@@ -1,5 +1,8 @@
 import * as React from "react";
-import { Button, Input, Link, Text, makeStyles, tokens } from "@fluentui/react-components";
+import { Button, Input, Link, Spinner, Switch, Text, makeStyles, tokens } from "@fluentui/react-components";
+import { HostName } from "../../office/host";
+import { getHostTools } from "../../office/tools";
+import { TestStep, runSelfTest } from "../../office/selftest";
 import { PROVIDERS, Provider } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { fetchModels } from "../../core/models";
@@ -24,6 +27,7 @@ const useStyles = makeStyles({
 interface Props {
   storage: Storage;
   onChanged: () => void;
+  host?: HostName;
 }
 
 type Status = { kind: "ok" | "err" | "busy"; text: string } | undefined;
@@ -88,10 +92,67 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
   );
 };
 
+const AgentSettings: React.FC<Props> = ({ storage, onChanged, host }) => {
+  const s = useStyles();
+  const [st, setSt] = React.useState(storage.getSettings());
+  const [steps, setSteps] = React.useState<TestStep[] | null>(null);
+  const [running, setRunning] = React.useState(false);
+  const set = (patch: any) => {
+    storage.setSettings(patch);
+    setSt(storage.getSettings());
+    onChanged();
+  };
+  const tools = host ? getHostTools(host, () => storage.getSettings()) : null;
+  const test = async () => {
+    if (!tools) return;
+    setRunning(true);
+    setSteps([]);
+    try {
+      await runSelfTest(tools, setSteps);
+    } finally {
+      setRunning(false);
+    }
+  };
+  const passed = steps?.filter((x) => x.ok === true).length ?? 0;
+  const failed = steps?.filter((x) => x.ok === false).length ?? 0;
+  return (
+    <div className={s.card}>
+      <Text weight="semibold">AI tự thao tác trên tài liệu</Text>
+      <Switch label="Cho AI tự đọc, sửa, tạo nội dung trong Office" checked={st.agentMode} onChange={(_, d) => set({ agentMode: d.checked })} />
+      <Switch label="Hỏi tôi trước mỗi thao tác sửa tài liệu" checked={st.askBeforeWrite} onChange={(_, d) => set({ askBeforeWrite: d.checked })} />
+      <Switch label="Word: ghi sửa đổi bằng Theo dõi thay đổi (Track Changes)" checked={st.trackChanges} onChange={(_, d) => set({ trackChanges: d.checked })} />
+      <Text weight="semibold" style={{ marginTop: 6 }}>
+        Tự kiểm tra chức năng {host && host !== "Khác" ? `(${host})` : ""}
+      </Text>
+      <Text size={200} className={s.muted}>
+        Chạy thật từng thao tác (đọc, ghi, định dạng, tạo bảng/biểu đồ/slide, nhận xét…) trên tài liệu đang mở rồi tự dọn sạch. Không cần API key. Nên chạy trên tài liệu trống.
+      </Text>
+      <div className={s.row}>
+        <Button onClick={test} disabled={!tools || running}>
+          Chạy tự kiểm tra
+        </Button>
+        {running && <Spinner size="tiny" />}
+        {steps && !running && (
+          <Text weight="semibold" className={failed ? s.err : s.ok}>
+            {failed ? `${failed} lỗi` : "Tất cả đạt"} · {passed}/{steps.length} bước đạt
+          </Text>
+        )}
+      </div>
+      {steps?.map((x, i) => (
+        <Text key={i} size={200} className={x.ok === false ? s.err : x.ok ? s.ok : s.muted}>
+          {x.ok === true ? "✅" : x.ok === false ? "❌" : "➖"} {x.name}
+          {x.detail ? ` — ${x.detail}` : ""}
+        </Text>
+      ))}
+    </div>
+  );
+};
+
 const Settings: React.FC<Props> = (props) => {
   const s = useStyles();
   return (
     <div>
+      <AgentSettings {...props} />
       <Text size={200} className={s.muted} block style={{ marginBottom: 10 }}>
         Key chỉ lưu trên máy này, trong add-in; chỉ gửi tới đúng nhà cung cấp khi gọi. Bấm “Lưu” để kiểm tra key và tải
         danh sách model.

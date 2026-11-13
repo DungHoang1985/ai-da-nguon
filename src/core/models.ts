@@ -7,6 +7,8 @@ export interface ModelInfo {
   name: string;
   free?: boolean;
   context?: number;
+  /** Gọi được công cụ (thao tác trên tài liệu). undefined = không rõ */
+  tools?: boolean;
 }
 
 const NON_CHAT = /(embed|whisper|tts|dall-e|moderation|rerank|transcribe|audio|image-gen|imagen|veo|text-to-speech|guard)/i;
@@ -54,11 +56,13 @@ export function normalizeModels(provider: Provider, json: any): ModelInfo[] {
           provider.id === "openrouter"
             ? id.endsWith(":free") || (p && Number(p.prompt) === 0 && Number(p.completion) === 0)
             : undefined;
+        const sp: any[] | undefined = Array.isArray(m.supported_parameters) ? m.supported_parameters : undefined;
         return {
           id,
           name: m.name && m.name !== id ? `${m.name} (${id})` : id,
           free: free || undefined,
           context: m.context_length || m.context_window || undefined,
+          tools: sp ? sp.includes("tools") : undefined,
         };
       })
   );

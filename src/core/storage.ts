@@ -34,6 +34,24 @@ function defaultStore(): KVStore {
 
 const PREFIX = "aidn.";
 
+export interface AppSettings {
+  /** Cho AI tự thao tác trên tài liệu (gọi công cụ) */
+  agentMode: boolean;
+  /** Hỏi trước mỗi thao tác sửa tài liệu */
+  askBeforeWrite: boolean;
+  /** Word: ghi sửa đổi bằng Theo dõi thay đổi */
+  trackChanges: boolean;
+  /** OpenRouter: chỉ hiện model gọi được công cụ */
+  toolsOnly: boolean;
+}
+
+export const DEFAULT_SETTINGS: AppSettings = {
+  agentMode: true,
+  askBeforeWrite: false,
+  trackChanges: true,
+  toolsOnly: true,
+};
+
 export class Storage {
   constructor(private store: KVStore = defaultStore()) {}
 
@@ -85,6 +103,14 @@ export class Storage {
     const cache = this.getModelCache();
     cache[providerId] = { at, models };
     this.write("models", cache);
+  }
+
+  getSettings(): AppSettings {
+    return { ...DEFAULT_SETTINGS, ...this.read<Partial<AppSettings>>("settings", {}) };
+  }
+
+  setSettings(s: Partial<AppSettings>): void {
+    this.write("settings", { ...this.getSettings(), ...s });
   }
 
   getSelection(): { providerId?: string; modelId?: string; freeOnly?: boolean } {

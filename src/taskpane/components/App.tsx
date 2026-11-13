@@ -47,7 +47,7 @@ const App: React.FC = () => {
         {tab === "chat" ? (
           <Chat storage={storage} host={host} version={version} goSettings={() => setTab("settings")} />
         ) : (
-          <Settings storage={storage} onChanged={() => setVersion((v) => v + 1)} />
+          <Settings storage={storage} host={host} onChanged={() => setVersion((v) => v + 1)} />
         )}
       </div>
     </div>
