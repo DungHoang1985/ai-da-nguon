@@ -331,6 +331,7 @@ describe("v3 · Biểu đồ gốc PowerPoint (pptxgenjs)", () => {
     const layoutFile = /slideLayouts\/(slideLayout\d+\.xml)/.exec(rels)![1];
     const layoutXml = await zip.file("ppt/slideLayouts/" + layoutFile)!.async("string");
     assert.ok(layoutXml.includes('<p:cSld name="Title Only"'), "bố cục không mang tên của mẫu");
+    assert.ok(/<p:sldLayout type="titleOnly"/.test(layoutXml), "bố cục chưa gắn kiểu titleOnly");
     const y = Number(/<p:graphicFrame>[\s\S]*?<a:off x="\d+" y="(\d+)"/.exec(slide)![1]);
     assert.ok(y >= (130 / 72) * 914400, `biểu đồ đè lên tiêu đề (y=${y})`);
   });

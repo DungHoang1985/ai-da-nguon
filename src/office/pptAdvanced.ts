@@ -228,8 +228,10 @@ async function exportSlide(ctx: PowerPoint.RequestContext, slide: PowerPoint.Sli
 const THEME_COLORS = ["accent1", "accent2", "accent3", "accent4", "accent5", "accent6"];
 
 export interface ChartLayout {
-  /** Tên bố cục trong bài đang mở (PowerPoint ghép theo tên khi chèn với "Use Destination Theme") */
+  /** Tên bố cục trong bài đang mở */
   name: string;
+  /** Kiểu bố cục theo Office.js (TitleOnly, Object…) — PowerPoint ghép bố cục theo kiểu khi chèn với "Use Destination Theme" */
+  type?: string;
   /** Vị trí ô tiêu đề của bố cục đó (điểm) */
   title?: { left: number; top: number; width: number; height: number };
 }
@@ -240,23 +242,37 @@ async function pickChartLayout(ctx: PowerPoint.RequestContext, wanted?: string):
     const layouts = ctx.presentation.slideMasters.getItemAt(0).layouts;
     layouts.load("items/name");
     await ctx.sync();
+    let types: string[] = [];
+    if (supports("1.8")) {
+      try {
+        layouts.load("items/type");
+        await ctx.sync();
+        types = layouts.items.map((l) => String(l.type));
+      } catch {
+        types = [];
+      }
+    }
+    const byType = (t: string) => layouts.items.find((_, i) => types[i] === t);
     const find = (re: RegExp) => layouts.items.find((l) => re.test(l.name.trim()));
     const lay =
       (wanted ? layouts.items.find((l) => l.name.trim().toLowerCase() === String(wanted).trim().toLowerCase()) : undefined) ||
+      byType("TitleOnly") ||
       find(/^(title only|chỉ tiêu đề|chỉ có tiêu đề)$/i) ||
       find(/title only|chỉ (có )?tiêu đề/i) ||
+      byType("Object") ||
       find(/^title and content$|^tiêu đề và nội dung$/i);
-    if (!lay) return { name: "Title Only" };
+    if (!lay) return { name: "Title Only", type: "TitleOnly" };
+    const type = types[layouts.items.indexOf(lay)] || (/title only|chỉ (có )?tiêu đề/i.test(lay.name) ? "TitleOnly" : undefined);
     try {
       lay.shapes.load("items/name,items/left,items/top,items/width,items/height");
       await ctx.sync();
       const t = lay.shapes.items.find((x) => /title|tiêu đề/i.test(x.name) && !/sub|phụ/i.test(x.name));
-      return { name: lay.name, title: t ? { left: t.left, top: t.top, width: t.width, height: t.height } : undefined };
+      return { name: lay.name, type, title: t ? { left: t.left, top: t.top, width: t.width, height: t.height } : undefined };
     } catch {
-      return { name: lay.name };
+      return { name: lay.name, type };
     }
   } catch {
-    return { name: "Title Only" };
+    return { name: "Title Only", type: "TitleOnly" };
   }
 }
 
@@ -341,14 +357,36 @@ export async function buildChartPptx(a: any, size: { w: number; h: number }, lay
   }
   s.addChart(type as any, data, opts);
   const b64 = (await pptx.write({ outputType: "base64" })) as string;
-  if (!a.title) return b64;
   const JSZip = (await import("jszip")).default;
   const zip = await JSZip.loadAsync(b64, { base64: true });
   const f = zip.file("ppt/slides/slide1.xml");
   if (!f) return b64;
-  zip.file("ppt/slides/slide1.xml", inheritTitle(await f.async("string")));
+  if (a.title) zip.file("ppt/slides/slide1.xml", inheritTitle(await f.async("string")));
+  // Gắn kiểu bố cục chuẩn (vd titleOnly) để PowerPoint dùng bố cục cùng kiểu của mẫu thay vì thêm bố cục mới
+  const ooxml = OOXML_LAYOUT[layout?.type || "TitleOnly"];
+  const rels = await zip.file("ppt/slides/_rels/slide1.xml.rels")?.async("string");
+  const lf = rels && /slideLayouts\/(slideLayout\d+\.xml)/.exec(rels)?.[1];
+  const lx = lf ? zip.file("ppt/slideLayouts/" + lf) : null;
+  if (ooxml && lx) {
+    const xml = await lx.async("string");
+    if (!/<p:sldLayout\b[^>]*\btype="/.test(xml)) zip.file("ppt/slideLayouts/" + lf, xml.replace(/<p:sldLayout\b/, `<p:sldLayout type="${ooxml}"`));
+  }
   return zip.generateAsync({ type: "base64", compression: "DEFLATE" });
 }
+
+/** Kiểu bố cục Office.js → giá trị sldLayout@type trong OOXML */
+const OOXML_LAYOUT: Record<string, string> = {
+  TitleOnly: "titleOnly",
+  Title: "title",
+  Object: "obj",
+  Text: "tx",
+  Blank: "blank",
+  SectionHeader: "secHead",
+  TwoObjects: "twoObj",
+  Comparison: "twoTxTwoObj",
+  ContentWithCaption: "objTx",
+  PictureWithCaption: "picTx",
+};
 
 // ---------- Sơ đồ quy trình ----------
 

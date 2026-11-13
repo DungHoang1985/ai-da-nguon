@@ -505,7 +505,10 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
     });
     await step("Nhân bản và di chuyển slide", async () => {
       if (!has18) throw new Skip("PowerPoint chưa hỗ trợ");
+      const nLayouts = await layoutCount();
       const r = await run("ppt_duplicate_slide", { slide: slideNo });
+      const n2 = await layoutCount();
+      expect(n2 === nLayouts, `Nhân bản làm mẫu thêm bố cục (${nLayouts} → ${n2})`);
       const ov = await run("ppt_get_overview");
       const last = ov.slide_count;
       await run("ppt_move_slide", { slide: r.slide, to: last });

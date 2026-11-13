@@ -4,6 +4,7 @@ import Chat from "./Chat";
 import Settings from "./Settings";
 import { Storage } from "../../core/storage";
 import { hostName } from "../../office/host";
+import { APP_VERSION } from "../../core/version";
 
 const useStyles = makeStyles({
   root: {
@@ -36,7 +37,7 @@ const App: React.FC = () => {
           AI Đa Nguồn
         </Text>
         <Text size={200} className={s.muted}>
-          {host === "Khác" ? "" : `Đang chạy trong ${host}`}
+          {host === "Khác" ? `v${APP_VERSION}` : `v${APP_VERSION} · ${host}`}
         </Text>
       </div>
       <TabList selectedValue={tab} onTabSelect={(_, d) => setTab(String(d.value))} size="small">
