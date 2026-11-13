@@ -91,6 +91,29 @@ interface Props {
 const PLAIN_SYSTEM =
   "Bạn là trợ lý trong Microsoft Office. Trả lời bằng tiếng Việt, ngắn gọn, đúng trọng tâm. Khi trình bày dữ liệu dạng bảng, dùng bảng Markdown.";
 
+/** Hiển thị Markdown đơn giản: **đậm**, tiêu đề #, gạch đầu dòng */
+const inline = (s: string) =>
+  s.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
+    part.startsWith("**") && part.endsWith("**") && part.length > 4 ? <strong key={i}>{part.slice(2, -2)}</strong> : part
+  );
+
+const Rich: React.FC<{ text: string }> = ({ text }) => (
+  <span style={{ whiteSpace: "normal" }}>
+    {text.split("\n").map((line, i) => {
+      const h = line.match(/^\s*#{1,4}\s+(.*)$/);
+      if (h) return <div key={i} style={{ fontWeight: 600, marginTop: 4 }}>{inline(h[1])}</div>;
+      const b = line.match(/^\s*[-*•]\s+(.*)$/);
+      if (b)
+        return (
+          <div key={i} style={{ paddingLeft: 14, textIndent: -10 }}>
+            • {inline(b[1])}
+          </div>
+        );
+      return <div key={i}>{line.trim() ? inline(line) : "\u00a0"}</div>;
+    })}
+  </span>
+);
+
 const finalText = (it: Item) =>
   it.segments
     ? it.segments
@@ -462,7 +485,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
             <div key={i} className={s.bot}>
               {(it.segments || []).map((sg, k) =>
                 sg.type === "text" ? (
-                  <span key={k}>{sg.text}</span>
+                  <Rich key={k} text={sg.text} />
                 ) : (
                   <span key={k} className={sg.status === "error" ? s.stepErr : s.step}>
                     {sg.status === "running" ? "⏳" : sg.status === "ok" ? "✅" : "⚠️"} {sg.label}

@@ -12,7 +12,20 @@ export function getHostTools(host: HostName, settings: () => { trackChanges: boo
   return null;
 }
 
-const where = (a: any) => (a?.sheet && !String(a?.address || "").includes("!") ? `${a.sheet}!` : "") + (a?.address || a?.source_address || "");
+const where = (a: any) => {
+  const addr = String(a?.address || a?.source_address || "");
+  return (a?.sheet && !addr.includes("!") ? `${a.sheet}!` : "") + addr;
+};
+
+const CHART_VI: Record<string, string> = {
+  column: "cột",
+  bar: "thanh ngang",
+  line: "đường",
+  pie: "tròn",
+  area: "vùng",
+  scatter: "phân tán",
+  doughnut: "vành khuyên",
+};
 
 export function describeCall(call: ToolCall): string {
   const a = call.args || {};
@@ -30,7 +43,7 @@ export function describeCall(call: ToolCall): string {
     case "excel_create_table":
       return `Tạo bảng ${where(a)}`;
     case "excel_create_chart":
-      return `Vẽ biểu đồ ${a.chart_type || ""} từ ${where(a)}`;
+      return `Vẽ biểu đồ ${CHART_VI[a.chart_type] || a.chart_type || ""} từ ${where(a)}`;
     case "excel_sort_range":
       return `Sắp xếp ${where(a)} theo cột ${a.column}`;
     case "excel_clear_range":
