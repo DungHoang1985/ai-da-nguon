@@ -4,9 +4,14 @@ Trợ lý AI trong khung bên phải của Office, dùng API key của nhiều n
 OpenRouter, Google Gemini, Groq, Anthropic (Claude), OpenAI, Mistral, Cerebras, DeepSeek, SambaNova, NVIDIA NIM, Cohere.
 
 - Nhập key trong thẻ **Cài đặt** → key chỉ lưu trên máy (bộ nhớ cục bộ của add-in).
-- Tự liệt kê model theo nhà cung cấp, tự làm mới sau 24 giờ; lọc "Chỉ miễn phí" (OpenRouter).
-- Chat trả lời chạy dần, có nút Dừng; gửi kèm nội dung đang chọn.
-- **Chèn vào**: Excel → ô đang chọn (bảng Markdown được tách thành ô) · Word → sau chỗ con trỏ · PowerPoint → ô chữ/slide đang chọn.
+- Tự liệt kê model theo nhà cung cấp, tự làm mới sau 24 giờ; lọc "Miễn phí" và "Chỉ model thao tác được" (OpenRouter, biểu tượng 🛠).
+- **AI tự thao tác trong tài liệu** (chế độ tác tử, gọi công cụ):
+  - Excel: đọc sổ tính, ghi giá trị/công thức, định dạng, tạo sheet, bảng (Table), biểu đồ, sắp xếp, xóa vùng — có nút **Hoàn tác**.
+  - Word: thay chữ, viết lại đoạn (chỉ sửa phần khác), chèn tiêu đề/đoạn/gạch đầu dòng, định dạng, nhận xét, bảng — ghi bằng **Theo dõi thay đổi**.
+  - PowerPoint: tạo slide theo bố cục có sẵn, sửa chữ, thêm ô chữ/hình/bảng — có nút **Hoàn tác**.
+  - Từng bước hiện trong khung chat; nút Dừng; tùy chọn hỏi trước khi sửa.
+- **Tự kiểm tra** (thẻ Cài đặt): chạy thật mọi thao tác trên tài liệu đang mở rồi dọn sạch, không cần key.
+- Chế độ chỉ trò chuyện + nút **Chèn vào** khi tắt "AI tự thao tác" hoặc model không gọi được công cụ.
 
 Bản chạy thật: https://dunghoang1985.github.io/ai-da-nguon/ (manifest: `dist/manifest.xml` sau khi build).
 
