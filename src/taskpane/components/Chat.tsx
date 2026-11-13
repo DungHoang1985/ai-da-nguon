@@ -90,6 +90,8 @@ const useStyles = makeStyles({
     "& th": { background: tokens.colorNeutralBackground4, fontWeight: 600 },
   },
   menu: {
+    // Không cho khung cột co về 0 khi khung add-in thấp
+    flexShrink: 0,
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     borderRadius: "6px",
     maxHeight: "180px",
@@ -924,7 +926,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
         onChange={(_, d) => setWithSelection(!!d.checked)}
       />
       {attachments.length > 0 && (
-        <div className={s.row}>
+        <div className={s.row} style={{ flexShrink: 0 }}>
           {attachments.map((a, i) => (
             <span key={i} className={s.fileChip} title={a.note || a.name}>
               {a.kind === "image" ? "🖼" : "📄"} {a.name}
