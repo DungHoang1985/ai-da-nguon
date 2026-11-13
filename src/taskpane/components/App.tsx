@@ -6,9 +6,17 @@ import { Storage } from "../../core/storage";
 import { hostName } from "../../office/host";
 
 const useStyles = makeStyles({
-  root: { padding: "10px", height: "100vh", boxSizing: "border-box", display: "flex", flexDirection: "column" },
-  head: { display: "flex", justifyContent: "space-between", alignItems: "center" },
-  body: { flex: 1, overflowY: "auto", paddingTop: "8px" },
+  root: {
+    padding: "10px",
+    height: "100vh",
+    width: "100%",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+    overflowX: "hidden",
+  },
+  head: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "4px" },
+  body: { flex: 1, overflowY: "auto", overflowX: "hidden", paddingTop: "8px" },
   muted: { color: tokens.colorNeutralForeground3 },
 });
 

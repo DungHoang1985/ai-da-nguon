@@ -198,7 +198,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
   return (
     <div className={s.wrap}>
       <div className={s.row}>
-        <Select value={providerId} onChange={(_, d) => setProviderId(d.value)} style={{ flex: 1 }}>
+        <Select value={providerId} onChange={(_, d) => setProviderId(d.value)} style={{ flex: 1, minWidth: 0 }}>
           {available.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
@@ -215,7 +215,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
           value={search}
           onChange={(_, d) => setSearch(d.value)}
           size="small"
-          style={{ flex: 1 }}
+          style={{ flex: 1, minWidth: 0 }}
         />
         {providerId === "openrouter" && (
           <Switch label="Chỉ miễn phí" checked={freeOnly} onChange={(_, d) => setFreeOnly(d.checked)} />

@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     gap: "6px",
   },
-  row: { display: "flex", gap: "6px", alignItems: "center" },
+  row: { display: "flex", gap: "6px", alignItems: "center", minWidth: 0 },
   ok: { color: tokens.colorPaletteGreenForeground1 },
   err: { color: tokens.colorPaletteRedForeground1 },
   muted: { color: tokens.colorNeutralForeground3 },
@@ -72,12 +72,12 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
           placeholder="Dán API key"
           value={key}
           onChange={(_, d) => setKey(d.value)}
-          style={{ flex: 1 }}
+          style={{ flex: 1, minWidth: 0 }}
         />
-        <Button appearance="primary" onClick={save} disabled={!key.trim() || status?.kind === "busy"}>
+        <Button appearance="primary" style={{ minWidth: 0 }} onClick={save} disabled={!key.trim() || status?.kind === "busy"}>
           Lưu
         </Button>
-        {storage.getKey(p.id) && <Button onClick={remove}>Xóa</Button>}
+        {storage.getKey(p.id) && <Button style={{ minWidth: 0 }} onClick={remove}>Xóa</Button>}
       </div>
       {status && (
         <Text size={200} className={status.kind === "ok" ? s.ok : status.kind === "err" ? s.err : s.muted}>
