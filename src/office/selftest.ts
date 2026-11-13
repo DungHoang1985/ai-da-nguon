@@ -31,6 +31,14 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
 
   if (tools.host === "Excel") {
     const sheet = "AIDN_KT_" + Date.now().toString(36).slice(-4);
+    // Dọn sheet thử còn sót từ lần chạy trước
+    await Excel.run(async (ctx) => {
+      const ws = ctx.workbook.worksheets;
+      ws.load("items/name");
+      await ctx.sync();
+      ws.items.filter((w) => /^AIDN_KT_/.test(w.name)).forEach((w) => w.delete());
+      await ctx.sync();
+    }).catch(() => undefined);
     await step("Xem tổng quan sổ tính", async () => {
       const ov = await run("excel_get_overview");
       expect(ov.sheets?.length, "Không đọc được danh sách sheet");
@@ -101,14 +109,19 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         ws.charts.load("items");
         ws.tables.load("items");
         await ctx.sync();
+        const font = ws.getRange("A1").format.font;
+        font.load("bold");
+        await ctx.sync();
         return {
           empty: r.values.every((row) => row.every((v) => v === "")),
           charts: ws.charts.items.length,
           tables: ws.tables.items.length,
+          bold: font.bold,
         };
       });
       expect(state.empty, "Sheet thử chưa trống sau khi hoàn tác");
       expect(state.charts === 0 && state.tables === 0, `Còn ${state.charts} biểu đồ, ${state.tables} bảng`);
+      expect(state.bold === false, "Định dạng (chữ đậm) chưa được hoàn tác");
       if (first) await first.undo();
       const gone = await Excel.run(async (ctx) => {
         const ws = ctx.workbook.worksheets.getItemOrNullObject(sheet);
@@ -116,8 +129,17 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         return ws.isNullObject;
       });
       expect(gone, "Sheet thử chưa được xóa");
-      return `Hoàn tác ${log.length} thao tác, sổ tính trở lại như cũ`;
+      return `Hoàn tác ${log.length} thao tác (cả nội dung lẫn định dạng), sổ tính trở lại như cũ`;
     });
+    // Bảo đảm không để lại sheet thử dù bước nào lỗi
+    await Excel.run(async (ctx) => {
+      const ws = ctx.workbook.worksheets.getItemOrNullObject(sheet);
+      await ctx.sync();
+      if (!ws.isNullObject) {
+        ws.delete();
+        await ctx.sync();
+      }
+    }).catch(() => undefined);
   } else if (tools.host === "Word") {
     const marker = "AIDN-KT-" + Date.now().toString(36).slice(-5);
     let startCount = 0;
@@ -266,6 +288,16 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
     await step("Hoàn tác toàn bộ", async () => {
       for (const u of log.slice().reverse()) await u.undo();
       const ov = await run("ppt_get_overview");
+      if (ov.slide_count !== before) {
+        // dọn slide thử còn sót
+        await PowerPoint.run(async (ctx) => {
+          const sl = ctx.presentation.slides;
+          sl.load("items/id");
+          await ctx.sync();
+          if (slideNo > 0 && sl.items[slideNo - 1]) sl.items[slideNo - 1].delete();
+          await ctx.sync();
+        }).catch(() => undefined);
+      }
       expect(ov.slide_count === before, `Còn ${ov.slide_count} slide, ban đầu ${before}`);
       return `Hoàn tác ${log.length} thao tác, bài trình chiếu trở lại như cũ`;
     });

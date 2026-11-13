@@ -202,20 +202,61 @@ async function snapshot(ctx: Excel.RequestContext, range: Excel.Range, withColum
   };
 }
 
+/** Chỉ giữ các thuộc tính ghi lại được (bỏ address, viền trong, giá trị rỗng) — nếu không setCellProperties báo lỗi tham số. */
+export function settableProps(props: any[][]): any[][] {
+  const clean = (o: any) => {
+    const out: any = {};
+    for (const [k, v] of Object.entries(o || {})) if (v !== null && v !== undefined && v !== "") out[k] = v;
+    return out;
+  };
+  return (props || []).map((row) =>
+    (row || []).map((cell: any) => {
+      const f = cell?.format || {};
+      const format: any = {};
+      const font = clean(f.font);
+      if (Object.keys(font).length) format.font = font;
+      if (f.fill) format.fill = f.fill.pattern === "None" || !f.fill.color ? { pattern: "None" } : clean({ color: f.fill.color, pattern: f.fill.pattern });
+      for (const k of ["horizontalAlignment", "verticalAlignment", "wrapText"]) if (f[k] !== null && f[k] !== undefined) format[k] = f[k];
+      if (f.borders) {
+        const b: any = {};
+        for (const edge of ["top", "bottom", "left", "right"]) {
+          const e = f.borders[edge];
+          if (!e) continue;
+          b[edge] = !e.style || e.style === "None" ? { style: "None" } : clean({ style: e.style, color: e.color, weight: e.weight });
+        }
+        if (Object.keys(b).length) format.borders = b;
+      }
+      return { format };
+    })
+  );
+}
+
 function restoreFrom(snap: Snapshot | null, label: string): UndoEntry | null {
   if (!snap) return null;
   return {
     label,
-    undo: () =>
-      Excel.run(async (ctx) => {
+    undo: async () => {
+      // Bước 1: nội dung + định dạng số (bắt buộc)
+      await Excel.run(async (ctx) => {
         const ws = snap.sheet ? ctx.workbook.worksheets.getItem(snap.sheet) : ctx.workbook.worksheets.getActiveWorksheet();
         const r = ws.getRange(snap.address);
         r.formulas = snap.formulas;
         r.numberFormat = snap.numberFormat;
-        r.setCellProperties(snap.props);
-        if (snap.columns) r.setColumnProperties(snap.columns);
         await ctx.sync();
-      }),
+      });
+      // Bước 2: định dạng ô và độ rộng cột (cố gắng hết mức)
+      await Excel.run(async (ctx) => {
+        const ws = snap.sheet ? ctx.workbook.worksheets.getItem(snap.sheet) : ctx.workbook.worksheets.getActiveWorksheet();
+        const r = ws.getRange(snap.address);
+        r.setCellProperties(settableProps(snap.props));
+        if (snap.columns) {
+          r.setColumnProperties(
+            snap.columns.map((c: any) => (c?.format?.columnWidth ? { format: { columnWidth: c.format.columnWidth } } : {}))
+          );
+        }
+        await ctx.sync();
+      }).catch(() => undefined);
+    },
   };
 }
 

@@ -403,3 +403,44 @@ describe("Hàm phụ cho Office", () => {
     assert.strictEqual(escapeWordSearch("a^b"), "a^^b");
   });
 });
+
+import { settableProps } from "../../src/office/excelTools";
+describe("Hoàn tác Excel: chỉ ghi lại thuộc tính hợp lệ", () => {
+  it("Bỏ address, viền trong, giá trị null; ô không tô nền → pattern None", () => {
+    const got = settableProps([
+      [
+        {
+          address: "Sheet1!A1",
+          format: {
+            font: { bold: true, italic: false, color: "#000000", size: 11, name: "Aptos", underline: "None" },
+            fill: { color: "#FFFFFF", pattern: "None" },
+            horizontalAlignment: "General",
+            verticalAlignment: "Bottom",
+            wrapText: false,
+            borders: {
+              top: { style: "Continuous", color: "#8EA9C1", weight: "Thin" },
+              bottom: { style: "None", color: "#000000", weight: "Thin" },
+              horizontal: { style: "None" },
+              vertical: { style: "None" },
+              diagonalDown: { style: "None" },
+            },
+          },
+        },
+      ],
+    ]);
+    assert.deepStrictEqual(got, [
+      [
+        {
+          format: {
+            font: { bold: true, italic: false, color: "#000000", size: 11, name: "Aptos", underline: "None" },
+            fill: { pattern: "None" },
+            horizontalAlignment: "General",
+            verticalAlignment: "Bottom",
+            wrapText: false,
+            borders: { top: { style: "Continuous", color: "#8EA9C1", weight: "Thin" }, bottom: { style: "None" } },
+          },
+        },
+      ],
+    ]);
+  });
+});
