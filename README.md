@@ -12,7 +12,7 @@ Bản chạy thật: https://dunghoang1985.github.io/ai-da-nguon/ (manifest: `di
 
 ## Cài vào Office trên Windows (một lần)
 
-Bấm đúp `cai-dat/cai-dat.cmd`: tải manifest bản chạy thật về `%LOCALAPPDATA%\AiDaNguon` và đăng ký với Office (khóa `HKCU\Software\Microsoft\Office\16.0\WEF\Developer`, giá trị `AiDaNguon`).
+Bấm đúp `cai-dat/cai-dat.cmd`: tải manifest bản chạy thật về `%LOCALAPPDATA%\AiDaNguon` và đăng ký với Office (khóa `HKCU\Software\Microsoft\Office\16.0\WEF\Developer`, giá trị = Id trong manifest).
 Đóng hẳn rồi mở lại Word/Excel/PowerPoint → thẻ **Home** → **Mở AI Đa Nguồn**. Gỡ: `cai-dat/go-cai-dat.cmd`.
 
 ## Cập nhật bản chạy thật
