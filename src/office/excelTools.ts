@@ -2,9 +2,13 @@
 /** Công cụ để AI thao tác trực tiếp trên sổ tính Excel. Mỗi thao tác ghi đều lưu ảnh chụp để Hoàn tác. */
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, topLeft, truncate } from "./util";
+import { getRange, restoreFrom, snapshot } from "./excelCore";
+import { EXCEL_ADV_SPECS, excelRisk, executeExcelAdvanced } from "./excelAdvanced";
+
+export { getRange, restoreFrom, settableProps, snapshot } from "./excelCore";
+export type { Snapshot } from "./excelCore";
 
 const MAX_READ_CELLS = 2500;
-const MAX_UNDO_CELLS = 10000;
 
 const addressProp = {
   type: "string",
@@ -156,109 +160,6 @@ export const EXCEL_SPECS: ToolSpec[] = [
     parameters: { type: "object", properties: { address: addressProp, sheet: sheetProp }, required: ["address"] },
   },
 ];
-
-function getRange(ctx: Excel.RequestContext, address: string, sheet?: string) {
-  if (!address) throw new Error("Thiếu địa chỉ ô (address).");
-  const a = splitAddress(address, sheet);
-  const ws = a.sheet ? ctx.workbook.worksheets.getItem(a.sheet) : ctx.workbook.worksheets.getActiveWorksheet();
-  return { ws, range: ws.getRange(a.address) };
-}
-
-interface Snapshot {
-  sheet: string;
-  address: string;
-  formulas: any[][];
-  numberFormat: any[][];
-  props: any;
-  columns?: any;
-}
-
-/** Chụp lại nội dung + định dạng trước khi sửa (giới hạn 10.000 ô). */
-async function snapshot(ctx: Excel.RequestContext, range: Excel.Range, withColumns = false): Promise<Snapshot | null> {
-  range.load("address,rowCount,columnCount");
-  await ctx.sync();
-  if (range.rowCount * range.columnCount > MAX_UNDO_CELLS) return null;
-  range.load("formulas,numberFormat");
-  const props = range.getCellProperties({
-    format: {
-      font: { bold: true, italic: true, underline: true, color: true, size: true, name: true },
-      fill: { color: true, pattern: true },
-      horizontalAlignment: true,
-      verticalAlignment: true,
-      wrapText: true,
-      borders: { style: true, color: true, weight: true },
-    },
-  });
-  const cols = withColumns ? range.getColumnProperties({ format: { columnWidth: true } }) : null;
-  await ctx.sync();
-  const { sheet, address } = splitAddress(range.address);
-  return {
-    sheet: sheet || "",
-    address,
-    formulas: range.formulas,
-    numberFormat: range.numberFormat,
-    props: props.value,
-    columns: cols ? cols.value : undefined,
-  };
-}
-
-/** Chỉ giữ các thuộc tính ghi lại được (bỏ address, viền trong, giá trị rỗng) — nếu không setCellProperties báo lỗi tham số. */
-export function settableProps(props: any[][]): any[][] {
-  const clean = (o: any) => {
-    const out: any = {};
-    for (const [k, v] of Object.entries(o || {})) if (v !== null && v !== undefined && v !== "") out[k] = v;
-    return out;
-  };
-  return (props || []).map((row) =>
-    (row || []).map((cell: any) => {
-      const f = cell?.format || {};
-      const format: any = {};
-      const font = clean(f.font);
-      if (Object.keys(font).length) format.font = font;
-      if (f.fill) format.fill = f.fill.pattern === "None" || !f.fill.color ? { pattern: "None" } : clean({ color: f.fill.color, pattern: f.fill.pattern });
-      for (const k of ["horizontalAlignment", "verticalAlignment", "wrapText"]) if (f[k] !== null && f[k] !== undefined) format[k] = f[k];
-      if (f.borders) {
-        const b: any = {};
-        for (const edge of ["top", "bottom", "left", "right"]) {
-          const e = f.borders[edge];
-          if (!e) continue;
-          b[edge] = !e.style || e.style === "None" ? { style: "None" } : clean({ style: e.style, color: e.color, weight: e.weight });
-        }
-        if (Object.keys(b).length) format.borders = b;
-      }
-      return { format };
-    })
-  );
-}
-
-function restoreFrom(snap: Snapshot | null, label: string): UndoEntry | null {
-  if (!snap) return null;
-  return {
-    label,
-    undo: async () => {
-      // Bước 1: nội dung + định dạng số (bắt buộc)
-      await Excel.run(async (ctx) => {
-        const ws = snap.sheet ? ctx.workbook.worksheets.getItem(snap.sheet) : ctx.workbook.worksheets.getActiveWorksheet();
-        const r = ws.getRange(snap.address);
-        r.formulas = snap.formulas;
-        r.numberFormat = snap.numberFormat;
-        await ctx.sync();
-      });
-      // Bước 2: định dạng ô và độ rộng cột (cố gắng hết mức)
-      await Excel.run(async (ctx) => {
-        const ws = snap.sheet ? ctx.workbook.worksheets.getItem(snap.sheet) : ctx.workbook.worksheets.getActiveWorksheet();
-        const r = ws.getRange(snap.address);
-        r.setCellProperties(settableProps(snap.props));
-        if (snap.columns) {
-          r.setColumnProperties(
-            snap.columns.map((c: any) => (c?.format?.columnWidth ? { format: { columnWidth: c.format.columnWidth } } : {}))
-          );
-        }
-        await ctx.sync();
-      }).catch(() => undefined);
-    },
-  };
-}
 
 function isDateFormat(nf: any): boolean {
   const s = String(nf || "");
@@ -560,10 +461,35 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
   throw new Error(`Không có công cụ ${name}`);
 }
 
+const RISKY_NAMES = new Set(["excel_write_range", "excel_clear_range", "excel_insert_delete", "excel_sheet"]);
+
+/** Ảnh chụp nội dung để ứng dụng khác (Word, PowerPoint) đọc chéo. */
+async function shareSnapshot() {
+  const ov = await overview();
+  const data = await Excel.run(async (ctx) => {
+    const ws = ctx.workbook.worksheets.getActiveWorksheet();
+    const u = ws.getUsedRangeOrNullObject(true);
+    u.load("address,rowCount,columnCount");
+    await ctx.sync();
+    if (u.isNullObject) return null;
+    const r = u.getCell(0, 0).getResizedRange(Math.min(u.rowCount, 200) - 1, Math.min(u.columnCount, 30) - 1);
+    r.load("address,values");
+    await ctx.sync();
+    return { address: r.address, values: r.values.map((row) => row.map((v) => truncate(v, 80))) };
+  });
+  return { title: "Sổ tính Excel đang mở", data: { overview: ov, activeSheetData: data } };
+}
+
 export const excelTools: HostToolSet = {
   host: "Excel",
-  specs: EXCEL_SPECS,
-  execute,
+  specs: [...EXCEL_SPECS, ...EXCEL_ADV_SPECS].map((sp) =>
+    RISKY_NAMES.has(sp.name) ? { ...sp, risky: (args: any) => excelRisk(sp.name, args) } : sp
+  ),
+  execute: async (name, a, ctx) => {
+    const adv = EXCEL_ADV_SPECS.some((sp) => sp.name === name);
+    return adv ? executeExcelAdvanced(name, a || {}, ctx.log) : execute(name, a || {}, ctx);
+  },
+  snapshot: shareSnapshot,
   overview,
   systemPrompt: (ov) =>
     [
@@ -574,6 +500,8 @@ export const excelTools: HostToolSet = {
       "- Ưu tiên công thức Excel (tên hàm tiếng Anh, dấu phẩy) thay vì số tính sẵn để bảng tự cập nhật; ghi cả khối bằng một lần excel_write_range.",
       "- Không ghi đè hay xóa dữ liệu có sẵn nếu người dùng không yêu cầu; cần chỗ mới thì dùng vùng trống hoặc sheet mới.",
       "- Kiểm tra formula_errors trong kết quả ghi; có lỗi thì sửa lại.",
+      "- Công cụ nâng cao: excel_find (tìm), excel_find_errors (quét lỗi công thức), excel_trace (lần ô phụ thuộc/được tham chiếu), excel_filter, excel_create_pivot, excel_conditional_format, excel_data_validation (danh sách chọn), excel_add_comment, excel_insert_delete (chèn/xóa hàng cột), excel_sheet (đổi tên, cố định dòng/cột, xóa sheet).",
+      "- Khi nhắc tới ô hay vùng, ghi rõ dạng Sheet!A1 hoặc Sheet!A1:B5 để người dùng bấm vào xem.",
       "- Xong việc: dùng excel_select_range để chỉ cho người dùng thấy kết quả, rồi trả lời ngắn gọn bằng tiếng Việt: đã làm gì, ở sheet/ô nào.",
       "",
       "Trạng thái hiện tại của sổ tính (JSON):",

@@ -143,6 +143,67 @@ export const WORD_SPECS: ToolSpec[] = [
     },
     write: true,
   },
+  {
+    name: "word_list_comments",
+    description: "List comments with their anchored text, author, paragraph index, replies and resolved state.",
+    parameters: { type: "object", properties: { include_resolved: { type: "boolean", description: "Default false." } } },
+  },
+  {
+    name: "word_reply_comment",
+    description: "Reply to a comment thread (e.g. explain what was changed).",
+    parameters: { type: "object", properties: { id: { type: "string" }, text: { type: "string" } }, required: ["id", "text"] },
+    write: true,
+  },
+  {
+    name: "word_resolve_comment",
+    description: "Mark a comment as resolved (or reopen it).",
+    parameters: { type: "object", properties: { id: { type: "string" }, resolved: { type: "boolean", description: "Default true." } }, required: ["id"] },
+    write: true,
+  },
+  {
+    name: "word_list_revisions",
+    description: "List tracked changes (redlines) in the document: index, type (Added/Deleted/Formatted…), author, date, text, paragraph index.",
+    parameters: { type: "object", properties: {} },
+  },
+  {
+    name: "word_review_revision",
+    description: "Accept or reject tracked changes: by index list from word_list_revisions, or all at once.",
+    parameters: {
+      type: "object",
+      properties: {
+        action: { type: "string", enum: ["accept", "reject"] },
+        indexes: { type: "array", items: { type: "number" } },
+        all: { type: "boolean" },
+      },
+      required: ["action"],
+    },
+    write: true,
+  },
+  {
+    name: "word_read_tables",
+    description: "Read existing tables: index, size and cell values.",
+    parameters: { type: "object", properties: { max_rows: { type: "number", description: "Default 40 rows per table." } } },
+  },
+  {
+    name: "word_fill_table",
+    description: "Fill cells of an existing table in place (tracked), starting at a row/column; extra rows are appended.",
+    parameters: {
+      type: "object",
+      properties: {
+        table_index: { type: "number", description: "0-based, from word_read_tables." },
+        values: { type: "array", items: { type: "array", items: { type: "string" } } },
+        start_row: { type: "number", description: "Default 1 (skip header row)." },
+        start_col: { type: "number", description: "Default 0." },
+      },
+      required: ["table_index", "values"],
+    },
+    write: true,
+  },
+  {
+    name: "word_go_to",
+    description: "Select a paragraph so the user sees it.",
+    parameters: { type: "object", properties: { paragraph_index: { type: "number" } }, required: ["paragraph_index"] },
+  },
 ];
 
 export interface WordSettings {
@@ -500,13 +561,203 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             return { ok: true, message: `Đã xóa đoạn ${s}${e > s ? `–${e}` : ""}` };
           })
         );
+      case "word_list_comments":
+        return Word.run(async (ctx) => {
+          if (!supports("1.4")) throw new Error("Word trên máy này chưa hỗ trợ đọc nhận xét qua add-in.");
+          const paras = await loadParagraphs(ctx);
+          const cs = ctx.document.body.getComments();
+          cs.load("items/id,items/content,items/authorName,items/creationDate,items/resolved");
+          await ctx.sync();
+          const items = cs.items.filter((c) => a.include_resolved || !c.resolved).slice(0, 100);
+          const anchors = items.map((c) => {
+            const r = c.getRange();
+            r.load("text");
+            const p = r.paragraphs.getFirst();
+            p.load("text");
+            const reps = c.replies;
+            reps.load("items/content,items/authorName");
+            return { r, p, reps };
+          });
+          await ctx.sync();
+          const texts = paras.items.map((p) => p.text);
+          return {
+            ok: true,
+            total: cs.items.length,
+            comments: items.map((c, i) => ({
+              id: c.id,
+              author: c.authorName,
+              text: c.content,
+              anchor: truncate(anchors[i].r.text, 300),
+              paragraph: texts.indexOf(anchors[i].p.text),
+              resolved: c.resolved,
+              replies: anchors[i].reps.items.map((x) => ({ author: x.authorName, text: x.content })),
+            })),
+          };
+        });
+
+      case "word_reply_comment":
+      case "word_resolve_comment":
+        return Word.run(async (ctx) => {
+          if (!supports("1.4")) throw new Error("Word trên máy này chưa hỗ trợ nhận xét qua add-in.");
+          const cs = ctx.document.body.getComments();
+          cs.load("items/id");
+          await ctx.sync();
+          const c = cs.items.find((x) => x.id === String(a.id));
+          if (!c) throw new Error(`Không có nhận xét id ${a.id}.`);
+          if (name === "word_reply_comment") {
+            c.reply(String(a.text || ""));
+            await ctx.sync();
+            return { ok: true, message: "Đã trả lời nhận xét" };
+          }
+          c.resolved = a.resolved !== false;
+          await ctx.sync();
+          return { ok: true, message: a.resolved === false ? "Đã mở lại nhận xét" : "Đã đánh dấu đã xử lý" };
+        });
+
+      case "word_list_revisions":
+        return Word.run(async (ctx) => {
+          if (!supports("1.6")) throw new Error("Word trên máy này chưa hỗ trợ đọc sửa đổi được theo dõi qua add-in.");
+          const paras = await loadParagraphs(ctx);
+          const tc = ctx.document.body.getTrackedChanges();
+          tc.load("items/type,items/author,items/date,items/text");
+          await ctx.sync();
+          const items = tc.items.slice(0, 200);
+          const ps = items.map((t) => {
+            const p = t.getRange().paragraphs.getFirst();
+            p.load("text");
+            return p;
+          });
+          await ctx.sync();
+          const texts = paras.items.map((p) => p.text);
+          return {
+            ok: true,
+            total: tc.items.length,
+            revisions: items.map((t, i) => ({
+              index: i,
+              type: t.type,
+              author: t.author,
+              date: t.date ? new Date(t.date as any).toLocaleString("vi-VN") : "",
+              text: truncate(t.text, 300),
+              paragraph: texts.indexOf(ps[i].text),
+            })),
+          };
+        });
+
+      case "word_review_revision":
+        return Word.run(async (ctx) => {
+          if (!supports("1.6")) throw new Error("Word trên máy này chưa hỗ trợ duyệt sửa đổi qua add-in.");
+          const tc = ctx.document.body.getTrackedChanges();
+          tc.load("items");
+          await ctx.sync();
+          const accept = a.action === "accept";
+          if (a.all) {
+            const n = tc.items.length;
+            if (accept) tc.acceptAll();
+            else tc.rejectAll();
+            await ctx.sync();
+            return { ok: true, message: `Đã ${accept ? "chấp nhận" : "từ chối"} tất cả ${n} sửa đổi` };
+          }
+          const idx = Array.from(new Set<number>((a.indexes || []).map((x: any) => Number(x))))
+            .filter((i) => i >= 0 && i < tc.items.length)
+            .sort((x, y) => y - x);
+          if (!idx.length) throw new Error("Cần indexes (từ word_list_revisions) hoặc all=true.");
+          for (const i of idx) {
+            if (accept) tc.items[i].accept();
+            else tc.items[i].reject();
+          }
+          await ctx.sync();
+          return { ok: true, message: `Đã ${accept ? "chấp nhận" : "từ chối"} ${idx.length} sửa đổi` };
+        });
+
+      case "word_read_tables":
+        return Word.run(async (ctx) => {
+          const tables = ctx.document.body.tables;
+          tables.load("items/rowCount,items/values");
+          await ctx.sync();
+          const maxRows = Number(a.max_rows) || 40;
+          return {
+            ok: true,
+            count: tables.items.length,
+            tables: tables.items.slice(0, 30).map((t, i) => ({
+              index: i,
+              rows: t.rowCount,
+              columns: t.values[0]?.length || 0,
+              values: t.values.slice(0, maxRows).map((r) => r.map((v) => truncate(v, 200))),
+            })),
+          };
+        });
+
+      case "word_fill_table":
+        return Word.run(async (ctx) =>
+          tracked(ctx, async () => {
+            const tables = ctx.document.body.tables;
+            tables.load("items/rowCount,items/values");
+            await ctx.sync();
+            const t = tables.items[Number(a.table_index)];
+            if (!t) throw new Error(`Không có bảng số ${a.table_index} (có ${tables.items.length} bảng).`);
+            const vals = normalize2D(a.values).map((r) => r.map((v) => String(v)));
+            const r0 = a.start_row === undefined ? 1 : Number(a.start_row);
+            const c0 = Number(a.start_col) || 0;
+            const cols = t.values[0]?.length || 0;
+            let written = 0;
+            const extra: string[][] = [];
+            vals.forEach((row, i) => {
+              const r = r0 + i;
+              if (r < t.rowCount) {
+                row.forEach((v, j) => {
+                  if (c0 + j < cols) {
+                    t.getCell(r, c0 + j).value = v;
+                    written++;
+                  }
+                });
+              } else {
+                const full = Array(cols).fill("");
+                row.forEach((v, j) => c0 + j < cols && (full[c0 + j] = v));
+                extra.push(full);
+              }
+            });
+            if (extra.length) t.addRows("End", extra.length, extra);
+            await ctx.sync();
+            return { ok: true, message: `Đã điền ${written} ô${extra.length ? `, thêm ${extra.length} hàng` : ""} vào bảng ${a.table_index}` };
+          })
+        );
+
+      case "word_go_to":
+        return Word.run(async (ctx) => {
+          const p = await paragraphAt(ctx, a.paragraph_index);
+          p.select();
+          await ctx.sync();
+          return { ok: true, message: `Đã chuyển tới đoạn ${a.paragraph_index}` };
+        });
+
     }
     throw new Error(`Không có công cụ ${name}`);
   }
 
+  async function snapshot() {
+    return Word.run(async (ctx) => {
+      const paras = await loadParagraphs(ctx, "items/text");
+      let chars = 0;
+      const out: string[] = [];
+      for (let i = 0; i < paras.items.length && chars < 40000; i++) {
+        const t = paras.items[i].text;
+        if (!t.trim()) continue;
+        out.push(`[¶${i}] ${t}`);
+        chars += t.length;
+      }
+      return { title: "Văn bản Word đang mở", data: { paragraphs: paras.items.length, text: out.join("\n") } };
+    });
+  }
+
+  const RISK: Record<string, (a: any) => string | null> = {
+    word_delete_paragraphs: (a) => `Xóa đoạn ${a.start}${a.end !== undefined && a.end !== a.start ? `–${a.end}` : ""} (ghi bằng Track Changes nếu đang bật).`,
+    word_review_revision: (a) => (a.all ? `${a.action === "accept" ? "Chấp nhận" : "Từ chối"} TẤT CẢ sửa đổi đang theo dõi trong văn bản.` : null),
+  };
+
   return {
     host: "Word",
-    specs: WORD_SPECS,
+    snapshot,
+    specs: WORD_SPECS.map((sp) => (RISK[sp.name] ? { ...sp, risky: async (a: any) => RISK[sp.name](a) } : sp)),
     execute,
     overview,
     systemPrompt: (ov) =>

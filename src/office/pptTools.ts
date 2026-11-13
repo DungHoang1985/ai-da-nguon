@@ -2,8 +2,8 @@
 /** Công cụ để AI thao tác trực tiếp trên bài trình chiếu PowerPoint. Mỗi thao tác tạo/sửa đều có Hoàn tác. */
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { normalize2D, truncate } from "./util";
-
-const TEXT_TYPES = new Set(["GeometricShape", "TextBox", "Placeholder", "Callout"]);
+import { currentSlideId, deleteShapeUndo, findShape, loadShapeTexts, shapeOn, slideAt, supports } from "./pptCore";
+import { PPT_ADV_SPECS, executePptAdvanced, pptRisk, slideSizePt } from "./pptAdvanced";
 
 const slideProp = { type: "number", description: "Slide number (1-based)." };
 
@@ -11,7 +11,7 @@ export const PPT_SPECS: ToolSpec[] = [
   {
     name: "ppt_get_overview",
     description:
-      "Get a presentation overview: slides (number, id, layout, shapes with name/type/text/position), selected slides and available layout names. Slide size is usually 960x540 points.",
+      "Get a presentation overview: slide size (points), slides (number, id, layout, shapes with name/type/text/position), selected slides and available layout names.",
     parameters: { type: "object", properties: {} },
   },
   {
@@ -48,7 +48,7 @@ export const PPT_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_add_textbox",
-    description: "Add a text box on a slide (positions in points; slide is 960x540).",
+    description: "Add a text box on a slide (positions in points; see slide_size in the overview).",
     parameters: {
       type: "object",
       properties: {
@@ -115,75 +115,6 @@ export const PPT_SPECS: ToolSpec[] = [
   },
 ];
 
-function supports(v: string): boolean {
-  try {
-    return Office.context.requirements.isSetSupported("PowerPointApi", v);
-  } catch {
-    return false;
-  }
-}
-
-async function slideAt(ctx: PowerPoint.RequestContext, n: number) {
-  const slides = ctx.presentation.slides;
-  slides.load("items/id");
-  await ctx.sync();
-  const i = Number(n) - 1;
-  if (!Number.isInteger(i) || i < 0 || i >= slides.items.length) {
-    throw new Error(`Không có slide số ${n}. Bài có ${slides.items.length} slide (đánh số từ 1).`);
-  }
-  return { slide: slides.items[i], index: i + 1, count: slides.items.length };
-}
-
-async function shapeOn(ctx: PowerPoint.RequestContext, slide: PowerPoint.Slide, ref: any) {
-  const shapes = slide.shapes;
-  shapes.load("items/id,items/name");
-  await ctx.sync();
-  const s = String(ref ?? "").trim();
-  let shape = shapes.items.find((x) => x.name.toLowerCase() === s.toLowerCase());
-  if (!shape) shape = shapes.items.find((x) => x.name.toLowerCase().includes(s.toLowerCase()) && s);
-  if (!shape && /^\d+$/.test(s)) shape = shapes.items[Number(s) - 1];
-  if (!shape) throw new Error(`Không thấy hình "${s}" trên slide. Có: ${shapes.items.map((x) => x.name).join(", ")}`);
-  return shape;
-}
-
-function deleteShapeUndo(slideId: string, shapeId: string, label: string): UndoEntry {
-  return {
-    label,
-    undo: () =>
-      PowerPoint.run(async (c) => {
-        c.presentation.slides.getItem(slideId).shapes.getItem(shapeId).delete();
-        await c.sync();
-      }),
-  };
-}
-
-async function loadShapeTexts(ctx: PowerPoint.RequestContext, shapes: PowerPoint.Shape[]): Promise<Record<string, string>> {
-  const out: Record<string, string> = {};
-  const eligible = shapes.filter((s) => TEXT_TYPES.has(String(s.type)));
-  const trs = eligible.map((s) => {
-    const tr = s.textFrame.textRange;
-    tr.load("text");
-    return tr;
-  });
-  try {
-    await ctx.sync();
-    eligible.forEach((s, i) => (out[s.id] = trs[i].text));
-  } catch {
-    // Một hình không có khung chữ → đọc từng hình
-    for (const s of eligible) {
-      try {
-        const tr = s.textFrame.textRange;
-        tr.load("text");
-        await ctx.sync();
-        out[s.id] = tr.text;
-      } catch {
-        /* bỏ qua */
-      }
-    }
-  }
-  return out;
-}
-
 async function overview() {
   return PowerPoint.run(async (ctx) => {
     const slides = ctx.presentation.slides;
@@ -232,8 +163,10 @@ async function overview() {
     } catch {
       layouts = [];
     }
+    const size = await slideSizePt(ctx);
     return {
       slide_count: slides.items.length,
+      slide_size: { width: size.w, height: size.h },
       selected_slides: selected,
       layouts,
       slides: result,
@@ -341,7 +274,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           label: `Slide ${index}`,
           undo: () =>
             PowerPoint.run(async (c) => {
-              c.presentation.slides.getItem(slideId).delete();
+              c.presentation.slides.getItem(currentSlideId(slideId)).delete();
               await c.sync();
             }),
         });
@@ -364,11 +297,12 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         await ctx.sync();
         const slideId = slide.id;
         const shapeId = shape.id;
+        const shapeName = shape.name;
         log.push({
           label: `Sửa chữ ${shape.name}`,
           undo: () =>
             PowerPoint.run(async (c) => {
-              const t = c.presentation.slides.getItem(slideId).shapes.getItem(shapeId).textFrame.textRange;
+              const t = (await findShape(c, slideId, shapeId, shapeName)).textFrame.textRange;
               t.text = old.text;
               if (old.size) t.font.size = old.size;
               if (old.bold !== null && old.bold !== undefined) t.font.bold = old.bold;
@@ -395,7 +329,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         if (a.align) tr.paragraphFormat.horizontalAlignment = a.align;
         shp.load("id,name");
         await ctx.sync();
-        log.push(deleteShapeUndo(slide.id, shp.id, `Ô chữ ${shp.name}`));
+        log.push(deleteShapeUndo(slide.id, shp.id, `Ô chữ ${shp.name}`, shp.name));
         return { ok: true, message: `Đã thêm ô chữ ở slide ${a.slide}`, shape: shp.name };
       });
 
@@ -425,7 +359,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         }
         shp.load("id,name");
         await ctx.sync();
-        log.push(deleteShapeUndo(slide.id, shp.id, `Hình ${shp.name}`));
+        log.push(deleteShapeUndo(slide.id, shp.id, `Hình ${shp.name}`, shp.name));
         return { ok: true, message: `Đã thêm hình ${a.shape_type} ở slide ${a.slide}`, shape: shp.name };
       });
 
@@ -440,7 +374,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         const shp = slide.shapes.addTable(vals.length, vals[0].length, opts);
         shp.load("id,name");
         await ctx.sync();
-        log.push(deleteShapeUndo(slide.id, shp.id, `Bảng ${shp.name}`));
+        log.push(deleteShapeUndo(slide.id, shp.id, `Bảng ${shp.name}`, shp.name));
         return { ok: true, message: `Đã thêm bảng ${vals.length}×${vals[0].length} ở slide ${a.slide}`, shape: shp.name };
       });
 
@@ -457,17 +391,25 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
   throw new Error(`Không có công cụ ${name}`);
 }
 
+const PPT_RISKY = new Set(["ppt_delete_slide", "ppt_delete_shape"]);
+
 export const pptTools: HostToolSet = {
   host: "PowerPoint",
-  specs: PPT_SPECS,
-  execute,
+  specs: [...PPT_SPECS, ...PPT_ADV_SPECS].map((sp) => (PPT_RISKY.has(sp.name) ? { ...sp, risky: (args: any) => pptRisk(sp.name, args) } : sp)),
+  execute: async (name, a, ctx) => {
+    const adv = PPT_ADV_SPECS.some((sp) => sp.name === name);
+    return adv ? executePptAdvanced(name, a || {}, ctx.log) : execute(name, a || {}, ctx);
+  },
+  snapshot: async () => ({ title: "Bài trình chiếu PowerPoint đang mở", data: await overview() }),
   overview,
   systemPrompt: (ov) =>
     [
       "Bạn là trợ lý AI được tích hợp trong Microsoft PowerPoint, có thể thao tác trực tiếp trên bài trình chiếu đang mở bằng các công cụ (ppt_*).",
       "Nguyên tắc:",
       "- Khi người dùng muốn tạo slide, sửa chữ, thêm hình/bảng… hãy GỌI CÔNG CỤ để làm thật, không chỉ đưa dàn ý.",
-      "- Slide đánh số từ 1; kích thước thường là 960×540 điểm. Dùng bố cục có sẵn của tệp (danh sách layouts) để giữ đúng giao diện.",
+      "- Slide đánh số từ 1; kích thước slide (điểm) ở slide_size. Dùng bố cục có sẵn của tệp (danh sách layouts) để giữ đúng giao diện.",
+      "- Số liệu cần so sánh → ppt_add_chart (biểu đồ gốc, sửa được dữ liệu, theo màu chủ đề). Quy trình/các bước/mốc thời gian → ppt_add_process_flow. Sắp xếp slide → ppt_move_slide / ppt_duplicate_slide / ppt_delete_slide. Chỉnh vị trí, màu, chữ của hình → ppt_update_shape.",
+      "- Khi nhắc tới slide, ghi \"slide N\" để người dùng bấm vào xem.",
       "- Nội dung slide ngắn gọn: tiêu đề ≤ 10 từ, mỗi slide 3–6 ý, mỗi ý một dòng.",
       "- Đặt hình/ô chữ không chồng lên nhau, cách mép ≥ 40 điểm.",
       "- Xong việc: trả lời ngắn gọn bằng tiếng Việt: đã tạo/sửa slide nào.",

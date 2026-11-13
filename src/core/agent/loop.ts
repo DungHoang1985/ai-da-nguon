@@ -1,7 +1,7 @@
 /** Vòng lặp tác tử: model đề xuất lệnh gọi công cụ → add-in thực hiện trên tài liệu → trả kết quả → lặp đến khi xong. */
 import { Provider } from "../providers";
 import { callModelStep } from "./llm";
-import { AgentEvent, AgentMessage, HostToolSet, ToolCall, UndoEntry } from "./types";
+import { AgentEvent, AgentMessage, ExtraTools, HostToolSet, ToolCall, ToolSpec, UndoEntry } from "./types";
 
 export const MAX_TOOL_RESULT_CHARS = 30000;
 export const OLD_TOOL_RESULT_CHARS = 1500;
@@ -27,8 +27,15 @@ export interface RunAgentOptions {
   signal?: AbortSignal;
   log: UndoEntry[];
   onEvent: (e: AgentEvent) => void;
-  /** Trả về false nếu người dùng không cho phép thao tác ghi */
-  approve?: (call: ToolCall) => Promise<boolean>;
+  /** Hỏi người dùng; trả về false nếu không cho phép. reason = cảnh báo rủi ro (nếu có) */
+  approve?: (call: ToolCall, reason?: string) => Promise<boolean>;
+  /** Hỏi trước mọi thao tác ghi */
+  askBeforeWrite?: boolean;
+  /** Luôn hỏi trước thao tác rủi ro (ghi đè dữ liệu, xóa) */
+  confirmRisky?: boolean;
+  /** Công cụ dùng chung (use_skill, read_other_app…) */
+  extra?: ExtraTools;
+  webSearch?: boolean;
   fetchFn?: typeof fetch;
 }
 
@@ -36,8 +43,9 @@ export interface RunAgentOptions {
 export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
   const maxSteps = o.maxSteps ?? 20;
   const msgs: AgentMessage[] = [...o.messages];
-  const writeTools = new Set(o.tools.specs.filter((t) => t.write).map((t) => t.name));
-  const known = new Set(o.tools.specs.map((t) => t.name));
+  const allSpecs: ToolSpec[] = [...o.tools.specs, ...(o.extra?.specs || [])];
+  const specMap = new Map(allSpecs.map((t) => [t.name, t]));
+  const extraNames = new Set((o.extra?.specs || []).map((t) => t.name));
 
   for (let step = 1; step <= maxSteps; step++) {
     if (o.signal?.aborted) throw new DOMException("Đã dừng", "AbortError");
@@ -47,10 +55,11 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       key: o.key,
       model: o.model,
       messages: [{ role: "system", content: o.system }, ...msgs],
-      tools: o.tools.specs,
+      tools: allSpecs,
       signal: o.signal,
       onText: (d) => o.onEvent({ type: "text", delta: d }),
       fetchFn: o.fetchFn,
+      webSearch: o.webSearch,
     });
     msgs.push({ role: "assistant", content: res.text, toolCalls: res.toolCalls, raw: res.raw });
     if (!res.toolCalls.length) return msgs;
@@ -61,12 +70,19 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       let result: any;
       let error: string | undefined;
       try {
-        if (!known.has(call.name)) throw new Error(`Không có công cụ tên "${call.name}".`);
+        const spec = specMap.get(call.name);
+        if (!spec) throw new Error(`Không có công cụ tên "${call.name}".`);
         if (call.args?.__invalid_json) throw new Error("Tham số gửi lên không phải JSON hợp lệ, hãy gọi lại.");
-        if (writeTools.has(call.name) && o.approve && !(await o.approve(call))) {
-          throw new Error("Người dùng không cho phép thao tác này. Đừng thử lại; hỏi người dùng muốn làm gì khác.");
+        let reason: string | null = null;
+        if (o.confirmRisky && spec.risky) reason = await spec.risky(call.args || {});
+        if (reason || (spec.write && o.askBeforeWrite)) {
+          if (!o.approve || !(await o.approve(call, reason || undefined))) {
+            throw new Error("Người dùng không cho phép thao tác này. Đừng thử lại; hỏi người dùng muốn làm gì khác.");
+          }
         }
-        result = await o.tools.execute(call.name, call.args || {}, { log: o.log });
+        result = extraNames.has(call.name)
+          ? await o.extra!.execute(call.name, call.args || {})
+          : await o.tools.execute(call.name, call.args || {}, { log: o.log });
       } catch (e: any) {
         error = e?.message || String(e);
         if (e?.code && !String(error).includes(e.code)) error += ` [${e.code}]`;

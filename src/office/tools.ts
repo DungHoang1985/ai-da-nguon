@@ -25,6 +25,8 @@ const CHART_VI: Record<string, string> = {
   area: "vùng",
   scatter: "phân tán",
   doughnut: "vành khuyên",
+  stacked_column: "cột chồng",
+  stacked_bar: "thanh chồng",
 };
 
 export function describeCall(call: ToolCall): string {
@@ -84,27 +86,98 @@ export function describeCall(call: ToolCall): string {
       return `Thêm bảng ở slide ${a.slide}`;
     case "ppt_go_to_slide":
       return `Chuyển tới slide ${a.slide}`;
+    // Excel nâng cao
+    case "excel_find":
+      return `Tìm "${String(a.text || "").slice(0, 40)}"${a.sheet ? ` ở sheet ${a.sheet}` : ""}`;
+    case "excel_find_errors":
+      return `Quét lỗi công thức${a.sheet ? ` ở sheet ${a.sheet}` : " cả sổ tính"}`;
+    case "excel_trace":
+      return a.direction === "dependents" ? `Lần các ô phụ thuộc vào ${a.cell}` : `Lần các ô mà ${a.cell} tham chiếu tới`;
+    case "excel_filter":
+      return a.clear ? "Bỏ lọc" : `Lọc ${where(a)}${a.column ? ` theo cột ${a.column}` : ""}`;
+    case "excel_create_pivot":
+      return `Tạo PivotTable từ ${where(a)}`;
+    case "excel_conditional_format":
+      return `Định dạng có điều kiện ${where(a)}`;
+    case "excel_data_validation":
+      return `Tạo danh sách chọn ${where(a)}`;
+    case "excel_add_comment":
+      return `Thêm ghi chú ô ${a.cell}`;
+    case "excel_insert_delete": {
+      const del = String(a.action).startsWith("delete");
+      const rows = String(a.action).includes("rows");
+      return `${del ? "Xóa" : "Chèn"} ${a.count || 1} ${rows ? "hàng" : "cột"} tại ${a.at}${a.sheet ? ` (${a.sheet})` : ""}`;
+    }
+    case "excel_sheet":
+      return a.action === "rename"
+        ? `Đổi tên sheet "${a.sheet || "đang mở"}" → "${a.new_name}"`
+        : a.action === "freeze_rows"
+          ? `Cố định ${a.count || 1} dòng đầu`
+          : a.action === "freeze_columns"
+            ? `Cố định ${a.count || 1} cột đầu`
+            : a.action === "unfreeze"
+              ? "Bỏ cố định dòng/cột"
+              : a.action === "delete"
+                ? `Xóa sheet "${a.sheet || "đang mở"}"`
+                : `Mở sheet "${a.sheet}"`;
+    // Word nâng cao
+    case "word_list_comments":
+      return "Đọc các nhận xét";
+    case "word_reply_comment":
+      return `Trả lời nhận xét: ${String(a.text || "").slice(0, 50)}`;
+    case "word_resolve_comment":
+      return a.resolved === false ? "Mở lại nhận xét" : "Đánh dấu nhận xét đã xử lý";
+    case "word_list_revisions":
+      return "Đọc các sửa đổi được theo dõi";
+    case "word_review_revision":
+      return `${a.action === "accept" ? "Chấp nhận" : "Từ chối"} ${a.all ? "tất cả sửa đổi" : `sửa đổi số ${(a.indexes || []).join(", ")}`}`;
+    case "word_read_tables":
+      return "Đọc các bảng";
+    case "word_fill_table":
+      return `Điền bảng số ${a.table_index}`;
+    case "word_go_to":
+      return `Chuyển tới [¶${a.paragraph_index}]`;
+    // PowerPoint nâng cao
+    case "ppt_add_chart":
+      return `Chèn biểu đồ ${CHART_VI[a.chart_type] || a.chart_type || ""} (slide mới)`;
+    case "ppt_add_process_flow":
+      return `Vẽ sơ đồ ${Array.isArray(a.steps) ? a.steps.length + " bước " : ""}ở slide ${a.slide}`;
+    case "ppt_move_slide":
+      return `Chuyển slide ${a.slide} tới vị trí ${a.to}`;
+    case "ppt_duplicate_slide":
+      return `Nhân bản slide ${a.slide}`;
+    case "ppt_delete_slide":
+      return `Xóa slide ${a.slide}`;
+    case "ppt_update_shape":
+      return `Sửa hình "${a.shape}" ở slide ${a.slide}`;
+    case "ppt_delete_shape":
+      return `Xóa hình "${a.shape}" ở slide ${a.slide}`;
+    // Dùng chung
+    case "use_skill":
+      return `Đọc kỹ năng ${a.name}${a.file ? ` (${a.file})` : ""}`;
+    case "read_other_app":
+      return `Đọc nội dung đang mở ở ${a.app}`;
   }
   return call.name;
 }
 
 export const QUICK_PROMPTS: Record<string, string[]> = {
   Excel: [
-    "Tóm tắt dữ liệu ở sheet đang mở",
-    "Tạo bảng tổng hợp theo nhóm và vẽ biểu đồ",
-    "Kiểm tra công thức lỗi và sửa",
-    "Định dạng bảng cho đẹp (tiêu đề, viền, số có dấu phân cách)",
+    "Quét lỗi công thức trong sổ tính và sửa",
+    "Tạo PivotTable tổng hợp theo nhóm rồi vẽ biểu đồ",
+    "Tô màu các giá trị vượt ngưỡng bằng định dạng có điều kiện",
+    "Chuẩn hóa bảng: tiêu đề, định dạng số, cố định dòng tiêu đề",
   ],
   Word: [
-    "Rà soát chính tả, ngữ pháp và sửa bằng Track Changes",
-    "Thêm nhận xét cho các điều khoản có rủi ro",
-    "Tóm tắt văn bản này và chèn phần tóm tắt lên đầu",
-    "Chuẩn hóa định dạng tiêu đề các mục",
+    "Rà soát hợp đồng này cho bên mình và ghi nhận xét vào các điều khoản rủi ro",
+    "Tóm tắt các sửa đổi của đối tác (Track Changes) và đề xuất chấp nhận hay từ chối",
+    "Xử lý các nhận xét trong văn bản",
+    "Kiểm tra văn bản trước khi trình ký",
   ],
   PowerPoint: [
     "Tạo 5 slide giới thiệu về chủ đề tôi đưa",
-    "Tóm tắt nội dung bài trình chiếu",
-    "Viết lại tiêu đề các slide cho gọn và rõ",
-    "Thêm slide kết luận ở cuối",
+    "Thêm slide sơ đồ quy trình các bước từ nội dung tôi đưa",
+    "Thêm biểu đồ từ số liệu đang mở ở Excel",
+    "Kiểm tra bài trình chiếu và sửa lỗi",
   ],
 };

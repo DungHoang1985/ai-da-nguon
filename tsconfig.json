@@ -11,6 +11,7 @@
     "noUnusedParameters": true,
     "outDir": "dist",
     "sourceMap": true,
+    "skipLibCheck": true,
     "target": "es6",
     "lib": [
       "es7",

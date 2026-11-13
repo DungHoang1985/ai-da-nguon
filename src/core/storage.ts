@@ -43,6 +43,14 @@ export interface AppSettings {
   trackChanges: boolean;
   /** OpenRouter: chỉ hiện model gọi được công cụ */
   toolsOnly: boolean;
+  /** Luôn hỏi trước thao tác rủi ro: ghi đè ô có dữ liệu, xóa vùng/đoạn/slide */
+  confirmRisky: boolean;
+  /** Chia sẻ nội dung tài liệu đang mở cho các ứng dụng Office khác */
+  shareContext: boolean;
+  /** Bật tìm kiếm web (theo nhà cung cấp) */
+  webSearch: boolean;
+  /** Hướng dẫn riêng theo từng ứng dụng */
+  instructions: Record<string, string>;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -50,6 +58,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
   askBeforeWrite: false,
   trackChanges: true,
   toolsOnly: true,
+  confirmRisky: true,
+  shareContext: true,
+  webSearch: false,
+  instructions: {},
 };
 
 export class Storage {

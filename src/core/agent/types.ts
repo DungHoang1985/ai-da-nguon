@@ -10,7 +10,7 @@ export interface ToolCall {
 
 export type AgentMessage =
   | { role: "system"; content: string }
-  | { role: "user"; content: string }
+  | { role: "user"; content: string; images?: { mime: string; data: string }[] }
   | {
       role: "assistant";
       content: string;
@@ -27,6 +27,8 @@ export interface ToolSpec {
   parameters: any;
   /** Công cụ có thay đổi tài liệu */
   write?: boolean;
+  /** Trả về lời cảnh báo nếu lần gọi này rủi ro (ghi đè dữ liệu, xóa…) → luôn hỏi người dùng */
+  risky?: (args: any) => Promise<string | null>;
 }
 
 export interface StepResult {
@@ -48,6 +50,14 @@ export interface HostToolSet {
   execute(name: string, args: any, ctx: { log: UndoEntry[] }): Promise<any>;
   overview(): Promise<any>;
   systemPrompt(overview: any): string;
+  /** Ảnh chụp nội dung gọn để chia sẻ sang ứng dụng khác */
+  snapshot?(): Promise<{ title?: string; data: any }>;
+}
+
+/** Công cụ dùng chung mọi ứng dụng (use_skill, read_other_app…) */
+export interface ExtraTools {
+  specs: ToolSpec[];
+  execute(name: string, args: any): Promise<any>;
 }
 
 export type AgentEvent =

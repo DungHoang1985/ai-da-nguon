@@ -293,6 +293,7 @@ describe("Tác tử: vòng lặp", () => {
       log: [],
       onEvent: () => {},
       approve: async () => false,
+      askBeforeWrite: true,
       fetchFn: f,
     });
     assert.deepStrictEqual(calls, []);

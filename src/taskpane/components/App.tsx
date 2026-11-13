@@ -44,11 +44,10 @@ const App: React.FC = () => {
         <Tab value="settings">Cài đặt</Tab>
       </TabList>
       <div className={s.body}>
-        {tab === "chat" ? (
+        <div style={{ display: tab === "chat" ? "block" : "none", height: "100%" }}>
           <Chat storage={storage} host={host} version={version} goSettings={() => setTab("settings")} />
-        ) : (
-          <Settings storage={storage} host={host} onChanged={() => setVersion((v) => v + 1)} />
-        )}
+        </div>
+        {tab === "settings" && <Settings storage={storage} host={host} onChanged={() => setVersion((v) => v + 1)} />}
       </div>
     </div>
   );

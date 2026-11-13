@@ -98,10 +98,101 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(r.values.every((x: any[]) => x[0] === ""), "Vùng D1:D4 chưa trống");
       return "D1:D4 đã trống";
     });
+    let pivotSheet = "";
+    await step("Cảnh báo trước khi ghi đè ô có dữ liệu", async () => {
+      const spec = tools.specs.find((x) => x.name === "excel_write_range");
+      expect(spec?.risky, "Công cụ ghi chưa có kiểm tra rủi ro");
+      const msg = await spec!.risky!({ sheet, address: "A1", values: [["x", "y"]] });
+      expect(msg && /Ghi đè 2 ô/.test(msg), `Không cảnh báo đúng: ${msg}`);
+      const none = await spec!.risky!({ sheet, address: "Z50", values: [["x"]] });
+      expect(!none, "Cảnh báo nhầm ở vùng trống");
+      return msg!;
+    });
+    await step("Tìm kiếm", async () => {
+      const r = await run("excel_find", { text: "Doanh thu", sheet });
+      expect(r.total_cells >= 1, r.message);
+      return `Thấy ở ${r.results[0].addresses}`;
+    });
+    await step("Quét lỗi công thức", async () => {
+      await run("excel_write_range", { sheet, address: "F1", values: [["=1/0"]] });
+      const r = await run("excel_find_errors", { sheet });
+      expect(r.total_errors >= 1, r.message);
+      const c = r.sheets[0].cells[0];
+      return `${r.message}: ${c.cell} = ${c.error}`;
+    });
+    await step("Lần ô được công thức tham chiếu", async () => {
+      const r = await run("excel_trace", { cell: `${sheet}!B4`, direction: "precedents" });
+      const txt = JSON.stringify(r.nodes);
+      expect(/B2/.test(txt) && /B3/.test(txt), `Kết quả: ${txt.slice(0, 200)}`);
+      return r.message;
+    });
+    await step("Định dạng có điều kiện", async () => {
+      await run("excel_conditional_format", { sheet, address: "B2:B3", type: "data_bar" });
+      const n = await Excel.run(async (ctx) => {
+        const cf = ctx.workbook.worksheets.getItem(sheet).getRange("B2:B3").conditionalFormats;
+        cf.load("items");
+        await ctx.sync();
+        return cf.items.length;
+      });
+      expect(n >= 1, "Chưa có quy tắc định dạng có điều kiện");
+      return `Thanh dữ liệu cho B2:B3 (${n} quy tắc)`;
+    });
+    await step("Danh sách chọn", async () => {
+      await run("excel_data_validation", { sheet, address: "G2:G4", list: ["Đạt", "Chưa đạt"] });
+      const t = await Excel.run(async (ctx) => {
+        const dv = ctx.workbook.worksheets.getItem(sheet).getRange("G2").dataValidation;
+        dv.load("type");
+        await ctx.sync();
+        return dv.type;
+      });
+      expect(String(t) === "List", `Kiểu kiểm soát dữ liệu: ${t}`);
+      return "G2:G4 chọn Đạt / Chưa đạt";
+    });
+    await step("Ghi chú vào ô", async () => (await run("excel_add_comment", { cell: `${sheet}!B4`, text: "Nguồn: tự kiểm tra" })).message);
+    await step("Lọc dữ liệu", async () => {
+      await run("excel_write_range", { sheet, address: "K1", values: [["Nhóm", "Giá trị"], ["A", "100"], ["B", "200"], ["C", "300"]] });
+      await run("excel_filter", { sheet, address: "K1:L4", column: "L", condition: ">150" });
+      const hidden = await Excel.run(async (ctx) => {
+        const r = ctx.workbook.worksheets.getItem(sheet).getRange("K2");
+        r.load("rowHidden");
+        await ctx.sync();
+        return r.rowHidden;
+      });
+      await run("excel_filter", { sheet, address: "K1:L4", clear: true });
+      expect(hidden === true, "Dòng có giá trị 100 chưa bị ẩn");
+      return "Lọc > 150 ẩn đúng dòng 100, rồi bỏ lọc";
+    });
+    await step("PivotTable", async () => {
+      const r = await run("excel_create_pivot", {
+        sheet,
+        source_address: "K1:L4",
+        rows: ["Nhóm"],
+        values: [{ field: "Giá trị", summarize: "sum" }],
+      });
+      pivotSheet = r.sheet || "";
+      const n = await Excel.run(async (ctx) => {
+        const pts = ctx.workbook.worksheets.getItem(r.sheet).pivotTables;
+        pts.load("items");
+        await ctx.sync();
+        return pts.items.length;
+      });
+      expect(n >= 1, `Sheet ${r.sheet} chưa có PivotTable`);
+      return r.message;
+    });
+    await step("Chèn hàng", async () => (await run("excel_insert_delete", { sheet, action: "insert_rows", at: "8", count: 2 })).message);
+    await step("Cố định dòng tiêu đề", async () => (await run("excel_sheet", { sheet, action: "freeze_rows", count: 1 })).message);
     await step("Chọn vùng kết quả", async () => (await run("excel_select_range", { sheet, address: "A1:B4" })).message);
     await step("Hoàn tác từng thao tác", async () => {
       const first = log[0];
-      for (const u of log.slice(1).reverse()) await u.undo();
+      const errs: string[] = [];
+      for (const u of log.slice(1).reverse()) {
+        try {
+          await u.undo();
+        } catch (e: any) {
+          errs.push(`${u.label}: ${e?.message || e}`);
+        }
+      }
+      expect(!errs.length, `Hoàn tác lỗi: ${errs.join("; ")}`);
       const state = await Excel.run(async (ctx) => {
         const ws = ctx.workbook.worksheets.getItem(sheet);
         const r = ws.getRange("A1:D4");
@@ -132,14 +223,16 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       return `Hoàn tác ${log.length} thao tác (cả nội dung lẫn định dạng), sổ tính trở lại như cũ`;
     });
     // Bảo đảm không để lại sheet thử dù bước nào lỗi
-    await Excel.run(async (ctx) => {
-      const ws = ctx.workbook.worksheets.getItemOrNullObject(sheet);
-      await ctx.sync();
-      if (!ws.isNullObject) {
-        ws.delete();
+    for (const name of [pivotSheet, sheet].filter(Boolean)) {
+      await Excel.run(async (ctx) => {
+        const ws = ctx.workbook.worksheets.getItemOrNullObject(name);
         await ctx.sync();
-      }
-    }).catch(() => undefined);
+        if (!ws.isNullObject) {
+          ws.delete();
+          await ctx.sync();
+        }
+      }).catch(() => undefined);
+    }
   } else if (tools.host === "Word") {
     const marker = "AIDN-KT-" + Date.now().toString(36).slice(-5);
     let startCount = 0;
@@ -214,6 +307,51 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
           values: [["Mục", "Giá trị"], ["A", "1"]],
         })
       ).message;
+    });
+    let commentId = "";
+    let markerPara = -1;
+    await step("Đọc nhận xét kèm đoạn được neo", async () => {
+      if (!Office.context.requirements.isSetSupported("WordApi", "1.4")) throw new Skip("Word chưa hỗ trợ nhận xét");
+      const r = await run("word_list_comments", {});
+      const c = r.comments.find((x: any) => String(x.text).includes("Nhận xét thử"));
+      expect(c && String(c.anchor).includes(marker), `Không thấy nhận xét thử: ${JSON.stringify(r.comments).slice(0, 200)}`);
+      commentId = c.id;
+      markerPara = c.paragraph;
+      return `Neo vào "${c.anchor}" ở [¶${c.paragraph}]`;
+    });
+    await step("Trả lời và đánh dấu đã xử lý nhận xét", async () => {
+      if (!commentId) throw new Skip("Không có nhận xét để trả lời");
+      await run("word_reply_comment", { id: commentId, text: "Đã sửa theo nhận xét" });
+      await run("word_resolve_comment", { id: commentId });
+      const r = await run("word_list_comments", { include_resolved: true });
+      const c = r.comments.find((x: any) => x.id === commentId);
+      expect(c && c.replies?.length >= 1 && c.resolved === true, `Trạng thái: ${JSON.stringify(c)}`);
+      return "Đã trả lời và đánh dấu đã xử lý";
+    });
+    await step("Đọc và duyệt sửa đổi được theo dõi", async () => {
+      if (!Office.context.requirements.isSetSupported("WordApi", "1.6")) throw new Skip("Word chưa hỗ trợ đọc sửa đổi");
+      const r = await run("word_list_revisions", {});
+      const mine = r.revisions.filter((x: any) => markerPara >= 0 && x.paragraph >= markerPara);
+      expect(mine.length > 0, `Không thấy sửa đổi của phần thử (tổng ${r.total})`);
+      const target = mine.find((x: any) => x.type === "Added") || mine[0];
+      await run("word_review_revision", { action: "accept", indexes: [target.index] });
+      const r2 = await run("word_list_revisions", {});
+      expect(r2.total === r.total - 1, `Còn ${r2.total} sửa đổi, trước đó ${r.total}`);
+      return `${r.total} sửa đổi; đã chấp nhận 1 (${target.type}: "${String(target.text).slice(0, 30)}")`;
+    });
+    await step("Đọc và điền bảng có sẵn", async () => {
+      const r = await run("word_read_tables", {});
+      const t0 = r.tables.find((t: any) => t.values?.[0]?.[0] === "Mục" && t.values?.[1]?.[0] === "A");
+      expect(t0, `Không thấy bảng thử trong ${r.count} bảng`);
+      await run("word_fill_table", { table_index: t0.index, values: [["A", "10"], ["B", "2"]], start_row: 1 });
+      const r2 = await run("word_read_tables", {});
+      const t = r2.tables[t0.index];
+      expect(String(t.values[1][1]).includes("10") && String(t.values[2]?.[0]).includes("B"), `Bảng sau khi điền: ${JSON.stringify(t.values)}`);
+      return `Bảng ${t0.index}: sửa 1 ô, thêm 1 hàng`;
+    });
+    await step("Chuyển tới đoạn", async () => {
+      if (markerPara < 0) throw new Skip("Không xác định được đoạn thử");
+      return (await run("word_go_to", { paragraph_index: markerPara })).message;
     });
     await step("Dọn sạch nội dung thử", async () => {
       await Word.run(async (ctx) => {
@@ -296,20 +434,115 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       if (!Office.context.requirements.isSetSupported("PowerPointApi", "1.8")) throw new Skip("PowerPoint chưa hỗ trợ chèn bảng");
       return (await run("ppt_add_table", { slide: slideNo, values: [["Mục", "Giá trị"], ["A", "1"]], left: 300, top: 300 })).message;
     });
+    const has18 = Office.context.requirements.isSetSupported("PowerPointApi", "1.8");
+    let dupNo = 0;
+    await step("Biểu đồ gốc (sửa được dữ liệu)", async () => {
+      const r = await run("ppt_add_chart", {
+        chart_type: "column",
+        categories: ["Q1", "Q2", "Q3"],
+        series: [{ name: "Doanh thu", values: [10, 20, 15] }],
+        title: "AIDN biểu đồ",
+        after_slide: slideNo,
+      });
+      let parts = "không kiểm được tệp";
+      if (has18) {
+        const b64 = await PowerPoint.run(async (ctx) => {
+          const sl = ctx.presentation.slides;
+          sl.load("items");
+          await ctx.sync();
+          const out = sl.items[r.slide - 1].exportAsBase64();
+          await ctx.sync();
+          return out.value;
+        });
+        const JSZip = (await import("jszip")).default;
+        const zip = await JSZip.loadAsync(b64, { base64: true });
+        const files = Object.keys(zip.files);
+        const chart = files.filter((f) => /ppt\/charts\/chart\d+\.xml$/.test(f));
+        const data = files.filter((f) => /ppt\/embeddings\/.+\.xlsx$/.test(f));
+        expect(chart.length >= 1, `Slide ${r.slide} không chứa biểu đồ gốc`);
+        parts = `${chart.length} biểu đồ, ${data.length} bảng dữ liệu nhúng`;
+      }
+      return `${r.message} (${parts})`;
+    });
+    await step("Sơ đồ quy trình tự dàn trang", async () => {
+      const r = await run("ppt_add_process_flow", {
+        slide: slideNo,
+        steps: ["Chuẩn bị hồ sơ", "Nộp hồ sơ", "Thẩm định", "Phê duyệt"],
+        style: "chevron",
+        top: 170,
+        height: 80,
+      });
+      const ov = await run("ppt_get_overview");
+      const sh = ov.slides.find((x: any) => x.slide === slideNo).shapes;
+      expect(sh.some((x: any) => x.type === "Group") || sh.filter((x: any) => /Chuẩn bị hồ sơ|Phê duyệt/.test(x.text || "")).length >= 2, "Không thấy sơ đồ");
+      return r.message;
+    });
+    await step("Sửa vị trí, màu, chữ của hình", async () => {
+      const ov = await run("ppt_get_overview");
+      const h = ov.slides.find((x: any) => x.slide === slideNo).shapes.find((x: any) => x.text === "Hình thử");
+      expect(h, "Không thấy hình thử");
+      await run("ppt_update_shape", { slide: slideNo, shape: h.name, left: 90, fill_color: "#FFE699", font_size: 12 });
+      const ov2 = await run("ppt_get_overview");
+      const h2 = ov2.slides.find((x: any) => x.slide === slideNo).shapes.find((x: any) => x.name === h.name);
+      expect(Math.abs(h2.box[0] - 90) <= 1, `Vị trí trái: ${h2.box[0]}`);
+      return `Dời ${h.box[0]} → 90 điểm, đổi màu nền, cỡ chữ 12`;
+    });
+    await step("Nhân bản và di chuyển slide", async () => {
+      if (!has18) throw new Skip("PowerPoint chưa hỗ trợ");
+      const r = await run("ppt_duplicate_slide", { slide: slideNo });
+      const ov = await run("ppt_get_overview");
+      const last = ov.slide_count;
+      await run("ppt_move_slide", { slide: r.slide, to: last });
+      const ov2 = await run("ppt_get_overview");
+      const end = ov2.slides.find((x: any) => x.slide === last);
+      expect(end?.shapes.some((x: any) => x.text === "AIDN kiểm tra 2"), "Slide cuối không phải bản sao");
+      dupNo = last;
+      return `Bản sao ở slide ${r.slide} → chuyển xuống cuối (slide ${last})`;
+    });
+    await step("Xóa hình (hỏi trước, có hoàn tác)", async () => {
+      const ov = await run("ppt_get_overview");
+      const t = ov.slides.find((x: any) => x.slide === slideNo).shapes.find((x: any) => x.text === "Ô chữ thử");
+      expect(t, "Không thấy ô chữ thử");
+      const spec = tools.specs.find((x) => x.name === "ppt_delete_shape");
+      const warn = spec?.risky ? await spec.risky({ slide: slideNo, shape: t.name }) : null;
+      expect(warn, "Không có cảnh báo trước khi xóa");
+      await run("ppt_delete_shape", { slide: slideNo, shape: t.name });
+      const ov2 = await run("ppt_get_overview");
+      expect(!ov2.slides.find((x: any) => x.slide === slideNo).shapes.some((x: any) => x.text === "Ô chữ thử"), "Ô chữ vẫn còn");
+      return `Cảnh báo: "${warn}" → đã xóa`;
+    });
+    await step("Xóa slide (hỏi trước, có hoàn tác)", async () => {
+      if (!dupNo) throw new Skip("Không có bản sao để xóa");
+      const ov = await run("ppt_get_overview");
+      await run("ppt_delete_slide", { slide: dupNo });
+      const ov2 = await run("ppt_get_overview");
+      expect(ov2.slide_count === ov.slide_count - 1, `Còn ${ov2.slide_count} slide`);
+      return `Đã xóa slide ${dupNo}`;
+    });
     await step("Chuyển tới slide", async () => (await run("ppt_go_to_slide", { slide: slideNo })).message);
     await step("Hoàn tác toàn bộ", async () => {
-      for (const u of log.slice().reverse()) await u.undo();
+      const errs: string[] = [];
+      for (const u of log.slice().reverse()) {
+        try {
+          await u.undo();
+        } catch (e: any) {
+          errs.push(`${u.label}: ${e?.message || e}`);
+        }
+      }
       const ov = await run("ppt_get_overview");
       if (ov.slide_count !== before) {
-        // dọn slide thử còn sót
+        // dọn slide thử còn sót (nhận ra theo chữ "AIDN")
         await PowerPoint.run(async (ctx) => {
           const sl = ctx.presentation.slides;
           sl.load("items/id");
           await ctx.sync();
-          if (slideNo > 0 && sl.items[slideNo - 1]) sl.items[slideNo - 1].delete();
+          ov.slides
+            .filter((x: any) => x.shapes.some((y: any) => /^AIDN (kiểm tra|biểu đồ)/.test(String(y.text || ""))))
+            .forEach((x: any) => sl.items[x.slide - 1]?.delete());
           await ctx.sync();
         }).catch(() => undefined);
       }
+      expect(!errs.length, `Hoàn tác lỗi: ${errs.join("; ")}`);
       expect(ov.slide_count === before, `Còn ${ov.slide_count} slide, ban đầu ${before}`);
       return `Hoàn tác ${log.length} thao tác, bài trình chiếu trở lại như cũ`;
     });

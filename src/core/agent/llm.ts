@@ -61,7 +61,8 @@ export function buildStepRequest(
   key: string,
   model: string,
   messages: AgentMessage[],
-  tools: ToolSpec[]
+  tools: ToolSpec[],
+  opts: { webSearch?: boolean } = {}
 ): { url: string; init: RequestInit } {
   const system = messages
     .filter((m) => m.role === "system")
@@ -77,7 +78,11 @@ export function buildStepRequest(
       else out.push({ role: "user", content: blocks });
     };
     for (const m of turns) {
-      if (m.role === "user") pushUser([{ type: "text", text: m.content || " " }]);
+      if (m.role === "user")
+        pushUser([
+          ...(m.images || []).map((im) => ({ type: "image", source: { type: "base64", media_type: im.mime, data: im.data } })),
+          { type: "text", text: m.content || " " },
+        ]);
       else if (m.role === "tool")
         pushUser([{ type: "tool_result", tool_use_id: m.toolCallId, content: m.content || "(trống)" }]);
       else if (m.role === "assistant") {
@@ -102,6 +107,7 @@ export function buildStepRequest(
         input_schema: t.parameters || { type: "object", properties: {} },
       }));
     }
+    if (opts.webSearch) body.tools = [...(body.tools || []), { type: "web_search_20250305", name: "web_search", max_uses: 5 }];
     return {
       url: `${provider.baseUrl}/messages`,
       init: { method: "POST", headers: anthropicHeaders(key), body: JSON.stringify(body) },
@@ -116,7 +122,11 @@ export function buildStepRequest(
     }
     const contents: any[] = [];
     for (const m of turns) {
-      if (m.role === "user") contents.push({ role: "user", parts: [{ text: m.content || " " }] });
+      if (m.role === "user")
+        contents.push({
+          role: "user",
+          parts: [...(m.images || []).map((im) => ({ inlineData: { mimeType: im.mime, data: im.data } })), { text: m.content || " " }],
+        });
       else if (m.role === "assistant") {
         if (m.raw?.kind === "gemini" && m.raw.parts?.length) {
           contents.push({ role: "model", parts: m.raw.parts });
@@ -145,6 +155,7 @@ export function buildStepRequest(
     }
     const body: any = { contents };
     if (system) body.systemInstruction = { parts: [{ text: system }] };
+    if (opts.webSearch && !tools.length) body.tools = [{ google_search: {} }];
     if (tools.length) {
       body.tools = [
         {
@@ -166,8 +177,17 @@ export function buildStepRequest(
   const msgs: any[] = [];
   if (system) msgs.push({ role: "system", content: system });
   for (const m of turns) {
-    if (m.role === "user") msgs.push({ role: "user", content: m.content });
-    else if (m.role === "tool") msgs.push({ role: "tool", tool_call_id: m.toolCallId, content: m.content });
+    if (m.role === "user") {
+      if (m.images?.length) {
+        msgs.push({
+          role: "user",
+          content: [
+            { type: "text", text: m.content },
+            ...m.images.map((im) => ({ type: "image_url", image_url: { url: `data:${im.mime};base64,${im.data}` } })),
+          ],
+        });
+      } else msgs.push({ role: "user", content: m.content });
+    } else if (m.role === "tool") msgs.push({ role: "tool", tool_call_id: m.toolCallId, content: m.content });
     else if (m.role === "assistant") {
       const calls = m.toolCalls || [];
       const msg: any = { role: "assistant", content: m.content || (calls.length ? null : "") };
@@ -184,6 +204,7 @@ export function buildStepRequest(
   const headers: Record<string, string> = { Authorization: `Bearer ${key}`, "content-type": "application/json" };
   if (provider.id === "openrouter") headers["X-Title"] = "AI Da Nguon Office Add-in";
   const body: any = { model, messages: msgs, stream: true };
+  if (opts.webSearch && provider.id === "openrouter") body.plugins = [{ id: "web", max_results: 5 }];
   if (tools.length) {
     body.tools = tools.map((t) => ({
       type: "function",
@@ -315,8 +336,11 @@ export async function callModelStep(opts: {
   signal?: AbortSignal;
   onText: (d: string) => void;
   fetchFn?: typeof fetch;
+  webSearch?: boolean;
 }): Promise<StepResult> {
-  const { url, init } = buildStepRequest(opts.provider, opts.key, opts.model, opts.messages, opts.tools);
+  const { url, init } = buildStepRequest(opts.provider, opts.key, opts.model, opts.messages, opts.tools, {
+    webSearch: opts.webSearch,
+  });
   const fetchFn = opts.fetchFn || fetch;
   const res = await fetchFn(url, { ...init, signal: opts.signal });
   await ensureOk(res);

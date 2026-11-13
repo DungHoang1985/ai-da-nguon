@@ -32,6 +32,8 @@ module.exports = async (env, options) => {
     },
     resolve: {
       extensions: [".ts", ".tsx", ".html", ".js"],
+      // pptxgenjs chỉ dùng các mô-đun Node này khi chạy ngoài trình duyệt
+      fallback: { fs: false, https: false, http: false, path: false, os: false, zlib: false, stream: false, url: false, crypto: false },
     },
     module: {
       rules: [
@@ -72,6 +74,10 @@ module.exports = async (env, options) => {
           {
             from: "assets/*",
             to: "assets/[name][ext][query]",
+          },
+          {
+            from: "node_modules/pdfjs-dist/build/pdf.worker.min.mjs",
+            to: "pdf.worker.min.js",
           },
           {
             from: "manifest*.xml",
