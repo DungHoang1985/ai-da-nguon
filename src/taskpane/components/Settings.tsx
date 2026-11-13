@@ -382,7 +382,7 @@ const SkillsCard: React.FC<Props> = ({ onChanged }) => {
               </Button>
             </div>
           ))}
-          <Input size="small" placeholder="Tên lệnh, vd: tom-tat" value={cmdName} onChange={(_, d) => setCmdName(d.value)} />
+          <Input size="small" autoComplete="off" placeholder="Tên lệnh, vd: tom-tat" value={cmdName} onChange={(_, d) => setCmdName(d.value)} />
           <Textarea
             value={cmdBody}
             onChange={(_, d) => setCmdBody(d.value)}

@@ -727,6 +727,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
       <div className={s.row}>
         <Input
           placeholder="Tìm model…"
+          autoComplete="off"
+          name="aidn-model-search"
           value={search}
           onChange={(_, d) => setSearch(d.value)}
           size="small"
