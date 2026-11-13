@@ -299,6 +299,22 @@ describe("v3 · Biểu đồ gốc PowerPoint (pptxgenjs)", () => {
     const sxml = await st.file(Object.keys(st.files).find((f) => /charts\/chart\d+\.xml$/.test(f))!)!.async("string");
     assert.ok(sxml.includes('<c:grouping val="stacked"/>'));
   });
+  it("Mọi loại biểu đồ, 1 hoặc 2 chuỗi: không có mã màu sai (PowerPoint từ chối tệp có srgbClr không phải mã hex)", async () => {
+    for (const t of ["column", "stacked_column", "bar", "stacked_bar", "line", "area", "pie", "doughnut"]) {
+      for (const n of [1, 2]) {
+        const series = Array.from({ length: n }, (_, i) => ({ name: "S" + i, values: [1, -2, 3] }));
+        const zip = await JSZip.loadAsync(
+          await buildChartPptx({ chart_type: t, categories: ["A", "B", "C"], series, show_values: true, chart_title: "T" }, { w: 960, h: 540 }),
+          { base64: true }
+        );
+        const f = Object.keys(zip.files).find((x) => /ppt\/charts\/chart\d+\.xml$/.test(x))!;
+        const xml = await zip.file(f)!.async("string");
+        const bad = [...xml.matchAll(/srgbClr val="([^"]*)"/g)].map((m) => m[1]).filter((v) => !/^[0-9A-Fa-f]{6}$/.test(v));
+        assert.deepStrictEqual(bad, [], `${t}/${n} chuỗi`);
+        if (t.includes("column") || t.includes("bar")) assert.ok(!xml.includes("<c:dPt>"), `${t}/${n}: tô màu từng cột`);
+      }
+    }
+  });
   it("Thiếu dữ liệu → báo lỗi tiếng Việt", async () => {
     await assert.rejects(buildChartPptx({ chart_type: "column", categories: [], series: [] }, { w: 960, h: 540 }), /categories/);
   });

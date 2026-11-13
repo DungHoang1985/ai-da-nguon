@@ -320,7 +320,18 @@ export async function executeExcelAdvanced(name: string, a: any, log: UndoEntry[
           nodes.push(node);
           for (const l of links) if (!seen.has(l) && !l.includes(":")) queue.push({ address: l, level: cur.level + 1 });
         }
-        return { ok: true, direction: dir, nodes, message: `Lần ${dir === "precedents" ? "nguồn" : "phụ thuộc"} của ${first.range.address}: ${nodes.length} ô` };
+        const arrow = dir === "precedents" ? "←" : "→";
+        const chain = nodes
+          .filter((n) => n[dir]?.length)
+          .slice(0, 4)
+          .map((n) => `${n.cell.split("!").pop()} ${arrow} ${n[dir].map((x: string) => x.split("!").pop()).join(", ")}`)
+          .join("; ");
+        return {
+          ok: true,
+          direction: dir,
+          nodes,
+          message: `${dir === "precedents" ? "Nguồn" : "Ô phụ thuộc"} của ${first.range.address}: ${chain || "không có"}`,
+        };
       });
 
     case "excel_filter":

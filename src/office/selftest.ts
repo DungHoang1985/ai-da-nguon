@@ -21,7 +21,11 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       steps.push({ name, ok: true, detail: d || "" });
     } catch (e: any) {
       if (e instanceof Skip) steps.push({ name, ok: null, detail: e.message });
-      else steps.push({ name, ok: false, detail: e?.message || String(e) });
+      else {
+        let detail = e?.message || String(e);
+        if (e?.debugInfo?.errorLocation) detail += ` (${e.debugInfo.errorLocation})`;
+        steps.push({ name, ok: false, detail });
+      }
     }
     onProgress([...steps]);
   };

@@ -258,7 +258,9 @@ export async function buildChartPptx(a: any, size: { w: number; h: number }): Pr
     y: top,
     w: wIn - 2 * m,
     h: hIn - top - m,
-    chartColors: THEME_COLORS,
+    // Một chuỗi cột/thanh: một màu (màu theo đối tượng, không theo từng cột). pptxgenjs ghi màu từng cột bằng srgbClr
+    // nên tên màu chủ đề ở đó làm tệp không hợp lệ (PowerPoint báo InvalidArgument khi chèn).
+    chartColors: type === "bar" && data.length === 1 ? THEME_COLORS.slice(0, 1) : THEME_COLORS,
     showLegend: pie || data.length > 1,
     legendPos: "b",
     legendColor: "tx1",
