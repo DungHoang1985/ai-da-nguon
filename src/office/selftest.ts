@@ -153,11 +153,23 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         position: "end",
         text: `## Mục kiểm tra ${marker}\nHợp đồng số 01/2026 ký ngày 01/01/2026.\n- Ý thứ nhất`,
       });
-      const r = await run("word_read_paragraphs", { start: startCount, end: startCount + 10 });
+      // Văn bản trống: Word đặt nội dung mới trước đoạn trống ban đầu → đọc từ đầu
+      const r = await run("word_read_paragraphs", { start: 0, end: startCount + 10 });
       const texts = r.paragraphs.map((p: any) => p.text).join(" | ");
       expect(texts.includes(marker) && texts.includes("Hợp đồng số 01/2026"), `Đọc lại: ${texts}`);
       const h = r.paragraphs.find((p: any) => p.text.includes(marker));
-      return `Đã chèn; kiểu tiêu đề: ${h?.style}`;
+      expect(/2|heading|tiêu đề/i.test(String(h?.style)), `Kiểu tiêu đề: ${h?.style}`);
+      const isBullet = await Word.run(async (ctx) => {
+        const hits = ctx.document.body.search("Ý thứ nhất", { matchCase: true });
+        hits.load("items");
+        await ctx.sync();
+        const p = hits.items[0].paragraphs.getFirst();
+        p.load("isListItem");
+        await ctx.sync();
+        return p.isListItem;
+      });
+      expect(isBullet, "Dòng '- Ý thứ nhất' chưa thành gạch đầu dòng");
+      return `Đã chèn; tiêu đề kiểu "${h?.style}", dòng gạch đầu dòng là danh sách thật`;
     });
     await step("Ghi bằng Theo dõi thay đổi", async () => {
       if (!Office.context.requirements.isSetSupported("WordApi", "1.6")) throw new Skip("Word chưa hỗ trợ đếm Track Changes");
@@ -176,7 +188,7 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       return "01/2026 → 02/2026";
     });
     await step("Viết lại một đoạn (chỉ sửa phần khác)", async () => {
-      const r = await run("word_read_paragraphs", { start: startCount, end: startCount + 10 });
+      const r = await run("word_read_paragraphs", { start: 0, end: startCount + 10 });
       const p = r.paragraphs.find((x: any) => x.text.includes("Hợp đồng số"));
       expect(p, "Không thấy đoạn hợp đồng");
       const res = await run("word_set_paragraph_text", {
@@ -193,8 +205,8 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       return (await run("word_add_comment", { find: marker, text: "Nhận xét thử của AI Đa Nguồn" })).message;
     });
     await step("Chèn bảng", async () => {
-      const r = await run("word_read_paragraphs", { start: startCount, end: startCount + 10 });
-      const last = r.paragraphs[r.paragraphs.length - 1];
+      const r = await run("word_read_paragraphs", { start: 0, end: startCount + 10 });
+      const last = r.paragraphs.find((x: any) => x.text.includes("Ý thứ nhất")) || r.paragraphs[r.paragraphs.length - 1];
       return (
         await run("word_insert_table", {
           position: "after_paragraph",
