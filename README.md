@@ -12,14 +12,12 @@ Bản chạy thật: https://dunghoang1985.github.io/ai-da-nguon/ (manifest: `di
 
 ## Cài vào Office trên Windows (một lần)
 
-Tải `manifest.xml` của bản chạy thật về một thư mục cố định, rồi ghi một khóa registry trỏ tới tệp đó:
+Bấm đúp `cai-dat/cai-dat.cmd`: tải manifest bản chạy thật về `%LOCALAPPDATA%\AiDaNguon` và đăng ký với Office (khóa `HKCU\Software\Microsoft\Office\16.0\WEF\Developer`, giá trị `AiDaNguon`).
+Đóng hẳn rồi mở lại Word/Excel/PowerPoint → thẻ **Home** → **Mở AI Đa Nguồn**. Gỡ: `cai-dat/go-cai-dat.cmd`.
 
-```
-reg add "HKCU\Software\Microsoft\Office\16.0\WEF\Developer" /v AiDaNguon /t REG_SZ /d "D:\ADD IN\manifest.prod.xml" /f
-```
+## Cập nhật bản chạy thật
 
-Đóng hẳn rồi mở lại Word/Excel/PowerPoint → thẻ **Home** → **Mở AI Đa Nguồn**.
-Gỡ: `reg delete "HKCU\Software\Microsoft\Office\16.0\WEF\Developer" /v AiDaNguon /f`.
+`npm ci && npm run build`, rồi đưa nội dung `dist/` (bỏ `*.map`) lên nhánh `gh-pages`. Office tự dùng bản mới khi mở lại khung add-in.
 
 ## Phát triển
 
