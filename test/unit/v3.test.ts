@@ -315,6 +315,25 @@ describe("v3 · Biểu đồ gốc PowerPoint (pptxgenjs)", () => {
       }
     }
   });
+  it("Slide biểu đồ dùng bố cục 'Chỉ tiêu đề' của mẫu: tiêu đề là placeholder thật, biểu đồ nằm ngay dưới ô tiêu đề", async () => {
+    const b64 = await buildChartPptx(
+      { chart_type: "line", categories: ["T1", "T2"], series: [{ name: "S", values: [1, 2] }], title: "Tăng trưởng đều" },
+      { w: 960, h: 540 },
+      { name: "Title Only", title: { left: 60, top: 30, width: 840, height: 100 } }
+    );
+    const zip = await JSZip.loadAsync(b64, { base64: true });
+    const slide = await zip.file("ppt/slides/slide1.xml")!.async("string");
+    assert.ok(slide.includes('<p:ph type="title"/>'), "tiêu đề chưa là placeholder chuẩn");
+    const titleSp = slide.slice(0, slide.indexOf("</p:sp>"));
+    assert.ok(titleSp.includes("<p:spPr/>"), "tiêu đề còn tự đặt vị trí/kiểu");
+    assert.ok(slide.includes("Tăng trưởng đều"));
+    const rels = await zip.file("ppt/slides/_rels/slide1.xml.rels")!.async("string");
+    const layoutFile = /slideLayouts\/(slideLayout\d+\.xml)/.exec(rels)![1];
+    const layoutXml = await zip.file("ppt/slideLayouts/" + layoutFile)!.async("string");
+    assert.ok(layoutXml.includes('<p:cSld name="Title Only"'), "bố cục không mang tên của mẫu");
+    const y = Number(/<p:graphicFrame>[\s\S]*?<a:off x="\d+" y="(\d+)"/.exec(slide)![1]);
+    assert.ok(y >= (130 / 72) * 914400, `biểu đồ đè lên tiêu đề (y=${y})`);
+  });
   it("Thiếu dữ liệu → báo lỗi tiếng Việt", async () => {
     await assert.rejects(buildChartPptx({ chart_type: "column", categories: [], series: [] }, { w: 960, h: 540 }), /categories/);
   });

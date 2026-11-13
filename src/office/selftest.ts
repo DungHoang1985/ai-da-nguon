@@ -440,7 +440,15 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
     });
     const has18 = Office.context.requirements.isSetSupported("PowerPointApi", "1.8");
     let dupNo = 0;
+    const layoutCount = () =>
+      PowerPoint.run(async (ctx) => {
+        const l = ctx.presentation.slideMasters.getItemAt(0).layouts;
+        l.load("items/name");
+        await ctx.sync();
+        return l.items.length;
+      });
     await step("Biểu đồ gốc (sửa được dữ liệu)", async () => {
+      const nLayouts = await layoutCount();
       const r = await run("ppt_add_chart", {
         chart_type: "column",
         categories: ["Q1", "Q2", "Q3"],
@@ -466,7 +474,11 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         expect(chart.length >= 1, `Slide ${r.slide} không chứa biểu đồ gốc`);
         parts = `${chart.length} biểu đồ, ${data.length} bảng dữ liệu nhúng`;
       }
-      return `${r.message} (${parts})`;
+      const ov = await run("ppt_get_overview");
+      const sl = ov.slides.find((x: any) => x.slide === r.slide);
+      const n2 = await layoutCount();
+      expect(n2 === nLayouts, `Mẫu bị thêm bố cục mới (${nLayouts} → ${n2}), slide dùng bố cục "${sl?.layout}"`);
+      return `${r.message} (${parts}; slide dùng bố cục "${sl?.layout}", mẫu không bị thêm bố cục)`;
     });
     await step("Sơ đồ quy trình tự dàn trang", async () => {
       const r = await run("ppt_add_process_flow", {

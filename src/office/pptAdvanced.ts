@@ -30,6 +30,7 @@ export const PPT_ADV_SPECS: ToolSpec[] = [
         after_slide: { type: "number", description: "Insert after this slide number (default: last slide)." },
         number_format: { type: "string", description: "Excel number format for values, e.g. '#,##0' or '0.0%'." },
         show_values: { type: "boolean", description: "Show data labels." },
+        layout: { type: "string", description: "Optional layout name from the overview; default: the deck's 'Title Only' layout." },
       },
       required: ["chart_type", "categories", "series"],
     },
@@ -226,19 +227,71 @@ async function exportSlide(ctx: PowerPoint.RequestContext, slide: PowerPoint.Sli
 
 const THEME_COLORS = ["accent1", "accent2", "accent3", "accent4", "accent5", "accent6"];
 
-export async function buildChartPptx(a: any, size: { w: number; h: number }): Promise<string> {
+export interface ChartLayout {
+  /** Tên bố cục trong bài đang mở (PowerPoint ghép theo tên khi chèn với "Use Destination Theme") */
+  name: string;
+  /** Vị trí ô tiêu đề của bố cục đó (điểm) */
+  title?: { left: number; top: number; width: number; height: number };
+}
+
+/** Chọn bố cục "Chỉ tiêu đề" của bài đang mở cho slide biểu đồ, kèm vị trí ô tiêu đề để đặt biểu đồ ngay bên dưới. */
+async function pickChartLayout(ctx: PowerPoint.RequestContext, wanted?: string): Promise<ChartLayout> {
+  try {
+    const layouts = ctx.presentation.slideMasters.getItemAt(0).layouts;
+    layouts.load("items/name");
+    await ctx.sync();
+    const find = (re: RegExp) => layouts.items.find((l) => re.test(l.name.trim()));
+    const lay =
+      (wanted ? layouts.items.find((l) => l.name.trim().toLowerCase() === String(wanted).trim().toLowerCase()) : undefined) ||
+      find(/^(title only|chỉ tiêu đề|chỉ có tiêu đề)$/i) ||
+      find(/title only|chỉ (có )?tiêu đề/i) ||
+      find(/^title and content$|^tiêu đề và nội dung$/i);
+    if (!lay) return { name: "Title Only" };
+    try {
+      lay.shapes.load("items/name,items/left,items/top,items/width,items/height");
+      await ctx.sync();
+      const t = lay.shapes.items.find((x) => /title|tiêu đề/i.test(x.name) && !/sub|phụ/i.test(x.name));
+      return { name: lay.name, title: t ? { left: t.left, top: t.top, width: t.width, height: t.height } : undefined };
+    } catch {
+      return { name: lay.name };
+    }
+  } catch {
+    return { name: "Title Only" };
+  }
+}
+
+/** Ô tiêu đề là placeholder thật, không tự đặt vị trí/kiểu → nhận đúng kiểu tiêu đề của mẫu đang mở. */
+function inheritTitle(slideXml: string): string {
+  return slideXml.replace(/<p:sp>(?:(?!<\/p:sp>)[\s\S])*?type="title"[\s\S]*?<\/p:sp>/, (sp) =>
+    sp
+      .replace(/<p:ph\b[^>]*\/>/, '<p:ph type="title"/>')
+      .replace(/<p:spPr>[\s\S]*?<\/p:spPr>/, "<p:spPr/>")
+      .replace(/<a:pPr indent="0" marL="0"><a:buNone\/><\/a:pPr>/g, "")
+  );
+}
+
+export async function buildChartPptx(a: any, size: { w: number; h: number }, layout?: ChartLayout): Promise<string> {
   const PptxGenJS = (await import("pptxgenjs")).default;
   const pptx = new PptxGenJS();
   const wIn = size.w / 72;
   const hIn = size.h / 72;
   pptx.defineLayout({ name: "AIDN", width: wIn, height: hIn });
   pptx.layout = "AIDN";
-  const s = pptx.addSlide();
   const m = 0.5;
+  const tb = layout?.title;
+  const titleBox = tb
+    ? { x: tb.left / 72, y: tb.top / 72, w: tb.width / 72, h: tb.height / 72 }
+    : { x: m, y: 0.3, w: wIn - 2 * m, h: 0.9 };
+  const layoutName = layout?.name || "Title Only";
+  pptx.defineSlideMaster({
+    title: layoutName,
+    objects: [{ placeholder: { options: { name: "title", type: "title", ...titleBox }, text: "" } }],
+  } as any);
+  const s = pptx.addSlide({ masterName: layoutName });
   let top = m;
   if (a.title) {
-    s.addText(String(a.title), { x: m, y: 0.3, w: wIn - 2 * m, h: 0.9, fontSize: 28, bold: true, color: "tx1", valign: "middle" });
-    top = 1.3;
+    s.addText(String(a.title), { placeholder: "title", lang: "vi-VN" } as any);
+    top = titleBox.y + titleBox.h + 0.15;
   }
   const kind = String(a.chart_type || "column");
   const cats: string[] = (a.categories || []).map((c: any) => String(c));
@@ -253,11 +306,13 @@ export async function buildChartPptx(a: any, size: { w: number; h: number }): Pr
   const pie = kind === "pie" || kind === "doughnut";
   const type = pie ? kind : kind === "line" ? "line" : kind === "area" ? "area" : "bar";
   const fmt = a.number_format || (pie ? "0%" : "#,##0");
+  const left = tb ? titleBox.x : m;
+  const width = tb ? titleBox.w : wIn - 2 * m;
   const opts: any = {
-    x: m,
+    x: left,
     y: top,
-    w: wIn - 2 * m,
-    h: hIn - top - m,
+    w: width,
+    h: Math.max(1.5, hIn - top - 0.45),
     // Một chuỗi cột/thanh: một màu (màu theo đối tượng, không theo từng cột). pptxgenjs ghi màu từng cột bằng srgbClr
     // nên tên màu chủ đề ở đó làm tệp không hợp lệ (PowerPoint báo InvalidArgument khi chèn).
     chartColors: type === "bar" && data.length === 1 ? THEME_COLORS.slice(0, 1) : THEME_COLORS,
@@ -285,7 +340,14 @@ export async function buildChartPptx(a: any, size: { w: number; h: number }): Pr
     Object.assign(opts, { showValue: true, dataLabelFormatCode: fmt });
   }
   s.addChart(type as any, data, opts);
-  return (await pptx.write({ outputType: "base64" })) as string;
+  const b64 = (await pptx.write({ outputType: "base64" })) as string;
+  if (!a.title) return b64;
+  const JSZip = (await import("jszip")).default;
+  const zip = await JSZip.loadAsync(b64, { base64: true });
+  const f = zip.file("ppt/slides/slide1.xml");
+  if (!f) return b64;
+  zip.file("ppt/slides/slide1.xml", inheritTitle(await f.async("string")));
+  return zip.generateAsync({ type: "base64", compression: "DEFLATE" });
 }
 
 // ---------- Sơ đồ quy trình ----------
@@ -394,7 +456,8 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
         const size = await slideSizePt(ctx);
         const ids = await slideIds(ctx);
         const after = a.after_slide !== undefined ? Math.max(0, Math.min(Number(a.after_slide), ids.length)) : ids.length;
-        const b64 = await buildChartPptx(a, size);
+        const layout = await pickChartLayout(ctx, a.layout);
+        const b64 = await buildChartPptx(a, size, layout);
         const fresh = await insertAt(ctx, b64, after);
         if (!fresh.length) throw new Error("PowerPoint không chèn được slide biểu đồ.");
         log.push(deleteSlidesUndo(fresh, `Slide biểu đồ ${after + 1}`));
@@ -402,7 +465,11 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
           ctx.presentation.setSelectedSlides([fresh[0]]);
           await ctx.sync();
         }
-        return { ok: true, message: `Đã chèn biểu đồ gốc (sửa được dữ liệu) ở slide ${after + 1}`, slide: after + 1 };
+        return {
+          ok: true,
+          message: `Đã chèn biểu đồ gốc (sửa được dữ liệu) ở slide ${after + 1}, bố cục "${layout.name}" của mẫu`,
+          slide: after + 1,
+        };
       });
 
     case "ppt_add_process_flow":
