@@ -379,14 +379,32 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               anchor = ctx.document.getSelection().paragraphs.getLast();
             }
             let prev: Word.Paragraph | null = null;
+            let prevKind: string | null = null;
             for (const raw of lines) {
               const parsed = a.style ? { text: raw, style: mapStyle(a.style) } : parseMarkdownLine(raw);
               let np: Word.Paragraph;
               if (prev) np = prev.insertParagraph(parsed.text, "After");
               else if (anchor) np = anchor.insertParagraph(parsed.text, loc);
               else np = ctx.document.body.insertParagraph(parsed.text, pos === "start" ? "Start" : "End");
-              np.styleBuiltIn = parsed.style as any;
+              const kind = parsed.style === "ListBullet" || parsed.style === "ListNumber" ? parsed.style : "other";
+              // Đoạn mới chèn sau một mục danh sách sẽ tự thuộc danh sách đó
+              let inList: boolean;
+              if (prevKind === null) {
+                np.load("isListItem");
+                await ctx.sync();
+                inList = np.isListItem;
+              } else inList = prevKind !== "other";
+              if (kind === "other") {
+                if (inList) np.detachFromList();
+                np.styleBuiltIn = parsed.style as any;
+              } else if (prevKind !== kind) {
+                if (inList) np.detachFromList();
+                const list = np.startNewList();
+                if (kind === "ListBullet") list.setLevelBullet(0, "Solid" as any);
+                else list.setLevelNumbering(0, "Arabic" as any, [0, "."]);
+              }
               prev = np;
+              prevKind = kind;
             }
             await ctx.sync();
             return { ok: true, message: `Đã chèn ${lines.length} đoạn (${pos})` };
@@ -416,9 +434,27 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               if (a.font_color) r.font.color = a.font_color;
               if (a.highlight_color) r.font.highlightColor = /^none$/i.test(a.highlight_color) ? (null as any) : a.highlight_color;
             }
+            const style = a.style ? mapStyle(a.style) : "";
+            const isList = style === "ListBullet" || style === "ListNumber";
             for (const p of paras) {
               if (a.alignment) p.alignment = a.alignment;
-              if (a.style) p.styleBuiltIn = mapStyle(a.style) as any;
+              if (style && !isList) p.styleBuiltIn = style as any;
+            }
+            if (isList) {
+              paras.forEach((p) => p.load("isListItem"));
+              await ctx.sync();
+              let listId: number | undefined;
+              for (const p of paras) {
+                if (p.isListItem) continue;
+                if (listId === undefined) {
+                  const list = p.startNewList();
+                  if (style === "ListBullet") list.setLevelBullet(0, "Solid" as any);
+                  else list.setLevelNumbering(0, "Arabic" as any, [0, "."]);
+                  list.load("id");
+                  await ctx.sync();
+                  listId = list.id;
+                } else p.attachToList(listId, 0);
+              }
             }
             await ctx.sync();
             return { ok: true, message: `Đã định dạng ${ranges.length} vùng` };
