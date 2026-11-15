@@ -20,6 +20,7 @@ import {
   truncate,
 } from "./util";
 import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseName, findClause, outlineByParagraph } from "../core/outline";
+import { WORD_REVIEW_SPECS, createWordReviewTools } from "./wordReview";
 import {
   ChangeSnap,
   EditPlan,
@@ -130,6 +131,7 @@ export const WORD_SPECS: ToolSpec[] = [
       required: ["find", "replace"],
     },
     write: true,
+    reviewable: true,
   },
   {
     name: "word_set_paragraph_text",
@@ -366,7 +368,14 @@ export const WORD_SPECS: ToolSpec[] = [
     description: "Select a paragraph so the user sees it.",
     parameters: { type: "object", properties: { paragraph_index: { type: "number" } }, required: ["paragraph_index"] },
   },
+  // Đợt 1B: soát nhất quán, đọc phần ngoài thân văn bản, thể thức trang, so sánh phiên bản (wordReview.ts)
+  ...WORD_REVIEW_SPECS,
 ];
+/** Công cụ ghi chữ vào điều khoản: khi người dùng bật "Soát lập luận trước khi sửa", mỗi lần gọi được soát trước khi ghi */
+const REVIEWABLE = ["word_set_paragraph_text", "word_insert_clause", "word_replace_selection"];
+WORD_SPECS.forEach((sp) => {
+  if (REVIEWABLE.includes(sp.name)) sp.reviewable = true;
+});
 
 /** Từ 3.6 không còn công tắc tắt Track Changes: mọi sửa đổi của AI trong Word luôn ghi có theo dõi (anh duyệt 15/11/2026). */
 export type WordSettings = unknown;
@@ -392,6 +401,18 @@ function mapStyle(s?: string): string {
   if (/number/.test(k)) return "ListNumber";
   return "Normal";
 }
+
+/** Mốc chú thích cuối trang / cuối văn bản nằm trong paragraph.text dưới dạng ký tự U+0002; getText() thì không trả ký tự này
+ *  (thăm dò 15/11/2026, tasks/dot-1b.md). Chữ đưa cho AI không kèm mốc; khi sửa đoạn, mốc được coi là chữ "không sống" (như chữ
+ *  đã xóa có theo dõi) để lần sửa mức từ không đụng tới, và đoạn có mốc không bao giờ bị thay cả đoạn (sẽ mất chú thích). */
+const NOTE_MARK = "\u0002";
+const noMarks = (s: string) => (s.includes(NOTE_MARK) ? s.split(NOTE_MARK).join("") : s);
+const withNoteSpans = (M: string, spans?: [number, number][]): [number, number][] | undefined => {
+  if (!M.includes(NOTE_MARK)) return spans;
+  const out: [number, number][] = spans ? spans.slice() : [];
+  for (let k = M.indexOf(NOTE_MARK); k >= 0; k = M.indexOf(NOTE_MARK, k + 1)) out.push([k, k + 1]);
+  return out;
+};
 
 /** Bỏ dấu hết đoạn / hết ô bảng mà getText, getReviewedText trả kèm ở cuối */
 const strip = (s: any) => String(s ?? "").replace(/[\r\n\u0007\u000b\u000c]+$/, "");
@@ -433,6 +454,8 @@ async function currentTableValues(ctx: Word.RequestContext, t: Word.Table, value
 interface Row extends ParaRow {
   markup: string;
   id?: string;
+  /** Chú thích cuối trang / cuối văn bản neo vào đoạn này */
+  notes?: string[];
 }
 
 interface Loaded {
@@ -440,12 +463,21 @@ interface Loaded {
   rows: Row[];
   /** Văn bản đang có sửa đổi chờ duyệt */
   hasChanges: boolean;
+  /** Số chú thích cuối trang và cuối văn bản (chỉ có khi nạp kèm mục lục) */
+  footnotes?: number;
+  endnotes?: number;
 }
 
 /** Nạp mọi đoạn. withList = nạp thêm nhãn số do Word tự đánh, cấp tiêu đề, bảng (cho mục lục điều khoản).
  *  Thăm dò 15/11/2026: paragraph.text lẫn chữ đã xóa có theo dõi → khi văn bản có sửa đổi, đọc bản hiện tại bằng getText() từng đoạn. */
-async function loadRows(ctx: Word.RequestContext, withList = false): Promise<Loaded> {
-  const paras = ctx.document.body.paragraphs;
+function loadRows(ctx: Word.RequestContext, withList = false): Promise<Loaded> {
+  return loadRowsOf(ctx, ctx.document.body, withList);
+}
+
+/** Như loadRows cho một thân văn bản bất kỳ. foreign = thân của tài liệu ẩn dựng từ tệp khác (so sánh phiên bản): không nạp
+ *  định danh đoạn và chú thích. */
+async function loadRowsOf(ctx: Word.RequestContext, body: Word.Body, withList = false, foreign = false): Promise<Loaded> {
+  const paras = body.paragraphs;
   const props = ["items/text", "items/style"];
   const list = withList && supports("1.3");
   if (list) {
@@ -457,13 +489,20 @@ async function loadRows(ctx: Word.RequestContext, withList = false): Promise<Loa
       "items/listOrNullObject/id"
     );
   }
-  if (supports("1.6")) props.push("items/uniqueLocalId");
+  const ids = supports("1.6") && !foreign;
+  if (ids) props.push("items/uniqueLocalId");
   paras.load(props.join(","));
   let tc: Word.TrackedChangeCollection | null = null;
   if (supports("1.6")) {
-    tc = ctx.document.body.getTrackedChanges();
+    tc = body.getTrackedChanges();
     tc.load("items/type");
   }
+  // Chú thích cuối trang, cuối văn bản: nạp cùng lượt để mọi kết quả đọc đều kèm chú thích của đoạn
+  const withNotes = withList && !foreign && supports("1.5");
+  const fn = withNotes ? body.footnotes : null;
+  const en = withNotes ? body.endnotes : null;
+  fn?.load("items/body/text");
+  en?.load("items/body/text");
   await ctx.sync();
   const hasChanges = !!tc && tc.items.length > 0;
   let current: string[] | null = null;
@@ -474,10 +513,10 @@ async function loadRows(ctx: Word.RequestContext, withList = false): Promise<Loa
   }
   const rows: Row[] = paras.items.map((p, i) => {
     const markup = p.text;
-    const text = current ? current[i] : markup;
+    const text = noMarks(current ? current[i] : markup);
     const row: Row = { i, text, markup, style: p.style };
-    if (current && !text && markup.trim()) row.deleted = true;
-    if (supports("1.6")) row.id = p.uniqueLocalId;
+    if (current && !text && noMarks(markup).trim()) row.deleted = true;
+    if (ids) row.id = p.uniqueLocalId;
     if (list) {
       row.outlineLevel = Number(p.outlineLevel) || 10;
       row.inTable = p.tableNestingLevel > 0;
@@ -490,13 +529,33 @@ async function loadRows(ctx: Word.RequestContext, withList = false): Promise<Loa
     }
     return row;
   });
-  return { paras, rows, hasChanges };
+  const notes = [...(fn?.items || []).map((n) => ({ n, label: "Chú thích cuối trang" })), ...(en?.items || []).map((n) => ({ n, label: "Chú thích cuối văn bản" }))];
+  if (notes.length && ids) {
+    try {
+      const anchors = notes.map((x) => {
+        const p = x.n.reference.paragraphs.getFirstOrNullObject();
+        p.load("uniqueLocalId");
+        return p;
+      });
+      await ctx.sync();
+      const byId = new Map<string, Row>();
+      rows.forEach((r) => r.id && !byId.has(r.id) && byId.set(r.id, r));
+      notes.forEach((x, k) => {
+        const row = anchors[k].isNullObject ? undefined : byId.get(anchors[k].uniqueLocalId);
+        const t = noMarks(String(x.n.body.text ?? "")).replace(/\r/g, " ").trim();
+        if (row && t) (row.notes = row.notes || []).push(`${x.label}: ${truncate(t, 600)}`);
+      });
+    } catch {
+      /* không neo được chú thích vào đoạn: vẫn đọc được bằng word_read_parts */
+    }
+  }
+  return { paras, rows, hasChanges, ...(withNotes ? { footnotes: fn?.items.length || 0, endnotes: en?.items.length || 0 } : {}) };
 }
 
 /** Số điều khoản của từng đoạn mở đầu điều khoản (để mọi kết quả đọc đều kèm số điều) */
 function withNums(rows: Row[], outline: OutlineItem[]) {
   const byPara = outlineByParagraph(outline);
-  return rows.map((r) => ({ text: r.text, style: String(r.style ?? ""), num: byPara.get(r.i)?.num || undefined, deleted: r.deleted }));
+  return rows.map((r) => ({ text: r.text, style: String(r.style ?? ""), num: byPara.get(r.i)?.num || undefined, deleted: r.deleted, notes: r.notes }));
 }
 
 /** Định vị đoạn theo chỉ số + mấy chữ đầu AI đã đọc; lệch mà không chắc thì từ chối (không sửa nhầm đoạn) */
@@ -696,7 +755,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
 
   async function overview() {
     return Word.run(async (ctx) => {
-      const { rows, paras } = await loadRows(ctx, true);
+      const { rows, paras, footnotes, endnotes } = await loadRows(ctx, true);
       const outline = buildOutline(rows);
       const sel = ctx.document.getSelection();
       sel.load("text");
@@ -731,6 +790,8 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         track_changes: mode,
         tracked_changes: changes,
         comments,
+        ...(footnotes ? { footnotes } : {}),
+        ...(endnotes ? { endnotes } : {}),
       };
     });
   }
@@ -796,15 +857,15 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         p.load("text");
         const cur = supports("1.7") ? p.getText() : p.getReviewedText("Current");
         await ctx.sync();
-        const C = curOf(cur.value, p.text);
+        const C = noMarks(curOf(cur.value, p.text));
         if (C === prev) return;
         const info = await pendingInfo(ctx, p);
-        const plan = planParagraphEdit(p.text, C, prev, info.spans);
+        const plan = planParagraphEdit(p.text, C, prev, withNoteSpans(p.text, info.spans));
         if (typeof plan === "string") throw new Error(`không đưa được đoạn “${truncate(C, 40)}” về câu cũ: ${plan}`);
         await applyPlan(ctx, p, plan);
         const now = supports("1.7") ? p.getText() : p.getReviewedText("Current");
         await ctx.sync();
-        if (curOf(now.value, prev) !== prev) throw new Error(`đoạn “${truncate(prev, 40)}” chưa về đúng câu cũ; xem thẻ Review của Word`);
+        if (noMarks(curOf(now.value, prev)) !== prev) throw new Error(`đoạn “${truncate(prev, 40)}” chưa về đúng câu cũ; xem thẻ Review của Word`);
       })
     );
 
@@ -840,8 +901,15 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     if (skipped) throw new Error(`${skipped} đoạn đã chèn nay mang nội dung khác nên không gỡ; xem thẻ Review của Word`);
   };
 
+  const review = createWordReviewTools({
+    supports,
+    loadRows: (ctx) => loadRows(ctx, true),
+    loadRowsOf: (ctx, body) => loadRowsOf(ctx, body, true, true),
+  });
+
   async function run(name: string, a: any, u: Undo): Promise<any> {
     const extra = u.extra;
+    if (review.has(name)) return review.run(name, a);
     switch (name) {
       case "word_get_overview":
         return overview();
@@ -981,7 +1049,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
           }
           const { rows, paras, hasChanges } = await loadRows(ctx, true);
           const outline = buildOutline(rows);
-          const all = withNums(rows, outline) as { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean }[];
+          const all = withNums(rows, outline) as { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[] }[];
           // Ngân sách tính theo độ dài JSON thật; next_start và truncated nằm đầu kết quả (không bị cắt mất)
           const start = Math.max(0, Number(a.start) || 0);
           // Không nạp sửa đổi cho quá 300 đoạn một lần: kết quả cũng chỉ trả vài chục tới vài trăm đoạn theo ngân sách
@@ -997,9 +1065,9 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             await ctx.sync();
             win.forEach((_, k) => {
               const row = all[start + k];
-              if (tcs[k].items.length || rows[start + k].deleted || rows[start + k].markup !== rows[start + k].text) row.changed = true;
+              if (tcs[k].items.length || rows[start + k].deleted || noMarks(rows[start + k].markup) !== rows[start + k].text) row.changed = true;
               if (orig) {
-                row.text = strip(orig[k].value);
+                row.text = noMarks(strip(orig[k].value));
                 row.deleted = false;
               }
             });
@@ -1105,15 +1173,17 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             const M = r.row.markup;
             const C = r.row.text;
             if (C === raw) return { ok: true, index: r.index, changes: 0, message: `Nội dung đoạn ${r.index} không đổi${note}` };
+            // Đoạn có mốc chú thích: chỉ sửa mức từ (thay cả đoạn sẽ làm mất chú thích)
+            const hasNotes = M.includes(NOTE_MARK);
             // Đoạn đang có sửa đổi chờ duyệt? (và các khúc đã xóa nằm ở đâu trong chuỗi tìm kiếm)
-            let pending = M !== C;
+            let pending = noMarks(M) !== C;
             let spans: [number, number][] | undefined;
             if (r.hasChanges && supports("1.6")) {
               const info = await pendingInfo(ctx, r.p);
               pending = pending || info.count > 0;
               spans = info.spans;
             }
-            const plan = planParagraphEdit(M, C, raw, spans);
+            const plan = planParagraphEdit(M, C, raw, withNoteSpans(M, spans));
             if (r.row.id) {
               u.touched.push(r.row.id);
               u.inverse.push(restoreText(r.row.id, C));
@@ -1126,11 +1196,14 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
                   `${plan} Đoạn ${r.index} đang có sửa đổi chờ duyệt nên không thay cả đoạn (sẽ làm hỏng dấu vết sửa đổi). Hãy sửa từng cụm bằng word_replace_text với paragraph_index=${r.index}.`
                 );
               }
+              if (hasNotes) {
+                throw new Error(`${plan} Đoạn ${r.index} có chú thích cuối trang nên không thay cả đoạn (sẽ làm mất chú thích). Hãy sửa từng cụm bằng word_replace_text với paragraph_index=${r.index}.`);
+              }
               r.p.insertText(raw, "Replace");
               await ctx.sync();
               mode = "thay cả đoạn";
               changes = 1;
-            } else if (!pending && plan.ratio > WHOLE_PARAGRAPH_RATIO && plan.hunks >= WHOLE_PARAGRAPH_HUNKS) {
+            } else if (!pending && !hasNotes && plan.ratio > WHOLE_PARAGRAPH_RATIO && plan.hunks >= WHOLE_PARAGRAPH_HUNKS) {
               r.p.insertText(raw, "Replace");
               await ctx.sync();
               mode = "thay cả đoạn vì gần như viết lại toàn bộ";
@@ -1145,7 +1218,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             if (supports("1.4")) {
               const cur = supports("1.7") ? r.p.getText() : r.p.getReviewedText("Current");
               await ctx.sync();
-              now = curOf(cur.value, raw);
+              now = noMarks(curOf(cur.value, raw));
             }
             if (now !== raw) {
               return {
@@ -1913,6 +1986,50 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     });
   }
 
+  /** Chữ hiện tại của chỗ mà một lệnh ghi sắp sửa, kèm số điều và vài đoạn cùng điều khoản — cho lượt soát lập luận đối chiếu */
+  async function reviewContext(name: string, a: any): Promise<string> {
+    return Word.run(async (ctx) => {
+      if (name === "word_replace_selection") {
+        const sel = ctx.document.getSelection();
+        sel.load("text");
+        await ctx.sync();
+        return `Vùng đang chọn (sẽ bị thay):\n${truncate(sel.text, 6000)}`;
+      }
+      const { rows } = await loadRows(ctx, true);
+      const outline = buildOutline(rows);
+      const byPara = outlineByParagraph(outline);
+      const around = (i: number, mark: string) => {
+        const c = clauseAt(outline, i);
+        const from = Math.max(c ? c.i : i, i - 3);
+        const to = Math.min(c ? c.end : i, i + 3);
+        const lines: string[] = [];
+        for (let k = from; k <= to; k++) {
+          const r = rows[k];
+          if (!r || r.deleted || !r.text.trim()) continue;
+          const num = byPara.get(k)?.num;
+          lines.push(`[¶${k}]${k === i ? ` (${mark})` : ""} ${num ? num + " " : ""}${truncate(r.text, 2500)}`);
+        }
+        return `${c ? `Thuộc ${clauseName(c)}` : "Ngoài mọi điều khoản"}:\n${lines.join("\n")}`;
+      };
+      const pick = (index: any, expect: any): number => {
+        const loc = locateParagraph(
+          rows.map((r) => r.text),
+          index,
+          expect
+        );
+        return loc.ok === false ? Math.floor(Number(index)) : loc.index;
+      };
+      if (name === "word_set_paragraph_text") return around(pick(a.index, a.expect), "đoạn sắp được viết lại");
+      if (name === "word_insert_clause") return around(pick(a.after_index, a.expect), "điều khoản mới sẽ chèn sau đoạn này");
+      if (name === "word_replace_text") {
+        if (a.paragraph_index !== undefined && a.paragraph_index !== null) return around(pick(a.paragraph_index, a.expect), "đoạn có cụm sắp thay");
+        const hits = searchRows(rows, String(a.find || ""), { matchCase: !!a.match_case, wholeWord: !!a.whole_word }).hits.slice(0, 4);
+        return hits.length ? hits.map((h) => around(h.i, "đoạn có cụm sắp thay")).join("\n\n") : "";
+      }
+      return "";
+    });
+  }
+
   /** Cảnh báo rủi ro: trả về lý do (luôn hỏi người dùng) hoặc null (không rủi ro). */
   const RISK: Record<string, (a: any) => string | null | Promise<string | null>> = {
     // Xóa đoạn: hộp xác nhận hiện trích nội dung sắp xóa
@@ -2012,6 +2129,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
   return {
     host: "Word",
     snapshot,
+    reviewContext,
     specs: WORD_SPECS.map((sp) => (RISK[sp.name] ? { ...sp, risky: (a: any) => riskOf(sp.name, a) } : sp)),
     execute,
     overview,
@@ -2033,6 +2151,9 @@ export const WORD_SYSTEM_PROMPT = [
   "- SỬA NHỎ: đổi một từ, cụm từ, con số trong một đoạn → word_replace_text kèm paragraph_index (và occurrence nếu cụm đó lặp lại). Viết lại câu → word_set_paragraph_text với toàn bộ câu mới của đoạn (không gõ số điều nếu Word tự đánh số); công cụ chỉ đổi đúng các từ khác đi và giữ định dạng. Thay một cụm ở mọi nơi → word_replace_text với all=true.",
   "- THÊM ĐIỀU KHOẢN: dùng word_insert_clause để khoản mới nối đúng số và cùng kiểu với khoản bên cạnh; word_insert_paragraphs chỉ dùng cho nội dung tự do. Sau khi thêm hoặc xóa điều khoản, kiểm lại các dẫn chiếu tới số điều đã đổi (word_find).",
   "- VĂN BẢN ĐANG CÓ SỬA ĐỔI (Track Changes): nội dung đọc được là bản hiện tại (đã tính các sửa đổi chờ duyệt); đoạn có changed=true đang có sửa đổi chưa duyệt, deleted=true là đoạn đã bị xóa. Muốn biết ai sửa gì: word_list_revisions (đọc hết theo next_start, đối chiếu total). Chỉ chấp nhận hoặc từ chối sửa đổi khi người dùng ra lệnh.",
+  "- SOÁT VĂN BẢN (kiểm tra trước khi ký, rà lỗi, soát nhất quán): gọi word_check_consistency trước — mã tự dò đánh số nhảy hoặc trùng, dẫn chiếu tới điều không có, thuật ngữ viết lệch hoặc chưa định nghĩa, một bên nhiều tên, chỗ trống, số lệch chữ — rồi đọc đúng các chỗ được chỉ để xác nhận trước khi báo. Báo đủ mọi điểm công cụ trả về (đếm theo total), kèm số điều và số đoạn.",
+  "- NGOÀI THÂN VĂN BẢN: chú thích của một đoạn đi kèm đoạn đó trong kết quả đọc (trường notes). Đầu trang, chân trang, bookmark, trường dẫn chiếu, ô điền mẫu, hộp văn bản không nằm trong các đoạn: đọc bằng word_read_parts khi người dùng hỏi tới, và khi rà soát toàn văn.",
+  "- THỂ THỨC TRANG (lề, khổ giấy, phông, cỡ chữ của công văn, tờ trình…): word_check_page_format. SO VỚI PHIÊN BẢN KHÁC (tệp .docx người dùng đính kèm): word_compare_versions, rồi tóm tắt đủ mọi chỗ khác theo số điều (đếm theo differences); công cụ không sửa văn bản đang mở.",
   "- Mọi sửa đổi của bạn được ghi bằng Theo dõi thay đổi để người dùng duyệt, và người dùng có nút Hoàn tác cho cả lượt.",
   "- Rà soát văn bản/hợp đồng: ghi nhận xét đúng chỗ bằng word_add_comment; chỉ sửa trực tiếp khi được yêu cầu.",
   "- Giữ nguyên văn phong, định dạng; không tự bịa số hiệu văn bản, điều khoản hay căn cứ pháp lý.",

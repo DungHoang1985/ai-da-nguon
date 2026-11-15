@@ -48,6 +48,10 @@ export interface AppSettings {
   shareContext: boolean;
   /** Bật tìm kiếm web (theo nhà cung cấp) */
   webSearch: boolean;
+  /** Suy nghĩ kỹ: cho model suy nghĩ nhiều hơn trước khi trả lời (chậm và tốn hơn; tùy nhà cung cấp và model) */
+  deepThink: boolean;
+  /** Word: soát lập luận của mỗi lệnh ghi chữ vào điều khoản bằng một lượt model riêng trước khi ghi */
+  reviewEdits: boolean;
   /** Hướng dẫn riêng theo từng ứng dụng */
   instructions: Record<string, string>;
 }
@@ -59,6 +63,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   confirmRisky: true,
   shareContext: true,
   webSearch: false,
+  deepThink: false,
+  reviewEdits: false,
   instructions: {},
 };
 

@@ -149,6 +149,23 @@ const PermissionsCard: React.FC<Props> = ({ storage, onChanged }) => {
         Word: mọi sửa đổi của AI luôn ghi bằng Theo dõi thay đổi (Track Changes) để anh duyệt trong thẻ Review, kể cả khi đang tắt Theo dõi thay
         đổi; xong việc add-in trả lại chế độ cũ.
       </Text>
+      <Switch
+        label="Suy nghĩ kỹ: cho AI suy nghĩ nhiều hơn trước khi trả lời (chậm hơn, tốn token hơn)"
+        checked={!!st.deepThink}
+        onChange={(_, d) => set({ deepThink: d.checked })}
+      />
+      <Text size={200} className={s.muted}>
+        Có tác dụng với Anthropic, Gemini, OpenRouter và OpenAI, tùy model. Bật tắt nhanh ở dấu + cạnh ô nhập.
+      </Text>
+      <Switch
+        label="Word: soát lập luận trước khi ghi sửa đổi vào điều khoản"
+        checked={!!st.reviewEdits}
+        onChange={(_, d) => set({ reviewEdits: d.checked })}
+      />
+      <Text size={200} className={s.muted}>
+        Trước mỗi lần AI viết lại, thay chữ hoặc chèn điều khoản, một lượt AI riêng đối chiếu đề xuất với yêu cầu của anh và chữ hiện tại; thấy
+        vấn đề thì chưa ghi mà báo lại để AI sửa đề xuất. Mỗi lần sửa tốn thêm một lượt gọi model.
+      </Text>
     </div>
   );
 };

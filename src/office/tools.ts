@@ -150,6 +150,14 @@ export function describeCall(call: ToolCall): string {
       return `Điền bảng số ${a.table_index}`;
     case "word_go_to":
       return `Chuyển tới [¶${a.paragraph_index}]`;
+    case "word_check_consistency":
+      return "Soát nhất quán: đánh số, dẫn chiếu, thuật ngữ, tên các bên, chỗ trống, số và chữ";
+    case "word_read_parts":
+      return "Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản";
+    case "word_check_page_format":
+      return "Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ";
+    case "word_compare_versions":
+      return `So với phiên bản khác${a.file ? ` (${String(a.file).slice(0, 40)})` : ""}${a.open_redline ? ", mở bản so sánh của Word" : ""}`;
     // PowerPoint nâng cao
     case "ppt_add_chart":
       return `Chèn biểu đồ ${CHART_VI[a.chart_type] || a.chart_type || ""} (slide mới)`;
@@ -185,7 +193,7 @@ export const QUICK_PROMPTS: Record<string, string[]> = {
     "Rà soát hợp đồng này cho bên mình và ghi nhận xét vào các điều khoản rủi ro",
     "Tóm tắt các sửa đổi của đối tác (Track Changes) và đề xuất chấp nhận hay từ chối",
     "Xử lý các nhận xét trong văn bản",
-    "Kiểm tra văn bản trước khi trình ký",
+    "Soát nhất quán văn bản trước khi trình ký: đánh số, dẫn chiếu, thuật ngữ, chỗ trống, số và chữ",
   ],
   PowerPoint: [
     "Tạo 5 slide giới thiệu về chủ đề tôi đưa",

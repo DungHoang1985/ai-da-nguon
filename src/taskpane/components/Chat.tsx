@@ -37,7 +37,9 @@ import { getKV } from "../../core/db";
 import { ConversationMeta, ConversationStore, newConversationId, slimForStorage, titleFrom } from "../../core/conversations";
 import { Command, Skill, SkillStore, resolveSlash, skillCatalog } from "../../core/skills";
 import { CORE_GUIDES, autoSelectSkills } from "../../core/skillpack";
-import { Attachment, readAttachment, withAttachments } from "../../core/attachments";
+import { Attachment, DOCX_MIME, readAttachment, withAttachments } from "../../core/attachments";
+import { registerAttachedFile } from "../../core/attachedFiles";
+import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
 import { RefTarget, findRefs } from "../../core/refs";
 import { parseMarkdownTable } from "../../core/table";
@@ -511,7 +513,10 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
     const errs: string[] = [];
     for (const f of Array.from(files)) {
       try {
-        out.push(await readAttachment(f));
+        const att = await readAttachment(f);
+        // Bản gốc của tệp .docx: để công cụ Word so sánh phiên bản đọc được (giữ trong bộ nhớ của phiên này)
+        if (att.mime === DOCX_MIME && att.data) registerAttachedFile(att.name, att.data);
+        out.push(att);
       } catch (e: any) {
         errs.push(e?.message || `Không đọc được ${f.name}`);
       }
@@ -544,9 +549,16 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
       }
     }
     const atts = attachments;
-    content = withAttachments(content, atts);
+    content = withAttachments(content, atts, { compare: host === "Word" && agentOn });
     const images = atts.filter((a) => a.kind === "image" && a.data).map((a) => ({ mime: a.mime || "image/png", data: a.data! }));
-    const userMsg: AgentMessage = images.length ? { role: "user", content, images } : { role: "user", content };
+    // PDF quét: gửi nguyên tệp cho model tự đọc; nguồn không đọc được thì báo rõ (và model cũng được báo trong tin nhắn)
+    const pdfs = atts.filter((a) => a.kind === "file" && a.data).map((a) => ({ mime: a.mime || "application/pdf", data: a.data!, name: a.name }));
+    if (pdfs.length && !pdfCapable(p)) {
+      setNotice({
+        text: `${p.name} không đọc được PDF quét (${pdfs.map((f) => f.name).join(", ")}): tệp không được gửi đi. Đổi sang nguồn Anthropic hoặc Gemini rồi đính kèm lại.`,
+        err: true,
+      });
+    }
 
     const model = models.find((m) => m.id === modelId);
     const vision = model?.vision ?? p.vision;
@@ -588,6 +600,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
         history: historyRef.current,
         text: content,
         images: images.length ? images : undefined,
+        files: pdfs.length ? pdfs : undefined,
+        think: !!settings.deepThink,
         instructions: instr,
         agent:
           useAgent && hostTools
@@ -599,6 +613,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
                 autoSkills: auto.map((k) => ({ name: k.name, body: k.body })),
                 askBeforeWrite: settings.askBeforeWrite,
                 confirmRisky: settings.confirmRisky,
+                reviewEdits: host === "Word" && !!settings.reviewEdits,
                 approve: askApproval,
                 log,
               }
@@ -635,6 +650,23 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
                 sg.type === "step" && sg.id === ev.call.id ? { ...sg, status: ev.error ? "error" : "ok", detail: ev.error || ev.result?.message } : sg
               ),
             }));
+          } else if (ev.type === "review_start") {
+            clearRetry();
+            patchLast((it) => ({
+              ...it,
+              segments: [...(it.segments || []), { type: "step", id: "review:" + ev.call.id, label: `Soát lập luận trước khi ghi: ${describeCall(ev.call)}`, status: "running" }],
+            }));
+          } else if (ev.type === "review_end") {
+            patchLast((it) => ({
+              ...it,
+              segments: (it.segments || []).map((sg) =>
+                sg.type === "step" && sg.id === "review:" + ev.call.id
+                  ? { ...sg, status: ev.ok ? "ok" : "error", detail: ev.ok ? ev.note || "Đạt" : `Chưa ghi — ${ev.note || "có vấn đề"}` }
+                  : sg
+              ),
+            }));
+          } else if (ev.type === "thinking_off") {
+            setNotice({ text: "Nguồn đang dùng không nhận chế độ suy nghĩ với model này: đã gửi lại yêu cầu ở chế độ thường." });
           } else if (ev.type === "limit") {
             appendText(`\n(Đã đạt giới hạn ${ev.maxSteps} bước. Gửi "tiếp tục" nếu muốn AI làm tiếp.)`);
           } else if (ev.type === "retry") {
@@ -792,7 +824,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
   };
 
   const selectionLabel = host === "Excel" ? "Gửi kèm vùng ô đang chọn" : "Gửi kèm nội dung đang chọn";
-  const plusChecked = [...(withSelection ? ["sel"] : []), ...(settings.webSearch && webCapable ? ["web"] : [])];
+  const thinkWorks = !!provider && thinkingToggleWorks(provider, modelId);
+  const plusChecked = [...(withSelection ? ["sel"] : []), ...(settings.webSearch && webCapable ? ["web"] : []), ...(settings.deepThink ? ["think"] : [])];
 
   return (
     <div className={s.wrap}>
@@ -995,7 +1028,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
         <div className={`${s.row} ${s.fixed}`}>
           {attachments.map((a, i) => (
             <span key={i} className={s.fileChip} title={a.note || a.name}>
-              {a.kind === "image" ? "🖼" : "📄"} {a.name}
+              {a.kind === "image" ? "🖼" : a.kind === "file" ? "📑" : "📄"} {a.name}
               <span
                 role="button"
                 tabIndex={0}
@@ -1067,7 +1100,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
           onCheckedValueChange={(_, d) => {
             const v = d.checkedItems;
             setWithSelection(v.includes("sel"));
-            if (webCapable) updateSettings({ webSearch: v.includes("web") });
+            updateSettings({ ...(webCapable ? { webSearch: v.includes("web") } : {}), deepThink: v.includes("think") });
           }}
         >
           <MenuTrigger disableButtonEnhancement>
@@ -1102,6 +1135,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
                   Tìm trên web
                 </MenuItemCheckbox>
               )}
+              <MenuItemCheckbox name="opts" value="think">
+                Suy nghĩ kỹ (chậm hơn, tốn hơn)
+              </MenuItemCheckbox>
             </MenuList>
           </MenuPopover>
         </Menu>
@@ -1147,6 +1183,17 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
         {settings.webSearch && webCapable && (
           <Text size={100} className={s.tag} title="Đang bật tìm trên web" onClick={() => updateSettings({ webSearch: false })} style={{ cursor: "pointer" }}>
             🌐 Web ✕
+          </Text>
+        )}
+        {settings.deepThink && (
+          <Text
+            size={100}
+            className={s.tag}
+            title={thinkWorks ? "Đang bật Suy nghĩ kỹ: AI suy nghĩ nhiều hơn trước khi trả lời" : "Suy nghĩ kỹ không có tác dụng với nguồn hoặc model đang chọn"}
+            onClick={() => updateSettings({ deepThink: false })}
+            style={{ cursor: "pointer", ...(thinkWorks ? {} : { textDecoration: "line-through" }) }}
+          >
+            🧠 Nghĩ kỹ ✕
           </Text>
         )}
         <div className={s.modelSlot}>

@@ -733,6 +733,249 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     return `Sau 4 thao tác: ${mid.changes - before.changes} sửa đổi mới, 1 nhận xét mới; hoàn tác xong: sửa đổi ${after.changes}, nhận xét ${after.comments}, chữ y như trước (kể cả khoản chèn sát một khoản chờ duyệt, và lần sửa bên trong khoản chờ duyệt)`;
   });
 
+  // ───────────── Đợt 1B: soát và tra ─────────────
+  /** Chèn (không theo dõi) các đoạn chữ thường ngay trước mốc cuối của vùng thử */
+  const addTemp = (texts: string[]) =>
+    untracked(async (ctx) => {
+      const ps = ctx.document.body.paragraphs;
+      ps.load("items/text");
+      await ctx.sync();
+      const end = ps.items.find((p) => p.text === END);
+      expect(!!end, "Không thấy mốc cuối của vùng thử");
+      const made = texts.map((t) => (end as Word.Paragraph).insertParagraph(t, "Before"));
+      made.forEach((p) => p.load("isListItem"));
+      await ctx.sync();
+      made.forEach((p) => {
+        if (p.isListItem) p.detachFromList();
+        p.styleBuiltIn = "Normal" as any;
+      });
+      await ctx.sync();
+    });
+  /** Gỡ hẳn (không theo dõi) các đoạn của vùng thử có chứa một trong các chuỗi */
+  const removeTemp = (parts: string[]) =>
+    untracked(async (ctx) => {
+      const ps = ctx.document.body.paragraphs;
+      ps.load("items/text");
+      await ctx.sync();
+      const s = ps.items.findIndex((p) => p.text === START);
+      const e = ps.items.findIndex((p) => p.text === END);
+      ps.items.forEach((p, i) => {
+        if (i > s && i < e && parts.some((x) => p.text.includes(x))) p.delete();
+      });
+      await ctx.sync();
+    });
+
+  await step("Soát nhất quán bằng mã: nhảy số, dẫn chiếu hỏng, thuật ngữ lệch, chỗ trống, số lệch chữ", async () => {
+    const low = code.toLowerCase();
+    const P = {
+      def: `“Ngày Thử ${code}” là ngày chạy bài kiểm tra soát nhất quán.`,
+      bad: `Sau ngày thử ${low} các bên ký biên bản theo Điều 97.8, trả 1.500.000 đồng (Một triệu sáu trăm nghìn đồng) vào tài khoản số ……… SOAT${code}.`,
+      jump: `97.3 Khoản thử nhảy số SOAT${code}.`,
+    };
+    await addTemp([P.def, P.bad, P.jump]);
+    try {
+      const all: any[] = [];
+      let total = 0;
+      for (let start = 0, guard = 0; guard < 40; guard++) {
+        const r = await run("word_check_consistency", { start });
+        total = r.total;
+        all.push(...r.issues);
+        if (r.next_start === undefined) break;
+        start = r.next_start;
+      }
+      expect(all.length === total, `Đọc được ${all.length}/${total} điểm`);
+      const iBad = await need(P.bad.slice(0, 30));
+      const iJump = await need(P.jump);
+      const has = (kind: string, i: number, re: RegExp) => all.some((x) => x.kind === kind && x.i === i && re.test(x.message));
+      expect(has("numbering", iJump, /nhảy/), "Không báo chỗ nhảy số 97.1 → 97.3");
+      expect(has("reference", iBad, /97\.8/), "Không báo dẫn chiếu hỏng tới Điều 97.8");
+      expect(has("term", iBad, /Ngày Thử/), "Không báo thuật ngữ viết lệch “ngày thử …”");
+      expect(has("blank", iBad, /trống/), "Không báo chỗ trống “………”");
+      expect(has("amount", iBad, /1\.600\.000/), "Không báo số tiền lệch chữ");
+      const only = await run("word_check_consistency", { checks: ["amount"] });
+      expect(only.issues.every((x: any) => x.kind === "amount") && only.issues.some((x: any) => x.i === iBad), "Lọc theo loại soát không đúng");
+      await removeTemp([P.def.slice(0, 20), "SOAT" + code]);
+      const again = await run("word_check_consistency", {});
+      const s = await need(START);
+      const e = await need(END);
+      const left = again.issues.filter((x: any) => x.i > s && x.i < e && /97\.8|Ngày Thử|1\.600\.000|97\.3/.test(x.message + (x.excerpt || "")));
+      expect(left.length === 0, `Sau khi gỡ đoạn cài lỗi vẫn còn báo ${left.length} điểm`);
+      return `Cài 5 lỗi trong vùng thử: báo đủ 5 (nhảy số, dẫn chiếu, thuật ngữ, chỗ trống, số lệch chữ) trong ${total} điểm của cả văn bản; gỡ đoạn cài lỗi thì hết báo`;
+    } finally {
+      await removeTemp([P.def.slice(0, 20), "SOAT" + code]);
+    }
+  });
+
+  await step("Đọc phần ngoài thân văn bản: chú thích, bookmark, ô điền mẫu, đầu và chân trang; sửa đoạn có chú thích không làm mất chú thích", async () => {
+    if (!sup("1.5")) throw new Skip("Cần WordApi 1.5 để tạo và đọc chú thích");
+    const PX = `Đoạn thử phần ngoài thân NGOAI${code} có thời hạn 10 ngày.`;
+    const NOTE = `Chú thích thử ${code}`;
+    const BM = `AIDN_${code}`;
+    const CC = `Ô thử ${code}`;
+    await addTemp([PX]);
+    const mark = log.length;
+    try {
+      await untracked(async (ctx) => {
+        const ps = ctx.document.body.paragraphs;
+        ps.load("items/text");
+        await ctx.sync();
+        const p = ps.items.find((x) => x.text.includes("NGOAI" + code)) as Word.Paragraph;
+        p.getRange("End").insertFootnote(NOTE);
+        const word = p.search("thời hạn", { matchCase: true });
+        word.load("items");
+        await ctx.sync();
+        word.items[0].insertBookmark(BM);
+        const days = p.search("10 ngày", { matchCase: true });
+        days.load("items");
+        await ctx.sync();
+        const cc = days.items[0].insertContentControl();
+        cc.title = CC;
+        cc.tag = "aidn_thu";
+        await ctx.sync();
+      });
+      const i = await need("NGOAI" + code);
+      const r = await run("word_read_parts", {});
+      const fn = (r.footnotes || []).find((x: any) => String(x.text).includes(NOTE));
+      expect(!!fn, "Không đọc được chú thích cuối trang vừa tạo");
+      expect(fn.i === i, `Chú thích báo đoạn ${fn.i}, đúng phải là ${i}`);
+      expect((r.bookmarks?.items || []).some((x: any) => x.name === BM && x.i === i && /thời hạn/.test(x.text)), "Không đọc được bookmark vừa tạo");
+      expect((r.content_controls?.items || []).some((x: any) => x.title === CC && /10 ngày/.test(x.text) && x.i === i), "Không đọc được ô điền mẫu vừa tạo");
+      expect(r.headers_footers && !r.headers_footers.unavailable && Array.isArray(r.headers_footers.items), "Không đọc được đầu trang, chân trang");
+      const only = await run("word_read_parts", { parts: ["footnotes"] });
+      expect(only.footnotes && only.bookmarks === undefined, "Lọc theo phần không đúng");
+      // Đọc đoạn: chú thích đi kèm đoạn, chữ của đoạn không lẫn ký tự mốc
+      const rd = await run("word_read_paragraphs", { start: i, end: i + 1 });
+      const row = rd.paragraphs[0];
+      expect(row.text === PX, `Chữ của đoạn có chú thích đọc ra “${row.text}”`);
+      expect((row.notes || []).some((n: string) => n.includes(NOTE)), "Kết quả đọc đoạn không kèm chú thích");
+      const ov = await run("word_get_overview");
+      expect(ov.footnotes >= 1, "Tổng quan không báo số chú thích");
+      // Sửa một chữ trong đoạn có chú thích: chú thích phải còn nguyên
+      const edited = await run("word_set_paragraph_text", { index: i, expect: "Đoạn thử phần ngoài thân", text: PX.replace("có thời hạn", "có kỳ hạn") });
+      expect(edited.ok, `Sửa đoạn có chú thích: ${edited.message}`);
+      const after = await run("word_read_parts", { parts: ["footnotes"] });
+      expect((after.footnotes || []).some((x: any) => String(x.text).includes(NOTE) && x.i === i), "Sửa đoạn làm mất chú thích cuối trang");
+      expect((await inspect(i)).current.replace(/\u0002/g, "") === PX.replace("có thời hạn", "có kỳ hạn"), "Câu sau khi sửa không đúng");
+      for (const u of log.slice(mark).reverse()) await u.undo();
+      log.length = mark;
+      return `Đọc được chú thích (đúng đoạn ${i}), bookmark, ô điền mẫu, đầu và chân trang (${r.headers_footers.items.length} mục); đọc đoạn kèm chú thích; sửa một chữ trong đoạn có chú thích thì chú thích còn nguyên`;
+    } finally {
+      await untracked(async (ctx) => {
+        if (sup("1.4")) ctx.document.deleteBookmark(BM);
+        const notes = ctx.document.body.footnotes;
+        notes.load("items/body/text");
+        await ctx.sync();
+        notes.items.filter((n) => String(n.body.text).includes(NOTE)).forEach((n) => n.delete());
+        await ctx.sync();
+      }).catch(() => undefined);
+      await removeTemp(["NGOAI" + code]);
+    }
+  });
+
+  await step("Thể thức trang: báo đúng lề nào lệch chuẩn (đối chiếu với số đo đọc trực tiếp)", async () => {
+    if (!sup("1.3", "WordApiDesktop")) throw new Skip("Cần WordApiDesktop 1.3 để đọc lề và khổ giấy");
+    const direct = await Word.run(async (ctx) => {
+      const secs = ctx.document.sections;
+      secs.load("items");
+      await ctx.sync();
+      const ps = secs.items.map((x) => {
+        x.pageSetup.load("topMargin,bottomMargin,leftMargin,rightMargin");
+        return x.pageSetup;
+      });
+      await ctx.sync();
+      return ps.map((p) => ({ top: p.topMargin, bottom: p.bottomMargin, left: p.leftMargin, right: p.rightMargin }));
+    });
+    // Tính độc lập: lề (điểm) → mm, so với khoảng chuẩn của văn bản hành chính
+    const mm = (pt: number) => Math.round((pt * 25.4) / 72 * 10) / 10;
+    const STD: Record<string, [number, number]> = { top: [20, 25], bottom: [20, 25], left: [30, 35], right: [15, 20] };
+    const want: string[] = [];
+    direct.forEach((d, k) => {
+      (Object.keys(STD) as (keyof typeof d)[]).forEach((side) => {
+        const v = mm(d[side]);
+        if (v < STD[side][0] - 0.6 || v > STD[side][1] + 0.6) want.push(`${side}${direct.length > 1 ? "#" + (k + 1) : ""}`);
+      });
+    });
+    const r = await run("word_check_page_format", {});
+    const got: string[] = r.issues.filter((x: any) => ["top", "bottom", "left", "right"].includes(x.what)).map((x: any) => `${x.what}${x.section ? "#" + x.section : ""}`);
+    expect(got.slice().sort().join(",") === want.slice().sort().join(","), `Công cụ báo lề lệch: [${got.join(", ")}], đo trực tiếp ra: [${want.join(", ")}]`);
+    const s0 = r.sections[0];
+    expect(Math.abs(s0.left_mm - mm(direct[0].left)) < 0.11 && Math.abs(s0.top_mm - mm(direct[0].top)) < 0.11, "Số đo lề công cụ trả về lệch với số đo trực tiếp");
+    // Lấy chính số đo hiện tại làm chuẩn thì không còn lề nào lệch; đòi lề trái lớn hơn 10 mm thì chỉ lề trái lệch
+    const self = await run("word_check_page_format", { top_mm: s0.top_mm, bottom_mm: s0.bottom_mm, left_mm: s0.left_mm, right_mm: s0.right_mm });
+    expect(!self.issues.some((x: any) => ["top", "bottom", "left", "right"].includes(x.what) && (!x.section || x.section === 1)), "Lấy số đo hiện tại làm chuẩn mà vẫn báo lệch lề");
+    const off = await run("word_check_page_format", { top_mm: s0.top_mm, bottom_mm: s0.bottom_mm, left_mm: s0.left_mm + 10, right_mm: s0.right_mm });
+    const offSides = off.issues.filter((x: any) => ["top", "bottom", "left", "right"].includes(x.what) && (!x.section || x.section === 1)).map((x: any) => x.what);
+    expect(offSides.join(",") === "left", `Chuẩn đòi lề trái ${s0.left_mm + 10} mm: công cụ báo lệch [${offSides.join(", ")}], đúng phải là [left]`);
+    const lech = r.issues.filter((x: any) => ["top", "bottom", "left", "right", "paper", "orientation"].includes(x.what)).map((x: any) => `${x.label} ${x.actual} (chuẩn ${x.expected})`);
+    return `Giấy ${s0.paper} ${s0.orientation}; lề trên ${s0.top_mm}, dưới ${s0.bottom_mm}, trái ${s0.left_mm}, phải ${s0.right_mm} mm → ${lech.length ? "lệch chuẩn: " + lech.join("; ") : "bốn lề và khổ giấy đúng chuẩn"}; phông: ${r.fonts
+      .slice(0, 3)
+      .map((f: any) => `${f.name} ${f.size ?? "?"} (${f.share})`)
+      .join(", ")}`;
+  });
+
+  await step("So sánh phiên bản: liệt kê đúng 3 chỗ khác kèm số điều; văn bản đang mở không đổi", async () => {
+    if (!sup("1.3", "WordApiHiddenDocument")) throw new Skip("Cần WordApiHiddenDocument 1.3 để đọc tệp .docx khác");
+    const s = await need(START);
+    const e = await need(END);
+    // Chữ hiện tại của vùng thử → dựng "phiên bản khác": sửa một đoạn, bỏ một đoạn, thêm một đoạn
+    const cur: { i: number; text: string }[] = [];
+    for (let start = s, guard = 0; start <= e && guard < 40; guard++) {
+      const r = await run("word_read_paragraphs", { start, end: e + 1 });
+      r.paragraphs.filter((p: any) => !p.deleted && String(p.text).trim()).forEach((p: any) => cur.push({ i: p.i, text: p.text }));
+      if (r.next_start === undefined || r.next_start > e) break;
+      start = r.next_start;
+    }
+    const iPlain = cur.findIndex((p) => p.text.includes(`Hợp đồng số ${code}`));
+    const iArt2 = cur.findIndex((p) => p.text === T.art2);
+    expect(iPlain >= 0 && iArt2 >= 0, "Vùng thử thiếu đoạn mẫu để so sánh");
+    const ADDED = `Đoạn chỉ có ở phiên bản khác ${code}.`;
+    const other = cur.map((p) => p.text);
+    other[iPlain] = other[iPlain].replace("01/01/2026", "02/02/2026");
+    other.splice(other.length - 1, 0, ADDED);
+    other.splice(iArt2, 1);
+    const xml = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const JSZip = (await import("jszip")).default;
+    const zip = new JSZip();
+    zip.file(
+      "[Content_Types].xml",
+      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`
+    );
+    zip.file(
+      "_rels/.rels",
+      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`
+    );
+    zip.file(
+      "word/document.xml",
+      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${other
+        .map((t) => `<w:p><w:r><w:t xml:space="preserve">${xml(t)}</w:t></w:r></w:p>`)
+        .join("")}</w:body></w:document>`
+    );
+    const name = `aidn-thu-so-sanh-${code}.docx`;
+    const { registerAttachedFile } = await import("../core/attachedFiles");
+    registerAttachedFile(name, await zip.generateAsync({ type: "base64" }));
+    const before = await countAll();
+    const r = await run("word_compare_versions", { file: name, from: s, to: e });
+    const after = await countAll();
+    expect(r.open_document_modified === false && after.changes === before.changes && after.comments === before.comments, "So sánh làm đổi văn bản đang mở");
+    expect((await need(END)) === e && (await need(START)) === s, "So sánh làm đổi số đoạn của văn bản đang mở");
+    const kinds = r.diffs.map((d: any) => d.type).sort().join(",");
+    expect(r.differences === 3 && kinds === "changed,only_current,only_other", `Phải ra đúng 3 chỗ khác (sửa, chỉ ở bản đang mở, chỉ ở phiên bản khác); công cụ ra ${r.differences}: ${kinds}`);
+    const ch = r.diffs.find((d: any) => d.type === "changed");
+    expect(ch.i === cur[iPlain].i && (ch.changes || []).some((c: string) => c.includes("01/01/2026") && c.includes("02/02/2026")), "Chỗ sửa không chỉ đúng đoạn hoặc đúng chữ đổi");
+    const gone = r.diffs.find((d: any) => d.type === "only_current");
+    expect(gone.i === cur[iArt2].i && /Điều 2/.test(gone.clause), `Đoạn chỉ có ở bản đang mở: báo [¶${gone.i}] ${gone.clause}`);
+    const added = r.diffs.find((d: any) => d.type === "only_other");
+    expect(String(added.other).includes(ADDED), "Không thấy đoạn chỉ có ở phiên bản khác");
+    let miss = "";
+    try {
+      await run("word_compare_versions", { file: "khong-co-tep-nay.docx" });
+    } catch (err: any) {
+      miss = err.message;
+    }
+    expect(/Không thấy tệp đính kèm/.test(miss), "Gọi với tên tệp không có mà không báo lỗi rõ");
+    return `3 chỗ khác, đúng loại và đúng chỗ: sửa ở [¶${ch.i}] (${ch.clause}), bỏ ${gone.clause} [¶${gone.i}], thêm một đoạn sau ${added.clause}; văn bản đang mở không đổi (${after.changes} sửa đổi, ${after.comments} nhận xét như trước)`;
+  });
+
   await step("Chuyển tới đoạn", async () => (await run("word_go_to", { paragraph_index: await need(T.art1) })).message);
 
   await step("Dọn vùng thử; phần văn bản ngoài vùng thử không đổi", async () => {

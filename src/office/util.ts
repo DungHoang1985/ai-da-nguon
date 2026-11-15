@@ -201,7 +201,7 @@ export function takeWithinBudget<T>(items: T[], budget: number, shrink?: (x: T, 
 
 /** Kết quả word_read_paragraphs: tính theo độ dài JSON thật; next_start và truncated đặt lên đầu. */
 export function packParagraphs(
-  all: { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean }[],
+  all: { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[] }[],
   start: number,
   end: number,
   budget = RESULT_JSON_BUDGET
@@ -217,6 +217,8 @@ export function packParagraphs(
     text: String(p.text ?? ""),
     ...(p.changed ? { changed: true } : {}),
     ...(p.deleted ? { deleted: true } : {}),
+    // notes = chú thích cuối trang / cuối văn bản neo vào đoạn này
+    ...(p.notes?.length ? { notes: p.notes } : {}),
   }));
   const { picked, truncated } = takeWithinBudget(slice, budget - 400, (x, room) => ({
     ...x,
