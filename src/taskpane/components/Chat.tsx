@@ -32,6 +32,7 @@ import { QUICK_PROMPTS, describeCall, getHostTools } from "../../office/tools";
 import { createCommonTools } from "../../office/common";
 import { navigateTo } from "../../office/navigate";
 import { APP_VERSION_FULL } from "../../core/version";
+import { inputKeyAction } from "../../core/keys";
 
 const useStyles = makeStyles({
   wrap: { display: "flex", flexDirection: "column", gap: "8px", height: "100%", minWidth: 0 },
@@ -292,6 +293,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
   const listRef = React.useRef<HTMLDivElement>(null);
   const fileRef = React.useRef<HTMLInputElement>(null);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const [slashIdx, setSlashIdx] = React.useState(0);
+  /** Esc đóng danh sách "/" cho đến khi nội dung ô nhập đổi */
+  const [slashClosedFor, setSlashClosedFor] = React.useState<string | null>(null);
   const busyRef = React.useRef(false);
   const prevBusy = React.useRef(false);
 
@@ -669,6 +673,35 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
           .filter((x) => x.name.toLowerCase().includes(slashQuery.toLowerCase()))
           .slice(0, 15)
       : [];
+  const menuOpen = slashItems.length > 0 && slashClosedFor !== input;
+  const activeSlash = Math.min(slashIdx, Math.max(0, slashItems.length - 1));
+  const pickSlash = (name: string) => {
+    setInput(`/${name} `);
+    inputRef.current?.focus();
+  };
+
+  const onInputKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const act = inputKeyAction(
+      {
+        key: e.key,
+        shiftKey: e.shiftKey,
+        ctrlKey: e.ctrlKey,
+        metaKey: e.metaKey,
+        altKey: e.altKey,
+        isComposing: (e.nativeEvent as KeyboardEvent).isComposing,
+        keyCode: e.keyCode,
+      },
+      { menuOpen, busy }
+    );
+    if (act === "none" || act === "newline") return;
+    e.preventDefault();
+    if (act === "send") send();
+    else if (act === "stop") stop();
+    else if (act === "menu-next") setSlashIdx((activeSlash + 1) % slashItems.length);
+    else if (act === "menu-prev") setSlashIdx((activeSlash - 1 + slashItems.length) % slashItems.length);
+    else if (act === "menu-pick") pickSlash(slashItems[activeSlash].name);
+    else if (act === "menu-close") setSlashClosedFor(input);
+  };
 
   return (
     <div className={s.wrap}>
@@ -913,16 +946,17 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
           ))}
         </div>
       )}
-      {slashItems.length > 0 && (
-        <div className={s.menu}>
-          {slashItems.map((x) => (
+      {menuOpen && (
+        <div className={s.menu} role="listbox" aria-label="Kỹ năng và lệnh">
+          {slashItems.map((x, k) => (
             <div
               key={x.kind + x.name}
+              role="option"
+              aria-selected={k === activeSlash}
               className={s.menuItem}
-              onClick={() => {
-                setInput(`/${x.name} `);
-                inputRef.current?.focus();
-              }}
+              style={k === activeSlash ? { background: tokens.colorNeutralBackground1Selected } : undefined}
+              onMouseEnter={() => setSlashIdx(k)}
+              onClick={() => pickSlash(x.name)}
             >
               <Text size={200} weight="semibold">
                 /{x.name}
@@ -937,13 +971,16 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
       <Textarea
         ref={inputRef}
         placeholder={
-          agentOn ? `Yêu cầu AI làm gì trong ${host}… (gõ / để gọi kỹ năng · Ctrl+Enter để gửi)` : "Nhập câu hỏi… (Ctrl+Enter để gửi)"
+          agentOn
+            ? `Yêu cầu AI làm gì trong ${host}… (gõ / để gọi kỹ năng · Enter gửi, Shift+Enter xuống dòng)`
+            : "Nhập câu hỏi… (Enter gửi, Shift+Enter xuống dòng)"
         }
         value={input}
-        onChange={(_, d) => setInput(d.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !busy) send();
+        onChange={(_, d) => {
+          setInput(d.value);
+          setSlashIdx(0);
         }}
+        onKeyDown={onInputKey}
         resize="vertical"
         rows={3}
       />

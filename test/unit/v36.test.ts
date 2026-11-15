@@ -34,3 +34,33 @@ describe("Đợt 0A – bước 3: số phiên bản một nguồn", () => {
     );
   });
 });
+
+import { inputKeyAction } from "../../src/core/keys";
+
+describe("Đợt 0A – bước 5: Enter để gửi", () => {
+  const idle = { menuOpen: false, busy: false };
+  it("Enter gửi; Shift+Enter xuống dòng; Ctrl+Enter vẫn gửi", () => {
+    assert.strictEqual(inputKeyAction({ key: "Enter" }, idle), "send");
+    assert.strictEqual(inputKeyAction({ key: "Enter", shiftKey: true }, idle), "newline");
+    assert.strictEqual(inputKeyAction({ key: "Enter", ctrlKey: true }, idle), "send");
+    assert.strictEqual(inputKeyAction({ key: "a" }, idle), "none");
+  });
+  it("Bộ gõ tiếng Việt đang ghép chữ (isComposing / mã 229): không gửi", () => {
+    assert.strictEqual(inputKeyAction({ key: "Enter", isComposing: true }, idle), "none");
+    assert.strictEqual(inputKeyAction({ key: "Enter", keyCode: 229 }, idle), "none");
+  });
+  it("Danh sách '/' đang mở: mũi tên di chuyển, Enter/Tab chọn, Esc đóng", () => {
+    const menu = { menuOpen: true, busy: false };
+    assert.strictEqual(inputKeyAction({ key: "ArrowDown" }, menu), "menu-next");
+    assert.strictEqual(inputKeyAction({ key: "ArrowUp" }, menu), "menu-prev");
+    assert.strictEqual(inputKeyAction({ key: "Enter" }, menu), "menu-pick");
+    assert.strictEqual(inputKeyAction({ key: "Tab" }, menu), "menu-pick");
+    assert.strictEqual(inputKeyAction({ key: "Escape" }, menu), "menu-close");
+  });
+  it("Đang chạy: Enter không gửi, Esc = Dừng", () => {
+    const busy = { menuOpen: false, busy: true };
+    assert.strictEqual(inputKeyAction({ key: "Enter" }, busy), "blocked");
+    assert.strictEqual(inputKeyAction({ key: "Escape" }, busy), "stop");
+    assert.strictEqual(inputKeyAction({ key: "Escape" }, idle), "none");
+  });
+});
