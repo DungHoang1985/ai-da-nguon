@@ -1,6 +1,6 @@
 # Bàn giao – Add-in AI đa nguồn cho Office
 
-**Cập nhật:** 15/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`) · **Phiên bản đang chạy: v3.5** (hiện ở đầu khung add-in)
+**Cập nhật:** 15/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`) · **Phiên bản đang chạy: v3.6** (phát hành tự động 15/11/2026) (hiện ở đầu khung add-in)
 
 > Từ 15/11/2026, `D:\ADD IN` là bản làm việc của nhánh `main` (đã đồng bộ ở bước 1 Đợt 0A); `docs/`, `tasks/`, `kiem-thu/` đã có trong kho.
 
@@ -26,7 +26,14 @@
     - Lỗi đổi nhà cung cấp: khoanh được 4 nguyên nhân (SambaNova và NVIDIA chặn gọi từ add-in; khung giữ danh sách và model của nguồn cũ khi tải lỗi; model tự nhảy về mục đầu theo chữ cái; mọi `TypeError` đều hiện "Không kết nối được"). Chưa tái hiện trong Office.
     - Phát hiện mới mức cao: Office lưu dữ liệu add-in tách theo tài khoản Office; máy anh có 2 kho (`Wef\webview2`: một `_ADAL`, một `_LiveId`) → cần Sao lưu/Khôi phục. Mã Word có 20 phát hiện (12 mức cao). Bảng so sánh sai 3 chỗ, thiếu khoảng 12 khả năng mới của bản chính thức.
     - Chưa rà: mã lõi tác tử (tôi chỉ đọc trực tiếp `loop.ts`, `llm.ts`, `compaction.ts`, `errors.ts`), mã Excel, PowerPoint, kỹ năng, tệp đính kèm; tra cứu nền tảng Office và API nhà cung cấp. Lý do: 10/14 tác tử bị dừng vì hết hạn mức model.
-- **Đang làm:** Đợt 0A (bắt đầu 15/11/2026, phiên Claude Code). Bước 1 xong: `D:\ADD IN` là bản làm việc của `main`; mã bản 0 cũ chuyển vào `_ban-0-cu/` (không đưa lên kho, chờ xóa). Tiến độ từng bước: xem `git log`.
+- **Đợt 0A (phiên 15/11/2026, Claude Code) — mã xong bước 1–8 và nâng v3.6, đã phát hành; kiểm trong Office mới làm một phần:**
+  - Bước 1 (6e4d9b7): `D:\ADD IN` là bản làm việc của `main`; `docs/`, `tasks/`, `kiem-thu/` đã vào kho; `_ban-0-cu/` đã chuyển vào Thùng rác (anh duyệt).
+  - Bước 2 (6a828ed): phát hành tự động `.github/workflows/phat-hanh.yml`. Bằng chứng: run 43657987624 xanh, gh-pages có commit của bot, Pages đổi theo; nhánh thử trượt kiểm thử → bước phát hành bị bỏ qua (run 43658148652).
+  - Bước 3 (9532f7a): gỡ `chat.ts`, gói đệm IE, 10 thư viện; số phiên bản lấy từ `package.json`; `image-size` ép 2.1.0 (npm audit bản chạy: 0).
+  - Bước 4 (f7d941b, bd0cfb4): sửa lỗi đổi nhà cung cấp + nút Kiểm tra nhà cung cấp. **Tái hiện trong Word (v3.5):** OpenRouter bật "Miễn phí" → đổi sang Anthropic: 0/15 model, gửi model OpenRouter cho Anthropic. **Nguyên nhân "mất kết nối":** OpenAI (key dạng sk-… sai/hết hạn) và Cerebras trả trang lỗi thiếu CORS → bản cũ báo nhầm "Không kết nối được". **Chạy thật trong Word (15/11):** từng nguồn 5/8 đạt (Gemini, DeepSeek: tài khoản hết tiền; OpenAI: lỗi bị giấu — đã sửa cách báo, chưa chạy lại); đổi nguồn đạt 20/20 cặp giữa 5 nguồn chạy được (OpenRouter, Groq, Anthropic, Cerebras, Cohere). Bằng chứng: `tasks/dot-0a-bang-chung/`.
+  - Bước 5 (0385c02) Enter để gửi · Bước 6 (c48b20f) bố cục một dòng đầu, bỏ công tắc Track Changes · Bước 7 (6ada3e8) sao lưu/khôi phục · Bước 8 (2831125) ba lỗi Word · 69627fb nâng 3.6.
+  - Kiểm thử máy: `npm test` 118/118 (71 cũ − 5 của chat.ts + 52 mới), tsc sạch. Bố cục mới đo trong trình duyệt (330×620): vùng hội thoại 71,7%.
+- **Đang làm:** bước 9 của Đợt 0A — kiểm trong Office bản 3.6 và sửa bảng so sánh. Danh sách cụ thể: `tasks/dot-0b.md` mục "Việc còn lại của Đợt 0A".
 - **Quyết định và lý do:**
   - AI sửa thẳng vào tài liệu + Hoàn tác; Word luôn ghi Track Changes; thao tác rủi ro luôn hỏi kèm lý do, "Cho phép hết lần này" không áp dụng cho thao tác rủi ro. Lý do: tự động tối đa nhưng an toàn như bản chính thức.
   - Kỹ năng chính thức được chuyển thể, không chép nguyên văn; không ghi số hiệu văn bản pháp luật trong kỹ năng (có kiểm thử chặn).
@@ -56,6 +63,10 @@
   - Chưa biết Claude Code trên máy anh có điều khiển được màn hình Office không. Nếu không: các mục phải kiểm trong Office ghi "Chưa kiểm được" và kiểm bù bằng một phiên Claude có điều khiển máy.
   - Đã kiểm 14/11: máy anh có Git 2.56, Node 24.14 và quyền đẩy lên GitHub (`git push --dry-run` đạt).
 - **Bài học:**
+  - Lỗi "không kết nối được" trong add-in chưa chắc là mạng: nhà cung cấp trả trang lỗi thiếu tiêu đề CORS thì trình duyệt giấu lỗi thật. Đo bằng curl với Origin của add-in, và trong add-in gọi thử chế độ no-cors để phân biệt (`fetchDiagnosed`).
+  - Điều khiển máy: `open_application` Word mỗi lần lại mở thêm một tài liệu trống (Document2, 3…) → hạn chế gọi; Windows hay giữ màn hình nền ở lớp trên, cần quyền "File Explorer" (chỉ bấm) để bấm vào cửa sổ Word. Nội dung khung add-in cần quyền riêng cho `msedgewebview2.exe`, và chỉ xin được khi đang có khung add-in mở.
+  - Quy trình phát hành: đẩy lên `main` là phát hành; muốn thử quy trình thì dùng nhánh `thu/…` (không đẩy gh-pages).
+  - Lệnh xóa thư mục bị bộ phân loại chế độ tự động chặn → chuyển vào Thùng rác bằng PowerShell sau khi anh duyệt.
   - Phiên Claude Code có hạn mức sử dụng cứng theo model: phóng 14 tác tử song song làm phiên bị cắt hai lần, mất trắng lượt đầu. Chia đợt tối đa 4 tác tử, việc quan trọng chạy trước; tác tử tra cứu dùng model nhẹ; bị ngắt thì đọc `journal.jsonl` của workflow trước khi chạy lại.
   - Vùng tạm (scratchpad) của phiên bị xóa và đổi đường dẫn khi phiên khởi động lại: kết quả cần giữ phải chép ngay vào `tasks\`.
   - Dữ liệu add-in (key, lịch sử, kỹ năng) nằm trong `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\webview2\<tài khoản Office>`: **không xóa thư mục `Wef`**; đổi tài khoản Office là sang kho khác.
