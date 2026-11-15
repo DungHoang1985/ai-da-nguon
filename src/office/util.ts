@@ -118,3 +118,98 @@ export function truncate(s: any, n: number): string {
   const t = String(s ?? "");
   return t.length > n ? t.slice(0, n) + "…" : t;
 }
+
+/** Ngân sách độ dài JSON cho kết quả công cụ đọc: thấp hơn mức vòng lặp tác tử cắt (30.000 ký tự) để kết quả
+ *  không bao giờ bị cắt giữa chừng mà AI không biết (lỗi Word PH3 của rà soát 15/11/2026). */
+export const RESULT_JSON_BUDGET = 24000;
+
+/** Lấy lần lượt phần tử cho tới khi JSON vượt ngân sách. Phần tử đầu tiên quá dài thì rút gọn bằng shrink (nếu có). */
+export function takeWithinBudget<T>(items: T[], budget: number, shrink?: (x: T, room: number) => T): { picked: T[]; truncated: boolean } {
+  const picked: T[] = [];
+  let used = 2;
+  for (let k = 0; k < items.length; k++) {
+    let x = items[k];
+    let len = JSON.stringify(x).length + 1;
+    if (used + len > budget) {
+      if (!picked.length && shrink) {
+        x = shrink(x, Math.max(100, budget - used - 200));
+        len = JSON.stringify(x).length + 1;
+        picked.push(x);
+        return { picked, truncated: items.length > 1 };
+      }
+      return { picked, truncated: true };
+    }
+    picked.push(x);
+    used += len;
+  }
+  return { picked, truncated: false };
+}
+
+/** Kết quả word_read_paragraphs: tính theo độ dài JSON thật; next_start và truncated đặt lên đầu. */
+export function packParagraphs(all: { text: string; style: string }[], start: number, end: number, budget = RESULT_JSON_BUDGET) {
+  const s0 = Math.max(0, Math.floor(Number(start)) || 0);
+  const e0 = Math.min(all.length, Math.max(s0, Math.floor(Number(end)) || s0 + 200));
+  const slice = all.slice(s0, e0).map((p, k) => ({ i: s0 + k, style: String(p.style ?? ""), text: String(p.text ?? "") }));
+  const { picked, truncated } = takeWithinBudget(slice, budget - 400, (x, room) => ({
+    ...x,
+    text: x.text.slice(0, room) + "… [đoạn quá dài, đã cắt phần sau]",
+  }));
+  const last = picked.length ? picked[picked.length - 1].i : s0 - 1;
+  const more = last + 1 < all.length;
+  return {
+    ok: true,
+    total_paragraphs: all.length,
+    ...(more ? { next_start: last + 1 } : {}),
+    ...(truncated ? { truncated: true, note: `Kết quả dài nên dừng ở đoạn ${last}. Gọi lại với start = next_start để đọc tiếp.` } : {}),
+    read_from: s0,
+    read_to: last,
+    paragraphs: picked,
+  };
+}
+
+/** Số đoạn của nhận xét / sửa đổi: tìm theo định danh đoạn (uniqueLocalId, WordApi 1.6) — đúng cả khi có đoạn trùng nội dung;
+ *  Word cũ không có định danh thì so chữ như trước. */
+export function paragraphIndex(anchorId: string | undefined, anchorText: string, ids: string[] | null, texts: string[]): number {
+  if (ids && anchorId) {
+    const i = ids.indexOf(anchorId);
+    if (i >= 0) return i;
+  }
+  return texts.indexOf(anchorText);
+}
+
+/** Trạng thái văn bản đưa vào lời nhắc hệ thống: vùng chọn, chế độ theo dõi, nhận xét lên đầu; danh sách tiêu đề cắt theo phần tử
+ *  (không cắt chuỗi JSON) cho vừa ngân sách. */
+export function overviewForPrompt(ov: any, budget = 6000): string {
+  if (!ov || typeof ov !== "object") return JSON.stringify(ov ?? null);
+  const { selection, track_changes, comments, paragraphs, characters, headings, first_paragraphs, ...rest } = ov;
+  const allHeadings: any[] = Array.isArray(headings) ? headings : [];
+  let sel = selection;
+  let first: any[] = Array.isArray(first_paragraphs) ? first_paragraphs : [];
+  let hs = allHeadings;
+  const build = () =>
+    JSON.stringify({
+      selection: sel,
+      track_changes,
+      comments,
+      paragraphs,
+      characters,
+      ...rest,
+      ...(hs.length < allHeadings.length ? { headings_truncated: true, headings_total: allHeadings.length } : {}),
+      headings: hs,
+      first_paragraphs: first,
+    });
+  let s = build();
+  while (s.length > budget && hs.length) {
+    hs = hs.slice(0, Math.floor(hs.length * 0.8));
+    s = build();
+  }
+  while (s.length > budget && first.length) {
+    first = first.slice(0, first.length - 1);
+    s = build();
+  }
+  if (s.length > budget && typeof sel === "string") {
+    sel = truncate(sel, Math.max(200, sel.length - (s.length - budget) - 20));
+    s = build();
+  }
+  return s;
+}

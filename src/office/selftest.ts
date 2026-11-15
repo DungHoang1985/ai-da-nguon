@@ -384,6 +384,66 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(String(t.values[1][1]).includes("10") && String(t.values[2]?.[0]).includes("B"), `Bảng sau khi điền: ${JSON.stringify(t.values)}`);
       return `Bảng ${t0.index}: sửa 1 ô, thêm 1 hàng`;
     });
+    await step("Đọc văn bản dài: đọc hết theo next_start, không sót đoạn", async () => {
+      await Word.run(async (ctx) => {
+        ctx.document.load("changeTrackingMode");
+        await ctx.sync();
+        const mode = ctx.document.changeTrackingMode;
+        ctx.document.changeTrackingMode = Word.ChangeTrackingMode.off;
+        const line = `${marker} đoạn dài ` + "nội dung kiểm tra đọc văn bản dài ".repeat(11);
+        for (let k = 0; k < 90; k++) ctx.document.body.insertParagraph(`${line}${k}`, Word.InsertLocation.end);
+        await ctx.sync();
+        ctx.document.changeTrackingMode = mode;
+        await ctx.sync();
+      });
+      let start = 0;
+      let calls = 0;
+      let read = 0;
+      let total = 0;
+      for (;;) {
+        const r = await run("word_read_paragraphs", { start });
+        calls++;
+        total = r.total_paragraphs;
+        read += r.paragraphs.length;
+        const len = JSON.stringify(r).length;
+        expect(len < 30000, `Kết quả ${len} ký tự, vượt mức cắt 30.000`);
+        if (r.next_start === undefined || calls > 50) break;
+        start = r.next_start;
+      }
+      expect(read === total, `Đã đọc ${read}/${total} đoạn`);
+      expect(calls >= 2, `Chỉ ${calls} lượt đọc, chưa thử được việc đọc tiếp`);
+      return `${total} đoạn, đọc ${calls} lượt theo next_start, không sót đoạn nào`;
+    });
+    await step("Nhận xét ở đoạn trùng nội dung: báo đúng số đoạn", async () => {
+      if (!Office.context.requirements.isSetSupported("WordApi", "1.6")) throw new Skip("Word chưa hỗ trợ định danh đoạn");
+      const dup = `${marker} đoạn trùng`;
+      const target = await Word.run(async (ctx) => {
+        ctx.document.load("changeTrackingMode");
+        await ctx.sync();
+        const mode = ctx.document.changeTrackingMode;
+        ctx.document.changeTrackingMode = Word.ChangeTrackingMode.off;
+        const body = ctx.document.body;
+        body.insertParagraph(dup, Word.InsertLocation.end);
+        body.insertParagraph(dup, Word.InsertLocation.end);
+        await ctx.sync();
+        const hits = body.search(dup, { matchCase: true });
+        hits.load("items");
+        await ctx.sync();
+        hits.items[1].insertComment("Nhận xét ở đoạn trùng thứ hai");
+        const paras = body.paragraphs;
+        paras.load("items/text");
+        await ctx.sync();
+        ctx.document.changeTrackingMode = mode;
+        await ctx.sync();
+        const idx = paras.items.map((x, i) => (x.text === dup ? i : -1)).filter((i) => i >= 0);
+        return idx[1];
+      });
+      const r = await run("word_list_comments", {});
+      const c = r.comments.find((x: any) => String(x.text).includes("đoạn trùng thứ hai"));
+      expect(c, "Không thấy nhận xét thử");
+      expect(c.paragraph === target, `Công cụ báo đoạn ${c.paragraph}, đúng phải là ${target}`);
+      return `Nhận xét neo ở đoạn trùng thứ hai: báo đúng [¶${target}]`;
+    });
     await step("Chuyển tới đoạn", async () => {
       if (markerPara < 0) throw new Skip("Không xác định được đoạn thử");
       return (await run("word_go_to", { paragraph_index: markerPara })).message;

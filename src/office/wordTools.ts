@@ -1,7 +1,18 @@
 /* global Word, Office */
 /** Công cụ để AI thao tác trực tiếp trên văn bản Word. Sửa đổi được ghi bằng Theo dõi thay đổi (Track Changes). */
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
-import { diffMiddle, escapeWordSearch, normalize2D, parseMarkdownLine, truncate } from "./util";
+import {
+  RESULT_JSON_BUDGET,
+  diffMiddle,
+  escapeWordSearch,
+  normalize2D,
+  overviewForPrompt,
+  packParagraphs,
+  paragraphIndex,
+  parseMarkdownLine,
+  takeWithinBudget,
+  truncate,
+} from "./util";
 
 const MAX_READ_CHARS = 30000;
 
@@ -16,12 +27,13 @@ export const WORD_SPECS: ToolSpec[] = [
   },
   {
     name: "word_read_paragraphs",
-    description: "Read paragraphs by index range (0-based, end exclusive) with their style. Or read the current selection.",
+    description:
+      "Read paragraphs by index range (0-based, end exclusive) with their style. Or read the current selection. Long results stop early: when the result has next_start, call again with start=next_start to continue; compare with total_paragraphs to be sure you read everything.",
     parameters: {
       type: "object",
       properties: {
         start: { type: "number", description: "First paragraph index (default 0)." },
-        end: { type: "number", description: "End index, exclusive (default start+80)." },
+        end: { type: "number", description: "End index, exclusive (default start+200; the result may stop earlier, see next_start)." },
         selection_only: { type: "boolean", description: "Read only the current selection." },
       },
     },
@@ -145,8 +157,15 @@ export const WORD_SPECS: ToolSpec[] = [
   },
   {
     name: "word_list_comments",
-    description: "List comments with their anchored text, author, paragraph index, replies and resolved state.",
-    parameters: { type: "object", properties: { include_resolved: { type: "boolean", description: "Default false." } } },
+    description:
+      "List comments with their anchored text, author, paragraph index, replies and resolved state. If the result has next_start, call again with start=next_start for the rest.",
+    parameters: {
+      type: "object",
+      properties: {
+        include_resolved: { type: "boolean", description: "Default false." },
+        start: { type: "number", description: "Skip the first N comments (paging). Default 0." },
+      },
+    },
   },
   {
     name: "word_reply_comment",
@@ -162,8 +181,9 @@ export const WORD_SPECS: ToolSpec[] = [
   },
   {
     name: "word_list_revisions",
-    description: "List tracked changes (redlines) in the document: index, type (Added/Deleted/Formatted…), author, date, text, paragraph index.",
-    parameters: { type: "object", properties: {} },
+    description:
+      "List tracked changes (redlines) in the document: index, type (Added/Deleted/Formatted…), author, date, text, paragraph index. If the result has next_start, call again with start=next_start for the rest.",
+    parameters: { type: "object", properties: { start: { type: "number", description: "First revision index (paging). Default 0." } } },
   },
   {
     name: "word_review_revision",
@@ -181,8 +201,14 @@ export const WORD_SPECS: ToolSpec[] = [
   },
   {
     name: "word_read_tables",
-    description: "Read existing tables: index, size and cell values.",
-    parameters: { type: "object", properties: { max_rows: { type: "number", description: "Default 40 rows per table." } } },
+    description: "Read existing tables: index, size and cell values. If the result has next_start, call again with start=next_start for the remaining tables.",
+    parameters: {
+      type: "object",
+      properties: {
+        max_rows: { type: "number", description: "Default 40 rows per table." },
+        start: { type: "number", description: "First table index (paging). Default 0." },
+      },
+    },
   },
   {
     name: "word_fill_table",
@@ -345,23 +371,13 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             return { ok: true, selection: truncate(sel.text, MAX_READ_CHARS), paragraphs: ps.items.length };
           }
           const paras = await loadParagraphs(ctx, "items/text,items/style");
+          // Ngân sách tính theo độ dài JSON thật; next_start và truncated nằm đầu kết quả (không bị cắt mất)
           const start = Math.max(0, Number(a.start) || 0);
-          const end = Math.min(paras.items.length, Number(a.end) || start + 80);
-          const out: { i: number; style: string; text: string }[] = [];
-          let chars = 0;
-          for (let i = start; i < end; i++) {
-            const t = paras.items[i].text;
-            if (chars + t.length > MAX_READ_CHARS && out.length) break;
-            chars += t.length;
-            out.push({ i, style: paras.items[i].style, text: t });
-          }
-          const last = out.length ? out[out.length - 1].i : start - 1;
-          return {
-            ok: true,
-            total_paragraphs: paras.items.length,
-            paragraphs: out,
-            ...(last + 1 < paras.items.length ? { next_start: last + 1 } : {}),
-          };
+          return packParagraphs(
+            paras.items.map((p) => ({ text: p.text, style: p.style })),
+            start,
+            Number(a.end) || start + 200
+          );
         });
 
       case "word_replace_text":
@@ -568,34 +584,46 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
       case "word_list_comments":
         return Word.run(async (ctx) => {
           if (!supports("1.4")) throw new Error("Word trên máy này chưa hỗ trợ đọc nhận xét qua add-in.");
-          const paras = await loadParagraphs(ctx);
+          const withIds = supports("1.6");
+          const paras = await loadParagraphs(ctx, withIds ? "items/text,items/uniqueLocalId" : "items/text");
           const cs = ctx.document.body.getComments();
           cs.load("items/id,items/content,items/authorName,items/creationDate,items/resolved");
           await ctx.sync();
-          const items = cs.items.filter((c) => a.include_resolved || !c.resolved).slice(0, 100);
+          const all = cs.items.filter((c) => a.include_resolved || !c.resolved);
+          const from = Math.max(0, Number(a.start) || 0);
+          const items = all.slice(from, from + 100);
           const anchors = items.map((c) => {
             const r = c.getRange();
             r.load("text");
             const p = r.paragraphs.getFirst();
-            p.load("text");
+            p.load(withIds ? "text,uniqueLocalId" : "text");
             const reps = c.replies;
             reps.load("items/content,items/authorName");
             return { r, p, reps };
           });
           await ctx.sync();
           const texts = paras.items.map((p) => p.text);
+          // Số đoạn theo định danh đoạn (đúng cả khi có đoạn trùng nội dung); Word cũ thì so chữ
+          const ids = withIds ? paras.items.map((p) => p.uniqueLocalId) : null;
+          const rows = items.map((c, i) => ({
+            id: c.id,
+            author: c.authorName,
+            text: truncate(c.content, 2000),
+            anchor: truncate(anchors[i].r.text, 300),
+            paragraph: paragraphIndex(withIds ? anchors[i].p.uniqueLocalId : undefined, anchors[i].p.text, ids, texts),
+            resolved: c.resolved,
+            replies: anchors[i].reps.items.map((x) => ({ author: x.authorName, text: truncate(x.content, 1000) })),
+          }));
+          const { picked, truncated } = takeWithinBudget(rows, RESULT_JSON_BUDGET - 400);
+          const next = from + picked.length;
           return {
             ok: true,
-            total: cs.items.length,
-            comments: items.map((c, i) => ({
-              id: c.id,
-              author: c.authorName,
-              text: c.content,
-              anchor: truncate(anchors[i].r.text, 300),
-              paragraph: texts.indexOf(anchors[i].p.text),
-              resolved: c.resolved,
-              replies: anchors[i].reps.items.map((x) => ({ author: x.authorName, text: x.content })),
-            })),
+            total: all.length,
+            shown_from: from,
+            shown: picked.length,
+            ...(next < all.length ? { next_start: next } : {}),
+            ...(truncated ? { truncated: true } : {}),
+            comments: picked,
           };
         });
 
@@ -621,29 +649,38 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
       case "word_list_revisions":
         return Word.run(async (ctx) => {
           if (!supports("1.6")) throw new Error("Word trên máy này chưa hỗ trợ đọc sửa đổi được theo dõi qua add-in.");
-          const paras = await loadParagraphs(ctx);
+          const paras = await loadParagraphs(ctx, "items/text,items/uniqueLocalId");
           const tc = ctx.document.body.getTrackedChanges();
           tc.load("items/type,items/author,items/date,items/text");
           await ctx.sync();
-          const items = tc.items.slice(0, 200);
+          const from = Math.max(0, Number(a.start) || 0);
+          const items = tc.items.slice(from, from + 200);
           const ps = items.map((t) => {
             const p = t.getRange().paragraphs.getFirst();
-            p.load("text");
+            p.load("text,uniqueLocalId");
             return p;
           });
           await ctx.sync();
           const texts = paras.items.map((p) => p.text);
+          const ids = paras.items.map((p) => p.uniqueLocalId);
+          const rows = items.map((t, k) => ({
+            index: from + k,
+            type: t.type,
+            author: t.author,
+            date: t.date ? new Date(t.date as any).toLocaleString("vi-VN") : "",
+            text: truncate(t.text, 300),
+            paragraph: paragraphIndex(ps[k].uniqueLocalId, ps[k].text, ids, texts),
+          }));
+          const { picked, truncated } = takeWithinBudget(rows, RESULT_JSON_BUDGET - 400);
+          const next = from + picked.length;
           return {
             ok: true,
             total: tc.items.length,
-            revisions: items.map((t, i) => ({
-              index: i,
-              type: t.type,
-              author: t.author,
-              date: t.date ? new Date(t.date as any).toLocaleString("vi-VN") : "",
-              text: truncate(t.text, 300),
-              paragraph: texts.indexOf(ps[i].text),
-            })),
+            shown_from: from,
+            shown: picked.length,
+            ...(next < tc.items.length ? { next_start: next } : {}),
+            ...(truncated ? { truncated: true } : {}),
+            revisions: picked,
           };
         });
 
@@ -679,15 +716,27 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
           tables.load("items/rowCount,items/values");
           await ctx.sync();
           const maxRows = Number(a.max_rows) || 40;
+          const from = Math.max(0, Number(a.start) || 0);
+          const rows = tables.items.slice(from, from + 30).map((t, k) => ({
+            index: from + k,
+            rows: t.rowCount,
+            columns: t.values[0]?.length || 0,
+            ...(t.rowCount > maxRows ? { rows_shown: maxRows } : {}),
+            values: t.values.slice(0, maxRows).map((r) => r.map((v) => truncate(v, 200))),
+          }));
+          const { picked, truncated } = takeWithinBudget(rows, RESULT_JSON_BUDGET - 400, (x, room) => {
+            // Bảng đầu quá lớn: bớt hàng cho vừa
+            let vals = x.values;
+            while (vals.length > 1 && JSON.stringify(vals).length > room) vals = vals.slice(0, Math.ceil(vals.length / 2));
+            return { ...x, rows_shown: vals.length, values: vals };
+          });
+          const next = from + picked.length;
           return {
             ok: true,
             count: tables.items.length,
-            tables: tables.items.slice(0, 30).map((t, i) => ({
-              index: i,
-              rows: t.rowCount,
-              columns: t.values[0]?.length || 0,
-              values: t.values.slice(0, maxRows).map((r) => r.map((v) => truncate(v, 200))),
-            })),
+            ...(next < tables.items.length ? { next_start: next } : {}),
+            ...(truncated ? { truncated: true } : {}),
+            tables: picked,
           };
         });
 
@@ -769,14 +818,14 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         "Bạn là trợ lý AI được tích hợp trong Microsoft Word, có thể thao tác trực tiếp trên văn bản đang mở bằng các công cụ (word_*).",
         "Nguyên tắc:",
         "- Khi người dùng muốn sửa, viết, chèn, định dạng, rà soát… hãy GỌI CÔNG CỤ để làm thật trong văn bản, không chỉ đưa gợi ý.",
-        "- Đoạn văn đánh số từ 0. Đọc nội dung (word_read_paragraphs) trước khi sửa.",
+        "- Đoạn văn đánh số từ 0. Đọc nội dung (word_read_paragraphs) trước khi sửa. Kết quả có next_start là chưa đọc hết: gọi tiếp với start = next_start cho tới khi đã đọc đủ total_paragraphs.",
         "- Sửa nhỏ (từ, cụm từ, số liệu) dùng word_replace_text; viết lại cả đoạn dùng word_set_paragraph_text. Sửa đổi được ghi bằng Theo dõi thay đổi để người dùng duyệt.",
         "- Rà soát văn bản/hợp đồng: ghi nhận xét đúng chỗ bằng word_add_comment; chỉ sửa trực tiếp khi được yêu cầu.",
         "- Giữ nguyên văn phong, định dạng; không tự bịa số hiệu văn bản, điều khoản hay căn cứ pháp lý.",
         "- Xong việc: trả lời ngắn gọn bằng tiếng Việt: đã sửa/chèn gì, ở đoạn nào.",
         "",
         "Trạng thái hiện tại của văn bản (JSON):",
-        JSON.stringify(ov).slice(0, 6000),
+        overviewForPrompt(ov),
       ].join("\n"),
   };
 }

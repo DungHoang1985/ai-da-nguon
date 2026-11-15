@@ -64,3 +64,62 @@ describe("Đợt 0A – bước 5: Enter để gửi", () => {
     assert.strictEqual(inputKeyAction({ key: "Escape" }, idle), "none");
   });
 });
+
+import { overviewForPrompt, packParagraphs, paragraphIndex, takeWithinBudget } from "../../src/office/util";
+import { MAX_TOOL_RESULT_CHARS, clip } from "../../src/core/agent/loop";
+
+describe("Đợt 0A – bước 8: ba lỗi Word", () => {
+  it("Văn bản 400 đoạn × 370 ký tự: đọc tiếp theo next_start thì đọc hết, tổng số đoạn đã đọc = tổng số đoạn", () => {
+    const doc = Array.from({ length: 400 }, (_, i) => ({ style: "Normal", text: `Đoạn ${i}: ` + "nội dung hợp đồng ".repeat(20).slice(0, 360) }));
+    const seen: number[] = [];
+    let start = 0;
+    for (let guard = 0; guard < 100; guard++) {
+      const r: any = packParagraphs(doc, start, start + 200);
+      const json = JSON.stringify(r);
+      assert.ok(json.length < MAX_TOOL_RESULT_CHARS, `JSON ${json.length} ký tự, vượt mức cắt`);
+      // next_start nằm đầu kết quả: dù vòng lặp có cắt bớt thì vẫn còn
+      if (r.next_start !== undefined) assert.ok(clip(json, 2000).includes('"next_start"'));
+      seen.push(...r.paragraphs.map((p: any) => p.i));
+      if (r.next_start === undefined) break;
+      start = r.next_start;
+    }
+    assert.strictEqual(seen.length, 400);
+    assert.deepStrictEqual(seen, Array.from({ length: 400 }, (_, i) => i));
+  });
+  it("Một đoạn dài hơn ngân sách: vẫn trả về (rút gọn, có ghi chú), không làm vỡ JSON", () => {
+    const doc = [{ style: "Normal", text: "x".repeat(50000) }, { style: "Normal", text: "b" }];
+    const r: any = packParagraphs(doc, 0, 2);
+    assert.ok(JSON.stringify(r).length < MAX_TOOL_RESULT_CHARS);
+    assert.match(r.paragraphs[0].text, /đã cắt/);
+    assert.strictEqual(r.next_start, 1);
+    const t = takeWithinBudget([1, 2, 3], 1000);
+    assert.deepStrictEqual(t, { picked: [1, 2, 3], truncated: false });
+  });
+  it("Số đoạn của nhận xét / sửa đổi tìm theo định danh đoạn, đúng cả khi có hai đoạn trùng nội dung", () => {
+    const texts = ["Bên A:", "Nội dung", "Bên A:"];
+    const ids = ["id-0", "id-1", "id-2"];
+    assert.strictEqual(paragraphIndex("id-2", "Bên A:", ids, texts), 2);
+    assert.strictEqual(paragraphIndex(undefined, "Bên A:", null, texts), 0, "Word cũ (không có định danh) thì so chữ như trước");
+    assert.strictEqual(paragraphIndex("khong-co", "Nội dung", ids, texts), 1);
+  });
+  it("Trạng thái văn bản trong lời nhắc: JSON hợp lệ, không quá 6.000 ký tự, luôn còn vùng chọn và chế độ theo dõi", () => {
+    const ov = {
+      paragraphs: 900,
+      characters: 300000,
+      headings: Array.from({ length: 100 }, (_, i) => ({ index: i * 9, style: "Heading 2", text: `Điều ${i}. ` + "Quy định về nghĩa vụ ".repeat(5) })),
+      first_paragraphs: Array.from({ length: 6 }, (_, i) => ({ index: i, style: "Normal", text: "Mở đầu ".repeat(30) })),
+      selection: "Đoạn đang chọn để sửa",
+      track_changes: "TrackAll",
+      comments: 3,
+    };
+    const s = overviewForPrompt(ov);
+    assert.ok(s.length <= 6000, `dài ${s.length}`);
+    const j = JSON.parse(s);
+    assert.strictEqual(j.selection, "Đoạn đang chọn để sửa");
+    assert.strictEqual(j.track_changes, "TrackAll");
+    assert.strictEqual(j.comments, 3);
+    assert.strictEqual(j.headings_truncated, true);
+    assert.strictEqual(j.headings_total, 100);
+    assert.ok(Object.keys(j).indexOf("selection") < Object.keys(j).indexOf("headings"), "vùng chọn đứng trước danh sách tiêu đề");
+  });
+});
