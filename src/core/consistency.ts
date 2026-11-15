@@ -356,25 +356,27 @@ export function findDefinitions(live: Live[]): Defs {
     return t;
   };
   for (const r of live) {
-    const here: string[] = [];
-    for (const m of r.text.matchAll(DEF_QUOTED)) here.push(put(m[1], r.i));
+    for (const m of r.text.matchAll(DEF_QUOTED)) put(m[1], r.i);
     for (const m of r.text.matchAll(DEF_CALLED)) {
-      here.push(put(m[1], r.i));
-      if (m[2]) here.push(put(m[2], r.i));
+      const first = put(m[1], r.i);
+      const second = m[2] ? put(m[2], r.i) : "";
+      // "sau đây gọi là “Bên A” hoặc “Bên Bán”": một bên, hai tên
+      if (/^Bên\s/.test(first) && /^Bên\s/.test(second) && first !== second) aliases.push([first, second, r.i]);
     }
-    for (const m of r.text.matchAll(DEF_PAREN)) here.push(put(m[1], r.i));
-    for (const m of r.text.matchAll(DEF_CALLED_BARE)) here.push(put(m[1], r.i));
+    for (const m of r.text.matchAll(DEF_PAREN)) put(m[1], r.i);
+    for (const m of r.text.matchAll(DEF_CALLED_BARE)) put(m[1], r.i);
     const intro = r.text.match(PARTY_INTRO);
     if (intro) {
+      const names: string[] = [];
       for (const g of [intro[1], intro[2]]) {
         if (!g) continue;
         const name = titleCase(norm(g));
         if (!parties.has(name)) parties.set(name, r.i);
-        here.push(name);
+        names.push(name);
       }
+      // "BÊN A (BÊN BÁN): …": một bên, hai tên
+      if (names.length === 2 && names[0] !== names[1]) aliases.push([names[0], names[1], r.i]);
     }
-    const ps = Array.from(new Set(here.filter((t) => /^Bên\s/.test(t))));
-    if (ps.length >= 2) aliases.push([ps[0], ps[1], r.i]);
   }
   return { terms, parties, aliases };
 }

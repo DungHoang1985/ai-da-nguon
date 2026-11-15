@@ -49,33 +49,29 @@ Bước không đạt: làm lại riêng bước đó tối đa 3 lần rồi d�
 
 ## Kết quả bước 2 — thăm dò (15/11/2026, Word 16.0.20527, khung add-in bản 4.0.0)
 
-Máy hỗ trợ WordApi 1.4–1.9, WordApiDesktop 1.1–1.5, WordApiHiddenDocument 1.3–1.5. Văn bản thử: . Bằng chứng: tệp 01–04 trong .
+Máy hỗ trợ WordApi 1.4–1.9, WordApiDesktop 1.1–1.5, WordApiHiddenDocument 1.3–1.5. Văn bản thử: `node kiem-thu/soat-thu.mjs tham-do <tệp>`. Bài thăm dò: `kiem-thu/cdp-bai/tham-do-1b-*.js`. Bằng chứng: tệp 01–04 trong `tasks/dot-1b-bang-chung/`.
+
+### Đọc phần ngoài thân văn bản và thể thức trang
 
 | Thứ cần đọc | API | Kết quả |
 |---|---|---|
-| Chú thích cuối trang, cuối văn bản |  /  (WordApi 1.5): ,  | **Đọc được**, kèm đoạn neo. Chữ chú thích mở đầu bằng ký tự  (phải bỏ) |
-| Đầu trang, chân trang |  | **Đọc được** cả chữ lẫn trường PAGE |
-| Bookmark | ,  (WordApi 1.4) | **Đọc được** cả bookmark ẩn (_Ref…);  (Desktop 1.4) chỉ liệt kê bookmark hiện |
-| Trường dẫn chiếu | : , ,  (WordApi 1.4–1.5) | **Đọc được** (REF _Ref7001 → "7.1") |
-| Ô điền mẫu |  trả rỗng;  (WordApi 1.5) | **Đọc được khi nêu rõ loại** (PlainText…); ô chưa điền trả chữ rỗng |
-| Hộp văn bản |  →  (WordApiDesktop 1.2) | **Đọc được**; chữ trong hộp không nằm trong đoạn của thân văn bản |
-| Lề, khổ giấy |  (WordApiDesktop 1.3), đơn vị điểm | **Đọc được** (20 mm = 56,7 điểm) |
-| Phông, cỡ chữ |  | **Đọc được** theo từng đoạn |
+| Chú thích cuối trang, cuối văn bản | `body.footnotes` / `body.endnotes` (WordApi 1.5): `items/body/text`, `reference` | **Đọc được**, kèm đoạn neo. Chữ chú thích mở đầu bằng ký tự mốc U+0002 (phải bỏ) |
+| Đầu trang, chân trang | `section.getHeader()` / `getFooter()` với `"Primary"`, `"FirstPage"`, `"EvenPages"` (WordApi 1.1) | **Đọc được** cả chữ lẫn trường PAGE |
+| Bookmark | `range.getBookmarks(includeHidden)`, `document.getBookmarkRangeOrNullObject(name)` (WordApi 1.4) | **Đọc được** cả bookmark ẩn (`_Ref…`); `document.bookmarks` (WordApiDesktop 1.4) chỉ liệt kê bookmark hiện |
+| Trường dẫn chiếu | `body.fields`: `type`, `code`, `result/text` (WordApi 1.4–1.5) | **Đọc được** (`REF _Ref7001` → "7.1") |
+| Ô điền mẫu | `document.contentControls` trả rỗng; `document.getContentControls({ types: […] })` (WordApi 1.5) | **Đọc được khi nêu rõ loại** (PlainText…); ô chưa điền trả chữ rỗng |
+| Hộp văn bản | `body.shapes` → `shape.body.text` (WordApiDesktop 1.2) | **Đọc được**; chữ trong hộp không nằm trong đoạn của thân văn bản |
+| Lề, khổ giấy | `section.pageSetup` (WordApiDesktop 1.3), đơn vị điểm | **Đọc được** (20 mm = 56,7 điểm; khổ giấy trả "A4") |
+| Phông, cỡ chữ | `paragraphs` nạp `items/font/name`, `items/font/size` | **Đọc được** theo từng đoạn |
 
-Ghi nhận thêm:  chứa ký tự  tại mốc chú thích, còn  thì không → khi sửa đoạn phải coi mốc này là chữ "không sống" để không xóa mất chú thích (việc phải làm trong : bỏ  khỏi chữ đưa cho AI, thêm vị trí mốc vào , không thay cả đoạn khi đoạn có mốc).
+Ghi nhận thêm: `paragraph.text` chứa ký tự U+0002 tại mốc chú thích, còn `getText()` thì không. Hệ quả cho công cụ sửa đoạn có từ bản 4.0: phải coi mốc này là chữ "không sống" (như chữ đã xóa có theo dõi) để lần sửa mức từ không xóa mất chú thích; không thay cả đoạn khi đoạn có mốc; chữ đưa cho AI không kèm ký tự này.
 
 ### So sánh phiên bản
 
 | Cách | Kết quả |
 |---|---|
-| , đích  | Chạy được (0,5 giây): Word mở cửa sổ mới "Compare Result 1" có 45 sửa đổi; **bản đang mở y nguyên** (số đoạn, chữ, 2 sửa đổi của Đối tác). Add-in **không đọc được** tài liệu kết quả (khung gắn với tài liệu gốc) |
-| , đích  | Chạy được nhưng **đổi bản đang mở và làm mất 2 sửa đổi chờ duyệt của Đối tác** (50 sửa đổi mới thế chỗ) → không dùng |
-|  (tài liệu ẩn) | **Đọc được tệp kia mà không mở, không đụng bản đang mở**: đủ đoạn, số điều do Word tự đánh, bản hiện tại (), sửa đổi, chú thích, đầu trang. Tài liệu ẩn nằm lại trong Word tới khi thoát (không có lệnh đóng) |
+| `compareFromBase64`, đích `CompareTargetNew` | Chạy được (0,5 giây): Word mở cửa sổ mới "Compare Result 1" có 45 sửa đổi; **bản đang mở y nguyên** (số đoạn, chữ, 2 sửa đổi của Đối tác). Add-in **không đọc được** tài liệu kết quả (khung gắn với tài liệu gốc) |
+| `compareFromBase64`, đích `CompareTargetCurrent` | Chạy được nhưng **đổi bản đang mở và làm mất 2 sửa đổi chờ duyệt của Đối tác** (50 sửa đổi mới thế chỗ, mốc chú thích bị đánh dấu xóa) → không dùng |
+| `application.createDocument(base64)` (tài liệu ẩn) | **Đọc được tệp kia mà không mở, không đụng bản đang mở**: đủ đoạn, số điều do Word tự đánh, bản hiện tại (`getText()`), sửa đổi, chú thích, đầu trang. Tài liệu ẩn nằm lại trong Word tới khi thoát (API không có lệnh đóng) |
 
-**Cách làm đã chọn** (đúng phương án dự phòng ghi ở mục 8 của kế hoạch, cộng thêm bản redline): công cụ so sánh đọc tệp đính kèm qua tài liệu ẩn, **tự so bằng mã theo từng điều khoản** để AI tóm tắt (bản đang mở không đổi); khi người dùng muốn xem redline thì gọi  với đích là tài liệu mới. Lưu ý: đây là điểm lệch nhỏ so với giả định ban đầu (kết quả so sánh của Word không đọc được từ add-in) — **cần báo anh khi xin duyệt phát hành**.
-
-## Trạng thái khi phiên dừng vì hết hạn mức (15/11/2026)
-
-Đã xong: bước 1, 2; bộ dựng tệp thử (bước 3, chưa có PDF quét);  (bước 4, phần hàm thuần) — chạy thử trên tệp mẫu: **bản cài lỗi ra đúng 9/9, bản sạch và bản v2 ra 0** (chưa viết thành kiểm thử máy, chưa gắn vào công cụ Word); tra tài liệu nhà cung cấp cho bước 8, 9 (tệp 05).
-
-Chưa làm: kiểm thử máy  (dữ liệu mẫu đã có ở ); công cụ , đọc phần ngoài thân văn bản, kiểm thể thức trang, so sánh phiên bản; xử lý mốc chú thích khi sửa đoạn; PDF quét; công tắc Suy nghĩ kỹ và giữ khối suy nghĩ; Tự kiểm tra; Chạy thật; soát mã độc lập; cập nhật tài liệu; phát hành. **Chưa có tiêu chí nào đủ bằng chứng để ghi Đạt.**
+**Cách làm đã chọn** — đúng phương án dự phòng ghi ở mục 8 của kế hoạch ("so văn bản thuần"), cộng thêm bản redline của Word: công cụ so sánh đọc tệp đính kèm qua tài liệu ẩn rồi **tự so bằng mã theo từng điều khoản** để AI tóm tắt (bản đang mở không đổi); khi người dùng muốn xem redline thì gọi `compareFromBase64` với đích là tài liệu mới. Điểm lệch so với giả định ban đầu (kết quả so sánh của Word không đọc được từ add-in) được nêu lại khi xin duyệt phát hành.
