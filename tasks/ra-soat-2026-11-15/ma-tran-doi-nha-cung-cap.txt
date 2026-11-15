@@ -1,0 +1,210 @@
+=== A. HÌNH DẠNG LỊCH SỬ (mẫu) ===
+OpenAI (call_+24, content rỗng) → user | assistant[call_AAAAAAAAAAAAAAAAAAAAAAAA,call_BBBBBBBBBBBBBBBBBBBBBBBB] | tool | tool | assistant
+Anthropic (toolu_01…) → user | assistant[toolu_01A09q90qw90lq917835lq9,toolu_01B09q90qw90lq917835lq9] | tool | tool | assistant
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → user | assistant[mM8r35lyu,MGYGHLAf5]{raw} | tool | tool | assistant{raw}
+Gemini 3 (id gốc giả định, raw.parts) → user | assistant[fc_gem_0001,fc_gem_0002]{raw} | tool | tool | assistant{raw}
+Mistral (9 ký tự) → user | assistant[D681PevKs,aB3dE6gH9] | tool | tool | assistant
+OpenRouter→Kimi (functions.ten:0) → user | assistant[functions.excel_get_overview:0,functions.excel_read_range:1] | tool | tool | assistant
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → user | assistant[chatcmpl-tool-2f96fb218bfb3e3f459161a11397960c,chatcmpl-tool-32379b976be27706ad1e07bf5e0c27d7] | tool | tool | assistant
+Groq (fc_+uuid, giả định) → user | assistant[fc_3bd6b390-5f8c-2238-a55a-e7e1ed5350dc,fc_35865389-c217-da22-39f2-b3c1ed1db574] | tool | tool | assistant
+OpenAI có ẢNH ở lượt đầu → user{img} | assistant[call_CCCCCCCCCCCCCCCCCCCCCCCC,call_DDDDDDDDDDDDDDDDDDDDDDDD] | tool | tool | assistant
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → user | assistant[call_EEEEEEEEEEEEEEEEEEEEEEEE,call_FFFFFFFFFFFFFFFFFFFFFFFF] | tool | tool
+
+=== B. MA TRẬN NGUỒN → ĐÍCH (lịch sử cũ + 1 câu hỏi mới) ===
+OpenAI (call_+24, content rỗng) → openrouter: đạt
+OpenAI (call_+24, content rỗng) → gemini: đạt
+OpenAI (call_+24, content rỗng) → groq: đạt
+OpenAI (call_+24, content rỗng) → anthropic: đạt
+OpenAI (call_+24, content rỗng) → openai: đạt
+OpenAI (call_+24, content rỗng) → mistral: NGUY CƠ :: Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="call_AAAAAAAAAAAAAAAAAAAAAAAA") ; Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="call_BBBBBBBBBBBBBBBBBBBBBBBB")
+OpenAI (call_+24, content rỗng) → cerebras: đạt
+OpenAI (call_+24, content rỗng) → deepseek: đạt
+OpenAI (call_+24, content rỗng) → sambanova: đạt
+OpenAI (call_+24, content rỗng) → nvidia: đạt
+OpenAI (call_+24, content rỗng) → cohere: đạt
+Anthropic (toolu_01…) → openrouter: đạt
+Anthropic (toolu_01…) → gemini: đạt
+Anthropic (toolu_01…) → groq: đạt
+Anthropic (toolu_01…) → anthropic: đạt
+Anthropic (toolu_01…) → openai: đạt
+Anthropic (toolu_01…) → mistral: NGUY CƠ :: Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="toolu_01A09q90qw90lq917835lq9") ; Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="toolu_01B09q90qw90lq917835lq9")
+Anthropic (toolu_01…) → cerebras: đạt
+Anthropic (toolu_01…) → deepseek: đạt
+Anthropic (toolu_01…) → sambanova: đạt
+Anthropic (toolu_01…) → nvidia: đạt
+Anthropic (toolu_01…) → cohere: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → openrouter: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → gemini: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → groq: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → anthropic: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → openai: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → mistral: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → cerebras: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → deepseek: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → sambanova: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → nvidia: đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → cohere: đạt
+Gemini 3 (id gốc giả định, raw.parts) → openrouter: đạt
+Gemini 3 (id gốc giả định, raw.parts) → gemini: đạt
+Gemini 3 (id gốc giả định, raw.parts) → groq: đạt
+Gemini 3 (id gốc giả định, raw.parts) → anthropic: đạt
+Gemini 3 (id gốc giả định, raw.parts) → openai: đạt
+Gemini 3 (id gốc giả định, raw.parts) → mistral: NGUY CƠ :: Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="fc_gem_0001") ; Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="fc_gem_0002")
+Gemini 3 (id gốc giả định, raw.parts) → cerebras: đạt
+Gemini 3 (id gốc giả định, raw.parts) → deepseek: đạt
+Gemini 3 (id gốc giả định, raw.parts) → sambanova: đạt
+Gemini 3 (id gốc giả định, raw.parts) → nvidia: đạt
+Gemini 3 (id gốc giả định, raw.parts) → cohere: đạt
+Mistral (9 ký tự) → openrouter: đạt
+Mistral (9 ký tự) → gemini: đạt
+Mistral (9 ký tự) → groq: đạt
+Mistral (9 ký tự) → anthropic: đạt
+Mistral (9 ký tự) → openai: đạt
+Mistral (9 ký tự) → mistral: đạt
+Mistral (9 ký tự) → cerebras: đạt
+Mistral (9 ký tự) → deepseek: đạt
+Mistral (9 ký tự) → sambanova: đạt
+Mistral (9 ký tự) → nvidia: đạt
+Mistral (9 ký tự) → cohere: đạt
+OpenRouter→Kimi (functions.ten:0) → openrouter: đạt
+OpenRouter→Kimi (functions.ten:0) → gemini: đạt
+OpenRouter→Kimi (functions.ten:0) → groq: đạt
+OpenRouter→Kimi (functions.ten:0) → anthropic: NGUY CƠ :: tool_use.id pattern ^[a-zA-Z0-9_-]+$ [cong-dong] (id="functions.excel_get_overview:0") ; tool_use.id pattern ^[a-zA-Z0-9_-]+$ [cong-dong] (id="functions.excel_read_range:1")
+OpenRouter→Kimi (functions.ten:0) → openai: đạt
+OpenRouter→Kimi (functions.ten:0) → mistral: NGUY CƠ :: Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="functions.excel_get_overview:0") ; Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="functions.excel_read_range:1")
+OpenRouter→Kimi (functions.ten:0) → cerebras: đạt
+OpenRouter→Kimi (functions.ten:0) → deepseek: đạt
+OpenRouter→Kimi (functions.ten:0) → sambanova: đạt
+OpenRouter→Kimi (functions.ten:0) → nvidia: đạt
+OpenRouter→Kimi (functions.ten:0) → cohere: đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → openrouter: đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → gemini: đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → groq: đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → anthropic: NGUY CƠ :: text-non-whitespace [tri-nho] (messages.1: khối text rỗng/chỉ khoảng trắng "\n\n")
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → openai: NGUY CƠ :: OpenAI: tool_calls[].id tối đa 40 ký tự [cong-dong] (id="chatcmpl-tool-2f96fb218bfb3e3f459161a11397960c" (46)) ; OpenAI: tool_calls[].id tối đa 40 ký tự [cong-dong] (id="chatcmpl-tool-32379b976be27706ad1e07bf5e0c27d7" (46))
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → mistral: NGUY CƠ :: Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="chatcmpl-tool-2f96fb218bfb3e3f459161a11397960c") ; Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="chatcmpl-tool-32379b976be27706ad1e07bf5e0c27d7")
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → cerebras: đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → deepseek: đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → sambanova: đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → nvidia: đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → cohere: đạt
+Groq (fc_+uuid, giả định) → openrouter: đạt
+Groq (fc_+uuid, giả định) → gemini: đạt
+Groq (fc_+uuid, giả định) → groq: đạt
+Groq (fc_+uuid, giả định) → anthropic: đạt
+Groq (fc_+uuid, giả định) → openai: đạt
+Groq (fc_+uuid, giả định) → mistral: NGUY CƠ :: Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="fc_3bd6b390-5f8c-2238-a55a-e7e1ed5350dc") ; Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="fc_35865389-c217-da22-39f2-b3c1ed1db574")
+Groq (fc_+uuid, giả định) → cerebras: đạt
+Groq (fc_+uuid, giả định) → deepseek: đạt
+Groq (fc_+uuid, giả định) → sambanova: đạt
+Groq (fc_+uuid, giả định) → nvidia: đạt
+Groq (fc_+uuid, giả định) → cohere: đạt
+OpenAI có ẢNH ở lượt đầu → openrouter: NGUY CƠ :: ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận [tri-nho] (messages.1 (phụ thuộc model))
+OpenAI có ẢNH ở lượt đầu → gemini: đạt
+OpenAI có ẢNH ở lượt đầu → groq: NGUY CƠ :: ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận [tri-nho] (messages.1 (phụ thuộc model))
+OpenAI có ẢNH ở lượt đầu → anthropic: đạt
+OpenAI có ẢNH ở lượt đầu → openai: NGUY CƠ :: ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận [tri-nho] (messages.1 (phụ thuộc model))
+OpenAI có ẢNH ở lượt đầu → mistral: NGUY CƠ :: ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận [tri-nho] (messages.1 (phụ thuộc model)) ; Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="call_CCCCCCCCCCCCCCCCCCCCCCCC") ; Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="call_DDDDDDDDDDDDDDDDDDDDDDDD")
+OpenAI có ẢNH ở lượt đầu → cerebras: NGUY CƠ :: ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận [tri-nho] (messages.1 (phụ thuộc model))
+OpenAI có ẢNH ở lượt đầu → deepseek: NGUY CƠ :: DeepSeek: không nhận image_url [tri-nho] (messages.1 (phụ thuộc model))
+OpenAI có ẢNH ở lượt đầu → sambanova: NGUY CƠ :: ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận [tri-nho] (messages.1 (phụ thuộc model))
+OpenAI có ẢNH ở lượt đầu → nvidia: NGUY CƠ :: ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận [tri-nho] (messages.1 (phụ thuộc model))
+OpenAI có ẢNH ở lượt đầu → cohere: NGUY CƠ :: ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận [tri-nho] (messages.1 (phụ thuộc model))
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → openrouter: đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → gemini: đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → groq: đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → anthropic: đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → openai: đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → mistral: NGUY CƠ :: Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="call_EEEEEEEEEEEEEEEEEEEEEEEE") ; Mistral: id đúng 9 ký tự chữ-số [cong-dong] (id="call_FFFFFFFFFFFFFFFFFFFFFFFF") ; Mistral: user ngay sau tool [tri-nho] (messages.5)
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → cerebras: đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → deepseek: đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → sambanova: đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → nvidia: đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → cohere: đạt
+
+=== C. TÓM TẮT (compaction) rồi gửi sang đích ===
+OpenAI (call_+24, content rỗng) → anthropic: compacted=true len=12 đạt
+OpenAI (call_+24, content rỗng) → gemini: compacted=true len=12 đạt
+OpenAI (call_+24, content rỗng) → mistral: compacted=true len=12 NGUY CƠ Mistral: id đúng 9 ký tự chữ-số
+OpenAI (call_+24, content rỗng) → openai: compacted=true len=12 đạt
+Anthropic (toolu_01…) → anthropic: compacted=true len=12 đạt
+Anthropic (toolu_01…) → gemini: compacted=true len=12 đạt
+Anthropic (toolu_01…) → mistral: compacted=true len=12 NGUY CƠ Mistral: id đúng 9 ký tự chữ-số
+Anthropic (toolu_01…) → openai: compacted=true len=12 đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → anthropic: compacted=true len=12 đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → gemini: compacted=true len=12 đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → mistral: compacted=true len=12 đạt
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → openai: compacted=true len=12 đạt
+Gemini 3 (id gốc giả định, raw.parts) → anthropic: compacted=true len=12 đạt
+Gemini 3 (id gốc giả định, raw.parts) → gemini: compacted=true len=12 đạt
+Gemini 3 (id gốc giả định, raw.parts) → mistral: compacted=true len=12 NGUY CƠ Mistral: id đúng 9 ký tự chữ-số
+Gemini 3 (id gốc giả định, raw.parts) → openai: compacted=true len=12 đạt
+Mistral (9 ký tự) → anthropic: compacted=true len=12 đạt
+Mistral (9 ký tự) → gemini: compacted=true len=12 đạt
+Mistral (9 ký tự) → mistral: compacted=true len=12 đạt
+Mistral (9 ký tự) → openai: compacted=true len=12 đạt
+OpenRouter→Kimi (functions.ten:0) → anthropic: compacted=true len=12 NGUY CƠ tool_use.id pattern ^[a-zA-Z0-9_-]+$
+OpenRouter→Kimi (functions.ten:0) → gemini: compacted=true len=12 đạt
+OpenRouter→Kimi (functions.ten:0) → mistral: compacted=true len=12 NGUY CƠ Mistral: id đúng 9 ký tự chữ-số
+OpenRouter→Kimi (functions.ten:0) → openai: compacted=true len=12 đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → anthropic: compacted=true len=12 NGUY CƠ text-non-whitespace
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → gemini: compacted=true len=12 đạt
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → mistral: compacted=true len=12 NGUY CƠ Mistral: id đúng 9 ký tự chữ-số
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → openai: compacted=true len=12 NGUY CƠ OpenAI: tool_calls[].id tối đa 40 ký tự
+Groq (fc_+uuid, giả định) → anthropic: compacted=true len=12 đạt
+Groq (fc_+uuid, giả định) → gemini: compacted=true len=12 đạt
+Groq (fc_+uuid, giả định) → mistral: compacted=true len=12 NGUY CƠ Mistral: id đúng 9 ký tự chữ-số
+Groq (fc_+uuid, giả định) → openai: compacted=true len=12 đạt
+OpenAI có ẢNH ở lượt đầu → anthropic: compacted=true len=12 đạt
+OpenAI có ẢNH ở lượt đầu → gemini: compacted=true len=12 đạt
+OpenAI có ẢNH ở lượt đầu → mistral: compacted=true len=12 NGUY CƠ ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận ; Mistral: id đúng 9 ký tự chữ-số
+OpenAI có ẢNH ở lượt đầu → openai: compacted=true len=12 NGUY CƠ ảnh trong lịch sử: chỉ model nhận ảnh mới chấp nhận
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → anthropic: compacted=true len=10 đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → gemini: compacted=true len=10 đạt
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → mistral: compacted=true len=10 NGUY CƠ Mistral: id đúng 9 ký tự chữ-số ; Mistral: user ngay sau tool
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → openai: compacted=true len=10 đạt
+
+=== D. LƯU RỒI MỞ LẠI (slimForStorage) ===
+OpenAI (call_+24, content rỗng) → mistral:Mistral: id đúng 9 ký tự chữ-số
+Anthropic (toolu_01…) → mistral:Mistral: id đúng 9 ký tự chữ-số
+Gemini 2.5 (không id gốc, có raw.parts+chữ ký) → đạt cả 11
+Gemini 3 (id gốc giả định, raw.parts) → mistral:Mistral: id đúng 9 ký tự chữ-số
+Mistral (9 ký tự) → đạt cả 11
+OpenRouter→Kimi (functions.ten:0) → anthropic:tool_use.id pattern ^[a-zA-Z0-9_-]+$ | mistral:Mistral: id đúng 9 ký tự chữ-số
+OpenRouter/vLLM (chatcmpl-tool-+32hex, chữ '\n\n') → anthropic:text-non-whitespace | openai:OpenAI: tool_calls[].id tối đa 40 ký tự | mistral:Mistral: id đúng 9 ký tự chữ-số
+Groq (fc_+uuid, giả định) → mistral:Mistral: id đúng 9 ký tự chữ-số
+OpenAI có ẢNH ở lượt đầu → mistral:Mistral: id đúng 9 ký tự chữ-số
+OpenAI chạm giới hạn bước (kết thúc bằng tool) → mistral:Mistral: id đúng 9 ký tự chữ-số/Mistral: user ngay sau tool
+
+=== E. NGOẠI LỆ với dữ liệu lệch chuẩn (lịch sử cũ/hỏng) ===
+tool.content undefined → openai:NGOẠI LỆ TypeError: Cannot read properties of undefined (reading 'length') | anthropic:NGOẠI LỆ TypeError: Cannot read properties of undefined (reading 'length') | gemini:NGOẠI LỆ TypeError: Cannot read properties of undefined (reading 'length') | transcriptOf/historyChars/slimForStorage: TypeError: Cannot read properties of undefined (reading 'slice')
+assistant.content undefined → openai:đạt | anthropic:đạt | gemini:đạt
+user.content undefined → openai:đạt | anthropic:text-non-whitespace | gemini:đạt
+toolCalls args undefined → openai:đạt | anthropic:đạt | gemini:đạt | transcriptOf/historyChars/slimForStorage: TypeError: Cannot read properties of undefined (reading 'slice')
+args là chuỗi (JSON.parse ra chuỗi) → openai:đạt | anthropic:tool_use.input là object | gemini:functionCall.args là object
+raw.parts gemini rỗng + content rỗng → openai:đạt | anthropic:đạt | gemini:đạt
+
+=== F. THÔNG BÁO LỖI NGƯỜI DÙNG THẤY ===
+Lỗi lập trình (đọc thuộc tính của undefined) → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Key có ký tự ẩn U+200B (dán từ web/Zalo) / openai [TypeError: Cannot convert argument to a ByteString because the character at index 13 has a value of 8203 which is greater than 255.] → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Key có ký tự ẩn U+200B (dán từ web/Zalo) / anthropic [TypeError: Cannot convert argument to a ByteString because the character at index 6 has a value of 8203 which is greater than 255.] → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Key có ký tự ẩn U+200B (dán từ web/Zalo) / gemini → không ném lỗi khi dựng Request (lỗi nếu có sẽ là HTTP 400/401)
+Key có xuống dòng ở giữa / openai [TypeError: Headers.append: "Bearer sk-abc
+def" is an invalid header value.] → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Key có xuống dòng ở giữa / anthropic [TypeError: Headers.append: "sk-abc
+def" is an invalid header value.] → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Key có xuống dòng ở giữa / gemini → không ném lỗi khi dựng Request (lỗi nếu có sẽ là HTTP 400/401)
+Key có chữ tiếng Việt lẫn vào / openai [TypeError: Cannot convert argument to a ByteString because the character at index 13 has a value of 273 which is greater than 255.] → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Key có chữ tiếng Việt lẫn vào / anthropic [TypeError: Cannot convert argument to a ByteString because the character at index 6 has a value of 273 which is greater than 255.] → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Key có chữ tiếng Việt lẫn vào / gemini → không ném lỗi khi dựng Request (lỗi nếu có sẽ là HTTP 400/401)
+Key có dấu … (U+2026) / openai [TypeError: Cannot convert argument to a ByteString because the character at index 13 has a value of 8230 which is greater than 255.] → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Key có dấu … (U+2026) / anthropic [TypeError: Cannot convert argument to a ByteString because the character at index 6 has a value of 8230 which is greater than 255.] → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Key có dấu … (U+2026) / gemini → không ném lỗi khi dựng Request (lỗi nếu có sẽ là HTTP 400/401)
+Mistral 400 id sai → [nhánh isToolUnsupportedError] Model này không gọi được công cụ…
+Anthropic 400 id sai → [nhánh isToolUnsupportedError] Model này không gọi được công cụ…
+Anthropic 400 text trắng → Lỗi 400 (messages: text content blocks must contain non-whitespace text)
+OpenAI 400 id dài → [nhánh isToolUnsupportedError] Model này không gọi được công cụ…
+Gọi model của A ở B (404) → Không tìm thấy model hoặc địa chỉ API (The model `claude-sonnet-4-5` does not exist or you do not have access to it.)
+Groq 400 ảnh → Lỗi 400 (messages[1].content must be a string)
+fetch bị CORS chặn → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).
+Luồng đứt giữa chừng → Không kết nối được. Có thể mất mạng, hoặc nhà cung cấp này chặn gọi trực tiếp từ add-in (CORS).

@@ -4,3 +4,6 @@ test/testBuild
 
 # Node modules folder
 node_modules/
+
+# Ma bo khung ban 0 cu (tam giu, se xoa)
+_ban-0-cu/
