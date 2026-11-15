@@ -44,7 +44,7 @@ Lịch sử chỉ thêm, không sửa · tự thử lại khi 429/5xx, không ch
 
 Phát hành: commit `0c570a7` trên `main`, gh-pages có "Bản chạy thật v3.7.0 (main@0c570a7)", GitHub Pages phục vụ `taskpane.1414ffa9.js` chứa số bản 3.7.0 (đo bằng curl lúc phát hành).
 
-**Chưa kiểm được trong Office ở phiên này:** yêu cầu quyền điều khiển Word, Excel, PowerPoint bị từ chối, nên mọi tiêu chí "Chạy thật" và "Tự kiểm tra" dưới đây còn để ngỏ. Tác tử soát mã độc lập cũng bị dừng vì hết hạn mức model, nên mã mới chỉ qua kiểm thử máy và một lần chạy thử trong trình duyệt.
+**Chưa kiểm được trong Office ở phiên này:** công cụ xin quyền điều khiển Word, Excel, PowerPoint trả về mã `user_denied` ngay lập tức, hai lần liên tiếp, trong khi anh không hề bấm từ chối (hộp thoại xin quyền không hiện tới anh; chưa rõ nguyên nhân), nên mọi tiêu chí "Chạy thật" và "Tự kiểm tra" dưới đây còn để ngỏ. Tác tử soát mã độc lập cũng bị dừng vì hết hạn mức model, nên mã mới chỉ qua kiểm thử máy và một lần chạy thử trong trình duyệt.
 
 ### Bảng nghiệm thu (tiêu chí ở `ke-hoach-v4.md` mục 5)
 

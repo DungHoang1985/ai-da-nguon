@@ -46,7 +46,7 @@
   - **Chưa có lần soát mã độc lập**: tác tử soát mã bị dừng vì hết hạn mức 5 giờ của model. Thư viện: `npm audit --omit=dev` 0 cảnh báo; chỉ còn các bản nâng lớn (pdfjs 6, pptxgenjs 4, React 19) cố ý chưa làm.
   - Kết quả kiểm trong Office: xem bảng ở `tasks/dot-0b.md` (mục nào chưa có dòng kết quả là chưa kiểm).
   - **Phát hành 3.7.0 xong** (commit `0c570a7`, gh-pages "Bản chạy thật v3.7.0 (main@0c570a7)", Pages phục vụ `taskpane.1414ffa9.js`). Tệp sao lưu thử đã vào Thùng rác.
-  - **Chưa kiểm trong Office**: yêu cầu quyền điều khiển Word, Excel, PowerPoint bị từ chối trong phiên này. Bảng nghiệm thu ở `tasks/dot-0b.md` ghi rõ dòng nào Đạt (Kiểm thử máy), dòng nào Chưa kiểm được.
+  - **Chưa kiểm trong Office**: công cụ xin quyền điều khiển Word, Excel, PowerPoint trả về mã `user_denied` ngay lập tức, hai lần liên tiếp, trong khi anh không hề bấm từ chối (hộp thoại xin quyền không hiện tới anh; chưa rõ nguyên nhân). Bảng nghiệm thu ở `tasks/dot-0b.md` ghi rõ dòng nào Đạt (Kiểm thử máy), dòng nào Chưa kiểm được.
 - **Đang làm:** Đợt 0B còn phần kiểm trong Office bản 3.7.0 (Tự kiểm tra ba ứng dụng, bốn bài Chạy thật, 7 mục cũ). Chưa sang Đợt 1A.
 - **Quyết định và lý do:**
   - AI sửa thẳng vào tài liệu + Hoàn tác; Word luôn ghi Track Changes; thao tác rủi ro luôn hỏi kèm lý do, "Cho phép hết lần này" không áp dụng cho thao tác rủi ro. Lý do: tự động tối đa nhưng an toàn như bản chính thức.
@@ -82,7 +82,7 @@
   - Đã kiểm 14/11: máy anh có Git 2.56, Node 24.14 và quyền đẩy lên GitHub (`git push --dry-run` đạt).
 - **Bài học:**
   - Phiên dùng nhiều token (đọc mã lõi + viết lại vòng lặp) chạm hạn mức 5 giờ của model: tác tử soát mã phóng cuối phiên bị dừng ngay. Việc cần tác tử (soát mã) nên phóng sớm, trước khi viết tài liệu; trạng thái phải ghi vào HANDOFF và commit trước khi phóng.
-  - Quyền điều khiển Office có thể bị từ chối hoặc hết giờ chờ khi anh không ở máy: xin quyền ngay đầu phiên, lúc anh còn đang theo dõi, không để tới sau khi phát hành.
+  - Công cụ xin quyền điều khiển máy có thể trả `user_denied` mà anh không hề bấm gì (15/11 buổi chiều: hai lần, trả về tức thì, danh sách ứng dụng được phép vẫn rỗng). Mã đó KHÔNG có nghĩa là anh từ chối: không được viết "anh từ chối" khi chưa hỏi anh. Xin quyền ngay đầu phiên để biết sớm công cụ có dùng được không; không được thì hỏi anh có thấy hộp thoại không, đừng xin lại nhiều lần.
   - Vá tệp bằng script Python viết qua heredoc của bash làm rơi dấu `\` và có lần chèn ký tự điều khiển (backspace) vào biểu thức chính quy. Viết script vá bằng công cụ ghi tệp, hoặc sửa thẳng bằng công cụ Edit; sau khi vá, `grep -c $'\x08'` các tệp vừa sửa.
   - Worktree mới không có `node_modules`: chạy `npm ci` (khoảng 2 phút) ở nền ngay đầu phiên.
   - Kiểm thử máy có `assert.ok(x === 0)` rồi `assert.ok(x === 1)` trên cùng một biến bị TypeScript báo lỗi thu hẹp kiểu: đọc giá trị qua một hàm.
