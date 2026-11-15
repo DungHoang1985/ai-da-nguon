@@ -1,0 +1,484 @@
+/** Đợt 1A — Word đọc đúng, sửa đúng: mục lục điều khoản, so khác mức từ, chống sửa nhầm đoạn, Hoàn tác. */
+import * as assert from "assert";
+import { ParaRow, buildOutline, clauseAt, clauseKey, findClause, parseNumber } from "../../src/core/outline";
+import {
+  addedKeys,
+  applyHunks,
+  changeKey,
+  diffChanges,
+  diffWords,
+  liveMap,
+  locateParagraph,
+  matchesExpect,
+  occurrenceAt,
+  pickByKeys,
+  planParagraphEdit,
+  snapChange,
+} from "../../src/core/worddiff";
+import { isMarkdownNumberedList, packParagraphs, parseMarkdownLine } from "../../src/office/util";
+import { WORD_SPECS, WORD_SYSTEM_PROMPT } from "../../src/office/wordTools";
+import { BUILTIN_SKILLS } from "../../src/core/skillpack";
+
+const rows = (list: (Partial<ParaRow> & { text: string })[]): ParaRow[] => list.map((r, i) => ({ i, ...r }));
+const nums = (rs: ParaRow[]) => buildOutline(rs).map((o) => `${o.i}:${o.num}`);
+
+describe("Đợt 1A – mục lục điều khoản (buildOutline)", () => {
+  it("số do Word tự đánh, nhiều cấp gắn kiểu tiêu đề: ghép nhãn cấp con với cấp cha", () => {
+    // Đúng dữ liệu thăm dò 15/11/2026 (tasks/dot-1a-bang-chung/01)
+    const rs = rows([
+      { text: "HỢP ĐỒNG" },
+      { text: "Phạm vi hợp đồng", listString: "Điều 1.", listLevel: 0, listId: 2, outlineLevel: 1 },
+      { text: "Bên A giao cho Bên B…", listString: "1.1.", listLevel: 1, listId: 2, outlineLevel: 2 },
+      { text: "Bên B cam kết…", listString: "1.2.", listLevel: 1, listId: 2, outlineLevel: 2 },
+      { text: "tiến độ tổng thể;", listString: "a)", listLevel: 2, listId: 2, outlineLevel: 3 },
+      { text: "tiến độ chi tiết.", listString: "b)", listLevel: 2, listId: 2, outlineLevel: 3 },
+      { text: "Giá và thanh toán", listString: "Điều 2.", listLevel: 0, listId: 2, outlineLevel: 1 },
+      { text: "Giá trị hợp đồng…", listString: "2.1.", listLevel: 1, listId: 2, outlineLevel: 2 },
+      { text: "Đoạn thường thuộc 2.1" },
+    ]);
+    const o = buildOutline(rs);
+    assert.deepStrictEqual(
+      o.map((x) => x.num),
+      ["Điều 1", "1.1", "1.2", "1.2(a)", "1.2(b)", "Điều 2", "2.1"]
+    );
+    assert.deepStrictEqual(
+      o.map((x) => x.level),
+      [0, 1, 1, 2, 2, 0, 1]
+    );
+    assert.strictEqual(o[0].end, 5, "Điều 1 kéo tới hết khoản con cuối");
+    assert.strictEqual(o[2].end, 5, "1.2 gồm cả điểm a, b");
+    assert.strictEqual(o[1].end, 2);
+    assert.strictEqual(o[6].end, 8, "khoản cuối kéo tới hết văn bản");
+    assert.ok(o.every((x) => x.source === "list"));
+    assert.strictEqual(o[0].title, "Phạm vi hợp đồng");
+  });
+
+  it("nhiều cấp đặt trên đoạn: 1. / 1.1 / (a)", () => {
+    const rs = rows([
+      { text: "Quyền của Bên A", listString: "1.", listLevel: 0, listId: 3 },
+      { text: "Được kiểm tra tiến độ.", listString: "1.1", listLevel: 1, listId: 3 },
+      { text: "Được yêu cầu sửa chữa.", listString: "1.2", listLevel: 1, listId: 3 },
+      { text: "bằng văn bản;", listString: "(a)", listLevel: 2, listId: 3 },
+      { text: "Nghĩa vụ của Bên A", listString: "2.", listLevel: 0, listId: 3 },
+    ]);
+    assert.deepStrictEqual(nums(rs), ["0:1", "1:1.1", "2:1.2", "3:1.2(a)", "4:2"]);
+  });
+
+  it("số gõ tay: Điều 7. / 7.1 / 7.2. / a)", () => {
+    const rs = rows([
+      { text: "Điều 7. Thời hạn" },
+      { text: "7.1 Thời hạn thuê là 24 tháng." },
+      { text: "7.2. Gia hạn theo thỏa thuận." },
+      { text: "a) bằng phụ lục hợp đồng;" },
+      { text: "Điều 8: Bảo mật" },
+    ]);
+    const o = buildOutline(rs);
+    assert.deepStrictEqual(
+      o.map((x) => x.num),
+      ["Điều 7", "7.1", "7.2", "7.2(a)", "Điều 8"]
+    );
+    assert.ok(o.every((x) => x.source === "typed"));
+    assert.strictEqual(o[0].title, "Thời hạn");
+    assert.strictEqual(o[1].title, "Thời hạn thuê là 24 tháng.");
+    assert.strictEqual(o[0].end, 3);
+  });
+
+  it("kiểu văn bản Việt Nam: khoản 1, 2 và điểm a, b dưới Điều", () => {
+    const rs = rows([
+      { text: "Điều 5. Thanh toán" },
+      { text: "1. Bên B thanh toán trong 30 ngày." },
+      { text: "a) bằng chuyển khoản;" },
+      { text: "b) bằng tiền mặt." },
+      { text: "2. Chậm thanh toán thì chịu lãi." },
+      { text: "Điều 6. Bàn giao" },
+      { text: "1. Bên A bàn giao mặt bằng." },
+    ]);
+    assert.deepStrictEqual(nums(rs), ["0:Điều 5", "1:5.1", "2:5.1(a)", "3:5.1(b)", "4:5.2", "5:Điều 6", "6:6.1"]);
+  });
+
+  it("Chương, Mục, Điều: điều thuộc chương; chương mới đóng chương cũ", () => {
+    const rs = rows([
+      { text: "Chương I. QUY ĐỊNH CHUNG" },
+      { text: "Điều 1. Phạm vi" },
+      { text: "Điều 2. Đối tượng" },
+      { text: "Chương II: QUYỀN VÀ NGHĨA VỤ" },
+      { text: "Mục 1. Bên A" },
+      { text: "Điều 3. Quyền của Bên A" },
+    ]);
+    const o = buildOutline(rs);
+    assert.deepStrictEqual(
+      o.map((x) => `${x.num}/${x.level}`),
+      ["Chương I/0", "Điều 1/1", "Điều 2/1", "Chương II/0", "Mục 1/1", "Điều 3/2"]
+    );
+    assert.strictEqual(o[0].end, 2);
+    assert.strictEqual(o[1].end, 1);
+  });
+
+  it("danh sách liệt kê nằm trong một điều không bị nhầm thành điều lớn (theo mã danh sách của Word)", () => {
+    const rs = rows([
+      { text: "Định nghĩa", listString: "1.", listLevel: 0, listId: 1 },
+      { text: "Thanh toán", listString: "2.", listLevel: 0, listId: 1 },
+      { text: "hồ sơ gồm hóa đơn", listString: "1.", listLevel: 0, listId: 7 },
+      { text: "và biên bản nghiệm thu", listString: "2.", listLevel: 0, listId: 7 },
+      { text: "Bảo hành", listString: "3.", listLevel: 0, listId: 1 },
+    ]);
+    assert.deepStrictEqual(nums(rs), ["0:1", "1:2", "2:2.1", "3:2.2", "4:3"]);
+  });
+
+  it("không nhận nhầm số tiền, ngày tháng, năm, chữ thường", () => {
+    const rs = rows([
+      { text: "1.500.000.000 đồng là giá trị hợp đồng." },
+      { text: "15.11.2026 hai bên ký biên bản." },
+      { text: "2026. Năm tài chính bắt đầu từ tháng 1." },
+      { text: "Bên A có trách nhiệm bàn giao." },
+      { text: "2.5% là mức lãi." },
+      { text: "", listString: "" },
+      { text: "Gạch đầu dòng", listString: "•", listLevel: 0 },
+    ]);
+    assert.deepStrictEqual(nums(rs), []);
+  });
+
+  it("chữ số La Mã thường và chữ cái i nối tiếp h", () => {
+    const rs = rows([
+      { text: "Điều 3. Phạt" },
+      { text: "3.1 Các trường hợp:" },
+      { text: "a) chậm tiến độ:" },
+      { text: "(i) dưới 10 ngày;" },
+      { text: "(ii) từ 10 ngày;" },
+      { text: "b) sai chất lượng." },
+    ]);
+    assert.deepStrictEqual(nums(rs), ["0:Điều 3", "1:3.1", "2:3.1(a)", "3:3.1(a)(i)", "4:3.1(a)(ii)", "5:3.1(b)"]);
+    const abc = "abcdefgh".split("").map((c) => ({ text: `${c}) mục ${c}` }));
+    const rs2 = rows([{ text: "Điều 1. Danh mục" }, ...abc, { text: "i) mục i" }]);
+    const o2 = buildOutline(rs2);
+    assert.strictEqual(o2[o2.length - 1].num, "1(i)");
+    assert.strictEqual(o2[o2.length - 1].kind, "letter");
+  });
+
+  it("bỏ qua đoạn trong bảng và đoạn đã bị xóa có theo dõi; tiêu đề không đánh số vẫn vào mục lục", () => {
+    const rs = rows([
+      { text: "PHẦN MỞ ĐẦU", outlineLevel: 1 },
+      { text: "Điều 1. Một" },
+      { text: "1. ô bảng", inTable: true },
+      { text: "", deleted: true, listString: "Điều 9." },
+      { text: "Điều 2. Hai" },
+    ]);
+    const o = buildOutline(rs);
+    assert.deepStrictEqual(
+      o.map((x) => `${x.i}:${x.num}:${x.kind}`),
+      ["0::heading", "1:Điều 1:article", "4:Điều 2:article"]
+    );
+    assert.strictEqual(o[0].title, "PHẦN MỞ ĐẦU");
+    assert.strictEqual(o[1].end, 3, "đoạn trong bảng và đoạn đã xóa vẫn thuộc phạm vi điều đứng trước");
+  });
+
+  it("parseNumber: nhãn danh sách và số gõ tay", () => {
+    assert.strictEqual(parseNumber("Điều 12.", true)?.kind, "article");
+    assert.strictEqual(parseNumber("ĐIỀU 12", true)?.n, 12);
+    assert.deepStrictEqual(parseNumber("12.3.", true)?.parts, [12, 3]);
+    assert.strictEqual(parseNumber("(a)", true)?.letter, "a");
+    assert.strictEqual(parseNumber("đ)", true)?.letter, "đ");
+    assert.strictEqual(parseNumber("a.", true)?.kind, "letter");
+    assert.strictEqual(parseNumber("a. Ghi chú", false), null, "'a.' gõ tay không coi là điểm");
+    assert.strictEqual(parseNumber("Phụ lục 01. Bảng giá", false)?.kind, "chapter");
+    assert.strictEqual(parseNumber("II. NỘI DUNG", false)?.kind, "chapter");
+    assert.strictEqual(parseNumber("Điều 5.3 Thanh toán", false)?.kind, "dotted");
+    assert.strictEqual(parseNumber("Theo Điều 5 thì", false), null);
+  });
+});
+
+describe("Đợt 1A – tìm điều khoản theo cách gọi của người dùng", () => {
+  const o = buildOutline(
+    rows([
+      { text: "Chương II. Thanh toán" },
+      { text: "Điều 5. Thanh toán" },
+      { text: "5.1 Kỳ hạn" },
+      { text: "5.2 Phương thức" },
+      { text: "a) chuyển khoản" },
+      { text: "Điều 6. Phạt" },
+      { text: "1. Mức phạt" },
+      { text: "Phụ lục 01. Bảng giá" },
+      { text: "Điều 5. Giá phụ lục" },
+    ])
+  );
+  it("clauseKey chuẩn hóa nhiều cách gọi", () => {
+    assert.strictEqual(clauseKey("Điều 5"), "5");
+    assert.strictEqual(clauseKey("điều 5.2"), "5.2");
+    assert.strictEqual(clauseKey("5.2(a)"), "5.2.a");
+    assert.strictEqual(clauseKey("Điều 5.2 (a)"), "5.2.a");
+    assert.strictEqual(clauseKey("khoản 2 Điều 5"), "5.2");
+    assert.strictEqual(clauseKey("điểm a khoản 2 Điều 5"), "5.2.a");
+    assert.strictEqual(clauseKey("khoản 5.2"), "5.2");
+    assert.strictEqual(clauseKey("5.2.a"), "5.2.a");
+  });
+  it("findClause: đúng điều; nhiều điều trùng số thì trả hết; chương và phụ lục", () => {
+    assert.deepStrictEqual(
+      findClause(o, "Điều 5.2").map((x) => x.i),
+      [3]
+    );
+    assert.deepStrictEqual(
+      findClause(o, "điểm a khoản 2 điều 5").map((x) => x.i),
+      [4]
+    );
+    assert.deepStrictEqual(
+      findClause(o, "khoản 1 Điều 6").map((x) => x.i),
+      [6]
+    );
+    assert.deepStrictEqual(
+      findClause(o, "Điều 5").map((x) => x.i),
+      [1, 8],
+      "số trùng giữa thân hợp đồng và phụ lục"
+    );
+    assert.deepStrictEqual(
+      findClause(o, "chương ii").map((x) => x.i),
+      [0]
+    );
+    assert.deepStrictEqual(
+      findClause(o, "Phụ lục 1").map((x) => x.i),
+      [7]
+    );
+    assert.deepStrictEqual(findClause(o, "Điều 99"), []);
+  });
+  it("clauseAt: điều khoản trong cùng chứa một đoạn", () => {
+    assert.strictEqual(clauseAt(o, 4)?.num, "5.2(a)");
+    assert.strictEqual(clauseAt(o, 3)?.num, "5.2");
+    assert.strictEqual(clauseAt(o, 6)?.num, "6.1");
+    assert.strictEqual(clauseAt(buildOutline(rows([{ text: "Lời mở đầu" }, { text: "Điều 1. A" }])), 0), null);
+  });
+});
+
+describe("Đợt 1A – so khác mức từ (diffWords)", () => {
+  const clause =
+    "Bên B thanh toán cho Bên A trong thời hạn 30 ngày kể từ ngày nhận hóa đơn; nếu chậm quá 30 ngày thì Bên B chịu phạt 30 triệu đồng và lãi 0,05% mỗi ngày trên số tiền chậm trả, trừ trường hợp bất khả kháng theo Điều 12.";
+  const check = (oldT: string, newT: string, n: number) => {
+    const h = diffWords(oldT, newT);
+    assert.strictEqual(applyHunks(oldT, h), newT, "áp lại phải ra đúng câu mới");
+    assert.strictEqual(h.length, n, JSON.stringify(h));
+    return h;
+  };
+  it("đổi một con số lặp lại: đúng một chỗ, xóa đúng 2 ký tự", () => {
+    const h = check(clause, clause.replace("quá 30 ngày", "quá 45 ngày"), 1);
+    assert.deepStrictEqual({ del: h[0].del, ins: h[0].ins }, { del: "30", ins: "45" });
+    assert.strictEqual(h[0].at, clause.indexOf("quá 30") + 4);
+  });
+  it("hai chỗ sửa cách xa nhau: hai khối riêng", () => {
+    const h = check(clause, clause.replace("thời hạn 30 ngày", "thời hạn 15 ngày").replace("0,05%", "0,03%"), 2);
+    assert.deepStrictEqual(
+      h.map((x) => `${x.del}>${x.ins}`),
+      ["30>15", "0,05%>0,03%"]
+    );
+  });
+  it("sửa đầu và cuối câu; thêm thuần; xóa thuần", () => {
+    check(clause, clause.replace("Bên B thanh toán", "Bên Mua thanh toán").replace("Điều 12.", "Điều 14."), 2);
+    const add = check(clause, clause.replace("thanh toán cho", "thanh toán đầy đủ cho"), 1);
+    assert.strictEqual(add[0].del, "");
+    assert.strictEqual(add[0].ins.trim(), "đầy đủ");
+    const del = check(clause, clause.replace(", trừ trường hợp bất khả kháng theo Điều 12", ""), 1);
+    assert.strictEqual(del[0].ins, "");
+  });
+  it("hai từ liền nhau đổi cùng lúc gộp thành một khối; câu giống hệt không có khối nào", () => {
+    const h = check("chậm quá 30 ngày thì phạt", "chậm quá 45 hôm thì phạt", 1);
+    assert.deepStrictEqual({ del: h[0].del, ins: h[0].ins }, { del: "30 ngày", ins: "45 hôm" });
+    assert.deepStrictEqual(diffWords(clause, clause), []);
+  });
+  it("số có dấu chấm, phẩy là một từ: 5.000.000.000 đổi thành 6.000.000.000 là một khối trọn số", () => {
+    const h = check("Giá trị là 5.000.000.000 đồng.", "Giá trị là 6.000.000.000 đồng.", 1);
+    assert.strictEqual(h[0].del, "5.000.000.000");
+  });
+});
+
+describe("Đợt 1A – kế hoạch sửa đoạn trong Word (planParagraphEdit)", () => {
+  it("đoạn sạch: đổi '30' thứ hai → tìm '30', lần thứ hai trong ba lần", () => {
+    const C = "Thanh toán trong 30 ngày; chậm quá 30 ngày thì phạt 30 triệu.";
+    const p = planParagraphEdit(C, C, C.replace("quá 30", "quá 45"));
+    assert.ok(typeof p !== "string");
+    if (typeof p === "string") return;
+    assert.strictEqual(p.hunks, 1);
+    assert.deepStrictEqual(p.ops, [{ kind: "replace", from: { search: "30", occurrence: 1, total: 3, at: C.indexOf("quá 30") + 4 }, text: "45" }]);
+  });
+
+  it("đoạn đang có chữ đối tác đã xóa: định vị trên chuỗi gồm cả chữ đã xóa, không đụng vào chữ đã xóa", () => {
+    // Đúng dữ liệu thăm dò: .text = "…là 24 tháng12 tháng…", bản hiện tại = "…là 12 tháng…"
+    const M = "Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.";
+    const C = "Thời hạn thuê là 12 tháng kể từ ngày ký.";
+    const p = planParagraphEdit(M, C, "Thời hạn thuê là 18 tháng kể từ ngày bàn giao.");
+    assert.ok(typeof p !== "string");
+    if (typeof p === "string") return;
+    assert.strictEqual(p.ops.length, 2);
+    const [a, b] = p.ops as any[];
+    assert.deepStrictEqual({ s: a.from.search, at: a.from.at, t: a.text }, { s: "12", at: 25, t: "18" });
+    assert.strictEqual(b.from.search, "ký");
+    assert.strictEqual(b.text, "bàn giao");
+  });
+
+  it("chỗ sửa vắt qua khúc đã xóa: tách thành từng khúc sống, chữ mới đặt vào khúc đầu", () => {
+    const M = "Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.";
+    const C = "Thời hạn thuê là 12 tháng kể từ ngày ký.";
+    const p = planParagraphEdit(M, C, "Thời hạn thuê 36 tháng kể từ ngày ký.");
+    assert.ok(typeof p !== "string");
+    if (typeof p === "string") return;
+    const ops = p.ops as any[];
+    assert.strictEqual(ops.length, 2);
+    assert.deepStrictEqual(
+      ops.map((o) => [o.kind, o.from.search, o.text]),
+      [
+        ["replace", "là ", "36"],
+        ["replace", "12", ""],
+      ]
+    );
+  });
+
+  it("thêm thuần: neo vào từ đứng trước; chèn đầu đoạn; đoạn rỗng", () => {
+    const C = "Bên B thanh toán trong 30 ngày.";
+    const p1 = planParagraphEdit(C, C, "Bên B thanh toán đủ trong 30 ngày.") as any;
+    assert.strictEqual(p1.ops[0].kind, "insertAfter");
+    assert.strictEqual(p1.ops[0].from.search, "toán ");
+    assert.strictEqual(p1.ops[0].text, "đủ ");
+    const p2 = planParagraphEdit(C, C, "Theo đó, Bên B thanh toán trong 30 ngày.") as any;
+    assert.strictEqual(p2.ops[0].kind, "insertBefore");
+    assert.strictEqual(p2.ops[0].from.search, "Bên");
+    const p3 = planParagraphEdit("", "", "Nội dung mới") as any;
+    assert.deepStrictEqual(p3.ops, [{ kind: "insertStart", text: "Nội dung mới" }]);
+  });
+
+  it("khúc xóa dài hơn 255 ký tự: định vị bằng đầu và đuôi", () => {
+    const long = "từ " + "rất dài ".repeat(60) + "hết";
+    const C = `Mở đầu ${long} kết thúc.`;
+    const p = planParagraphEdit(C, C, "Mở đầu kết thúc.") as any;
+    assert.strictEqual(p.ops.length, 1);
+    assert.ok(p.ops[0].to, "phải có điểm cuối");
+    assert.ok(p.ops[0].from.search.length <= 255 && p.ops[0].to.search.length <= 255);
+  });
+
+  it("bản hiện tại không nằm trong chuỗi tìm kiếm: trả lỗi, không lập kế hoạch bừa", () => {
+    assert.strictEqual(typeof planParagraphEdit("abc", "xyz", "xyz 1"), "string");
+  });
+
+  it("liveMap: dùng vị trí khúc đã xóa khi có; không có thì dò dãy con", () => {
+    assert.deepStrictEqual(liveMap("ab ab", "ab", [[0, 3]]), [3, 4]);
+    assert.deepStrictEqual(liveMap("ab ab", "ab"), [0, 1]);
+    assert.deepStrictEqual(liveMap("ab ab", "ab", [[9, 12]]), [0, 1], "vị trí sai thì dò dãy con");
+    assert.strictEqual(liveMap("abc", "abd"), null);
+  });
+
+  it("occurrenceAt đếm như Word tìm: trái sang phải, không chồng nhau", () => {
+    assert.deepStrictEqual(occurrenceAt("30 và 30 và 30", "30", 6), { index: 1, total: 3 });
+    assert.deepStrictEqual(occurrenceAt("aaa", "aa", 1), { index: -1, total: 1 });
+  });
+});
+
+describe("Đợt 1A – chống sửa nhầm đoạn (locateParagraph)", () => {
+  const doc = ["Tiêu đề", "Điều 1. Thời hạn thuê là 12 tháng.", "Điều 2. Giá thuê là 20 triệu đồng.", "Đại diện: ………", "Đại diện: ………"];
+  it("đúng chỉ số và khớp mấy chữ đầu: dùng luôn", () => {
+    assert.deepStrictEqual(locateParagraph(doc, 2, "Điều 2. Giá thuê"), { ok: true, index: 2, moved: false });
+  });
+  it("chèn hai đoạn phía trên rồi sửa theo số đoạn cũ: tự định vị lại đúng đoạn", () => {
+    const shifted = ["Tiêu đề", "Đoạn mới 1", "Đoạn mới 2", ...doc.slice(1)];
+    assert.deepStrictEqual(locateParagraph(shifted, 2, "Điều 2. Giá thuê"), { ok: true, index: 4, moved: true });
+  });
+  it("không còn đoạn nào khớp: từ chối", () => {
+    const r = locateParagraph(doc, 2, "Điều 9. Không có");
+    assert.strictEqual(r.ok, false);
+    assert.ok(!r.ok && /Đọc lại/.test(r.reason));
+  });
+  it("nhiều đoạn giống nhau mà chỉ số lệch: từ chối kèm ứng viên, không tự chọn", () => {
+    const r = locateParagraph(doc, 1, "Đại diện:");
+    assert.strictEqual(r.ok, false);
+    assert.ok(!r.ok && r.candidates.join(",") === "3,4");
+    // đúng chỉ số thì vẫn dùng được dù có đoạn trùng
+    assert.deepStrictEqual(locateParagraph(doc, 4, "Đại diện:"), { ok: true, index: 4, moved: false });
+  });
+  it("không có expect thì theo chỉ số; chỉ số ngoài phạm vi thì từ chối", () => {
+    assert.deepStrictEqual(locateParagraph(doc, 1), { ok: true, index: 1, moved: false });
+    assert.strictEqual(locateParagraph(doc, 99).ok, false);
+  });
+  it("matchesExpect bỏ qua khác biệt khoảng trắng và dấu … cuối", () => {
+    assert.ok(matchesExpect("Điều 1.  Thời hạn thuê", "Điều 1. Thời hạn…"));
+    assert.ok(!matchesExpect("Điều 1. Thời hạn", "Điều 2."));
+  });
+});
+
+describe("Đợt 1A – Hoàn tác cho Word: sửa đổi nào là của lượt vừa rồi", () => {
+  const k = (type: string, author: string, text: string, date = "2026-11-15T12:03:00Z") => changeKey({ type, author, date, text });
+  it("phần chênh giữa hai lần chụp là sửa đổi của AI; sửa đổi của đối tác không bị tính", () => {
+    const before = [k("Deleted", "Đối tác", "24 tháng"), k("Added", "Đối tác", "12 tháng")];
+    const after = [k("Deleted", "Đối tác", "24 tháng"), k("Added", "Tôi", "18"), k("Deleted", "Tôi", "12"), k("Added", "Đối tác", "12 tháng")];
+    assert.deepStrictEqual(addedKeys(before, after), [k("Added", "Tôi", "18"), k("Deleted", "Tôi", "12")]);
+    assert.deepStrictEqual(addedKeys(after, after), []);
+  });
+  it("sửa đổi trùng hệt (cùng người, cùng phút, cùng chữ): chỉ phần thêm mới được tính, đúng vị trí", () => {
+    const a = k("Added", "Tôi", "45");
+    const b = k("Deleted", "Tôi", "30");
+    assert.deepStrictEqual(addedKeys([a, b], [a, b, a, b]), [a, b]);
+    assert.deepStrictEqual(pickByKeys([a, b, a, b], [a, b]), [3, 2], "từ chối cặp đứng sau");
+  });
+  it("Word gộp phần chèn mới vào phần chèn liền kề có từ trước: không được từ chối (sẽ mất cả phần cũ), phải hoàn tác cách khác", () => {
+    const s = (type: string, author: string, text: string) => snapChange({ type, author, date: "2026-11-15T12:03:00Z", text });
+    const old = s("Added", "Tôi", "\rKhoản chèn lượt trước.");
+    const partner = s("Deleted", "Đối tác", "24 tháng");
+    // Lượt này chèn một khoản sát ngay trước: Word gộp thành một sửa đổi; đồng thời sửa một chữ ở đoạn khác
+    const mergedNow = s("Added", "Tôi", "\rKhoản chèn lượt này.\rKhoản chèn lượt trước.");
+    const d = diffChanges([partner, old], [partner, s("Added", "Tôi", "45"), s("Deleted", "Tôi", "30"), mergedNow]);
+    assert.deepStrictEqual(d.added, [s("Added", "Tôi", "45").key, s("Deleted", "Tôi", "30").key]);
+    assert.deepStrictEqual(d.merged, [mergedNow.key]);
+    assert.strictEqual(d.removed, 1);
+    // Sửa bên trong phần chèn đang chờ duyệt: sửa đổi cũ đổi nội dung, không có sửa đổi mới hẳn
+    const edited = s("Added", "Tôi", "\rKhoản chèn lượt trước, đã sửa.");
+    const d2 = diffChanges([partner, old], [partner, edited]);
+    assert.deepStrictEqual({ added: d2.added, merged: d2.merged, removed: d2.removed }, { added: [], merged: [edited.key], removed: 1 });
+    // Không có gì bị gộp: mọi sửa đổi mới đều từ chối được
+    const d3 = diffChanges([partner], [partner, s("Added", "Tôi", "45")]);
+    assert.deepStrictEqual({ merged: d3.merged, removed: d3.removed, n: d3.added.length }, { merged: [], removed: 0, n: 1 });
+  });
+  it("pickByKeys: khóa không còn trong văn bản thì bỏ qua", () => {
+    const a = k("Added", "Tôi", "45");
+    assert.deepStrictEqual(pickByKeys([k("Added", "Đối tác", "x")], [a]), []);
+  });
+});
+
+describe("Đợt 1A – công cụ và lời nhắc", () => {
+  it("các công cụ mới có mặt; công cụ sửa và xóa theo đoạn bắt buộc expect", () => {
+    const names = WORD_SPECS.map((s) => s.name);
+    for (const n of ["word_get_outline", "word_find", "word_read_clause", "word_insert_clause", "word_change_level"]) assert.ok(names.includes(n), n);
+    for (const n of ["word_set_paragraph_text", "word_delete_paragraphs", "word_insert_clause", "word_change_level"]) {
+      const sp = WORD_SPECS.find((s) => s.name === n);
+      assert.ok(sp?.parameters.required.includes("expect"), `${n} phải bắt buộc expect`);
+    }
+    const rep = WORD_SPECS.find((s) => s.name === "word_replace_text");
+    for (const p of ["paragraph_index", "occurrence", "all"]) assert.ok(rep?.parameters.properties[p], `word_replace_text thiếu ${p}`);
+  });
+  it("lời nhắc hệ thống Word cố định (không ngày giờ, không trạng thái) và có hướng dẫn mục lục, expect", () => {
+    assert.ok(/word_get_outline/.test(WORD_SYSTEM_PROMPT) && /expect/.test(WORD_SYSTEM_PROMPT));
+    assert.ok(!/\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{4}/.test(WORD_SYSTEM_PROMPT));
+  });
+  it("mọi tên công cụ word_* nêu trong kỹ năng dựng sẵn đều tồn tại", () => {
+    const names = new Set(WORD_SPECS.map((s) => s.name));
+    for (const sk of BUILTIN_SKILLS) {
+      const all = [sk.body, ...Object.values(sk.files || {})].join("\n");
+      for (const m of all.match(/word_[a-z_]+/g) || []) assert.ok(names.has(m), `Kỹ năng ${sk.name} nhắc công cụ không tồn tại: ${m}`);
+    }
+  });
+  it("dòng '5. Thanh toán' đứng lẻ giữ nguyên số; hai dòng 1. 2. mới thành danh sách", () => {
+    assert.strictEqual(isMarkdownNumberedList(["5. Thanh toán"]), false);
+    assert.strictEqual(isMarkdownNumberedList(["2026. Năm tài chính", "Nội dung"]), false);
+    assert.strictEqual(isMarkdownNumberedList(["1. Một", "2. Hai"]), true);
+    assert.deepStrictEqual(parseMarkdownLine("5. Thanh toán", false), { text: "5. Thanh toán", style: "Normal" });
+    assert.deepStrictEqual(parseMarkdownLine("1. Một", true), { text: "Một", style: "ListNumber" });
+    assert.deepStrictEqual(parseMarkdownLine("## **Điều 5**"), { text: "Điều 5", style: "Heading2" });
+  });
+  it("kết quả đọc đoạn kèm số điều, cờ đang có sửa đổi, cờ đã xóa", () => {
+    const r: any = packParagraphs(
+      [
+        { text: "Thanh toán", style: "Heading 1", num: "Điều 5" },
+        { text: "Bên B trả tiền", style: "Normal", changed: true },
+        { text: "", style: "Normal", deleted: true },
+      ],
+      0,
+      3
+    );
+    assert.deepStrictEqual(r.paragraphs[0], { i: 0, num: "Điều 5", style: "Heading 1", text: "Thanh toán" });
+    assert.strictEqual(r.paragraphs[1].changed, true);
+    assert.strictEqual(r.paragraphs[2].deleted, true);
+    assert.strictEqual(r.paragraphs[1].num, undefined);
+  });
+});

@@ -54,12 +54,25 @@ export function describeCall(call: ToolCall): string {
       return `Chọn ${where(a)}`;
     case "word_get_overview":
       return "Xem tổng quan văn bản";
+    case "word_get_outline":
+      return "Xem mục lục điều khoản";
+    case "word_find":
+      return `Tìm "${String(a.query || "").slice(0, 40)}" trong văn bản`;
+    case "word_read_clause":
+      return `Đọc ${String(a.number || "").slice(0, 40)}`;
     case "word_read_paragraphs":
-      return a.selection_only ? "Đọc đoạn đang chọn" : `Đọc đoạn ${a.start ?? 0}–${a.end ?? ""}`;
+      return a.selection_only ? "Đọc đoạn đang chọn" : `Đọc đoạn ${a.start ?? 0}–${a.end ?? ""}${a.view === "original" ? " (bản gốc)" : ""}`;
     case "word_replace_text":
-      return `Thay "${String(a.find || "").slice(0, 40)}" → "${String(a.replace || "").slice(0, 40)}"`;
+      return (
+        `Thay "${String(a.find || "").slice(0, 40)}" → "${String(a.replace || "").slice(0, 40)}"` +
+        (a.paragraph_index !== undefined && a.paragraph_index !== null ? ` ở [¶${a.paragraph_index}]` : a.all ? " (mọi chỗ)" : "")
+      );
     case "word_set_paragraph_text":
-      return `Sửa đoạn ${a.index}`;
+      return `Sửa [¶${a.index}]`;
+    case "word_insert_clause":
+      return `Chèn điều khoản mới sau [¶${a.after_index}]`;
+    case "word_change_level":
+      return `Đổi cấp [¶${a.index}] (${a.direction === "deeper" ? "xuống" : "lên"} một cấp)`;
     case "word_insert_paragraphs":
       return `Chèn nội dung (${a.position || "cuối văn bản"})`;
     case "word_replace_selection":
@@ -128,9 +141,9 @@ export function describeCall(call: ToolCall): string {
     case "word_resolve_comment":
       return a.resolved === false ? "Mở lại nhận xét" : "Đánh dấu nhận xét đã xử lý";
     case "word_list_revisions":
-      return "Đọc các sửa đổi được theo dõi";
+      return `Đọc các sửa đổi được theo dõi${a.author ? ` của ${a.author}` : ""}${a.start ? ` (từ số ${a.start})` : ""}`;
     case "word_review_revision":
-      return `${a.action === "accept" ? "Chấp nhận" : "Từ chối"} ${a.all ? "tất cả sửa đổi" : `sửa đổi số ${(a.indexes || []).join(", ")}`}`;
+      return `${a.action === "accept" ? "Chấp nhận" : "Từ chối"} ${a.all ? `tất cả sửa đổi${a.author ? ` của ${a.author}` : ""}` : `sửa đổi số ${(a.indexes || []).join(", ")}`}`;
     case "word_read_tables":
       return "Đọc các bảng";
     case "word_fill_table":

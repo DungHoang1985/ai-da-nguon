@@ -149,15 +149,23 @@ export function escapeWordSearch(s: string): string {
 
 export type LineStyle = "Normal" | "Heading1" | "Heading2" | "Heading3" | "ListBullet" | "ListNumber";
 
-/** Đọc ký hiệu đầu dòng kiểu Markdown để chọn kiểu đoạn trong Word. */
-export function parseMarkdownLine(line: string): { text: string; style: LineStyle } {
+/** Đọc ký hiệu đầu dòng kiểu Markdown để chọn kiểu đoạn trong Word.
+ *  numbered = false: dòng bắt đầu bằng "số." được giữ nguyên chữ (số điều khoản gõ tay như "5. Thanh toán", "2026. Năm tài chính"). */
+export function parseMarkdownLine(line: string, numbered = true): { text: string; style: LineStyle } {
   let m = line.match(/^\s*(#{1,3})\s+(.*)$/);
-  if (m) return { text: m[2], style: (`Heading${m[1].length}` as LineStyle) };
+  if (m) return { text: m[2].replace(/\*\*(.*?)\*\*/g, "$1"), style: (`Heading${m[1].length}` as LineStyle) };
   m = line.match(/^\s*[-*•]\s+(.*)$/);
   if (m) return { text: m[1], style: "ListBullet" };
-  m = line.match(/^\s*\d+[.)]\s+(.*)$/);
+  m = numbered ? line.match(/^\s*\d+[.)]\s+(.*)$/) : null;
   if (m) return { text: m[1], style: "ListNumber" };
   return { text: line.replace(/\*\*(.*?)\*\*/g, "$1"), style: "Normal" };
+}
+
+/** Các dòng có phải một danh sách đánh số Markdown thật không: có ít nhất hai dòng "số." và dòng đầu là 1.
+ *  Một dòng lẻ "5. Thanh toán" là số điều khoản gõ tay, không được đổi thành danh sách đánh lại từ 1. */
+export function isMarkdownNumberedList(lines: string[]): boolean {
+  const nums = lines.map((l) => l.match(/^\s*(\d+)[.)]\s+\S/)).filter(Boolean) as RegExpMatchArray[];
+  return nums.length >= 2 && Number(nums[0][1]) === 1;
 }
 
 export function truncate(s: any, n: number): string {
@@ -192,10 +200,24 @@ export function takeWithinBudget<T>(items: T[], budget: number, shrink?: (x: T, 
 }
 
 /** Kết quả word_read_paragraphs: tính theo độ dài JSON thật; next_start và truncated đặt lên đầu. */
-export function packParagraphs(all: { text: string; style: string }[], start: number, end: number, budget = RESULT_JSON_BUDGET) {
+export function packParagraphs(
+  all: { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean }[],
+  start: number,
+  end: number,
+  budget = RESULT_JSON_BUDGET
+) {
   const s0 = Math.max(0, Math.floor(Number(start)) || 0);
   const e0 = Math.min(all.length, Math.max(s0, Math.floor(Number(end)) || s0 + 200));
-  const slice = all.slice(s0, e0).map((p, k) => ({ i: s0 + k, style: String(p.style ?? ""), text: String(p.text ?? "") }));
+  // num = số điều khoản (kể cả số do Word tự đánh, vốn không nằm trong chữ của đoạn); changed = đoạn đang có sửa đổi chờ duyệt;
+  // deleted = đoạn đã bị xóa có theo dõi
+  const slice = all.slice(s0, e0).map((p, k) => ({
+    i: s0 + k,
+    ...(p.num ? { num: p.num } : {}),
+    style: String(p.style ?? ""),
+    text: String(p.text ?? ""),
+    ...(p.changed ? { changed: true } : {}),
+    ...(p.deleted ? { deleted: true } : {}),
+  }));
   const { picked, truncated } = takeWithinBudget(slice, budget - 400, (x, room) => ({
     ...x,
     text: x.text.slice(0, room) + "… [đoạn quá dài, đã cắt phần sau]",
@@ -211,6 +233,54 @@ export function packParagraphs(all: { text: string; style: string }[], start: nu
     read_to: last,
     paragraphs: picked,
   };
+}
+
+const foldAccents = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D");
+
+/** Tìm một cụm chữ trong danh sách đoạn (bản hiện tại). Trả mỗi đoạn khớp một dòng: vị trí lần khớp đầu, số lần khớp.
+ *  ignoreAccents: bỏ dấu tiếng Việt và hoa thường ở cả hai phía (người dùng gõ không dấu). */
+export function searchRows(
+  rows: { i: number; text: string; deleted?: boolean }[],
+  query: string,
+  opts: { matchCase?: boolean; wholeWord?: boolean; ignoreAccents?: boolean } = {}
+): { total: number; hits: { i: number; at: number; len: number; n: number }[] } {
+  const norm = (s: string) => {
+    let t = s.replace(/ /g, " ");
+    if (opts.ignoreAccents) t = foldAccents(t.normalize("NFC")).toLowerCase();
+    else if (!opts.matchCase) t = t.toLowerCase();
+    return t;
+  };
+  const q = norm(query.replace(/\s+/g, " ").trim());
+  const hits: { i: number; at: number; len: number; n: number }[] = [];
+  let total = 0;
+  if (!q) return { total, hits };
+  const isWord = (c: string | undefined) => !!c && /[\p{L}\p{N}]/u.test(c);
+  for (const r of rows) {
+    if (r.deleted || !r.text) continue;
+    const t = norm(r.text);
+    // Bỏ dấu và đổi hoa thường có thể làm lệch độ dài chuỗi: khi đó chỉ báo đoạn khớp, đặt vị trí về đầu đoạn
+    const aligned = t.length === r.text.length;
+    let n = 0;
+    let first = -1;
+    for (let pos = 0; ; ) {
+      const k = t.indexOf(q, pos);
+      if (k < 0) break;
+      pos = k + q.length;
+      if (opts.wholeWord && (isWord(t[k - 1]) || isWord(t[k + q.length]))) continue;
+      if (first < 0) first = k;
+      n++;
+    }
+    if (n) {
+      total += n;
+      hits.push({ i: r.i, at: aligned ? first : 0, len: aligned ? q.length : 0, n });
+    }
+  }
+  return { total, hits };
 }
 
 /** Số đoạn của nhận xét / sửa đổi: tìm theo định danh đoạn (uniqueLocalId, WordApi 1.6) — đúng cả khi có đoạn trùng nội dung;

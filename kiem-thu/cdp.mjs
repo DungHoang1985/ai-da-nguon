@@ -6,6 +6,9 @@
 //                                                                    thường là kiem-thu/cdp-lib.js rồi tới tệp bài thử)
 //   node kiem-thu/cdp.mjs shot <cổng> <tệp .png>                     chụp khung add-in
 //   node kiem-thu/cdp.mjs file <cổng> <bộ chọn CSS> <tệp> [tệp…]     đặt tệp vào ô chọn tệp (đính kèm, nhập kỹ năng)
+//   node kiem-thu/cdp.mjs serve <cổng> [thư mục dist]                nạp BẢN CỤC BỘ vào khung: chặn mọi yêu cầu tới địa chỉ add-in và trả tệp
+//                                                                    từ thư mục dist (sau npm run build), rồi tải lại khung. Chạy ở nền, giữ tới khi
+//                                                                    thử xong; tắt tiến trình rồi tải lại khung là về bản đã phát hành. Không đẩy gì lên mạng.
 // <cổng> có thể kèm tên ứng dụng khi mở nhiều ứng dụng: 9229/Word, 9229/Excel, 9229/PowerPoint
 //
 // Mở Office kèm cổng gỡ lỗi (PowerShell), khi KHÔNG còn ứng dụng Office nào đang chạy:
@@ -55,8 +58,10 @@ async function connect(portAndHost) {
   });
   let seq = 0;
   const waiting = new Map();
+  const handlers = new Map();
   ws.onmessage = (ev) => {
     const m = JSON.parse(ev.data);
+    if (m.method && handlers.has(m.method)) handlers.get(m.method)(m.params);
     if (m.id && waiting.has(m.id)) {
       const { res, rej } = waiting.get(m.id);
       waiting.delete(m.id);
@@ -69,7 +74,7 @@ async function connect(portAndHost) {
       waiting.set(id, { res, rej });
       ws.send(JSON.stringify({ id, method, params }));
     });
-  return { send, close: () => ws.close(), url: target.url };
+  return { send, on: (method, fn) => handlers.set(method, fn), close: () => ws.close(), closed: new Promise((r) => (ws.onclose = r)), url: target.url };
 }
 
 async function evalFile(port, list) {
@@ -115,8 +120,53 @@ async function setFile(port, selector, filePaths) {
   }
 }
 
+const MIME = { html: "text/html; charset=utf-8", js: "text/javascript; charset=utf-8", mjs: "text/javascript; charset=utf-8", css: "text/css; charset=utf-8", json: "application/json", map: "application/json", png: "image/png", svg: "image/svg+xml", ico: "image/x-icon", wasm: "application/wasm", woff2: "font/woff2", xml: "text/xml", txt: "text/plain; charset=utf-8" };
+
+/** Nạp bản cục bộ: trả tệp trong thư mục dist cho mọi yêu cầu tới địa chỉ add-in (cùng nguồn gốc nên kho lưu, key vẫn như cũ) */
+async function serve(port, dir) {
+  const base = path.resolve(dir || path.join(root, "dist"));
+  if (!fs.existsSync(path.join(base, "taskpane.html"))) throw new Error(`Không thấy ${path.join(base, "taskpane.html")}: chạy npm run build trước.`);
+  const c = await connect(port);
+  const prefix = c.url.slice(0, c.url.indexOf("taskpane.html"));
+  let served = 0;
+  c.on("Fetch.requestPaused", async (p) => {
+    try {
+      const u = new URL(p.request.url);
+      const rel = decodeURIComponent((u.origin + u.pathname).slice(prefix.length)) || "taskpane.html";
+      const file = path.join(base, rel);
+      if (file.startsWith(base) && fs.existsSync(file) && fs.statSync(file).isFile()) {
+        const ext = path.extname(file).slice(1).toLowerCase();
+        await c.send("Fetch.fulfillRequest", {
+          requestId: p.requestId,
+          responseCode: 200,
+          responseHeaders: [
+            { name: "Content-Type", value: MIME[ext] || "application/octet-stream" },
+            { name: "Cache-Control", value: "no-store" },
+          ],
+          body: fs.readFileSync(file).toString("base64"),
+        });
+        served++;
+        console.log(`cục bộ  ${rel}`);
+      } else {
+        await c.send("Fetch.continueRequest", { requestId: p.requestId });
+        console.log(`mạng    ${rel}`);
+      }
+    } catch (e) {
+      console.error("LỖI khi trả tệp:", e.message);
+    }
+  });
+  await c.send("Network.enable");
+  await c.send("Network.setCacheDisabled", { cacheDisabled: true });
+  await c.send("Fetch.enable", { patterns: [{ urlPattern: prefix + "*" }] });
+  await c.send("Page.reload", { ignoreCache: true });
+  console.log(`Đang trả bản cục bộ từ ${base} cho ${prefix}* — giữ tiến trình này tới khi thử xong.`);
+  await c.closed;
+  console.log(`Khung đã đóng. Đã trả ${served} tệp cục bộ.`);
+}
+
 try {
   if (cmd === "make") await make(a1, a2);
+  else if (cmd === "serve") await serve(a1, a2);
   else if (cmd === "file") await setFile(a1, a2, process.argv.slice(5));
   else if (cmd === "eval") await evalFile(a1, files);
   else if (cmd === "shot") await shot(a1, a2);
