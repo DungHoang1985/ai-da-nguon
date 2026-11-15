@@ -2,6 +2,7 @@
  *  Chỉ đổi trong bản gửi đi; lịch sử gốc giữ nguyên để quay lại nguồn cũ vẫn dùng được mã gốc (Gemini cần). */
 import { Provider } from "../providers";
 import { AgentMessage, ToolCall } from "./types";
+import { pdfCapable } from "./thinking";
 
 export interface HistoryTarget {
   provider: Provider;
@@ -117,7 +118,9 @@ export function prepareHistory(messages: AgentMessage[], target: HistoryTarget):
   const lastUser = out.map((m) => m.role).lastIndexOf("user");
   out = out.map((m, i) => {
     if (m.role !== "user" || !m.images?.length) return m;
-    const keep = target.vision === true || (target.vision === undefined && i === lastUser);
+    // Anthropic: mọi model Claude hiện hành đều nhận ảnh, và bỏ ảnh của lượt cũ là sửa tin nhắn cũ (làm hỏng khối suy nghĩ
+    // đã gắn với phần hội thoại đứng trước, vỡ bộ nhớ đệm) → chưa rõ thì vẫn giữ
+    const keep = target.vision === true || (target.vision === undefined && (i === lastUser || p.kind === "anthropic"));
     if (keep) return m;
     const { images, ...rest } = m;
     const note =
@@ -126,6 +129,17 @@ export function prepareHistory(messages: AgentMessage[], target: HistoryTarget):
         : `[${images.length} ảnh đã gửi ở lượt trước, không gửi lại]`;
     return { ...rest, content: rest.content ? `${rest.content}\n${note}` : note };
   });
+
+  // 4b) Tệp gửi nguyên vẹn (PDF quét): nguồn không nhận tệp → thay bằng một dòng ghi rõ, để model báo lại cho người dùng.
+  //     Nguồn nhận tệp thì giữ ở mọi lượt (không bỏ ở lượt sau: bỏ là sửa tin nhắn cũ, làm vỡ bộ nhớ đệm lời nhắc).
+  if (!pdfCapable(p)) {
+    out = out.map((m) => {
+      if (m.role !== "user" || !m.files?.length) return m;
+      const { files, ...rest } = m;
+      const note = `[Tệp ${files.map((f) => `“${f.name}”`).join(", ")} là PDF quét (không có lớp chữ) nên KHÔNG gửi được cho nguồn ${p.name}: nguồn này không đọc được PDF quét. Hãy nói rõ điều này với người dùng và gợi ý chuyển sang nguồn Anthropic hoặc Gemini để đọc tệp.]`;
+      return { ...rest, content: rest.content ? `${rest.content}\n${note}` : note };
+    });
+  }
 
   // 5) Mistral không nhận câu hỏi người dùng ngay sau kết quả công cụ → chèn một câu trả lời nối
   if (p.id === "mistral") {

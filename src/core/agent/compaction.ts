@@ -105,6 +105,13 @@ export async function compactIfNeeded(o: {
     ],
   });
   const summary = res.text.trim() || "(không tóm tắt được)";
+  // Khối suy nghĩ của Anthropic gắn với phần hội thoại đứng trước nó; phần đó vừa bị thay bằng bản tóm tắt nên các khối trong
+  // phần giữ lại không còn hợp lệ → bỏ (tài liệu: sau khi tóm tắt không gửi lại khối suy nghĩ cũ)
+  recent = recent.map((m) => {
+    if (m.role !== "assistant" || m.raw?.kind !== "anthropic") return m;
+    const { raw: _raw, ...rest } = m;
+    return rest;
+  });
   // Đây là lúc duy nhất phần đầu lịch sử đổi, nên nếu phần giữ lại vẫn quá lớn thì rút gọn luôn kết quả công cụ dài trong đó
   const kept =
     historyChars(recent) > limit * 0.7

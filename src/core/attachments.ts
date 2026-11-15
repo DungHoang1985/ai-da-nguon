@@ -1,13 +1,24 @@
-/** Đọc tệp đính kèm thành chữ (TXT/CSV/MD/JSON/HTML, PDF, DOCX) hoặc ảnh (base64) để gửi kèm câu hỏi. */
+/** Đọc tệp đính kèm thành chữ (TXT/CSV/MD/JSON/HTML, PDF, DOCX) hoặc ảnh (base64) để gửi kèm câu hỏi.
+ *  PDF quét (không có lớp chữ) được giữ nguyên tệp (kind "file") để gửi cho model tự đọc. */
 
 export interface Attachment {
   name: string;
-  kind: "text" | "image";
+  /** text = chữ ghép vào câu hỏi · image = ảnh gửi kèm · file = tệp gửi nguyên vẹn cho model đọc (PDF quét) */
+  kind: "text" | "image" | "file";
   text?: string;
   mime?: string;
+  /** base64: ảnh, tệp gửi nguyên vẹn; với .docx là bản gốc của tệp để so sánh phiên bản trong Word */
   data?: string;
   note?: string;
+  /** Số trang (PDF) */
+  pages?: number;
 }
+
+/** Cỡ tối đa của một PDF gửi nguyên tệp. Anthropic nhận tối đa 32 MB cho cả yêu cầu (base64 làm tệp to thêm một phần ba). */
+export const MAX_PDF_FILE_BYTES = 15 * 1024 * 1024;
+/** Cỡ tối đa của tệp .docx được giữ bản gốc để so sánh phiên bản */
+export const MAX_DOCX_KEEP_BYTES = 20 * 1024 * 1024;
+export const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
 export const MAX_ATTACH_CHARS = 120000;
 
@@ -40,12 +51,13 @@ function toBase64(buf: ArrayBuffer): string {
   return btoa(s);
 }
 
-async function pdfText(buf: ArrayBuffer): Promise<string> {
+async function pdfText(buf: ArrayBuffer): Promise<{ text: string; pages: number }> {
   const pdfjs: any = await import("pdfjs-dist");
   if (!pdfjs.GlobalWorkerOptions.workerSrc) {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdf.worker.min.js", document.baseURI).toString();
   }
-  const doc = await pdfjs.getDocument({ data: new Uint8Array(buf) }).promise;
+  // pdf.js chiếm lấy vùng nhớ được đưa vào: đưa một bản sao để còn giữ được tệp gốc (gửi nguyên tệp khi là PDF quét)
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(buf.slice(0)) }).promise;
   const pages: string[] = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
@@ -63,7 +75,7 @@ async function pdfText(buf: ArrayBuffer): Promise<string> {
     pages.push(`[Trang ${i}]\n${out.join("\n")}`);
     if (pages.join("\n").length > MAX_ATTACH_CHARS) break;
   }
-  return pages.join("\n\n");
+  return { text: pages.join("\n\n"), pages: doc.numPages };
 }
 
 export async function readAttachment(file: File): Promise<Attachment> {
@@ -74,16 +86,26 @@ export async function readAttachment(file: File): Promise<Attachment> {
     return { name, kind: "image", mime: file.type, data: toBase64(await file.arrayBuffer()) };
   }
   if (lower.endsWith(".pdf")) {
-    const t = await pdfText(await file.arrayBuffer());
-    if (!t.replace(/\[Trang \d+\]/g, "").trim()) throw new Error(`PDF "${name}" không có lớp chữ (có thể là ảnh scan).`);
-    return { name, kind: "text", ...clipText(t) };
+    const buf = await file.arrayBuffer();
+    const { text: t, pages } = await pdfText(buf);
+    if (!t.replace(/\[Trang \d+\]/g, "").trim()) {
+      // PDF quét: không có lớp chữ → giữ nguyên tệp để model tự đọc (Anthropic, Gemini… ; nguồn khác sẽ được báo rõ khi gửi)
+      if (file.size > MAX_PDF_FILE_BYTES) {
+        throw new Error(`PDF "${name}" là bản quét (không có lớp chữ) và nặng ${(file.size / 1048576).toFixed(1)} MB, quá mức gửi nguyên tệp (tối đa ${MAX_PDF_FILE_BYTES / 1048576} MB). Hãy tách tệp hoặc giảm độ phân giải.`);
+      }
+      return { name, kind: "file", mime: "application/pdf", data: toBase64(buf), pages, note: `PDF quét, ${pages} trang, gửi nguyên tệp` };
+    }
+    return { name, kind: "text", pages, ...clipText(t) };
   }
   if (lower.endsWith(".docx")) {
     const JSZip = (await import("jszip")).default;
-    const zip = await JSZip.loadAsync(await file.arrayBuffer());
+    const buf = await file.arrayBuffer();
+    const zip = await JSZip.loadAsync(buf);
     const xml = await zip.file("word/document.xml")?.async("string");
     if (!xml) throw new Error(`Không đọc được "${name}".`);
-    return { name, kind: "text", ...clipText(docxXmlToText(xml)) };
+    // Giữ bản gốc của tệp: trong Word, AI so tệp này với văn bản đang mở bằng công cụ so sánh phiên bản
+    const keep = file.size <= MAX_DOCX_KEEP_BYTES ? { mime: DOCX_MIME, data: toBase64(buf) } : {};
+    return { name, kind: "text", ...keep, ...clipText(docxXmlToText(xml)) };
   }
   if (/\.(txt|md|markdown|csv|tsv|json|xml|html?|ya?ml|log)$/i.test(lower) || file.type.startsWith("text/")) {
     let t = await file.text();
@@ -93,12 +115,20 @@ export async function readAttachment(file: File): Promise<Attachment> {
   throw new Error(`Chưa hỗ trợ loại tệp "${name}". Dùng PDF, DOCX, TXT, CSV, MD, JSON hoặc ảnh.`);
 }
 
-/** Ghép chữ của các tệp vào câu hỏi */
-export function withAttachments(question: string, atts: Attachment[]): string {
+/** Ghép chữ của các tệp vào câu hỏi. opts.compare = đang ở Word, có công cụ so sánh phiên bản: ghi kèm cách gọi cho tệp .docx */
+export function withAttachments(question: string, atts: Attachment[], opts: { compare?: boolean } = {}): string {
   const texts = atts.filter((a) => a.kind === "text");
-  if (!texts.length) return question;
+  const files = atts.filter((a) => a.kind === "file");
+  if (!texts.length && !files.length) return question;
   return [
     question,
-    ...texts.map((a) => `\n--- Tệp đính kèm: ${a.name}${a.note ? ` (${a.note})` : ""} ---\n${a.text}\n--- Hết tệp ${a.name} ---`),
+    ...files.map((a) => `\n--- Tệp đính kèm: ${a.name} (${a.note || "gửi nguyên tệp"}) — tệp được gửi kèm tin nhắn này để bạn đọc trực tiếp, kể cả chữ trong ảnh quét ---`),
+    ...texts.map((a) => {
+      const hint =
+        opts.compare && a.mime === DOCX_MIME && a.data
+          ? `\n(Muốn so tệp này với văn bản đang mở theo từng điều khoản: gọi word_compare_versions với file = "${a.name}"; đừng tự so bằng mắt.)`
+          : "";
+      return `\n--- Tệp đính kèm: ${a.name}${a.note ? ` (${a.note})` : ""} ---${hint}\n${a.text}\n--- Hết tệp ${a.name} ---`;
+    }),
   ].join("\n");
 }

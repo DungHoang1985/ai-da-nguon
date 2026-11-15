@@ -3,8 +3,9 @@ import { Provider } from "../providers";
 import { anthropicHeaders } from "../models";
 import { ApiError, ensureOk, fetchDiagnosed, isRetryable } from "../errors";
 import { createSSEParser } from "../sse";
-import { AgentMessage, StepResult, ToolCall, ToolSpec, Usage } from "./types";
+import { AgentMessage, RawAssistant, StepResult, ToolCall, ToolSpec, Usage } from "./types";
 import { prepareHistory } from "./history";
+import { anthropicThinkingParams, geminiThinkingConfig, isThinkingParamError } from "./thinking";
 
 const ID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 /** id 9 ký tự chữ-số: hợp lệ với mọi nhà cung cấp (Mistral bắt buộc đúng 9 ký tự) */
@@ -72,7 +73,15 @@ export function buildStepRequest(
   model: string,
   messages: AgentMessage[],
   tools: ToolSpec[],
-  opts: { webSearch?: boolean; vision?: boolean; maxOutput?: number } = {}
+  opts: {
+    webSearch?: boolean;
+    vision?: boolean;
+    maxOutput?: number;
+    /** Công tắc "Suy nghĩ kỹ" */
+    think?: boolean;
+    /** Không gửi tham số suy nghĩ và không gửi lại khối suy nghĩ (lần gửi lại sau khi nhà cung cấp từ chối các phần đó) */
+    plain?: boolean;
+  } = {}
 ): { url: string; init: RequestInit } {
   const system = messages
     .filter((m) => m.role === "system")
@@ -91,15 +100,41 @@ export function buildStepRequest(
     };
     for (const m of turns) {
       if (m.role === "user") {
-        const imgs = (m.images || []).map((im) => ({ type: "image", source: { type: "base64", media_type: im.mime, data: im.data } }));
+        // Tệp PDF đứng trước, rồi ảnh, rồi chữ (tài liệu chính thức: khối document đặt trước khối chữ)
+        const imgs = [
+          ...(m.files || []).map((f) => ({ type: "document", source: { type: "base64", media_type: f.mime, data: f.data } })),
+          ...(m.images || []).map((im) => ({ type: "image", source: { type: "base64", media_type: im.mime, data: im.data } })),
+        ];
         // Anthropic từ chối khối chữ rỗng hoặc chỉ có khoảng trắng
         pushUser(nonBlank(m.content) ? [...imgs, { type: "text", text: m.content }] : imgs.length ? imgs : [{ type: "text", text: "(trống)" }]);
       } else if (m.role === "tool")
         pushUser([{ type: "tool_result", tool_use_id: m.toolCallId, content: nonBlank(m.content) ? m.content : "(trống)" }]);
       else if (m.role === "assistant") {
         const blocks: any[] = [];
-        if (nonBlank(m.content)) blocks.push({ type: "text", text: m.content });
-        for (const tc of m.toolCalls || []) blocks.push({ type: "tool_use", id: tc.id, name: tc.name, input: tc.args || {} });
+        const calls = (m.toolCalls || []).slice();
+        const useCall = () => {
+          const tc = calls.shift();
+          if (tc) blocks.push({ type: "tool_use", id: tc.id, name: tc.name, input: tc.args || {} });
+        };
+        let textDone = false;
+        const useText = () => {
+          if (!textDone && nonBlank(m.content)) blocks.push({ type: "text", text: m.content });
+          textDone = true;
+        };
+        // Câu trả lời có khối suy nghĩ: gửi lại đúng thứ tự gốc, khối suy nghĩ nguyên văn kèm chữ ký (tài liệu: "pass thinking
+        // blocks back unmodified"). Cách dựng này cho cùng một kết quả ở mọi lần gửi nên phần đầu hội thoại không đổi.
+        if (!opts.plain && m.raw?.kind === "anthropic" && Array.isArray(m.raw.blocks)) {
+          for (const b of m.raw.blocks) {
+            if (b?.type === "thinking" || b?.type === "redacted_thinking") blocks.push(b);
+            else if (b?.type === "text") useText();
+            else if (b?.type === "tool_use") {
+              useText();
+              useCall();
+            }
+          }
+        }
+        useText();
+        while (calls.length) useCall();
         if (!blocks.length) blocks.push({ type: "text", text: "(trống)" });
         out.push({ role: "assistant", content: blocks });
       }
@@ -112,12 +147,17 @@ export function buildStepRequest(
       const i = lastMsg.content.length - 1;
       lastMsg.content[i] = { ...lastMsg.content[i], cache_control: CACHE };
     }
+    const maxTokens = anthropicMaxTokens(model, opts.maxOutput);
     const body: any = {
       model,
-      max_tokens: anthropicMaxTokens(model, opts.maxOutput),
+      max_tokens: maxTokens,
       stream: true,
       messages: out,
     };
+    // Tham số suy nghĩ nằm ngoài system / tools / messages: bật hay tắt không làm vỡ bộ nhớ đệm lời nhắc
+    const think = opts.plain ? {} : anthropicThinkingParams(model, !!opts.think, maxTokens);
+    if (think.thinking) body.thinking = think.thinking;
+    if (think.output_config) body.output_config = think.output_config;
     if (system) body.system = [{ type: "text", text: system, cache_control: CACHE }];
     if (tools.length) {
       body.tools = tools.map((t) => ({
@@ -129,7 +169,11 @@ export function buildStepRequest(
     if (opts.webSearch) body.tools = [...(body.tools || []), { type: "web_search_20250305", name: "web_search", max_uses: 5 }];
     return {
       url: `${provider.baseUrl}/messages`,
-      init: { method: "POST", headers: anthropicHeaders(key), body: JSON.stringify(body) },
+      init: {
+        method: "POST",
+        headers: think.beta ? { ...anthropicHeaders(key), "anthropic-beta": think.beta } : anthropicHeaders(key),
+        body: JSON.stringify(body),
+      },
     };
   }
 
@@ -144,7 +188,11 @@ export function buildStepRequest(
       if (m.role === "user")
         contents.push({
           role: "user",
-          parts: [...(m.images || []).map((im) => ({ inlineData: { mimeType: im.mime, data: im.data } })), { text: m.content || " " }],
+          parts: [
+            ...(m.files || []).map((f) => ({ inlineData: { mimeType: f.mime, data: f.data } })),
+            ...(m.images || []).map((im) => ({ inlineData: { mimeType: im.mime, data: im.data } })),
+            { text: m.content || " " },
+          ],
         });
       else if (m.role === "assistant") {
         if (m.raw?.kind === "gemini" && m.raw.parts?.length) {
@@ -174,6 +222,8 @@ export function buildStepRequest(
     }
     const body: any = { contents };
     if (system) body.systemInstruction = { parts: [{ text: system }] };
+    const thinkingConfig = opts.think && !opts.plain ? geminiThinkingConfig(model) : undefined;
+    if (thinkingConfig) body.generationConfig = { thinkingConfig };
     if (opts.webSearch && !tools.length) body.tools = [{ google_search: {} }];
     if (tools.length) {
       body.tools = [
@@ -194,16 +244,19 @@ export function buildStepRequest(
   }
 
   // OpenAI-compatible
+  let hasFiles = false;
   const msgs: any[] = [];
   if (system) msgs.push({ role: "system", content: system });
   for (const m of turns) {
     if (m.role === "user") {
-      if (m.images?.length) {
+      if (m.images?.length || m.files?.length) {
+        if (m.files?.length) hasFiles = true;
         msgs.push({
           role: "user",
           content: [
-            { type: "text", text: m.content },
-            ...m.images.map((im) => ({ type: "image_url", image_url: { url: `data:${im.mime};base64,${im.data}` } })),
+            { type: "text", text: nonBlank(m.content) ? m.content : "(trống)" },
+            ...(m.images || []).map((im) => ({ type: "image_url", image_url: { url: `data:${im.mime};base64,${im.data}` } })),
+            ...(m.files || []).map((f) => ({ type: "file", file: { filename: f.name, file_data: `data:${f.mime};base64,${f.data}` } })),
           ],
         });
       } else msgs.push({ role: "user", content: nonBlank(m.content) ? m.content : "(trống)" });
@@ -218,6 +271,8 @@ export function buildStepRequest(
           function: { name: tc.name, arguments: JSON.stringify(tc.args || {}) },
         }));
       }
+      // OpenRouter: gửi lại nguyên các khối suy nghĩ của câu trả lời trước (tài liệu: bắt buộc khi tiếp tục vòng lặp công cụ)
+      if (!opts.plain && provider.id === "openrouter" && m.raw?.kind === "openrouter" && m.raw.reasoning?.length) msg.reasoning_details = m.raw.reasoning;
       msgs.push(msg);
     }
   }
@@ -225,6 +280,12 @@ export function buildStepRequest(
   if (provider.id === "openrouter") headers["X-Title"] = "AI Da Nguon Office Add-in";
   const body: any = { model, messages: msgs, stream: true };
   if (opts.webSearch && provider.id === "openrouter") body.plugins = [{ id: "web", max_results: 5 }];
+  // OpenRouter: chỉ rõ để model tự đọc tệp PDF; không để OpenRouter tự chuyển sang bộ OCR tính phí riêng
+  if (hasFiles && provider.id === "openrouter") body.plugins = [...(body.plugins || []), { id: "file-parser", pdf: { engine: "native" } }];
+  if (opts.think && !opts.plain) {
+    if (provider.id === "openrouter") body.reasoning = { effort: "high" };
+    else if (provider.id === "openai") body.reasoning_effort = "high";
+  }
   if (tools.length) {
     body.tools = tools.map((t) => ({
       type: "function",
@@ -235,7 +296,28 @@ export function buildStepRequest(
 }
 
 /** Gom các sự kiện luồng thành chữ + lệnh gọi công cụ. */
-export function createStepAccumulator(kind: string, onText: (d: string) => void) {
+export function createStepAccumulator(kind: string, onText: (d: string) => void, onThinking?: () => void) {
+  let thinkingSeen = false;
+  const noteThinking = () => {
+    if (thinkingSeen) return;
+    thinkingSeen = true;
+    onThinking?.();
+  };
+  // OpenRouter: các khối suy nghĩ (reasoning_details) tới theo từng mẩu, ghép theo index
+  const orDetails: any[] = [];
+  const mergeDetail = (d: any) => {
+    if (!d || typeof d !== "object") return;
+    const at = typeof d.index === "number" ? orDetails.findIndex((x) => x.index === d.index && x.type === d.type) : -1;
+    if (at < 0) {
+      orDetails.push({ ...d });
+      return;
+    }
+    const cur = orDetails[at];
+    for (const [k, v] of Object.entries(d)) {
+      if (k === "text" || k === "summary" || k === "data") cur[k] = (typeof cur[k] === "string" ? cur[k] : "") + (typeof v === "string" ? v : "");
+      else if (v !== undefined && v !== null && v !== "") cur[k] = v;
+    }
+  };
   let text = "";
   let finishReason: string | undefined;
   let usage: Usage | undefined;
@@ -255,7 +337,7 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
   const oaCalls: { id: string; name: string; args: string }[] = [];
   let lastKey = -1;
   // Anthropic
-  const blocks: Record<number, { type: string; id?: string; name?: string; json: string }> = {};
+  const blocks: Record<number, { type: string; id?: string; name?: string; json: string; thinking?: string; signature?: string; data?: string }> = {};
   // Gemini
   const gParts: any[] = [];
   const gCalls: ToolCall[] = [];
@@ -290,12 +372,24 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
           const b = j.content_block || {};
           blocks[j.index] = { type: b.type, id: b.id, name: b.name, json: "" };
           if (b.type === "text" && b.text) addText(b.text);
+          if (b.type === "thinking" || b.type === "redacted_thinking") {
+            noteThinking();
+            blocks[j.index].thinking = b.thinking || "";
+            blocks[j.index].signature = b.signature || "";
+            blocks[j.index].data = b.data;
+          }
         } else if (j.type === "content_block_delta") {
           const d = j.delta || {};
           if (d.type === "text_delta") addText(d.text || "");
           else if (d.type === "input_json_delta") {
             const b = blocks[j.index] || (blocks[j.index] = { type: "tool_use", json: "" });
             b.json += d.partial_json || "";
+          } else if (d.type === "thinking_delta") {
+            const b = blocks[j.index];
+            if (b) b.thinking = (b.thinking || "") + (d.thinking || "");
+          } else if (d.type === "signature_delta") {
+            const b = blocks[j.index];
+            if (b) b.signature = (b.signature || "") + (d.signature || "");
           }
         } else if (j.type === "message_delta") {
           finishReason = j.delta?.stop_reason || finishReason;
@@ -324,6 +418,7 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
               nativeId: !!p.functionCall.id,
             });
           } else if (typeof p.text === "string" && !p.thought) addText(p.text);
+          else if (p.thought) noteThinking();
         }
         if (cand.finishReason) finishReason = cand.finishReason;
         return;
@@ -340,6 +435,10 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
       const choice = j?.choices?.[0];
       if (!choice) return;
       const delta = choice.delta || choice.message || {};
+      if (Array.isArray(delta.reasoning_details) && delta.reasoning_details.length) {
+        noteThinking();
+        delta.reasoning_details.forEach(mergeDetail);
+      } else if (typeof delta.reasoning === "string" && delta.reasoning) noteThinking();
       if (typeof delta.content === "string") addText(delta.content);
       for (const tc of delta.tool_calls || []) {
         let key: number;
@@ -357,13 +456,24 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
     },
     result(): StepResult {
       if (kind === "anthropic") {
-        const calls: ToolCall[] = Object.keys(blocks)
+        const ordered = Object.keys(blocks)
           .map(Number)
           .sort((a, b) => a - b)
-          .map((i) => blocks[i])
-          .filter((b) => b.type === "tool_use" && b.name)
-          .map((b) => ({ id: b.id || newCallId(), name: b.name!, args: parseArgs(b.json) }));
-        return { text, toolCalls: calls, finishReason, truncated: finishReason === "max_tokens", usage };
+          .map((i) => blocks[i]);
+        const calls: ToolCall[] = ordered.filter((b) => b.type === "tool_use" && b.name).map((b) => ({ id: b.id || newCallId(), name: b.name!, args: parseArgs(b.json) }));
+        // Giữ khối suy nghĩ (nguyên văn, kèm chữ ký) cùng thứ tự các khối để gửi lại ở bước sau. Khối suy nghĩ chưa có chữ ký
+        // (câu trả lời bị cắt giữa chừng) thì bỏ: gửi lại sẽ bị từ chối.
+        const rawBlocks: any[] = [];
+        for (const b of ordered) {
+          if (b.type === "thinking") {
+            if (b.signature) rawBlocks.push({ type: "thinking", thinking: b.thinking || "", signature: b.signature });
+          } else if (b.type === "redacted_thinking") {
+            if (b.data) rawBlocks.push({ type: "redacted_thinking", data: b.data });
+          } else if (b.type === "text") rawBlocks.push({ type: "text" });
+          else if (b.type === "tool_use" && b.name) rawBlocks.push({ type: "tool_use" });
+        }
+        const raw: RawAssistant | undefined = rawBlocks.some((b) => b.type === "thinking" || b.type === "redacted_thinking") ? { kind: "anthropic", blocks: rawBlocks } : undefined;
+        return { text, toolCalls: calls, ...(raw ? { raw } : {}), finishReason, truncated: finishReason === "max_tokens", usage };
       }
       if (kind === "gemini") {
         return { text, toolCalls: gCalls, raw: { kind: "gemini", parts: gParts }, finishReason, truncated: finishReason === "MAX_TOKENS", usage };
@@ -371,7 +481,8 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
       const calls = oaCalls
         .filter((c) => c && c.name)
         .map((c) => ({ id: c.id || newCallId(), name: c.name, args: parseArgs(c.args) }));
-      return { text, toolCalls: calls, finishReason, truncated: finishReason === "length", usage };
+      const raw: RawAssistant | undefined = orDetails.length ? { kind: "openrouter", reasoning: orDetails } : undefined;
+      return { text, toolCalls: calls, ...(raw ? { raw } : {}), finishReason, truncated: finishReason === "length", usage };
     },
   };
 }
@@ -430,6 +541,14 @@ export interface CallModelOptions {
   vision?: boolean;
   /** Trần độ dài đầu ra của model nếu biết (Anthropic) */
   maxOutput?: number;
+  /** Công tắc "Suy nghĩ kỹ" */
+  think?: boolean;
+  /** Trạng thái dùng chung của một lượt: nhà cung cấp đã từ chối tham số suy nghĩ thì các bước sau gửi thẳng không kèm */
+  state?: { plain?: boolean };
+  /** Model bắt đầu suy nghĩ (chưa có chữ trả lời) */
+  onThinking?: () => void;
+  /** Nhà cung cấp từ chối tham số suy nghĩ hoặc khối suy nghĩ gửi lại: đã gửi lại không kèm các phần đó */
+  onThinkingOff?: (reason: string) => void;
   /** Được gọi trước mỗi lần chờ để thử lại */
   onRetry?: (info: RetryInfo) => void;
   /** Thay bảng khoảng chờ (kiểm thử); mảng rỗng = không thử lại */
@@ -439,7 +558,8 @@ export interface CallModelOptions {
 
 /** Gọi model một bước; tự thử lại khi nhà cung cấp quá tải hoặc hết hạn mức tạm thời (429, 5xx, 529),
  *  miễn là chưa có chữ nào hiện ra cho người dùng (tránh lặp chữ) và người dùng chưa bấm Dừng. */
-export async function callModelStep(opts: CallModelOptions): Promise<StepResult> {
+export async function callModelStep(input: CallModelOptions): Promise<StepResult> {
+  const opts: CallModelOptions = input.state ? input : { ...input, state: {} };
   const delays = opts.retryDelaysMs ?? RETRY_DELAYS_MS;
   for (let attempt = 0; ; attempt++) {
     let emitted = false;
@@ -452,6 +572,14 @@ export async function callModelStep(opts: CallModelOptions): Promise<StepResult>
         },
       });
     } catch (e: any) {
+      // Nhà cung cấp không nhận tham số suy nghĩ, hoặc từ chối khối suy nghĩ gửi lại (tài liệu Anthropic: bỏ hết khối suy nghĩ
+      // rồi gửi lại một lần): gửi lại không kèm các phần đó, và giữ cách gửi này cho các bước sau của lượt.
+      if (!opts.signal?.aborted && !emitted && opts.state && !opts.state.plain && isThinkingParamError(e)) {
+        opts.state.plain = true;
+        opts.onThinkingOff?.(String(e?.message || ""));
+        attempt--;
+        continue;
+      }
       if (opts.signal?.aborted || emitted || !isRetryable(e) || attempt >= delays.length) throw e;
       const ra: number | undefined = e.retryAfter;
       if (ra !== undefined && ra > MAX_RETRY_AFTER_S) throw e;
@@ -468,11 +596,13 @@ async function callModelOnce(opts: CallModelOptions): Promise<StepResult> {
     webSearch: opts.webSearch,
     vision: opts.vision,
     maxOutput: opts.maxOutput,
+    think: opts.think,
+    plain: opts.state?.plain,
   });
   const fetchFn = opts.fetchFn || fetch;
   const res = await fetchDiagnosed(opts.provider, url, { ...init, signal: opts.signal }, fetchFn, opts.model);
   await ensureOk(res);
-  const acc = createStepAccumulator(opts.provider.kind, opts.onText);
+  const acc = createStepAccumulator(opts.provider.kind, opts.onText, opts.onThinking);
   const parser = createSSEParser((d) => acc.push(d));
   if (res.body) {
     const reader = res.body.getReader();

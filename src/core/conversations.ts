@@ -30,15 +30,28 @@ export function titleFrom(text: string): string {
   return t.length > 60 ? t.slice(0, 57) + "…" : t || "Hội thoại mới";
 }
 
-/** Bỏ phần nặng trước khi lưu: kết quả công cụ dài, ảnh đính kèm */
+/** Bỏ phần nặng trước khi lưu: kết quả công cụ dài, ảnh và tệp đính kèm.
+ *  Khối suy nghĩ của Anthropic gắn với phần hội thoại đứng trước nó: từ tin nhắn đầu tiên bị rút gọn trở đi, bản lưu không còn
+ *  khớp với hội thoại đã gửi nên các khối suy nghĩ phía sau cũng bỏ (mở lại hội thoại thì không gửi lại khối đã hết hợp lệ). */
 export function slimForStorage(history: AgentMessage[]): AgentMessage[] {
+  let changed = false;
   return history.map((m) => {
     if (m.role === "tool" && m.content.length > STORED_TOOL_CHARS) {
+      changed = true;
       return { ...m, content: m.content.slice(0, STORED_TOOL_CHARS) + "… [đã rút gọn khi lưu]" };
     }
-    if (m.role === "user" && (m as any).images?.length) {
-      const { images, ...rest } = m as any;
-      return { ...rest, content: `${rest.content}\n[Đã đính kèm ${images.length} ảnh]` };
+    if (m.role === "user" && (m.images?.length || m.files?.length)) {
+      changed = true;
+      const { images, files, ...rest } = m;
+      const notes = [
+        images?.length ? `[Đã đính kèm ${images.length} ảnh]` : "",
+        files?.length ? `[Đã đính kèm tệp ${files.map((f) => `“${f.name}”`).join(", ")} (gửi nguyên tệp); bản lưu không giữ tệp, cần hỏi tiếp về tệp thì đính kèm lại]` : "",
+      ].filter(Boolean);
+      return { ...rest, content: `${rest.content}\n${notes.join("\n")}` };
+    }
+    if (changed && m.role === "assistant" && m.raw?.kind === "anthropic") {
+      const { raw: _raw, ...rest } = m;
+      return rest;
     }
     return m;
   });

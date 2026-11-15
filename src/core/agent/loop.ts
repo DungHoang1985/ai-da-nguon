@@ -13,6 +13,8 @@ export const MAX_TRUNCATED_IN_A_ROW = 2;
 
 export const STOP_NOTE = "[Người dùng đã bấm Dừng ở đây. Các bước ở trên có kết quả thành công thì đã được thực hiện trong tài liệu.]";
 export const NOT_RUN_STOPPED = "Chưa thực hiện: người dùng đã bấm Dừng trước bước này.";
+/** Bước soát lập luận chặn tối đa bấy nhiêu lần trong một lượt; sau đó lệnh ghi được chạy thẳng (tránh vòng lặp và tốn token) */
+export const MAX_REVIEW_BLOCKS = 2;
 export const NOT_RUN_TRUNCATED =
   "Chưa thực hiện: câu trả lời vừa rồi bị cắt vì vượt giới hạn độ dài nên lệnh gọi công cụ có thể dở dang. Hãy gọi lại, chia nhỏ: mỗi lần ghi ít nội dung hơn (ví dụ từng phần của văn bản, từng nhóm hàng, từng slide).";
 
@@ -75,6 +77,11 @@ export interface RunAgentOptions {
   maxOutput?: number;
   /** Hạn chờ cho mỗi bước công cụ (mili giây); 0 = không giới hạn */
   toolTimeoutMs?: number;
+  /** Công tắc "Suy nghĩ kỹ" */
+  think?: boolean;
+  /** Soát lập luận của một lệnh ghi vào điều khoản trước khi chạy (công cụ có reviewable). ok = false thì lệnh không chạy,
+   *  note được trả cho model để sửa đề xuất. Lỗi khi soát không chặn lệnh. */
+  review?: (call: ToolCall, spec: ToolSpec) => Promise<{ ok: boolean; note?: string }>;
   fetchFn?: typeof fetch;
   /** Cho kiểm thử: bảng khoảng chờ thử lại và hàm chờ */
   retryDelaysMs?: number[];
@@ -111,6 +118,9 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
   };
 
   let truncatedRun = 0;
+  let reviewBlocks = 0;
+  /** Dùng chung cho mọi bước của lượt: nhà cung cấp đã từ chối tham số suy nghĩ thì các bước sau không gửi nữa */
+  const callState: { plain?: boolean } = {};
   for (let step = 1; step <= maxSteps; step++) {
     if (aborted()) {
       markStopped();
@@ -132,6 +142,10 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
           o.onEvent({ type: "text", delta: d });
         },
         onRetry: (r) => o.onEvent({ type: "retry", ...r }),
+        onThinking: () => o.onEvent({ type: "thinking" }),
+        onThinkingOff: (reason) => o.onEvent({ type: "thinking_off", reason }),
+        think: o.think,
+        state: callState,
         fetchFn: o.fetchFn,
         webSearch: o.webSearch,
         vision: o.vision,
@@ -183,6 +197,24 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         const spec = specMap.get(call.name);
         if (!spec) throw new Error(`Không có công cụ tên "${call.name}".`);
         if (call.args?.__invalid_json) throw new Error("Tham số gửi lên không phải JSON hợp lệ, hãy gọi lại.");
+        // Soát lập luận trước khi ghi sửa đổi vào điều khoản (tùy chọn): một lượt model riêng, không nằm trong lịch sử
+        if (o.review && spec.reviewable && reviewBlocks < MAX_REVIEW_BLOCKS) {
+          o.onEvent({ type: "review_start", call });
+          let verdict: { ok: boolean; note?: string };
+          try {
+            verdict = await o.review(call, spec);
+          } catch (e: any) {
+            if (aborted() || e?.name === "AbortError") throw e;
+            verdict = { ok: true, note: "Không soát được: " + (e?.message || String(e)) };
+          }
+          o.onEvent({ type: "review_end", call, ok: verdict.ok, note: verdict.note });
+          if (!verdict.ok) {
+            reviewBlocks++;
+            throw new Error(
+              `CHƯA GHI vào văn bản. Bước soát lập luận trước khi sửa nêu vấn đề: ${verdict.note || "(không nêu lý do)"} — Hãy xem lại đề xuất: nếu vấn đề đúng thì sửa đề xuất rồi gọi lại công cụ; nếu bạn chắc đề xuất ban đầu đúng thì nói rõ lý do với người dùng và hỏi ý họ trước khi ghi.`
+            );
+          }
+        }
         let reason: string | null = null;
         if (o.confirmRisky && spec.risky) reason = await spec.risky(call.args || {});
         if (reason || (spec.write && o.askBeforeWrite)) {
@@ -196,6 +228,12 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
           : o.tools.execute(call.name, call.args || {}, { log: o.log });
         result = await withTimeout(Promise.resolve(run), spec.timeoutMs ?? o.toolTimeoutMs ?? TOOL_TIMEOUT_MS, call.name);
       } catch (e: any) {
+        if (e?.name === "AbortError" && aborted()) {
+          // Bấm Dừng trong lúc soát lập luận: lệnh này và các lệnh sau đều chưa chạy
+          for (const rest of res.toolCalls.slice(i)) push(toolMsg(rest, { ok: false, error: NOT_RUN_STOPPED }));
+          markStopped();
+          throw stopError();
+        }
         error = e?.message || String(e);
         if (e?.code && !String(error).includes(e.code)) error += ` [${e.code}]`;
         if (e?.debugInfo?.errorLocation) error += ` (${e.debugInfo.errorLocation})`;
