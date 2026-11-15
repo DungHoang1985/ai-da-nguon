@@ -480,8 +480,8 @@ async function liveHits(ctx: Word.RequestContext, hits: Word.Range[], hasChanges
   return hits.filter((h, k) => strip(cur[k].value) === strip(h.text));
 }
 
-/** Áp kế hoạch sửa mức từ vào một đoạn: tìm mọi chỗ trong một lần sync, sửa trong một lần sync, từ phải sang trái */
-async function applyPlan(ctx: Word.RequestContext, p: Word.Paragraph, plan: EditPlan): Promise<void> {
+/** Áp kế hoạch sửa mức từ vào một đoạn (hoặc một vùng chữ tìm thấy): tìm mọi chỗ trong một lần sync, sửa trong một lần sync, từ phải sang trái */
+async function applyPlan(ctx: Word.RequestContext, p: Word.Paragraph | Word.Range, plan: EditPlan): Promise<void> {
   const locs: Locator[] = [];
   for (const op of plan.ops) {
     if (op.kind === "insertStart") continue;
@@ -968,7 +968,13 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               const byId = new Map(loaded.rows.map((r) => [r.id as string, r.text] as [string, string]));
               new Set(tps.map((p) => p.uniqueLocalId)).forEach((id) => byId.has(id) && u.inverse.push(restoreText(id, byId.get(id) as string)));
             }
-            targets.forEach((t) => (replace ? t.insertText(replace, "Replace") : t.delete()));
+            // Cụm cũ và cụm mới có phần chung: chỉ đổi đúng các từ khác đi (dấu sửa đổi nhỏ nhất, giữ định dạng); khác hẳn thì thay cả cụm
+            for (const t of targets) {
+              const plan = replace ? planParagraphEdit(t.text, t.text, replace) : "xóa";
+              if (typeof plan !== "string" && plan.hunks >= 1 && plan.hunks <= 3 && plan.ratio < 0.8) await applyPlan(ctx, t, plan);
+              else if (replace) t.insertText(replace, "Replace");
+              else t.delete();
+            }
             await ctx.sync();
             return { ok: true, found: live.length, replaced: targets.length, message: `Đã thay ${targets.length} chỗ${where}` };
           });

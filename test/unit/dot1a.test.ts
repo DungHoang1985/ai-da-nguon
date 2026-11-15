@@ -15,7 +15,7 @@ import {
   planParagraphEdit,
   snapChange,
 } from "../../src/core/worddiff";
-import { isMarkdownNumberedList, packParagraphs, parseMarkdownLine, searchRows } from "../../src/office/util";
+import { isMarkdownNumberedList, packParagraphs, parseMarkdownLine, searchRows, searchRowsByWords } from "../../src/office/util";
 import { findRefs } from "../../src/core/refs";
 import { WORD_SPECS, WORD_SYSTEM_PROMPT } from "../../src/office/wordTools";
 import { BUILTIN_SKILLS } from "../../src/core/skillpack";
@@ -481,6 +481,34 @@ describe("Đợt 1A – công cụ và lời nhắc", () => {
     assert.strictEqual(searchRows(rs, "Bên B").total, 2);
     assert.strictEqual(searchRows(rs, "thanh toan").total, 0);
     assert.strictEqual(searchRows(rs, "thanh toan", { ignoreAccents: true }).total, 3);
+  });
+  it("không đoạn nào chứa nguyên cụm: tìm theo từng từ, đoạn có nhiều từ của câu hỏi nhất đứng trước", () => {
+    const rs = [
+      { i: 0, text: "Tiền Thuê được thanh toán theo quý." },
+      { i: 1, text: "Nếu chậm thanh toán, Bên Thuê phải trả lãi chậm trả 0,05% mỗi ngày. Câu khác không liên quan." },
+      { i: 2, text: "Bên Cho Thuê xuất hóa đơn." },
+      { i: 3, text: "Lãi không tính trên tiền đặt cọc.", deleted: false },
+    ];
+    assert.strictEqual(searchRows(rs, "lãi chậm thanh toán").total, 0);
+    const w = searchRowsByWords(rs, "lãi chậm thanh toán");
+    assert.deepStrictEqual(w.words, ["lai", "cham", "thanh", "toan"]);
+    assert.deepStrictEqual(
+      w.hits.map((h) => [h.i, h.matched]),
+      [
+        [1, 4],
+        [0, 2],
+      ]
+    );
+    assert.ok(w.hits[0].sentence.startsWith("Nếu chậm thanh toán"), "trích câu chứa nhiều từ khớp nhất");
+    assert.deepStrictEqual(searchRowsByWords(rs, "lãi").hits, [], "một từ thì không tìm theo từng từ");
+  });
+  it("tìm và thay một cụm: chỉ đổi đúng từ khác đi khi cụm cũ và mới có phần chung", () => {
+    const p = planParagraphEdit("chưa gồm thuế giá trị gia tăng", "chưa gồm thuế giá trị gia tăng", "đã gồm thuế giá trị gia tăng") as any;
+    assert.strictEqual(p.hunks, 1);
+    assert.deepStrictEqual({ s: p.ops[0].from.search, t: p.ops[0].text }, { s: "chưa", t: "đã" });
+    assert.ok(p.ratio < 0.8);
+    const q = planParagraphEdit("30", "30", "60") as any;
+    assert.ok(q.ratio >= 0.8, "cụm khác hẳn thì thay cả cụm");
   });
   it("dòng '5. Thanh toán' đứng lẻ giữ nguyên số; hai dòng 1. 2. mới thành danh sách", () => {
     assert.strictEqual(isMarkdownNumberedList(["5. Thanh toán"]), false);

@@ -1,0 +1,51 @@
+{
+ "yeuCau": "Viết lại Điều 4.2: đổi “chưa gồm thuế giá trị gia tăng” thành “đã gồm thuế giá trị gia tăng”, đổi “ba năm đầu” thành “hai năm đầu”, và thêm vào cuối điều câu “Đơn giá này không áp dụng cho diện tích sân bãi.”. Giữ nguyên mọi chữ khác của điều này.",
+ "cacBuoc": [
+  "✅ Đọc 4.2",
+  "✅ Thay \"chưa gồm thuế giá trị gia tăng\" → \"đã gồm thuế giá trị gia tăng\" ở [¶22]",
+  "✅ Thay \"ba năm đầu\" → \"hai năm đầu\" ở [¶22]",
+  "✅ Thay \"có liên quan của mình.\" → \"có liên quan của mình. Đơn giá này không\" ở [",
+  "✅ Đọc đoạn 22–23"
+ ],
+ "daHoi": [
+  "AI muốn: Thay \"chưa gồm thuế giá trị gia tăng\" → \"đã gồm thuế giá trị gia tăng\" ở [¶22] | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "truoc": {
+  "doan": 22,
+  "hienTai": "Đơn giá thuê là 420.000 đồng cho mỗi mét vuông mỗi tháng, chưa gồm thuế giá trị gia tăng, áp dụng cố định trong ba năm đầu. Chi phí phát sinh do một bên không tuân thủ quy định về tiền thuê do chính bên đó gánh chịu, trừ khi hợp đồng có quy định khác. Định kỳ hằng năm, hai bên rà soát việc thực hiện nội dung về tiền thuê và ghi nhận kết quả bằng biên bản. Quy định về tiền thuê tiếp tục ràng buộc người kế thừa quyền, nghĩa vụ hợp pháp của mỗi bên. Các bên hiểu rằng nội dung về tiền thuê được giải thích theo ngữ cảnh chung của hợp đồng và thông lệ của ngành. Việc một bên chấp nhận ngoại lệ đối với tiền thuê trong một lần không tạo thành tiền lệ cho các lần sau. Việc thực hiện nội dung về tiền thuê phải phù hợp với các điều khoản khác của hợp đồng và không làm giảm quyền của bên còn lại. Hai bên ghi nhận rằng quy định về tiền thuê đã được trao đổi kỹ trong quá trình đàm phán và phản ánh đúng ý chí của mỗi bên. Khi phát sinh vướng mắc liên quan đến tiền thuê, bên phát hiện thông báo ngay cho bên kia để cùng xem xét, xử lý trên tinh thần hợp tác. Mọi tài liệu, biên bản lập trong quá trình thực hiện quy định về tiền thuê được lưu giữ đầy đủ và xuất trình khi bên kia có yêu cầu hợp lý. Trường hợp cần hướng dẫn chi tiết hơn về tiền thuê, hai bên thống nhất bằng văn bản và văn bản đó được coi là một phần của hợp đồng. Không bên nào được viện dẫn việc bên kia chậm thực hiện quyền của mình về tiền thuê để coi đó là sự từ bỏ quyền. Người đại diện của mỗi bên chịu trách nhiệm phổ biến quy định về tiền thuê tới các bộ phận có liên quan của mình.",
+  "suaDoiTrongDoan": [
+   "Added \"420.000 đồng\"",
+   "Deleted \"450.000 đồng\""
+  ],
+  "haiDoanBenCanh": [
+   "Tiền Thuê được tính theo diện tích sàn thực tế và đơn giá qu",
+   "Từ năm thứ tư, đơn giá thuê tăng 3% sau mỗi hai năm so với đ"
+  ],
+  "tongSuaDoi": 40,
+  "tongNhanXet": 5
+ },
+ "sauKhiSua": {
+  "dungCauMongMuon": true,
+  "hienTai": "Đơn giá thuê là 420.000 đồng cho mỗi mét vuông mỗi tháng, đã gồm thuế giá trị gia tăng, áp dụng cố định trong hai năm đầu. Chi phí phát sinh do một bên không tuân thủ quy định về tiền thuê do chính bê … m phổ biến quy định về tiền thuê tới các bộ phận có liên quan của mình. Đơn giá này không áp dụng cho diện tích sân bãi.",
+  "suaDoiMoiTrongDoan": [
+   "Added \"đã\"",
+   "Deleted \"chưa\"",
+   "Added \"hai\"",
+   "Deleted \"ba\"",
+   "Added \" Đơn giá này không áp dụng cho diện tích sân bãi.\""
+  ],
+  "haiDoanBenCanhKhongDoi": true,
+  "tongSuaDoi": 45
+ },
+ "nutHoanTac": "Hoàn tác thay đổi (3)",
+ "thongBaoSauKhiBam": [
+  "Sửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.",
+  "Đã hoàn tác 3 thao tác."
+ ],
+ "sauHoanTac": {
+  "veNhuTruoc": true,
+  "suaDoiTrongDoanNhuTruoc": true,
+  "tongSuaDoi": 40,
+  "tongNhanXet": 5
+ }
+}
