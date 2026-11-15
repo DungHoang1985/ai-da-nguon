@@ -92,8 +92,11 @@ export function checkNumbering(rows: ParaRow[], outline: OutlineItem[]): Issue[]
     if (it.kind === "heading" || !it.key) continue;
     const prefix = it.kind === "dotted" ? it.key.slice(0, it.key.lastIndexOf(".")) : "";
     const word = it.kind === "chapter" || it.kind === "section" ? it.num.replace(/\s*([0-9]+|[IVXLCDM]+)$/i, "").toLowerCase() : "";
-    // Điều được đánh số liên tục qua các chương: so theo thứ tự trong văn bản, không theo mục cha
-    const group = it.kind === "article" ? "article" : `${it.parent}|${it.kind}|${prefix}|${word}|${it.source === "list" ? "L" : "T"}`;
+    // Điều được đánh số liên tục qua các chương: so theo thứ tự trong văn bản, không theo mục cha.
+    // Khoản dạng "5.3": anh em là các khoản cùng phần đầu "5.", dù nằm dưới mục cha nào (khoản gõ tay nằm cách xa điều của nó,
+    // sau một tiêu đề khác, vẫn phải được so với khoản đứng trước — lộ ra khi chạy Tự kiểm tra trên văn bản thật 15/11/2026).
+    const src = it.source === "list" ? "L" : "T";
+    const group = it.kind === "article" ? "article" : it.kind === "dotted" ? `dotted|${prefix}|${src}` : `${it.parent}|${it.kind}|${word}|${src}`;
     const prev = last.get(group);
     last.set(group, it);
     const where = clauseName(it);

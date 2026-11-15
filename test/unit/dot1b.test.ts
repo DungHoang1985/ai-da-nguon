@@ -135,6 +135,20 @@ describe("Đợt 1B – soát nhất quán: đánh số", () => {
     assert.ok(out[0].message.includes("không có 2.1"));
   });
 
+  it("khoản gõ tay nằm cách xa điều của nó (sau một tiêu đề khác) vẫn được so với khoản đứng trước", () => {
+    const rs = rows([
+      { text: "Điều 97. Điều khoản gõ tay" },
+      { text: "97.1 Thời hạn thuê là 24 tháng." },
+      { text: "Tiêu đề chen giữa", outlineLevel: 2, style: "Heading 2" },
+      { text: "5. Thanh toán bổ sung" },
+      { text: "Một đoạn chữ thường." },
+      { text: "97.3 Khoản nhảy số." },
+    ]);
+    const out = checkNumbering(rs, buildOutline(rs));
+    assert.strictEqual(out.length, 1);
+    assert.ok(out[0].message.includes("sau 97.1 là 97.3") && out[0].p === 5);
+  });
+
   it("các điều đánh số liên tục qua nhiều chương: không báo; phụ lục đánh số lại từ 1: không báo", () => {
     const rs = typed(["Chương I. Quy định chung", "Điều 1. Phạm vi", "Điều 2. Đối tượng", "Chương II. Quy định cụ thể", "Điều 3. Giá", "Điều 4. Thanh toán", "PHỤ LỤC 01. BẢNG GIÁ", "1. Giá thuê", "2. Phí"]);
     assert.deepStrictEqual(checkNumbering(rs, buildOutline(rs)), []);

@@ -915,65 +915,80 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
 
   await step("So sánh phiên bản: liệt kê đúng 3 chỗ khác kèm số điều; văn bản đang mở không đổi", async () => {
     if (!sup("1.3", "WordApiHiddenDocument")) throw new Skip("Cần WordApiHiddenDocument 1.3 để đọc tệp .docx khác");
-    const s = await need(START);
-    const e = await need(END);
-    // Chữ hiện tại của vùng thử → dựng "phiên bản khác": sửa một đoạn, bỏ một đoạn, thêm một đoạn
-    const cur: { i: number; text: string }[] = [];
-    for (let start = s, guard = 0; start <= e && guard < 40; guard++) {
-      const r = await run("word_read_paragraphs", { start, end: e + 1 });
-      r.paragraphs.filter((p: any) => !p.deleted && String(p.text).trim()).forEach((p: any) => cur.push({ i: p.i, text: p.text }));
-      if (r.next_start === undefined || r.next_start > e) break;
-      start = r.next_start;
-    }
-    const iPlain = cur.findIndex((p) => p.text.includes(`Hợp đồng số ${code}`));
-    const iArt2 = cur.findIndex((p) => p.text === T.art2);
-    expect(iPlain >= 0 && iArt2 >= 0, "Vùng thử thiếu đoạn mẫu để so sánh");
-    const ADDED = `Đoạn chỉ có ở phiên bản khác ${code}.`;
-    const other = cur.map((p) => p.text);
-    other[iPlain] = other[iPlain].replace("01/01/2026", "02/02/2026");
-    other.splice(other.length - 1, 0, ADDED);
-    other.splice(iArt2, 1);
-    const xml = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const JSZip = (await import("jszip")).default;
-    const zip = new JSZip();
-    zip.file(
-      "[Content_Types].xml",
-      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`
-    );
-    zip.file(
-      "_rels/.rels",
-      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`
-    );
-    zip.file(
-      "word/document.xml",
-      `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${other
-        .map((t) => `<w:p><w:r><w:t xml:space="preserve">${xml(t)}</w:t></w:r></w:p>`)
-        .join("")}</w:body></w:document>`
-    );
-    const name = `aidn-thu-so-sanh-${code}.docx`;
-    const { registerAttachedFile } = await import("../core/attachedFiles");
-    registerAttachedFile(name, await zip.generateAsync({ type: "base64" }));
-    const before = await countAll();
-    const r = await run("word_compare_versions", { file: name, from: s, to: e });
-    const after = await countAll();
-    expect(r.open_document_modified === false && after.changes === before.changes && after.comments === before.comments, "So sánh làm đổi văn bản đang mở");
-    expect((await need(END)) === e && (await need(START)) === s, "So sánh làm đổi số đoạn của văn bản đang mở");
-    const kinds = r.diffs.map((d: any) => d.type).sort().join(",");
-    expect(r.differences === 3 && kinds === "changed,only_current,only_other", `Phải ra đúng 3 chỗ khác (sửa, chỉ ở bản đang mở, chỉ ở phiên bản khác); công cụ ra ${r.differences}: ${kinds}`);
-    const ch = r.diffs.find((d: any) => d.type === "changed");
-    expect(ch.i === cur[iPlain].i && (ch.changes || []).some((c: string) => c.includes("01/01/2026") && c.includes("02/02/2026")), "Chỗ sửa không chỉ đúng đoạn hoặc đúng chữ đổi");
-    const gone = r.diffs.find((d: any) => d.type === "only_current");
-    expect(gone.i === cur[iArt2].i && /Điều 2/.test(gone.clause), `Đoạn chỉ có ở bản đang mở: báo [¶${gone.i}] ${gone.clause}`);
-    const added = r.diffs.find((d: any) => d.type === "only_other");
-    expect(String(added.other).includes(ADDED), "Không thấy đoạn chỉ có ở phiên bản khác");
-    let miss = "";
+    const KEEP = `Đoạn so sánh giữ nguyên SS${code}.`;
+    const EDIT = `Đoạn so sánh sẽ được sửa SS${code}, ký ngày 01/01/2026.`;
+    const DROP = `Điều khoản phạt chậm giao hàng SS${code} bị bỏ ở phiên bản khác.`;
+    const ADDED = `Phụ lục bảng giá ${code} mới thêm vào.`;
+    await addTemp([KEEP, EDIT, DROP]);
     try {
-      await run("word_compare_versions", { file: "khong-co-tep-nay.docx" });
-    } catch (err: any) {
-      miss = err.message;
+      const s = await need(START);
+      const e = await need(END);
+      // Chữ hiện tại của vùng thử → dựng "phiên bản khác": sửa một đoạn, bỏ một đoạn, thêm một đoạn
+      const cur: { i: number; text: string }[] = [];
+      for (let start = s, guard = 0; start <= e && guard < 60; guard++) {
+        const r = await run("word_read_paragraphs", { start, end: e + 1 });
+        r.paragraphs.filter((p: any) => p.i <= e && !p.deleted && String(p.text).trim()).forEach((p: any) => cur.push({ i: p.i, text: p.text }));
+        if (r.next_start === undefined || r.next_start > e) break;
+        start = r.next_start;
+      }
+      const kEdit = cur.findIndex((p) => p.text === EDIT);
+      const kDrop = cur.findIndex((p) => p.text === DROP);
+      expect(kEdit >= 0 && kDrop >= 0 && cur[cur.length - 1].text === END, "Không đọc lại được các đoạn mẫu của bước so sánh");
+      const other = cur.map((p) => p.text);
+      other[kEdit] = other[kEdit].replace("01/01/2026", "02/02/2026");
+      other.splice(other.length - 1, 0, ADDED);
+      other.splice(kDrop, 1);
+      const xml = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const JSZip = (await import("jszip")).default;
+      const zip = new JSZip();
+      zip.file(
+        "[Content_Types].xml",
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`
+      );
+      zip.file(
+        "_rels/.rels",
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`
+      );
+      zip.file(
+        "word/document.xml",
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${other
+          .map((t) => `<w:p><w:r><w:t xml:space="preserve">${xml(t)}</w:t></w:r></w:p>`)
+          .join("")}</w:body></w:document>`
+      );
+      const name = `aidn-thu-so-sanh-${code}.docx`;
+      const { registerAttachedFile } = await import("../core/attachedFiles");
+      registerAttachedFile(name, await zip.generateAsync({ type: "base64" }));
+      const before = await countAll();
+      const r = await run("word_compare_versions", { file: name, from: s, to: e });
+      const after = await countAll();
+      expect(r.open_document_modified === false && after.changes === before.changes && after.comments === before.comments, "So sánh làm đổi văn bản đang mở");
+      expect((await need(END)) === e && (await need(START)) === s, "So sánh làm đổi số đoạn của văn bản đang mở");
+      const kinds = r.diffs
+        .map((d: any) => d.type)
+        .sort()
+        .join(",");
+      expect(
+        r.differences === 3 && kinds === "changed,only_current,only_other",
+        `Phải ra đúng 3 chỗ khác (sửa, chỉ ở bản đang mở, chỉ ở phiên bản khác); công cụ ra ${r.differences}: ${r.diffs.map((d: any) => `${d.type}@${d.i}`).join(", ")}`
+      );
+      const ch = r.diffs.find((d: any) => d.type === "changed");
+      expect(ch.i === cur[kEdit].i && (ch.changes || []).some((c: string) => c.includes("01/01/2026") && c.includes("02/02/2026")), "Chỗ sửa không chỉ đúng đoạn hoặc đúng chữ đổi");
+      const gone = r.diffs.find((d: any) => d.type === "only_current");
+      expect(gone.i === cur[kDrop].i && String(gone.current).includes("phạt chậm giao hàng"), `Đoạn chỉ có ở bản đang mở: báo [¶${gone.i}], đúng phải là [¶${cur[kDrop].i}]`);
+      const added = r.diffs.find((d: any) => d.type === "only_other");
+      expect(String(added.other).includes(ADDED), "Không thấy đoạn chỉ có ở phiên bản khác");
+      expect(typeof ch.clause === "string" && ch.clause.length > 0, "Chỗ khác không kèm số điều");
+      let miss = "";
+      try {
+        await run("word_compare_versions", { file: "khong-co-tep-nay.docx" });
+      } catch (err: any) {
+        miss = err.message;
+      }
+      expect(/Không thấy tệp đính kèm/.test(miss), "Gọi với tên tệp không có mà không báo lỗi rõ");
+      return `So ${r.paragraphs_current} đoạn của vùng thử với tệp dựng sẵn: đúng 3 chỗ khác, đúng loại và đúng chỗ — sửa ở [¶${ch.i}] (${ch.clause}): ${ch.changes[0]}; bỏ [¶${gone.i}]; thêm một đoạn sau [¶${added.i}]. Văn bản đang mở không đổi (${after.changes} sửa đổi, ${after.comments} nhận xét như trước)`;
+    } finally {
+      await removeTemp(["SS" + code]);
     }
-    expect(/Không thấy tệp đính kèm/.test(miss), "Gọi với tên tệp không có mà không báo lỗi rõ");
-    return `3 chỗ khác, đúng loại và đúng chỗ: sửa ở [¶${ch.i}] (${ch.clause}), bỏ ${gone.clause} [¶${gone.i}], thêm một đoạn sau ${added.clause}; văn bản đang mở không đổi (${after.changes} sửa đổi, ${after.comments} nhận xét như trước)`;
   });
 
   await step("Chuyển tới đoạn", async () => (await run("word_go_to", { paragraph_index: await need(T.art1) })).message);
