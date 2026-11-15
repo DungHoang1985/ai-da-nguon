@@ -406,9 +406,19 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
 
   await step("Đổi cấp điều khoản", async () => {
     const i = await need(`điểm con mới ${code}`);
+    const mark = log.length;
     const res = await run("word_change_level", { index: i, expect: "điểm con mới", direction: "shallower" });
     expect(res.ok && res.num === "2.2", `Sau khi lên một cấp: ${JSON.stringify(res)}`);
-    return res.message;
+    // Hoàn tác việc đổi cấp rồi làm lại
+    const entries = log.slice(mark);
+    expect(entries.length === 1, `Đổi cấp ghi ${entries.length} mục hoàn tác (phải là 1)`);
+    for (const x of entries.reverse()) await x.undo();
+    log.length = mark;
+    const back = (await regionOutline()).find((o) => o.i === i);
+    expect(back?.num === "2.1(a)", `Hoàn tác đổi cấp: số điều là ${back?.num} (phải về 2.1(a))`);
+    const again = await run("word_change_level", { index: i, expect: "điểm con mới", direction: "shallower" });
+    expect(again.num === "2.2", `Đổi cấp lần hai: ${JSON.stringify(again)}`);
+    return `${res.message}; hoàn tác thì về 2.1(a); đổi lại thành 2.2`;
   });
 
   await step("Định dạng chữ: phải chỉ rõ vị trí; đọc lại thấy đậm và đổi màu", async () => {
@@ -420,7 +430,14 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     }
     expect(/đúng một vị trí/.test(refused), `Không chỉ vị trí mà không từ chối: ${refused}`);
     const i = await need(`Mục kiểm tra ${code}`);
-    await run("word_format_text", { find: `kiểm tra ${code}`, paragraph_index: i, bold: true, font_color: "#C00000" });
+    let noExpect = "";
+    try {
+      await run("word_format_text", { find: `kiểm tra ${code}`, paragraph_index: i, bold: true });
+    } catch (e: any) {
+      noExpect = e.message;
+    }
+    expect(/Thiếu expect/.test(noExpect), `Chỉ đoạn bằng số mà thiếu expect vẫn không từ chối: ${noExpect}`);
+    await run("word_format_text", { find: `kiểm tra ${code}`, paragraph_index: i, expect: "Mục kiểm tra", bold: true, font_color: "#C00000" });
     const f = await Word.run(async (ctx) => {
       const hit = ctx.document.body.search(`kiểm tra ${code}`, { matchCase: true });
       hit.load("items/font/bold,items/font/color");
@@ -546,11 +563,27 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       refused = e.message;
     }
     expect(/danh sách đã đổi/.test(refused), `Chữ đối chiếu sai mà không từ chối: ${refused}`);
+    let noTexts = "";
+    try {
+      await run("word_review_revision", { action: "accept", indexes: [target.index] });
+    } catch (e: any) {
+      noTexts = e.message;
+    }
+    expect(/Thiếu texts/.test(noTexts), `Duyệt theo số mà không kèm chữ đối chiếu vẫn không từ chối: ${noTexts}`);
+    let noAuthor = "";
+    try {
+      await run("word_review_revision", { action: "reject", all: true, author: `không-có-ai-${code}` });
+    } catch (e: any) {
+      noAuthor = e.message;
+    }
+    expect(/Không có sửa đổi nào của/.test(noAuthor), `Duyệt tất cả của một tác giả không tồn tại: ${noAuthor}`);
+    const askMany = await riskOf("word_review_revision", { action: "accept", indexes: [0, 1, 2, 3, 4, 5], texts: ["", "", "", "", "", ""] });
+    expect(askMany && /6 sửa đổi cùng lúc/.test(askMany), `Duyệt 6 sửa đổi một lúc mà lời cảnh báo là: ${askMany}`);
     const before = (await countAll()).changes;
     await run("word_review_revision", { action: "accept", indexes: [target.index], texts: ["0,03%"] });
     const after = (await countAll()).changes;
     expect(after === before - 1, `Còn ${after} sửa đổi, trước đó ${before}`);
-    return `Chữ đối chiếu sai → từ chối; đúng → đã chấp nhận 1 (Added “0,03%”), còn ${after}`;
+    return `Chữ đối chiếu sai hoặc thiếu → từ chối; tác giả không có → từ chối; duyệt 6 sửa đổi một lúc → có hỏi; đúng → đã chấp nhận 1 (Added “0,03%”), còn ${after}`;
   });
 
   await step("Đọc văn bản dài: đọc hết theo next_start, không sót đoạn", async () => {

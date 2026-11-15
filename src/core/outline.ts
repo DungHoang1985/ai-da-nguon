@@ -58,6 +58,21 @@ const ROMAN = /^(?=[ivxlcdm])m{0,3}(cm|cd|d?c{0,3})(xc|xl|l?x{0,3})(ix|iv|v?i{0,
 const CHAPTER_WORDS = "chương|phần|phụ lục|chapter|part|appendix|annex|schedule";
 const ARTICLE_WORDS = "điều|article|clause|section";
 const LETTERS = "abcdđefghijklmnopqrstuvwxyz";
+/** Đơn vị đứng ngay sau một số thập phân: dấu hiệu đó là số đo, không phải số khoản */
+const UNIT = /^(triệu|tỷ|tỉ|nghìn|ngàn|trăm|đồng|vnđ|vnd|usd|eur|m2|m²|m3|m³|ha|kg|tấn|km|lần|năm|tháng|tuần|ngày|giờ|phút|%|‰)(?![\p{L}\p{N}])/iu;
+
+/** Giá trị của số La Mã (I = 1, IV = 4…) */
+export function romanValue(s: string): number {
+  const v: Record<string, number> = { i: 1, v: 5, x: 10, l: 50, c: 100, d: 500, m: 1000 };
+  let total = 0;
+  const t = s.toLowerCase();
+  for (let k = 0; k < t.length; k++) {
+    const a = v[t[k]] || 0;
+    const b = v[t[k + 1]] || 0;
+    total += a < b ? -a : a;
+  }
+  return total;
+}
 
 const cap = (s: string) => (s ? s[0].toUpperCase() + s.slice(1).toLowerCase() : s);
 const cleanTitle = (s: string) => s.replace(/\s+/g, " ").trim();
@@ -76,30 +91,36 @@ export function parseNumber(raw: string, isLabel: boolean): Parsed | null {
   if (!s) return null;
   let m: RegExpMatchArray | null;
 
+  // Số gõ tay: phần sau số phải trông như tiêu đề chứ không phải phần tiếp của một câu. "Điều 3 của Hợp đồng này quy định…",
+  // "Phụ lục 01 là bộ phận không tách rời…" là câu dẫn chiếu, không phải điều khoản (soát mã độc lập 15/11/2026, mục C2).
+  // Nhận khi: hết dòng; có dấu phân cách sau số (. : – -); hoặc phần sau ngắn, viết hoa chữ đầu, không kết thúc như một câu.
+  const titleLike = (sep: string | undefined, rest: string) =>
+    isLabel || !rest || !!(sep && sep.trim()) || (rest.length <= 80 && /^\p{Lu}/u.test(rest) && !/[.;,:]$/.test(rest));
+
   // Chương II, Phần 1, Phụ lục 01
-  m = s.match(new RegExp(`^(${CHAPTER_WORDS})\\s+([0-9]{1,3}|[ivxlcdm]+)(?![\\p{L}\\p{N}])\\s*[.:–-]?\\s*(.*)$`, "iu"));
-  if (m && (/^\d+$/.test(m[2]) || ROMAN.test(m[2])) && (isLabel || s.length <= 200)) {
-    return { kind: "chapter", label: s.slice(0, s.length - m[3].length).trim(), rest: m[3], word: cap(m[1]), id: m[2].toUpperCase() };
+  m = s.match(new RegExp(`^(${CHAPTER_WORDS})\\s+([0-9]{1,3}|[ivxlcdm]+)(?![\\p{L}\\p{N}])(\\s*[.:–-])?\\s*(.*)$`, "iu"));
+  if (m && (/^\d+$/.test(m[2]) || ROMAN.test(m[2])) && (isLabel || s.length <= 200) && titleLike(m[3], m[4])) {
+    return { kind: "chapter", label: s.slice(0, s.length - m[4].length).trim(), rest: m[4], word: cap(m[1]), id: m[2].toUpperCase() };
   }
   // Mục 2
-  m = s.match(/^(mục|tiểu mục)\s+([0-9]{1,3}|[ivxlcdm]+)(?![\p{L}\p{N}])\s*[.:–-]?\s*(.*)$/iu);
-  if (m && (/^\d+$/.test(m[2]) || ROMAN.test(m[2])) && (isLabel || s.length <= 200)) {
-    return { kind: "section", label: s.slice(0, s.length - m[3].length).trim(), rest: m[3], word: cap(m[1]), id: m[2].toUpperCase() };
+  m = s.match(/^(mục|tiểu mục)\s+([0-9]{1,3}|[ivxlcdm]+)(?![\p{L}\p{N}])(\s*[.:–-])?\s*(.*)$/iu);
+  if (m && (/^\d+$/.test(m[2]) || ROMAN.test(m[2])) && (isLabel || s.length <= 200) && titleLike(m[3], m[4])) {
+    return { kind: "section", label: s.slice(0, s.length - m[4].length).trim(), rest: m[4], word: cap(m[1]), id: m[2].toUpperCase() };
   }
   // Điều 5.3 / Điều 5
-  m = s.match(new RegExp(`^(${ARTICLE_WORDS})\\s+(\\d{1,3}(?:\\.\\d{1,3})*)\\s*[.:–-]?\\s*(.*)$`, "i"));
-  if (m) {
-    const label = s.slice(0, s.length - m[3].length).trim();
+  m = s.match(new RegExp(`^(${ARTICLE_WORDS})\\s+(\\d{1,3}(?:\\.\\d{1,3})*)(?![\\p{L}\\p{N}])(\\s*[.:–-])?\\s*(.*)$`, "iu"));
+  if (m && titleLike(m[3], m[4])) {
+    const label = s.slice(0, s.length - m[4].length).trim();
     if (m[2].includes(".")) {
       const parts = dottedParts(m[2]);
-      if (parts) return { kind: "dotted", label, rest: m[3], parts };
-    } else return { kind: "article", label, rest: m[3], word: cap(m[1]), n: Number(m[2]) };
+      if (parts) return { kind: "dotted", label, rest: m[4], parts };
+    } else return { kind: "article", label, rest: m[4], word: cap(m[1]), n: Number(m[2]) };
   }
-  // 5.3 / 5.3. / 5.3.1
+  // 5.3 / 5.3. / 5.3.1  — "1.5 triệu đồng", "2.5%" ở đầu đoạn là số đo, không phải số khoản
   m = s.match(/^(\d{1,3}(?:\.\d{1,3})+)\.?\)?(?:\s+(.*))?$/);
   if (m && (isLabel || m[2])) {
     const parts = dottedParts(m[1]);
-    if (parts && !/^[%‰]/.test(m[2] || "")) return { kind: "dotted", label: s.slice(0, s.length - (m[2] || "").length).trim(), rest: m[2] || "", parts };
+    if (parts && (isLabel || !UNIT.test(m[2] || ""))) return { kind: "dotted", label: s.slice(0, s.length - (m[2] || "").length).trim(), rest: m[2] || "", parts };
   }
   // 5. / 5) / (5)
   m = s.match(/^(?:\((\d{1,3})\)|(\d{1,3})[.)])(?:\s+(.*))?$/);
@@ -162,6 +183,10 @@ export function buildOutline(rows: ParaRow[]): OutlineItem[] {
     for (let s = stack.length - 1; s >= 0; s--) if (ok(items[stack[s]])) return stack[s];
     return -1;
   };
+  /** Khóa số đã gặp và tiền tố của các khóa có dấu chấm đã gặp (để nhận số gõ tay theo ngữ cảnh) */
+  const seenKeys = new Set<string>();
+  const seenPrefixes = new Set<string>();
+  let lastTypedRoman = 0;
   const sameList = (a: { source: string; listId?: number }, b: { source: string; listId?: number }) =>
     (a.source === "list") === (b.source === "list") && (a.listId === undefined || b.listId === undefined || a.listId === b.listId);
 
@@ -178,7 +203,21 @@ export function buildOutline(rows: ParaRow[]): OutlineItem[] {
         p.rest = text;
       } else if (/[\p{L}\p{N}]/u.test(row.listString)) p = null; // nhãn lạ: bỏ qua
     }
-    if (!p && !(row.listString && row.listString.trim())) p = text ? parseNumber(text, false) : null;
+    if (!p && !(row.listString && row.listString.trim())) {
+      p = text ? parseNumber(text, false) : null;
+      // Số gõ tay phải khớp ngữ cảnh, nếu không thì là chữ thường của đoạn:
+      if (p && p.kind === "dotted") {
+        // "5.3" chỉ là khoản khi đã có "5" hoặc một khoản "5.x" đứng trước, hoặc là khoản đầu tiên ("x.1")
+        const parts = p.parts as number[];
+        const prefix = parts.slice(0, -1).join(".");
+        if (!seenKeys.has(prefix) && !seenPrefixes.has(prefix) && parts[parts.length - 1] !== 1) p = null;
+      } else if (p && p.kind === "chapter" && !p.word) {
+        // "I.", "II." gõ tay: phải bắt đầu từ I và nối tiếp nhau ("C. Công ty X", "D. …" là danh sách chữ cái)
+        const v = romanValue(String(p.id));
+        if (v === 1 || v === lastTypedRoman + 1) lastTypedRoman = v;
+        else p = null;
+      }
+    }
     if (!p) {
       if (ol <= 9 && text) p = { kind: "heading", label: "", rest: text };
       else continue;
@@ -224,7 +263,8 @@ export function buildOutline(rows: ParaRow[]): OutlineItem[] {
       num = key;
     } else if (kind === "single") {
       const n = p.n as number;
-      const sib = nearest((it) => it.kind === "single" && it.n === n - 1 && sameList(it, me) && (source !== "list" || it.listLevel === row.listLevel));
+      // Anh em = khoản cùng loại đứng trước có số nhỏ hơn (không đòi đúng n-1: khoản liền trước có thể đã bị xóa có theo dõi hoặc đánh nhảy số)
+      const sib = nearest((it) => it.kind === "single" && (it.n as number) < n && sameList(it, me) && (source !== "list" || it.listLevel === row.listLevel));
       if (sib >= 0) parent = items[sib].parent;
       else if (source === "list" && (row.listLevel || 0) > 0) {
         parent = nearest((it) => it.source === "list" && (it.listLevel ?? 0) < (row.listLevel || 0) && sameList(it, me));
@@ -270,6 +310,10 @@ export function buildOutline(rows: ParaRow[]): OutlineItem[] {
       ol,
     };
     items.push(node);
+    if (NUMERIC.includes(kind) && key) {
+      seenKeys.add(key);
+      if (key.includes(".")) seenPrefixes.add(key.slice(0, key.lastIndexOf(".")));
+    }
     stack = pathOf(items.length - 1);
   }
 

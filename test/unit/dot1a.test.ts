@@ -12,7 +12,9 @@ import {
   matchesExpect,
   occurrenceAt,
   pickByKeys,
+  pickWanted,
   planParagraphEdit,
+  resolveAuthor,
   snapChange,
 } from "../../src/core/worddiff";
 import { isMarkdownNumberedList, packParagraphs, parseMarkdownLine, searchRows, searchRowsByWords } from "../../src/office/util";
@@ -173,6 +175,55 @@ describe("Đợt 1A – mục lục điều khoản (buildOutline)", () => {
     assert.strictEqual(o[1].end, 3, "đoạn trong bảng và đoạn đã xóa vẫn thuộc phạm vi điều đứng trước");
   });
 
+  it("câu dẫn chiếu mở đầu bằng 'Điều N', 'Phụ lục N', 'Phần N' không phải điều khoản (soát mã độc lập, C2)", () => {
+    const rs = rows([
+      { text: "Điều 1. Phạm vi" },
+      { text: "Điều 3 của Hợp đồng này quy định rõ quyền của các bên." },
+      { text: "Phụ lục 01 là bộ phận không tách rời của Hợp đồng này." },
+      { text: "Phần 2 của khoản tiền được trả sau khi nghiệm thu." },
+      { text: "Điều 12 Luật Nhà ở quy định về điều kiện của nhà ở tham gia giao dịch." },
+      { text: "Section 3 of this Agreement applies." },
+      { text: "Điều 2. Giá" },
+      { text: "ĐIỀU 3 THANH TOÁN" },
+      { text: "Điều 4 – Bàn giao" },
+      { text: "PHỤ LỤC 01 MÔ TẢ MẶT BẰNG" },
+    ]);
+    const o = buildOutline(rs);
+    assert.deepStrictEqual(
+      o.map((x) => `${x.i}:${x.num}/${x.level}`),
+      ["0:Điều 1/0", "6:Điều 2/0", "7:Điều 3/0", "8:Điều 4/0", "9:Phụ lục 01/0"]
+    );
+    assert.strictEqual(o[0].end, 5, "Điều 1 gồm cả các câu dẫn chiếu đứng sau nó");
+  });
+
+  it("khoản đứng trước bị xóa có theo dõi hoặc đánh nhảy số: khoản sau vẫn là anh em, không thành khoản con (T1)", () => {
+    const rs = rows([{ text: "Điều 5. Thanh toán" }, { text: "1. Khoản một" }, { text: "", deleted: true }, { text: "3. Khoản ba" }, { text: "4. Khoản bốn" }]);
+    assert.deepStrictEqual(nums(rs), ["0:Điều 5", "1:5.1", "3:5.3", "4:5.4"]);
+    const auto = rows([
+      { text: "Thanh toán", listString: "Điều 5.", listLevel: 0, listId: 1 },
+      { text: "Khoản một", listString: "1.", listLevel: 0, listId: 9 },
+      { text: "", deleted: true, listString: "2.", listLevel: 0, listId: 9 },
+      { text: "Khoản ba", listString: "3.", listLevel: 0, listId: 9 },
+    ]);
+    assert.deepStrictEqual(nums(auto), ["0:Điều 5", "1:5.1", "3:5.3"]);
+  });
+
+  it("số đo đầu đoạn và danh sách chữ hoa gõ tay không thành điều khoản (L1, L2)", () => {
+    const rs = rows([
+      { text: "Điều 1. Giá" },
+      { text: "1.5 triệu đồng mỗi tháng là mức phí quản lý." },
+      { text: "3.5 tỷ đồng là giá trị bảo lãnh." },
+      { text: "C. Công ty X" },
+      { text: "D. Công ty Y" },
+      { text: "9.4 Khoản không có điều 9 đứng trước" },
+      { text: "1.1 Khoản đầu của Điều 1" },
+      { text: "1.2 Khoản hai" },
+    ]);
+    assert.deepStrictEqual(nums(rs), ["0:Điều 1", "6:1.1", "7:1.2"]);
+    const roman = rows([{ text: "I. QUY ĐỊNH CHUNG" }, { text: "Điều 1. A" }, { text: "II. QUY ĐỊNH CỤ THỂ" }, { text: "V. Lạc số" }]);
+    assert.deepStrictEqual(nums(roman), ["0:I", "1:Điều 1", "2:II"]);
+  });
+
   it("parseNumber: nhãn danh sách và số gõ tay", () => {
     assert.strictEqual(parseNumber("Điều 12.", true)?.kind, "article");
     assert.strictEqual(parseNumber("ĐIỀU 12", true)?.n, 12);
@@ -282,6 +333,35 @@ describe("Đợt 1A – so khác mức từ (diffWords)", () => {
     assert.deepStrictEqual({ del: h[0].del, ins: h[0].ins }, { del: "30 ngày", ins: "45 hôm" });
     assert.deepStrictEqual(diffWords(clause, clause), []);
   });
+  it("thử ngẫu nhiên 3.000 cặp câu: áp các khối khác biệt vào câu cũ luôn ra đúng câu mới; kế hoạch sửa thi hành ra đúng câu mới", () => {
+    let seed = 12345;
+    const rnd = (n: number) => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) % n;
+    const words = ["Bên", "A", "B", "30", "ngày", "0,05%", "thanh", "toán", ".", ",", "và", "30", "ab", "a"];
+    const sentence = () => Array.from({ length: 1 + rnd(9) }, () => words[rnd(words.length)]).join(rnd(5) ? " " : "  ");
+    for (let t = 0; t < 3000; t++) {
+      const oldT = sentence();
+      const newT = rnd(4) ? sentence() : oldT.replace(words[rnd(words.length)], words[rnd(words.length)]);
+      const h = diffWords(oldT, newT);
+      assert.strictEqual(applyHunks(oldT, h), newT, `${JSON.stringify(oldT)} → ${JSON.stringify(newT)}`);
+      const plan = planParagraphEdit(oldT, oldT, newT);
+      if (typeof plan === "string") continue;
+      // Thi hành kế hoạch trên chuỗi: mỗi phép định vị bằng lần xuất hiện thứ k
+      const spots = plan.ops
+        .map((op: any) => {
+          if (op.kind === "insertStart") return { s: 0, e: 0, text: op.text };
+          const s = op.from.at;
+          const e = op.kind === "replace" ? (op.to ? op.to.at + op.to.search.length : s + op.from.search.length) : s + op.from.search.length;
+          assert.strictEqual(oldT.substr(op.from.at, op.from.search.length), op.from.search);
+          assert.strictEqual(occurrenceAt(oldT, op.from.search, op.from.at).index, op.from.occurrence);
+          if (op.kind === "replace") return { s, e, text: op.text };
+          return op.kind === "insertAfter" ? { s: e, e, text: op.text } : { s, e: s, text: op.text };
+        })
+        .sort((x: any, y: any) => y.s - x.s);
+      let out = oldT;
+      for (const sp of spots) out = out.slice(0, sp.s) + sp.text + out.slice(sp.e);
+      assert.strictEqual(out, newT, `kế hoạch sai: ${JSON.stringify(oldT)} → ${JSON.stringify(newT)}`);
+    }
+  });
   it("số có dấu chấm, phẩy là một từ: 5.000.000.000 đổi thành 6.000.000.000 là một khối trọn số", () => {
     const h = check("Giá trị là 5.000.000.000 đồng.", "Giá trị là 6.000.000.000 đồng.", 1);
     assert.strictEqual(h[0].del, "5.000.000.000");
@@ -302,7 +382,8 @@ describe("Đợt 1A – kế hoạch sửa đoạn trong Word (planParagraphEdit
     // Đúng dữ liệu thăm dò: .text = "…là 24 tháng12 tháng…", bản hiện tại = "…là 12 tháng…"
     const M = "Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.";
     const C = "Thời hạn thuê là 12 tháng kể từ ngày ký.";
-    const p = planParagraphEdit(M, C, "Thời hạn thuê là 18 tháng kể từ ngày bàn giao.");
+    assert.strictEqual(typeof planParagraphEdit(M, C, "Thời hạn thuê là 18 tháng kể từ ngày bàn giao."), "string", "không có vị trí khúc đã xóa mà gán nhập nhằng thì từ chối");
+    const p = planParagraphEdit(M, C, "Thời hạn thuê là 18 tháng kể từ ngày bàn giao.", [[17, 25]]);
     assert.ok(typeof p !== "string");
     if (typeof p === "string") return;
     assert.strictEqual(p.ops.length, 2);
@@ -315,7 +396,7 @@ describe("Đợt 1A – kế hoạch sửa đoạn trong Word (planParagraphEdit
   it("chỗ sửa vắt qua khúc đã xóa: tách thành từng khúc sống, chữ mới đặt vào khúc đầu", () => {
     const M = "Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.";
     const C = "Thời hạn thuê là 12 tháng kể từ ngày ký.";
-    const p = planParagraphEdit(M, C, "Thời hạn thuê 36 tháng kể từ ngày ký.");
+    const p = planParagraphEdit(M, C, "Thời hạn thuê 36 tháng kể từ ngày ký.", [[17, 25]]);
     assert.ok(typeof p !== "string");
     if (typeof p === "string") return;
     const ops = p.ops as any[];
@@ -357,8 +438,14 @@ describe("Đợt 1A – kế hoạch sửa đoạn trong Word (planParagraphEdit
 
   it("liveMap: dùng vị trí khúc đã xóa khi có; không có thì dò dãy con", () => {
     assert.deepStrictEqual(liveMap("ab ab", "ab", [[0, 3]]), [3, 4]);
-    assert.deepStrictEqual(liveMap("ab ab", "ab"), [0, 1]);
-    assert.deepStrictEqual(liveMap("ab ab", "ab", [[9, 12]]), [0, 1], "vị trí sai thì dò dãy con");
+    assert.strictEqual(liveMap("ab ab", "ab"), null, "không biết khúc nào đã xóa và có hai cách gán: từ chối");
+    assert.strictEqual(liveMap("ab ab", "ab", [[9, 12]]), null, "vị trí sai thì dò dãy con, vẫn nhập nhằng");
+    assert.deepStrictEqual(liveMap("xyz ab", "ab"), [4, 5], "chỉ một cách gán thì nhận");
+    // Lỗi do lần soát mã độc lập tìm ra: chữ "1" của khúc đã xóa bị nhận là chữ sống
+    const M2 = "là 12 tháng18 tháng";
+    assert.strictEqual(typeof planParagraphEdit(M2, "là 18 tháng", "là 20 tháng"), "string");
+    const ok = planParagraphEdit(M2, "là 18 tháng", "là 20 tháng", [[3, 11]]) as any;
+    assert.deepStrictEqual({ s: ok.ops[0].from.search, at: ok.ops[0].from.at, t: ok.ops[0].text }, { s: "18", at: 11, t: "20" });
     assert.strictEqual(liveMap("abc", "abd"), null);
   });
 
@@ -430,6 +517,28 @@ describe("Đợt 1A – Hoàn tác cho Word: sửa đổi nào là của lượt
     // Không có gì bị gộp: mọi sửa đổi mới đều từ chối được
     const d3 = diffChanges([partner], [partner, s("Added", "Tôi", "45")]);
     assert.deepStrictEqual({ merged: d3.merged, removed: d3.removed, n: d3.added.length }, { merged: [], removed: 0, n: 1 });
+  });
+  it("sửa đổi của AI trùng khóa với sửa đổi người dùng tự làm ở đoạn khác: hoàn tác đúng cái nằm trong đoạn AI đã đụng", () => {
+    const a = k("Deleted", "Tôi", "30");
+    // Văn bản: [đoạn P1: của AI] rồi [đoạn P3: của người dùng] — cùng khóa
+    const cur = [
+      { key: a, para: "P1" },
+      { key: a, para: "P3" },
+    ];
+    assert.deepStrictEqual(pickWanted(cur, [{ key: a, para: "P1" }]), [0], "chọn theo đoạn, không lấy mục đứng sau");
+    assert.deepStrictEqual(pickWanted(cur, [{ key: a }]), [1], "không biết đoạn thì lấy mục đứng sau");
+    assert.deepStrictEqual(pickWanted(cur, [{ key: a, para: "P9" }]), [1], "đoạn không còn thì chọn theo khóa");
+    assert.deepStrictEqual(pickWanted(cur, [{ key: a, para: "P1" }, { key: a }]), [1, 0]);
+    assert.deepStrictEqual(pickWanted([{ key: "x" }], [{ key: a }]), []);
+  });
+  it("duyệt tất cả sửa đổi của một tác giả: phải khớp đúng một tên", () => {
+    const names = ["Nguyễn Văn An", "Hoàng Anh", "An Phát Law", "Đối tác"];
+    assert.deepStrictEqual(resolveAuthor(names, "An"), ["Nguyễn Văn An", "Hoàng Anh", "An Phát Law"], "khớp nhiều tên: không chọn");
+    assert.strictEqual(resolveAuthor(names, "hoàng anh"), "Hoàng Anh");
+    assert.strictEqual(resolveAuthor(names, "đối tác"), "Đối tác");
+    assert.strictEqual(resolveAuthor(names, "Phát"), "An Phát Law", "chỉ một tên chứa chuỗi đó");
+    assert.deepStrictEqual(resolveAuthor(names, "Bình"), []);
+    assert.strictEqual(resolveAuthor(["An", "Hoàng An"], "an"), "An", "trùng hẳn tên được ưu tiên");
   });
   it("pickByKeys: khóa không còn trong văn bản thì bỏ qua", () => {
     const a = k("Added", "Tôi", "45");

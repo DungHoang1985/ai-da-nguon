@@ -121,12 +121,20 @@ export function liveMap(M: string, C: string, spans?: [number, number][]): numbe
     }
     if (ok && map.length === C.length) return map;
   }
+  // Không có vị trí thật: dò C như một dãy con của M, và CHỈ nhận khi cách gán là duy nhất (dò từ trái và dò từ phải ra cùng kết quả).
+  // Gán nhập nhằng có thể trỏ vào chữ đã xóa ("là 12 tháng18 tháng" với bản hiện tại "là 18 tháng") và làm sửa nhầm chữ.
   const map: number[] = [];
   let i = 0;
   for (let j = 0; j < C.length; j++) {
     while (i < M.length && M[i] !== C[j]) i++;
     if (i >= M.length) return null;
     map.push(i++);
+  }
+  let r = M.length - 1;
+  for (let j = C.length - 1; j >= 0; j--) {
+    while (r >= 0 && M[r] !== C[j]) r--;
+    if (r !== map[j]) return null;
+    r--;
   }
   return map;
 }
@@ -178,7 +186,8 @@ const LONG_PIECE = 120;
 
 function locator(M: string, start: number, end: number): Locator | null {
   const s = M.slice(start, end);
-  if (!s || s.length > MAX_SEARCH) return null;
+  // Word coi ^ là ký tự đặc biệt nên chuỗi gửi đi có ^ nhân đôi: giới hạn 255 tính trên chuỗi đã nhân đôi
+  if (!s || s.length + (s.match(/\^/g) || []).length > MAX_SEARCH) return null;
   const o = occurrenceAt(M, s, start);
   if (o.index < 0) return null;
   return { search: s, occurrence: o.index, total: o.total, at: start };
@@ -200,7 +209,7 @@ function liveRuns(map: number[], a: number, b: number): [number, number][] {
  *  Trả lỗi (chuỗi) khi không định vị chắc chắn được — khi đó KHÔNG được thay cả đoạn nếu đoạn đang có sửa đổi chờ duyệt. */
 export function planParagraphEdit(M: string, C: string, N: string, spans?: [number, number][]): EditPlan | string {
   const map = liveMap(M, C, spans);
-  if (!map) return "Chữ của đoạn (bản hiện tại) không khớp với chuỗi Word dùng để tìm kiếm.";
+  if (!map) return "Không xác định chắc được chữ nào trong đoạn đang sống, chữ nào đã bị xóa có theo dõi.";
   const hunks = diffWords(C, N);
   const ops: EditOp[] = [];
   for (const h of hunks) {
@@ -364,6 +373,48 @@ export function pickByKeys(current: string[], keys: string[]): number[] {
     }
   }
   return picked;
+}
+
+/** Tìm đúng MỘT tác giả theo tên người dùng nêu, cho việc duyệt hàng loạt: trùng hẳn tên (không phân biệt hoa thường) thì lấy;
+ *  không thì chỉ nhận khi đúng một tên chứa chuỗi đó. Trả tên thật, hoặc danh sách ứng viên (rỗng = không ai khớp).
+ *  Khớp kiểu "chứa chuỗi" với nhiều tên ("An" khớp cả "Hoàng Anh") sẽ duyệt nhầm sửa đổi của người khác. */
+export function resolveAuthor(authors: string[], want: string): string | string[] {
+  const w = String(want || "")
+    .trim()
+    .toLowerCase();
+  const uniq = Array.from(new Set(authors));
+  if (!w) return [];
+  const exact = uniq.filter((a) => a.trim().toLowerCase() === w);
+  if (exact.length === 1) return exact[0];
+  const part = uniq.filter((a) => a.toLowerCase().includes(w));
+  return part.length === 1 ? part[0] : part;
+}
+
+/** Một sửa đổi cần hoàn tác: khóa, và (khi biết) định danh đoạn chứa nó — để không chọn nhầm một sửa đổi trùng khóa
+ *  do chính người dùng tạo ở đoạn khác trong cùng phút. */
+export interface Wanted {
+  key: string;
+  para?: string;
+}
+
+/** Chọn trong danh sách sửa đổi hiện có những mục cần hoàn tác. Mỗi mục cần một sửa đổi cùng khóa; biết đoạn thì ưu tiên sửa đổi nằm
+ *  trong đúng đoạn đó, không biết thì lấy mục đứng sau cùng chưa dùng. Trả chỉ số, giảm dần. */
+export function pickWanted(current: { key: string; para?: string }[], wants: Wanted[]): number[] {
+  const used = new Set<number>();
+  const take = (w: Wanted, exact: boolean): boolean => {
+    for (let i = current.length - 1; i >= 0; i--) {
+      if (used.has(i) || current[i].key !== w.key) continue;
+      if (exact && current[i].para !== w.para) continue;
+      used.add(i);
+      return true;
+    }
+    return false;
+  };
+  const loose: Wanted[] = [];
+  // Mục biết đoạn chọn trước, đúng đoạn; không thấy đúng đoạn thì xếp vào nhóm chọn theo khóa
+  for (const w of wants) if (!(w.para && take(w, true))) loose.push(w);
+  for (const w of loose) take(w, false);
+  return Array.from(used).sort((a, b) => b - a);
 }
 
 // ───────────────────────── Chống sửa nhầm đoạn ─────────────────────────

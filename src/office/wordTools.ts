@@ -20,7 +20,19 @@ import {
   truncate,
 } from "./util";
 import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseName, findClause, outlineByParagraph } from "../core/outline";
-import { ChangeSnap, EditPlan, Locator, changeKey, diffChanges, locateParagraph, pickByKeys, planParagraphEdit, snapChange } from "../core/worddiff";
+import {
+  ChangeSnap,
+  EditPlan,
+  Locator,
+  Wanted,
+  changeKey,
+  diffChanges,
+  locateParagraph,
+  pickWanted,
+  planParagraphEdit,
+  resolveAuthor,
+  snapChange,
+} from "../core/worddiff";
 
 const MAX_READ_CHARS = 30000;
 /** Thay quá số chỗ này trong một lần gọi thì hỏi người dùng trước */
@@ -34,7 +46,7 @@ export const WHOLE_PARAGRAPH_HUNKS = 4;
 
 const STYLE_ENUM = ["Normal", "Heading1", "Heading2", "Heading3", "Title", "ListBullet", "ListNumber", "Quote"];
 const EXPECT_DESC =
-  "First ~30 characters of that paragraph exactly as you read it. The tool checks it before writing: if paragraphs shifted it relocates the paragraph, and refuses when it cannot be sure.";
+  "REQUIRED whenever you point at a paragraph by index. First ~30 characters of that paragraph exactly as you read it. The tool checks it before writing: if paragraphs shifted it relocates the paragraph, and refuses when it cannot be sure.";
 
 export const WORD_SPECS: ToolSpec[] = [
   {
@@ -455,7 +467,8 @@ function withNums(rows: Row[], outline: OutlineItem[]) {
 }
 
 /** Định vị đoạn theo chỉ số + mấy chữ đầu AI đã đọc; lệch mà không chắc thì từ chối (không sửa nhầm đoạn) */
-async function resolvePara(ctx: Word.RequestContext, index: any, expect?: string) {
+async function resolvePara(ctx: Word.RequestContext, index: any, expect?: string, needExpect = true) {
+  if (needExpect && !String(expect ?? "").trim()) throw new Error(missingExpect(index));
   const loaded = await loadRows(ctx);
   const loc = locateParagraph(
     loaded.rows.map((r) => r.text),
@@ -467,6 +480,31 @@ async function resolvePara(ctx: Word.RequestContext, index: any, expect?: string
     throw new Error(loc.reason + (cand ? ` Ứng viên: ${cand}` : ""));
   }
   return { ...loaded, p: loaded.paras.items[loc.index], row: loaded.rows[loc.index], index: loc.index, moved: loc.moved };
+}
+
+/** Công cụ ghi chỉ đoạn bằng số mà không kèm expect: từ chối (chỉ số dời sau mỗi lần chèn, xóa — soát mã độc lập 15/11/2026, mục T4) */
+const missingExpect = (index: any) =>
+  `Thiếu expect: khi chỉ một đoạn bằng số (đoạn ${index}) phải kèm expect = khoảng 30 ký tự đầu của đoạn đó đúng như đã đọc, để công cụ không sửa nhầm đoạn khi chỉ số đã dời.`;
+
+/** Đoạn có sửa đổi chờ duyệt không, và các khúc đã bị xóa nằm ở đâu trong chuỗi Word dùng để tìm (vị trí thật, cần WordApiDesktop 1.4) */
+async function pendingInfo(ctx: Word.RequestContext, p: Word.Paragraph): Promise<{ count: number; spans?: [number, number][] }> {
+  const tc = p.getTrackedChanges();
+  tc.load("items/type");
+  await ctx.sync();
+  const dels = tc.items.filter((t) => t.type === "Deleted");
+  let spans: [number, number][] | undefined;
+  if (dels.length && supports("1.4", "WordApiDesktop")) {
+    const base = p.getRange("Content") as any;
+    base.load("start");
+    const rs = dels.map((t) => {
+      const x = t.getRange() as any;
+      x.load("start,end");
+      return x;
+    });
+    await ctx.sync();
+    spans = rs.map((x) => [x.start - base.start, x.end - base.start] as [number, number]);
+  }
+  return { count: tc.items.length, spans };
 }
 
 const movedNote = (asked: any, r: { index: number; moved: boolean }) =>
@@ -542,36 +580,51 @@ async function changeSnaps(): Promise<ChangeSnap[]> {
   });
 }
 
-/** Hoàn tác: từ chối đúng các sửa đổi có khóa đã ghi. Trả số sửa đổi đã từ chối. */
-async function rejectKeys(keys: string[]): Promise<number> {
-  const load = async (ctx: Word.RequestContext) => {
-    const tc = ctx.document.body.getTrackedChanges();
-    tc.load("items/type,items/author,items/date,items/text");
+/** Nạp danh sách sửa đổi hiện có; sửa đổi nào có khóa thuộc `paraKeys` thì nạp thêm định danh đoạn chứa nó */
+async function loadChanges(ctx: Word.RequestContext, paraKeys: Set<string>) {
+  const tc = ctx.document.body.getTrackedChanges();
+  tc.load("items/type,items/author,items/date,items/text");
+  await ctx.sync();
+  const cur: { key: string; para?: string }[] = tc.items.map((t) => ({ key: changeKey(t as any) }));
+  const need = cur.map((c, i) => (paraKeys.has(c.key) ? i : -1)).filter((i) => i >= 0);
+  if (need.length) {
+    const ps = need.map((i) => {
+      const p = tc.items[i].getRange().paragraphs.getFirst();
+      p.load("uniqueLocalId");
+      return p;
+    });
     await ctx.sync();
-    return tc;
-  };
+    need.forEach((i, k) => (cur[i].para = ps[k].uniqueLocalId));
+  }
+  return { tc, cur };
+}
+
+/** Hoàn tác: từ chối đúng các sửa đổi đã ghi (theo khóa, và theo đoạn khi biết). Trả số sửa đổi đã từ chối. */
+async function rejectWanted(wants: Wanted[]): Promise<number> {
+  const paraKeys = new Set(wants.filter((w) => w.para).map((w) => w.key));
   try {
     return await Word.run(async (ctx) => {
-      const tc = await load(ctx);
-      const idx = pickByKeys(tc.items.map((t) => changeKey(t as any)), keys);
+      const { tc, cur } = await loadChanges(ctx, paraKeys);
+      const idx = pickWanted(cur, wants);
       idx.forEach((i) => tc.items[i].reject());
       await ctx.sync();
       return idx.length;
     });
   } catch {
-    // Từ chối cả loạt lỗi (một sửa đổi nằm trong sửa đổi khác): làm từng cái một
+    // Từ chối cả loạt lỗi (một sửa đổi nằm trong sửa đổi khác): làm từng cái một, mỗi lần tính lại từ trạng thái hiện tại
     let done = 0;
-    let left = keys.slice();
+    const left = wants.slice();
     for (let guard = 0; guard < 500 && left.length; guard++) {
       const more = await Word.run(async (ctx) => {
-        const tc = await load(ctx);
-        const cur = tc.items.map((t) => changeKey(t as any));
-        const idx = pickByKeys(cur, left);
+        const { tc, cur } = await loadChanges(ctx, paraKeys);
+        const idx = pickWanted(cur, left);
         if (!idx.length) return false;
-        const k = cur[idx[0]];
+        const hit = cur[idx[0]];
         tc.items[idx[0]].reject();
         await ctx.sync();
-        left.splice(left.indexOf(k), 1);
+        let k = left.findIndex((w) => w.key === hit.key && w.para === hit.para);
+        if (k < 0) k = left.findIndex((w) => w.key === hit.key);
+        left.splice(k, 1);
         return true;
       });
       if (!more) break;
@@ -696,6 +749,10 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
   interface Undo {
     extra: UndoStep[];
     inverse: UndoStep[];
+    /** Dùng khi công cụ không sinh sửa đổi được theo dõi nào (ví dụ đổi cấp đánh số) */
+    fallback: UndoStep[];
+    /** Định danh các đoạn công cụ đã đụng: để phân biệt sửa đổi của AI với sửa đổi trùng hệt người dùng tự làm ở đoạn khác */
+    touched: string[];
   }
 
   /** Đưa chữ của một đoạn (tìm theo định danh) về câu cũ bằng sửa mức từ */
@@ -708,22 +765,36 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         await ctx.sync();
         const C = strip(cur.value);
         if (C === prev) return;
-        const plan = planParagraphEdit(p.text, C, prev);
-        if (typeof plan === "string") throw new Error(`Không đưa được đoạn “${truncate(C, 40)}” về câu cũ: ${plan}`);
+        const info = await pendingInfo(ctx, p);
+        const plan = planParagraphEdit(p.text, C, prev, info.spans);
+        if (typeof plan === "string") throw new Error(`không đưa được đoạn “${truncate(C, 40)}” về câu cũ: ${plan}`);
         await applyPlan(ctx, p, plan);
+        const now = supports("1.7") ? p.getText() : p.getReviewedText("Current");
+        await ctx.sync();
+        if (strip(now.value) !== prev) throw new Error(`đoạn “${truncate(prev, 40)}” chưa về đúng câu cũ; xem thẻ Review của Word`);
       })
     );
 
-  /** Gỡ hẳn các đoạn AI đã chèn (tìm theo định danh); đoạn không còn thì bỏ qua */
-  const removeParas = (ids: string[]): UndoStep => async () => {
-    for (const id of ids.slice().reverse()) {
+  /** Gỡ hẳn các đoạn AI đã chèn (tìm theo định danh); đoạn không còn thì bỏ qua. Trước khi gỡ đối chiếu chữ đầu đoạn với chữ AI đã
+   *  chèn: định danh đoạn trỏ sang đoạn khác thì không xóa. */
+  const removeParas = (ids: string[], texts: string[]): UndoStep => async () => {
+    let skipped = 0;
+    for (let k = ids.length - 1; k >= 0; k--) {
       await Word.run(async (ctx) => {
         ctx.document.load("changeTrackingMode");
         await ctx.sync();
         const mode = ctx.document.changeTrackingMode;
-        ctx.document.changeTrackingMode = "Off" as any;
         try {
-          ctx.document.getParagraphByUniqueLocalId(id).delete();
+          const p = ctx.document.getParagraphByUniqueLocalId(ids[k]);
+          p.load("text");
+          await ctx.sync();
+          const head = String(texts[k] ?? "").slice(0, 20);
+          if (head && !p.text.includes(head)) {
+            skipped++;
+            return;
+          }
+          ctx.document.changeTrackingMode = "Off" as any;
+          p.delete();
           await ctx.sync();
         } catch {
           /* đoạn đã không còn */
@@ -733,6 +804,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         }
       });
     }
+    if (skipped) throw new Error(`${skipped} đoạn đã chèn nay mang nội dung khác nên không gỡ; xem thẻ Review của Word`);
   };
 
   async function run(name: string, a: any, u: Undo): Promise<any> {
@@ -879,7 +951,8 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
           const all = withNums(rows, outline) as { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean }[];
           // Ngân sách tính theo độ dài JSON thật; next_start và truncated nằm đầu kết quả (không bị cắt mất)
           const start = Math.max(0, Number(a.start) || 0);
-          const end = Math.min(rows.length, Number(a.end) || start + 200);
+          // Không nạp sửa đổi cho quá 300 đoạn một lần: kết quả cũng chỉ trả vài chục tới vài trăm đoạn theo ngân sách
+          const end = Math.min(rows.length, Number(a.end) || start + 200, start + 300);
           if (hasChanges && supports("1.6")) {
             const win = paras.items.slice(start, end);
             const tcs = win.map((p) => {
@@ -906,7 +979,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         return Word.run(async (ctx) => {
           const find = String(a.find || "");
           if (!find) throw new Error("Thiếu chuỗi cần tìm.");
-          if (find.length > 255) throw new Error("Chuỗi tìm quá dài (>255 ký tự). Dùng word_set_paragraph_text để sửa cả đoạn.");
+          if (escapeWordSearch(find).length > 255) throw new Error("Chuỗi tìm quá dài (>255 ký tự). Dùng word_set_paragraph_text để sửa cả đoạn.");
           const replace = String(a.replace ?? "");
           if (/[\r\n]/.test(replace)) throw new Error("Chuỗi thay không được có xuống dòng: dùng word_insert_paragraphs để thêm đoạn.");
           return tracked(ctx, async () => {
@@ -966,17 +1039,23 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               });
               await ctx.sync();
               const byId = new Map(loaded.rows.map((r) => [r.id as string, r.text] as [string, string]));
-              new Set(tps.map((p) => p.uniqueLocalId)).forEach((id) => byId.has(id) && u.inverse.push(restoreText(id, byId.get(id) as string)));
+              new Set(tps.map((p) => p.uniqueLocalId)).forEach((id) => {
+                u.touched.push(id);
+                if (byId.has(id)) u.inverse.push(restoreText(id, byId.get(id) as string));
+              });
             }
             // Cụm cũ và cụm mới có phần chung: chỉ đổi đúng các từ khác đi (dấu sửa đổi nhỏ nhất, giữ định dạng); khác hẳn thì thay cả cụm
+            const same = targets.filter((t) => t.text === replace).length;
+            if (same === targets.length) return { ok: true, found: live.length, replaced: 0, message: `Chữ ở đó đã đúng là "${truncate(replace, 60)}": không cần thay${where}` };
             for (const t of targets) {
+              if (t.text === replace) continue;
               const plan = replace ? planParagraphEdit(t.text, t.text, replace) : "xóa";
               if (typeof plan !== "string" && plan.hunks >= 1 && plan.hunks <= 3 && plan.ratio < 0.8) await applyPlan(ctx, t, plan);
               else if (replace) t.insertText(replace, "Replace");
               else t.delete();
             }
             await ctx.sync();
-            return { ok: true, found: live.length, replaced: targets.length, message: `Đã thay ${targets.length} chỗ${where}` };
+            return { ok: true, found: live.length, replaced: targets.length - same, message: `Đã thay ${targets.length - same} chỗ${where}` };
           });
         });
 
@@ -997,25 +1076,15 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             let pending = M !== C;
             let spans: [number, number][] | undefined;
             if (r.hasChanges && supports("1.6")) {
-              const tc = r.p.getTrackedChanges();
-              tc.load("items/type");
-              await ctx.sync();
-              pending = pending || tc.items.length > 0;
-              const dels = tc.items.filter((t) => t.type === "Deleted");
-              if (dels.length && supports("1.4", "WordApiDesktop")) {
-                const base = r.p.getRange("Content") as any;
-                base.load("start");
-                const rs = dels.map((t) => {
-                  const x = t.getRange() as any;
-                  x.load("start,end");
-                  return x;
-                });
-                await ctx.sync();
-                spans = rs.map((x) => [x.start - base.start, x.end - base.start] as [number, number]);
-              }
+              const info = await pendingInfo(ctx, r.p);
+              pending = pending || info.count > 0;
+              spans = info.spans;
             }
             const plan = planParagraphEdit(M, C, raw, spans);
-            if (r.row.id) u.inverse.push(restoreText(r.row.id, C));
+            if (r.row.id) {
+              u.touched.push(r.row.id);
+              u.inverse.push(restoreText(r.row.id, C));
+            }
             let mode: string;
             let changes: number;
             if (typeof plan === "string") {
@@ -1091,6 +1160,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             let prevKind: string | null = null;
             let first: Word.Paragraph | null = null;
             const news: Word.Paragraph[] = [];
+            const newTexts: string[] = [];
             for (const raw of lines) {
               const parsed = a.style ? { text: raw, style: mapStyle(a.style) } : parseMarkdownLine(raw, numbered);
               let np: Word.Paragraph;
@@ -1099,6 +1169,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               else np = ctx.document.body.insertParagraph(parsed.text, pos === "start" ? "Start" : "End");
               if (!first) first = np;
               news.push(np);
+              newTexts.push(parsed.text);
               const kind = parsed.style === "ListBullet" || parsed.style === "ListNumber" ? parsed.style : "other";
               if (kind === "other" || prevKind !== kind) {
                 // Đoạn mới thừa hưởng kiểu và danh sách của đoạn đứng trước: đặt kiểu trước, rồi gỡ khỏi danh sách nếu còn dính.
@@ -1130,7 +1201,8 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               const ps = ctx.document.body.paragraphs;
               ps.load("items/uniqueLocalId");
               await ctx.sync();
-              u.inverse.push(removeParas(news.map((p) => p.uniqueLocalId)));
+              u.touched.push(...news.map((p) => p.uniqueLocalId));
+              u.inverse.push(removeParas(news.map((p) => p.uniqueLocalId), newTexts));
               total = ps.items.length;
               const k = ps.items.findIndex((p) => p.uniqueLocalId === (first as Word.Paragraph).uniqueLocalId);
               if (k >= 0) firstIndex = k;
@@ -1161,13 +1233,21 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               a.expect
             );
             if (loc.ok === false) throw new Error(loc.reason);
+            if (!String(a.expect ?? "").trim()) throw new Error(missingExpect(a.after_index));
             const outline = buildOutline(loaded.rows);
             const item = outline.find((o) => o.i === loc.index) || null;
             const anchorRow = loaded.rows[loc.index];
             const anchor = loaded.paras.items[loc.index];
             const deeper = a.level === "deeper";
             // Cùng cấp / lên cấp: chèn sau toàn bộ điều khoản (gồm khoản con); xuống cấp: chèn ngay sau đoạn mở đầu
-            let lastIdx = item && !deeper ? item.end : loc.index;
+            let lastIdx = loc.index;
+            if (item && !deeper) {
+              // Có điều khoản cùng cấp hoặc cao hơn đứng sau: phạm vi của điều neo kết thúc ngay trước nó. Không có (điều cuối của văn bản
+              // hay của phụ lục): phạm vi kéo tới hết văn bản, gồm cả phần chữ ký — khi đó chỉ tính tới khoản con cuối cùng.
+              const bounded = outline.some((o) => o.i > item.i && o.level <= item.level);
+              if (bounded) lastIdx = item.end;
+              else outline.forEach((o) => o.i > item.i && o.i <= item.end && (lastIdx = Math.max(lastIdx, o.i)));
+            }
             while (lastIdx > loc.index && (loaded.rows[lastIdx].inTable || loaded.rows[lastIdx].deleted || !loaded.rows[lastIdx].markup.trim())) lastIdx--;
             const last = loaded.paras.items[lastIdx];
             const isList = !!anchorRow.listString && anchorRow.listId !== undefined;
@@ -1198,6 +1278,14 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               made.filter((np) => np.isListItem).forEach((np) => np.detachFromList());
             }
             if (isList) {
+              // Đoạn mới có thể thừa hưởng danh sách KHÁC của đoạn đứng trước (khoản con nằm ở danh sách riêng): đưa về đúng danh sách của điều neo
+              made.forEach((np) => np.load("listOrNullObject/id"));
+              await ctx.sync();
+              const wrong = made.filter((np) => np.listOrNullObject.isNullObject || np.listOrNullObject.id !== anchorRow.listId);
+              if (wrong.length) {
+                wrong.forEach((np) => np.attachToList(anchorRow.listId as number, level));
+                await ctx.sync();
+              }
               const lis = made.map((np) => {
                 const li = np.listItemOrNullObject;
                 li.load("level");
@@ -1210,7 +1298,8 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             }
             made.forEach((np) => np.load("uniqueLocalId"));
             await ctx.sync();
-            u.inverse.push(removeParas(made.map((np) => np.uniqueLocalId)));
+            u.touched.push(...made.map((np) => np.uniqueLocalId));
+            u.inverse.push(removeParas(made.map((np) => np.uniqueLocalId), lines));
             // Đọc lại số mới
             const after = await loadRows(ctx, true);
             const out2 = buildOutline(after.rows);
@@ -1245,11 +1334,25 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             await ctx.sync();
             if (li.isNullObject) throw new Error(`Đoạn ${r.index} không thuộc danh sách đánh số tự động của Word (số gõ tay thì sửa bằng word_set_paragraph_text).`);
             const before = li.listString;
-            const level = li.level + (a.direction === "deeper" ? 1 : -1);
+            const oldLevel = li.level;
+            const level = oldLevel + (a.direction === "deeper" ? 1 : -1);
             if (level < 0) throw new Error("Đoạn này đang ở cấp cao nhất.");
             if (level > 8) throw new Error("Đoạn này đang ở cấp sâu nhất.");
             li.level = level;
             await ctx.sync();
+            if (r.row.id) {
+              const id = r.row.id;
+              u.touched.push(id);
+              u.fallback.push(() =>
+                Word.run(async (c2) => {
+                  const back = c2.document.getParagraphByUniqueLocalId(id).listItemOrNullObject;
+                  back.load("level");
+                  await c2.sync();
+                  if (!back.isNullObject && back.level !== oldLevel) back.level = oldLevel;
+                  await c2.sync();
+                })
+              );
+            }
             const after = await loadRows(ctx, true);
             const o = buildOutline(after.rows).find((x) => x.i === r.index);
             return { ok: true, index: r.index, num: o?.num || "", message: `Đã đổi cấp đoạn ${r.index}: ${before} → ${o?.num || "(không số)"}${movedNote(a.index, r)}` };
@@ -1358,6 +1461,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             const s = r.index;
             const e = s + span;
             if (e >= r.rows.length) throw new Error(`Chỉ số đoạn không hợp lệ (có ${r.rows.length} đoạn).`);
+            for (let i = s; i <= e; i++) if (r.rows[i].id) u.touched.push(r.rows[i].id as string);
             for (let i = e; i >= s; i--) r.paras.items[i].delete();
             await ctx.sync();
             return {
@@ -1406,7 +1510,12 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               replies: anchors[i].reps.items.map((x) => ({ author: x.authorName, text: truncate(x.content, 1000) })),
             };
           });
-          const { picked, truncated } = takeWithinBudget(list, RESULT_JSON_BUDGET - 400);
+          const { picked, truncated } = takeWithinBudget(list, RESULT_JSON_BUDGET - 400, (c, room) => {
+            // Một nhận xét quá dài (nhiều câu trả lời): bớt câu trả lời cho vừa, để lần gọi sau vẫn đi tiếp được
+            let reps = c.replies;
+            while (reps.length > 1 && JSON.stringify(reps).length > room - 3000) reps = reps.slice(0, Math.ceil(reps.length / 2));
+            return { ...c, replies: reps.map((x) => ({ ...x, text: truncate(x.text, 300) })), replies_total: c.replies.length };
+          });
           const next = from + picked.length;
           return {
             ok: true,
@@ -1559,14 +1668,24 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             .toLowerCase();
           if (a.all) {
             if (want) {
-              const mine = tc.items.filter((t) => String(t.author).toLowerCase().includes(want));
-              if (!mine.length) throw new Error(`Không có sửa đổi nào của "${a.author}".`);
+              const who = resolveAuthor(
+                tc.items.map((t) => String(t.author)),
+                want
+              );
+              if (typeof who !== "string") {
+                throw new Error(
+                  who.length
+                    ? `"${a.author}" khớp nhiều tác giả: ${who.map((x) => `“${x}”`).join(", ")}. Gọi lại với author là đúng một tên trong số đó.`
+                    : `Không có sửa đổi nào của "${a.author}". Tác giả trong văn bản: ${Array.from(new Set(tc.items.map((t) => `“${t.author}”`))).join(", ") || "(không có sửa đổi)"}.`
+                );
+              }
+              const mine = tc.items.filter((t) => String(t.author) === who);
               for (const t of mine.slice().reverse()) {
                 if (accept) t.accept();
                 else t.reject();
               }
               await ctx.sync();
-              return { ok: true, reviewed: mine.length, message: `Đã ${verb} ${mine.length} sửa đổi của ${a.author}. Thao tác này add-in không hoàn tác được.` };
+              return { ok: true, reviewed: mine.length, author: who, message: `Đã ${verb} ${mine.length} sửa đổi của “${who}”. Thao tác này add-in không hoàn tác được.` };
             }
             const n = tc.items.length;
             if (accept) tc.acceptAll();
@@ -1577,6 +1696,9 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
           const raw: number[] = (a.indexes || []).map((x: any) => Number(x));
           const texts: string[] = Array.isArray(a.texts) ? a.texts.map((x: any) => String(x ?? "")) : [];
           if (!raw.length) throw new Error("Cần indexes (từ word_list_revisions) hoặc all=true.");
+          if (texts.length !== raw.length || texts.some((x) => !x.trim())) {
+            throw new Error("Thiếu texts: với mỗi số trong indexes phải kèm phần đầu chữ của sửa đổi đó (đúng như word_list_revisions đã liệt kê) để công cụ đối chiếu trước khi duyệt. Duyệt là thao tác không hoàn tác được.");
+          }
           const squash = (s: string) => strip(s).replace(/\s+/g, " ").replace(/…$/, "").trim();
           raw.forEach((i, k) => {
             if (!(Number.isInteger(i) && i >= 0 && i < tc.items.length)) throw new Error(`Không có sửa đổi số ${i} (có ${tc.items.length}). Đọc lại word_list_revisions.`);
@@ -1646,7 +1768,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
 
       case "word_go_to":
         return Word.run(async (ctx) => {
-          const r = await resolvePara(ctx, a.paragraph_index);
+          const r = await resolvePara(ctx, a.paragraph_index, undefined, false);
           r.p.select();
           await ctx.sync();
           return { ok: true, message: `Đã chuyển tới đoạn ${a.paragraph_index}` };
@@ -1664,8 +1786,34 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
 
   /** Chạy công cụ và ghi cách hoàn tác: sửa đổi được theo dõi nào xuất hiện thêm sau công cụ này là của AI — hoàn tác = từ chối đúng
    *  các sửa đổi đó (ngày của sửa đổi chỉ chính xác tới phút nên không lọc theo thời gian); nhận xét thì gỡ theo id. */
-  async function execute(name: string, a: any, ctx: { log: UndoEntry[] }): Promise<any> {
-    const u: Undo = { extra: [], inverse: [] };
+  /** Sửa đổi mới trùng khóa với một sửa đổi có từ trước (cùng tác giả, cùng phút, cùng chữ — ví dụ người dùng vừa tự sửa y hệt ở đoạn khác):
+   *  xác định sửa đổi nào là của AI theo đoạn mà công cụ đã đụng. */
+  async function wantedOf(added: string[], after: ChangeSnap[], touched: string[]): Promise<Wanted[]> {
+    const wants: Wanted[] = added.map((key) => ({ key }));
+    const count = (list: string[], k: string) => list.filter((x) => x === k).length;
+    const afterKeys = after.map((x) => x.key);
+    const dup = new Set(added.filter((k) => count(afterKeys, k) > count(added, k)));
+    if (!dup.size || !touched.length) return wants;
+    const paras = await Word.run(async (ctx) => (await loadChanges(ctx, dup)).cur).catch(() => []);
+    const mine = new Set(touched);
+    for (const k of dup) {
+      const inTouched = paras.filter((c) => c.key === k && c.para && mine.has(c.para)).map((c) => c.para as string);
+      wants.filter((w) => w.key === k).forEach((w, n) => (w.para = inTouched[n]));
+    }
+    return wants;
+  }
+
+  /** Các công cụ ghi chạy lần lượt: công cụ bị hết hạn chờ vẫn chạy ngầm trong Office, công cụ kế không được chen vào giữa
+   *  (hai lần chụp danh sách sửa đổi của Hoàn tác sẽ lẫn nhau). */
+  let queue: Promise<unknown> = Promise.resolve();
+  function execute(name: string, a: any, ctx: { log: UndoEntry[] }): Promise<any> {
+    const job = queue.then(() => executeNow(name, a, ctx));
+    queue = job.catch(() => undefined);
+    return job;
+  }
+
+  async function executeNow(name: string, a: any, ctx: { log: UndoEntry[] }): Promise<any> {
+    const u: Undo = { extra: [], inverse: [], fallback: [], touched: [] };
     if (!WRITE.has(name) || !supports("1.6")) return run(name, a, u);
     const diffable = name !== "word_review_revision" && !UNDO_LABEL[name];
     const before = diffable ? await changeSnaps().catch(() => null) : null;
@@ -1673,19 +1821,33 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
       return await run(name, a, u);
     } finally {
       let d = { added: [] as string[], merged: [] as string[], removed: 0 };
-      if (before) d = diffChanges(before, await changeSnaps().catch(() => before));
+      let wants: Wanted[] = [];
+      if (before) {
+        const after = await changeSnaps().catch(() => before);
+        d = diffChanges(before, after);
+        wants = await wantedOf(d.added, after, u.touched);
+      }
       const tangled = d.merged.length > 0 || d.removed > 0;
-      if (d.added.length || tangled || u.extra.length) {
+      const untracked = !wants.length && !tangled && u.fallback.length > 0;
+      const blind = diffable && !before;
+      if (wants.length || tangled || u.extra.length || untracked || blind) {
         ctx.log.push({
           label: UNDO_LABEL[name] || `Hoàn tác ${name.replace(/^word_/, "")} (${d.added.length + d.merged.length} sửa đổi)`,
           undo: async () => {
+            if (blind) throw new Error("không chụp được danh sách sửa đổi trước khi sửa nên không gỡ tự động được; xem thẻ Review của Word");
             for (const x of u.extra.slice().reverse()) await x();
-            if (d.added.length) await rejectKeys(d.added);
+            let missing = 0;
+            if (wants.length) missing = wants.length - (await rejectWanted(wants));
             if (tangled) {
               if (!u.inverse.length) {
                 throw new Error("một phần thay đổi đã nhập vào sửa đổi có từ trước nên không hoàn tác riêng được; xem thẻ Review của Word");
               }
               for (const x of u.inverse.slice().reverse()) await x();
+            } else if (untracked) {
+              for (const x of u.fallback.slice().reverse()) await x();
+            }
+            if (missing > 0 && !tangled) {
+              throw new Error(`${missing} sửa đổi của bước này không còn nguyên (đã được chấp nhận, từ chối hoặc sửa tiếp) nên không gỡ được`);
             }
           },
         });
@@ -1729,10 +1891,26 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         const shown = rows.slice(s, Math.min(e + 1, s + 5)).map((r) => `[¶${r.i}] “${truncate(r.text, 80)}”`);
         return `Xóa ${e - s + 1} đoạn (ghi bằng Theo dõi thay đổi): ${shown.join(" · ")}${e - s + 1 > 5 ? ` · … và ${e - s + 1 - 5} đoạn nữa` : ""}`;
       }),
-    word_review_revision: (a) =>
-      a.all
-        ? `${a.action === "accept" ? "Chấp nhận" : "Từ chối"} TẤT CẢ sửa đổi đang theo dõi${a.author ? ` của ${a.author}` : " trong văn bản"} (không hoàn tác được bằng add-in).`
-        : null,
+    word_review_revision: (a) => {
+      const verb = a.action === "accept" ? "Chấp nhận" : "Từ chối";
+      if (!a.all) {
+        const n = Array.isArray(a.indexes) ? new Set(a.indexes.map((x: any) => Number(x))).size : 0;
+        return n > MANY_REPLACEMENTS ? `${verb} ${n} sửa đổi cùng lúc (không hoàn tác được bằng add-in).` : null;
+      }
+      return Word.run(async (ctx) => {
+        const tc = ctx.document.body.getTrackedChanges();
+        tc.load("items/author");
+        await ctx.sync();
+        if (!String(a.author || "").trim()) return `${verb} TẤT CẢ ${tc.items.length} sửa đổi đang theo dõi trong văn bản (không hoàn tác được bằng add-in).`;
+        const who = resolveAuthor(
+          tc.items.map((t) => String(t.author)),
+          a.author
+        );
+        if (typeof who !== "string") return null; // không đúng một tác giả: công cụ sẽ tự từ chối
+        const n = tc.items.filter((t) => String(t.author) === who).length;
+        return `${verb} TẤT CẢ ${n} sửa đổi đang theo dõi của “${who}” (không hoàn tác được bằng add-in).`;
+      });
+    },
     // Thay nhiều chỗ một lúc, hoặc xóa chữ ở nhiều chỗ
     word_replace_text: (a) => {
       const find = String(a.find || "");
@@ -1741,7 +1919,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
       return Word.run(async (ctx) => {
         const hasIndex = a.paragraph_index !== undefined && a.paragraph_index !== null;
         let scope: Word.Paragraph | Word.Body = ctx.document.body;
-        if (hasIndex) scope = (await resolvePara(ctx, a.paragraph_index, a.expect)).p;
+        if (hasIndex) scope = (await resolvePara(ctx, a.paragraph_index, a.expect, false)).p;
         const res = scope.search(escapeWordSearch(find), { matchCase: !!a.match_case, matchWholeWord: !!a.whole_word });
         res.load("items");
         await ctx.sync();
