@@ -1,0 +1,213 @@
+{
+ "sets": {
+  "WordApi 1.4": true,
+  "WordApi 1.5": true,
+  "WordApi 1.6": true,
+  "WordApi 1.7": true,
+  "WordApi 1.8": true,
+  "WordApi 1.9": true,
+  "WordApiDesktop 1.1": true,
+  "WordApiDesktop 1.2": true,
+  "WordApiDesktop 1.3": true,
+  "WordApiDesktop 1.4": true,
+  "WordApiDesktop 1.5": true,
+  "WordApiHiddenDocument 1.3": true,
+  "WordApiHiddenDocument 1.4": true,
+  "WordApiHiddenDocument 1.5": true
+ },
+ "kq": {
+  "0. paragraph.text của đoạn có mốc": {
+   "soDoan": 86,
+   "tieuDe_hopVanBan": [
+    "[1] \"HỢP ĐỒNG THUÊ VĂN PHÒNG\""
+   ],
+   "chuThich_1_4": [
+    "[11] \"“Tiền Thuê” là khoản tiền Bên Thuê trả hằng tháng cho việc sử dụng Diện Tích Thuê, xác định theo Điều 4.\\u0002\""
+   ],
+   "truongREF_10_2": [
+    "[53] \"Bên Thuê trả Tiền Thuê, Phí Quản Lý đầy đủ, đúng hạn theo Điều 7.1.\""
+   ],
+   "oDienMau_ky": [
+    "[84] \"Ông Trần Văn Minh                                                  Bà Lê Thu Hà\""
+   ],
+   "oTrong": [
+    "[85] \"Ô điền mẫu còn trống: \""
+   ],
+   "chuThichCuoi": [
+    "[54] \"Mỗi bên chịu trách nhiệm về hành vi của nhân viên, khách và nhà thầu của mình trong Tòa Nhà.\\u0002\""
+   ]
+  },
+  "1. body.footnotes / endnotes": {
+   "footnotes": [
+    {
+     "loai": "Footnote",
+     "chu": "\u0002 Tiền Thuê chưa gồm thuế giá trị gia tăng 10% và được thanh toán bằng đồng Việt Nam.",
+     "doanNeo": "“Tiền Thuê” là khoản tiền Bên Thuê trả hằng tháng …",
+     "id": true
+    },
+    {
+     "loai": "Footnote",
+     "chu": "\u0002 Mức Phí Dịch Vụ năm 2027 do ban quản lý Tòa Nhà thông báo ngày 01/12/2026.",
+     "doanNeo": "Phí Dịch Vụ là 85.000 đồng cho mỗi mét vuông mỗi t…",
+     "id": true
+    },
+    {
+     "loai": "Footnote",
+     "chu": "\u0002 Giấy chứng nhận bảo hiểm phải được gửi cho Bên Cho Thuê trước Ngày Bàn Giao 05 ngày.",
+     "doanNeo": "Bên Thuê mua bảo hiểm cháy nổ cho tài sản của mình…",
+     "id": true
+    }
+   ],
+   "endnotes": [
+    {
+     "loai": "Endnote",
+     "chu": "\u0002 Nội quy Tòa Nhà ban hành kèm theo hợp đồng này là bản cập nhật tháng 10 năm 2026.",
+     "doanNeo": "Mỗi bên chịu trách nhiệm về hành vi của nhân viên,…",
+     "id": true
+    }
+   ]
+  },
+  "2. sections getHeader/getFooter": [
+   {
+    "phan": 0,
+    "Primary": {
+     "dau": "Hợp đồng thuê văn phòng số 12/2026/HĐT-VP",
+     "chan": "Bản dự thảo lần 3 ngày 10/11/2026 — Lưu hành nội bộ — Trang 1"
+    },
+    "FirstPage": {
+     "dau": "",
+     "chan": ""
+    },
+    "EvenPages": {
+     "dau": "",
+     "chan": ""
+    }
+   }
+  ],
+  "2b. chân trang: đoạn và trường": {
+   "doan": [
+    "Bản dự thảo lần 3 ngày 10/11/2026 — Lưu hành nội bộ — Trang 1"
+   ],
+   "truong": [
+    "Page:  PAGE "
+   ]
+  },
+  "3a. Range.getBookmarks(includeHidden) (WordApi 1.4)": {
+   "hien": [
+    "GiaThue"
+   ],
+   "caAn": [
+    "GiaThue",
+    "_Ref7001"
+   ]
+  },
+  "3b. document.getBookmarkRangeOrNullObject (WordApi 1.4)": {
+   "GiaThue": {
+    "chu": "Tiền Thuê là 120.000.000 đồng (Một trăm hai mươi lăm triệu đồng) mỗi tháng",
+    "doan": "Tiền Thuê là 120.000.000 đồng (Một trăm hai mươi l…"
+   },
+   "_Ref7001": {
+    "chu": "Tiền Thuê và Phí Dịch Vụ",
+    "doan": "Tiền Thuê và Phí Dịch Vụ được thanh toán theo quý,…"
+   },
+   "KhongCo": null
+  },
+  "3c. document.bookmarks (WordApiDesktop 1.4)": [
+   "GiaThue 1808-1882 MainText"
+  ],
+  "4. body.fields": [
+   {
+    "loai": "Ref",
+    "ma": "REF _Ref7001 \\r \\h \u0001",
+    "ketQua": "7.1",
+    "doan": "Bên Thuê trả Tiền Thuê, Phí Quản Lý đầy …"
+   }
+  ],
+  "5. contentControls": [],
+  "5b. getContentControls mọi loại (WordApi 1.5)": [
+   "PlainText “Người đại diện bên cho thuê” = \"Trần Văn Minh\"",
+   "PlainText “Người đại diện bên thuê” = \"Lê Thu Hà\"",
+   "PlainText “Ô chưa điền” = \"\""
+  ],
+  "6. body.shapes": [
+   {
+    "id": 900,
+    "ten": "Hộp văn bản 900",
+    "loai": "TextBox",
+    "chu": "DỰ THẢO LẦN 3 — chưa có giá trị pháp lý"
+   }
+  ],
+  "6b. hộp văn bản: đoạn neo": {
+   "doanTrongHop": [
+    "DỰ THẢO LẦN 3 — chưa có giá trị pháp lý"
+   ],
+   "thanCha": null
+  },
+  "7a. section.pageSetup": [
+   {
+    "bottomMargin": 56.7000007629395,
+    "differentFirstPageHeaderFooter": false,
+    "footerDistance": 36,
+    "gutter": 0,
+    "headerDistance": 36,
+    "leftMargin": 85.0500030517578,
+    "mirrorMargins": false,
+    "oddAndEvenPagesHeaderFooter": false,
+    "orientation": "Portrait",
+    "pageHeight": 841.900024414062,
+    "pageWidth": 595.299987792969,
+    "paperSize": "A4",
+    "rightMargin": 42.5,
+    "topMargin": 56.7000007629395
+   }
+  ],
+  "7b. document.pageSetup": {
+   "bottomMargin": 56.7000007629395,
+   "differentFirstPageHeaderFooter": false,
+   "footerDistance": 36,
+   "gutter": 0,
+   "headerDistance": 36,
+   "leftMargin": 85.0500030517578,
+   "mirrorMargins": false,
+   "oddAndEvenPagesHeaderFooter": false,
+   "orientation": "Portrait",
+   "pageHeight": 841.900024414062,
+   "pageWidth": 595.299987792969,
+   "paperSize": "A4",
+   "rightMargin": 42.5,
+   "topMargin": 56.7000007629395
+  },
+  "8a. paragraphs items/font (name, size)": {
+   "theoKyTu": {
+    "\"Times New Roman\" 13": 1552,
+    "\"Times New Roman\" 12": 5272
+   },
+   "vaiDoan": [
+    "\"Times New Roman\" 13 Left | CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+    "\"Times New Roman\" 13 Left | HỢP ĐỒNG THUÊ VĂN PHÒNG",
+    "\"Times New Roman\" 13 Left | Số: 12/2026/HĐT-VP (bản thử của AI Đa Ng…",
+    "\"Times New Roman\" 13 Left | Hôm nay, ngày ... tháng ... năm 2026, tạ…",
+    "\"Times New Roman\" 13 Left | BÊN CHO THUÊ: Công ty Cổ phần Bất động s…"
+   ]
+  },
+  "8b. body.font": "\"Times New Roman\" null"
+ },
+ "giay": {
+  "0. paragraph.text của đoạn có mốc": 0.006,
+  "1. body.footnotes / endnotes": 0.013,
+  "2. sections getHeader/getFooter": 0.041,
+  "2b. chân trang: đoạn và trường": 0.008,
+  "3a. Range.getBookmarks(includeHidden) (WordApi 1.4)": 0.007,
+  "3b. document.getBookmarkRangeOrNullObject (WordApi 1.4)": 0.013,
+  "3c. document.bookmarks (WordApiDesktop 1.4)": 0.004,
+  "4. body.fields": 0.007,
+  "5. contentControls": 0.006,
+  "5b. getContentControls mọi loại (WordApi 1.5)": 0.002,
+  "6. body.shapes": 0.009,
+  "6b. hộp văn bản: đoạn neo": 0.023,
+  "7a. section.pageSetup": 0.1,
+  "7b. document.pageSetup": 0.039,
+  "8a. paragraphs items/font (name, size)": 0.022,
+  "8b. body.font": 0.005
+ }
+}

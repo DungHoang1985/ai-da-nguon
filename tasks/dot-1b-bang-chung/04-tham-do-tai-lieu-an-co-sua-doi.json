@@ -1,0 +1,28 @@
+{
+ "1. text + getText + getReviewedText trên đoạn của tài liệu ẩn": {
+  "doan83": "\"Bên Cho Thuê trả lời đề nghị cải tạo trong vòng 1510 Ngày Làm Việc; qu\"",
+  "doan14": "\"ê, xác định theo Điều 4.\\u0002\"",
+  "getText": "\"Bên Cho Thuê trả lời đề nghị cải tạo trong vòng 10 Ngày Làm Việc; quá \"",
+  "current": "\"Bên Cho Thuê trả lời đề nghị cải tạo trong vòng 10 Ngày Làm Việc; quá \"",
+  "original": "\"Bên Cho Thuê trả lời đề nghị cải tạo trong vòng 15 Ngày Làm Việc; quá \"",
+  "getText14": "\"ê, xác định theo Điều 4.\\r\""
+ },
+ "2. getTrackedChanges của thân tài liệu ẩn": [
+  "Deleted: 15",
+  "Added: 10"
+ ],
+ "3. chú thích, đầu/chân trang của tài liệu ẩn": {
+  "chuThich": [
+   "\u0002 Tiền Thuê chưa gồm thuế giá trị gia tă",
+   "\u0002 Mức Phí Dịch Vụ năm 2027 do ban quản l",
+   "\u0002 Giấy chứng nhận bảo hiểm phải được gửi"
+  ],
+  "dauTrang": "Hợp đồng thuê văn phòng số 12/2026/HĐT-VP"
+ },
+ "4. tài liệu đang mở: getText của đoạn có mốc chú thích": {
+  "text": "\"c định theo Điều 4.\\u0002\"",
+  "getText": "\"c định theo Điều 4.\\r\"",
+  "current": "\"c định theo Điều 4.\\r\"",
+  "coChuDaXoa": "\"c định theo Điều 4.\\r\""
+ }
+}

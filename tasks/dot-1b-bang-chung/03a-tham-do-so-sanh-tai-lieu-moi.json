@@ -1,0 +1,33 @@
+{
+ "target": "CompareTargetNew",
+ "truoc": {
+  "soDoan": 86,
+  "bam": -684884156,
+  "soSuaDoi": 2,
+  "theoTacGia": {
+   "Đối tác": 2
+  },
+  "cheDo": "Off",
+  "daLuu": false,
+  "vai": [
+   "Deleted: 15",
+   "Added: 10"
+  ]
+ },
+ "goi": "không lỗi",
+ "giay": 0.52,
+ "sau": {
+  "soDoan": 86,
+  "bam": -684884156,
+  "soSuaDoi": 2,
+  "theoTacGia": {
+   "Đối tác": 2
+  },
+  "cheDo": "Off",
+  "daLuu": false,
+  "vai": [
+   "Deleted: 15",
+   "Added: 10"
+  ]
+ }
+}

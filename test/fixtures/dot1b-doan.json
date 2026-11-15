@@ -1,0 +1,1402 @@
+{
+ "doan": {
+  "sach": [
+   {
+    "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+    "style": "Title0",
+    "key": "tieu-de.1"
+   },
+   {
+    "text": "HỢP ĐỒNG THUÊ VĂN PHÒNG",
+    "style": "Title0",
+    "key": "tieu-de.2"
+   },
+   {
+    "text": "Số: 12/2026/HĐT-VP (bản thử của AI Đa Nguồn, nội dung không có thật)",
+    "style": "",
+    "key": "tieu-de.3"
+   },
+   {
+    "text": "Hôm nay, ngày 10 tháng 11 năm 2026, tại trụ sở Bên Cho Thuê, các bên gồm:",
+    "style": "",
+    "key": "mo-dau.1"
+   },
+   {
+    "text": "BÊN CHO THUÊ: Công ty Cổ phần Bất động sản Hồng Lĩnh, sau đây gọi là “Bên Cho Thuê”.",
+    "style": "Party",
+    "key": "ben.1"
+   },
+   {
+    "text": "BÊN THUÊ: Công ty TNHH Tư vấn Thiết kế Lam Giang, sau đây gọi là “Bên Thuê”.",
+    "style": "Party",
+    "key": "ben.2"
+   },
+   {
+    "text": "Hai bên thống nhất ký hợp đồng thuê văn phòng với các điều khoản sau:",
+    "style": "",
+    "key": "mo-dau.9"
+   },
+   {
+    "text": "Định nghĩa",
+    "style": "Heading1",
+    "key": "1"
+   },
+   {
+    "text": "“Tòa Nhà” là tòa nhà văn phòng Hồng Lĩnh Tower tại số 18 đường Trần Phú, do Bên Cho Thuê làm chủ sở hữu.",
+    "style": "Heading2",
+    "key": "1.1"
+   },
+   {
+    "text": "“Diện Tích Thuê” là phần diện tích 420 m² tại tầng 9 của Tòa Nhà, có vị trí và ranh giới mô tả tại Phụ lục 01.",
+    "style": "Heading2",
+    "key": "1.2"
+   },
+   {
+    "text": "“Ngày Bàn Giao” là ngày hai bên ký biên bản bàn giao Diện Tích Thuê theo Điều 5.",
+    "style": "Heading2",
+    "key": "1.3"
+   },
+   {
+    "text": "“Tiền Thuê” là khoản tiền Bên Thuê trả hằng tháng cho việc sử dụng Diện Tích Thuê, xác định theo Điều 4.",
+    "style": "Heading2",
+    "key": "1.4"
+   },
+   {
+    "text": "“Phí Dịch Vụ” là khoản phí quản lý vận hành Tòa Nhà mà Bên Thuê trả theo Điều 4.3.",
+    "style": "Heading2",
+    "key": "1.5"
+   },
+   {
+    "text": "“Tiền Đặt Cọc” là khoản tiền bảo đảm thực hiện hợp đồng quy định tại Điều 6.",
+    "style": "Heading2",
+    "key": "1.6"
+   },
+   {
+    "text": "“Ngày Làm Việc” là các ngày từ thứ Hai đến thứ Sáu, trừ ngày nghỉ lễ, tết theo quy định của pháp luật.",
+    "style": "Heading2",
+    "key": "1.7"
+   },
+   {
+    "text": "Đối tượng và mục đích thuê",
+    "style": "Heading1",
+    "key": "2"
+   },
+   {
+    "text": "Bên Cho Thuê đồng ý cho thuê và Bên Thuê đồng ý thuê Diện Tích Thuê để làm văn phòng làm việc.",
+    "style": "Heading2",
+    "key": "2.1"
+   },
+   {
+    "text": "Diện Tích Thuê được đo theo tim tường; chênh lệch dưới 1% so với số đo nêu tại Phụ lục 01 không làm thay đổi Tiền Thuê.",
+    "style": "Heading2",
+    "key": "2.2"
+   },
+   {
+    "text": "Bên Thuê không được dùng Diện Tích Thuê vào mục đích khác, như kho hàng, lưu trú, lớp học v.v... nếu chưa có chấp thuận bằng văn bản của Bên Cho Thuê.",
+    "style": "Heading2",
+    "key": "2.3"
+   },
+   {
+    "text": "Thời hạn thuê",
+    "style": "Heading1",
+    "key": "3"
+   },
+   {
+    "text": "Thời hạn thuê là 05 (năm) năm kể từ Ngày Bàn Giao.",
+    "style": "Heading2",
+    "key": "3.1"
+   },
+   {
+    "text": "Bên Thuê được ưu tiên gia hạn nếu gửi đề nghị bằng văn bản chậm nhất 06 (sáu) tháng trước ngày hết hạn.",
+    "style": "Heading2",
+    "key": "3.2"
+   },
+   {
+    "text": "Hết thời hạn thuê mà không gia hạn thì hợp đồng chấm dứt và Bên Thuê hoàn trả Diện Tích Thuê theo Điều 12.",
+    "style": "Heading2",
+    "key": "3.3"
+   },
+   {
+    "text": "Tiền thuê và phí dịch vụ",
+    "style": "Heading1",
+    "key": "4"
+   },
+   {
+    "text": "Tiền Thuê là 120.000.000 đồng (Một trăm hai mươi triệu đồng) mỗi tháng, chưa gồm thuế giá trị gia tăng.",
+    "style": "Heading2",
+    "key": "4.1"
+   },
+   {
+    "text": "Tiền Thuê được giữ cố định trong 02 (hai) năm đầu; từ năm thứ ba, mỗi năm tăng 5% so với năm liền trước.",
+    "style": "Heading2",
+    "key": "4.2"
+   },
+   {
+    "text": "Phí Dịch Vụ là 85.000 đồng cho mỗi mét vuông mỗi tháng và được điều chỉnh theo thông báo của ban quản lý Tòa Nhà, nhưng mỗi lần tăng không quá 10%.",
+    "style": "Heading2",
+    "key": "4.3"
+   },
+   {
+    "text": "Bàn giao",
+    "style": "Heading1",
+    "key": "5"
+   },
+   {
+    "text": "Bên Cho Thuê bàn giao Diện Tích Thuê cho Bên Thuê chậm nhất vào ngày 01 tháng 02 năm 2027.",
+    "style": "Heading2",
+    "key": "5.1"
+   },
+   {
+    "text": "Tại Ngày Bàn Giao, hai bên lập biên bản ghi nhận hiện trạng, chỉ số công tơ điện và danh mục trang thiết bị kèm theo.",
+    "style": "Heading2",
+    "key": "5.2"
+   },
+   {
+    "text": "Nếu Bên Cho Thuê chậm bàn giao quá 30 (ba mươi) ngày, Bên Thuê được miễn Tiền Thuê tương ứng với gấp đôi số ngày chậm.",
+    "style": "Heading2",
+    "key": "5.3"
+   },
+   {
+    "text": "Đặt cọc",
+    "style": "Heading1",
+    "key": "6"
+   },
+   {
+    "text": "Bên Thuê chuyển Tiền Đặt Cọc bằng 03 (ba) tháng Tiền Thuê, tương đương 360.000.000 đồng (Ba trăm sáu mươi triệu đồng), trong vòng 10 (mười) Ngày Làm Việc kể từ ngày ký hợp đồng.",
+    "style": "Heading2",
+    "key": "6.1"
+   },
+   {
+    "text": "Tiền Đặt Cọc không tính lãi và được hoàn trả trong vòng 30 ngày kể từ ngày Bên Thuê hoàn thành mọi nghĩa vụ khi chấm dứt hợp đồng.",
+    "style": "Heading2",
+    "key": "6.2"
+   },
+   {
+    "text": "Bên Cho Thuê được khấu trừ Tiền Đặt Cọc trong các trường hợp sau:",
+    "style": "Heading2",
+    "key": "6.3"
+   },
+   {
+    "text": "Bên Thuê chậm trả Tiền Thuê hoặc Phí Dịch Vụ quá thời hạn quy định tại khoản 3 Điều 7;",
+    "style": "Heading3",
+    "key": "6.3.1"
+   },
+   {
+    "text": "Bên Thuê gây hư hỏng cho Tòa Nhà mà không khắc phục;",
+    "style": "Heading3",
+    "key": "6.3.2"
+   },
+   {
+    "text": "Bên Thuê đơn phương chấm dứt hợp đồng trái với Điều 11.",
+    "style": "Heading3",
+    "key": "6.3.3"
+   },
+   {
+    "text": "Thanh toán",
+    "style": "Heading1",
+    "key": "7"
+   },
+   {
+    "text": "Tiền Thuê và Phí Dịch Vụ được thanh toán theo quý, trong vòng 10 ngày đầu của mỗi quý, bằng chuyển khoản vào tài khoản của Bên Cho Thuê số 0011 2233 4455 tại Ngân hàng Thương mại Cổ phần Đông Hải.",
+    "style": "Heading2",
+    "key": "7.1"
+   },
+   {
+    "text": "Bên Cho Thuê xuất hóa đơn cho từng kỳ thanh toán trước ngày đến hạn ít nhất 07 ngày.",
+    "style": "Heading2",
+    "key": "7.2"
+   },
+   {
+    "text": "Nếu chậm thanh toán, Bên Thuê trả lãi chậm trả 0,05% mỗi ngày trên số tiền chậm trả; chậm quá 45 ngày là vi phạm nghiêm trọng theo Điều 11.2.",
+    "style": "Heading2",
+    "key": "7.3"
+   },
+   {
+    "text": "Lãi chậm trả nêu tại khoản 3 Điều này không vượt quá mức lãi suất tối đa theo Điều 357 của Bộ luật Dân sự.",
+    "style": "Heading2",
+    "key": "7.4"
+   },
+   {
+    "text": "Sử dụng và cải tạo",
+    "style": "Heading1",
+    "key": "8"
+   },
+   {
+    "text": "Bên Thuê sử dụng Diện Tích Thuê đúng công năng và tuân thủ nội quy Tòa Nhà.",
+    "style": "Heading2",
+    "key": "8.1"
+   },
+   {
+    "text": "Mọi cải tạo làm thay đổi kết cấu, hệ thống điện hoặc phòng cháy chữa cháy phải được Bên Cho Thuê chấp thuận bằng văn bản trước khi thi công.",
+    "style": "Heading2",
+    "key": "8.2"
+   },
+   {
+    "text": "Bên Cho Thuê trả lời đề nghị cải tạo trong vòng 10 Ngày Làm Việc; quá thời hạn này mà không trả lời thì coi như đồng ý.",
+    "style": "Heading2",
+    "key": "8.3"
+   },
+   {
+    "text": "Bảo trì và bảo hiểm",
+    "style": "Heading1",
+    "key": "9"
+   },
+   {
+    "text": "Bên Cho Thuê chịu trách nhiệm sửa chữa kết cấu, mặt ngoài và hệ thống kỹ thuật chung của Tòa Nhà.",
+    "style": "Heading2",
+    "key": "9.1"
+   },
+   {
+    "text": "Hư hỏng thuộc trách nhiệm của Bên Cho Thuê phải được khắc phục trong vòng 07 ngày kể từ ngày nhận thông báo; trường hợp khẩn cấp là 24 giờ.",
+    "style": "Heading2",
+    "key": "9.2"
+   },
+   {
+    "text": "Bên Thuê mua bảo hiểm cháy nổ cho tài sản của mình với mức trách nhiệm không thấp hơn 5.000.000.000 đồng (Năm tỷ đồng).",
+    "style": "Heading2",
+    "key": "9.3"
+   },
+   {
+    "text": "Quyền và nghĩa vụ của các bên",
+    "style": "Heading1",
+    "key": "10"
+   },
+   {
+    "text": "Bên Cho Thuê bảo đảm quyền sử dụng ổn định của Bên Thuê trong suốt thời hạn thuê nêu tại Điều 3.",
+    "style": "Heading2",
+    "key": "10.1"
+   },
+   {
+    "text": "Bên Thuê trả Tiền Thuê, Phí Dịch Vụ đầy đủ, đúng hạn theo Điều 7.1.",
+    "style": "Heading2",
+    "key": "10.2"
+   },
+   {
+    "text": "Mỗi bên chịu trách nhiệm về hành vi của nhân viên, khách và nhà thầu của mình trong Tòa Nhà.",
+    "style": "Heading2",
+    "key": "10.3"
+   },
+   {
+    "text": "Chấm dứt hợp đồng",
+    "style": "Heading1",
+    "key": "11"
+   },
+   {
+    "text": "Hợp đồng chấm dứt khi hết thời hạn thuê mà không gia hạn theo Điều 3.2, hoặc theo thỏa thuận bằng văn bản của hai bên.",
+    "style": "Heading2",
+    "key": "11.1"
+   },
+   {
+    "text": "Bên Cho Thuê được đơn phương chấm dứt hợp đồng nếu Bên Thuê chậm thanh toán quá thời hạn nêu tại Điều 7.3 mà không khắc phục trong 15 ngày kể từ ngày nhận thông báo.",
+    "style": "Heading2",
+    "key": "11.2"
+   },
+   {
+    "text": "Bên Thuê được chấm dứt hợp đồng trước hạn sau năm thứ hai, với điều kiện báo trước 06 tháng và trả khoản phí chấm dứt bằng 02 tháng Tiền Thuê.",
+    "style": "Heading2",
+    "key": "11.3"
+   },
+   {
+    "text": "Bên vi phạm chịu phạt 8% giá trị phần nghĩa vụ bị vi phạm và bồi thường thiệt hại thực tế.",
+    "style": "Heading2",
+    "key": "11.4"
+   },
+   {
+    "text": "Hoàn trả mặt bằng",
+    "style": "Heading1",
+    "key": "12"
+   },
+   {
+    "text": "Khi chấm dứt hợp đồng, Bên Thuê hoàn trả Diện Tích Thuê trong vòng 15 ngày theo hiện trạng lúc nhận bàn giao, trừ hao mòn tự nhiên.",
+    "style": "Heading2",
+    "key": "12.1"
+   },
+   {
+    "text": "Chậm hoàn trả, Bên Thuê trả tiền sử dụng bằng 150% Tiền Thuê tính theo ngày cho thời gian chậm.",
+    "style": "Heading2",
+    "key": "12.2"
+   },
+   {
+    "text": "Bất khả kháng và thông báo",
+    "style": "Heading1",
+    "key": "13"
+   },
+   {
+    "text": "Bên gặp sự kiện bất khả kháng thông báo cho bên kia trong vòng 07 ngày kể từ ngày sự kiện xảy ra, kèm tài liệu chứng minh.",
+    "style": "Heading2",
+    "key": "13.1"
+   },
+   {
+    "text": "Mọi thông báo lập bằng văn bản, gửi tới địa chỉ nêu tại phần đầu hợp đồng; bên thay đổi địa chỉ báo cho bên kia trong vòng 05 Ngày Làm Việc.",
+    "style": "Heading2",
+    "key": "13.2"
+   },
+   {
+    "text": "Điều 3 của hợp đồng này và Điều 12 vẫn được áp dụng trong thời gian xảy ra sự kiện bất khả kháng.",
+    "style": "Khoan",
+    "key": "free.13"
+   },
+   {
+    "text": "Giải quyết tranh chấp và hiệu lực",
+    "style": "Heading1",
+    "key": "14"
+   },
+   {
+    "text": "Tranh chấp được giải quyết bằng thương lượng trong vòng 30 ngày; không thành thì đưa ra Tòa án có thẩm quyền.",
+    "style": "Heading2",
+    "key": "14.1"
+   },
+   {
+    "text": "Hợp đồng có hiệu lực từ ngày ký và được lập thành 04 (bốn) bản có giá trị như nhau, mỗi bên giữ 02 (hai) bản.",
+    "style": "Heading2",
+    "key": "14.2"
+   },
+   {
+    "text": "Các phụ lục là phần không tách rời của hợp đồng.",
+    "style": "Heading2",
+    "key": "14.3"
+   },
+   {
+    "text": "PHỤ LỤC 01. MÔ TẢ DIỆN TÍCH THUÊ VÀ TRANG THIẾT BỊ",
+    "style": "TitlePL",
+    "key": "phu-luc.0"
+   },
+   {
+    "text": "1. Mô tả mặt bằng",
+    "style": "Khoan",
+    "key": "phu-luc.1"
+   },
+   {
+    "text": "1.1 Diện Tích Thuê nằm tại tầng 9, phía Đông Nam của Tòa Nhà, có 02 mặt thoáng.",
+    "style": "Khoan",
+    "key": "phu-luc.2"
+   },
+   {
+    "text": "1.2 Trần thạch cao, sàn nâng kỹ thuật và hệ thống điều hòa trung tâm đã được hoàn thiện.",
+    "style": "Khoan",
+    "key": "phu-luc.3"
+   },
+   {
+    "text": "2. Trang thiết bị bàn giao",
+    "style": "Khoan",
+    "key": "phu-luc.4"
+   },
+   {
+    "text": "2.1 Hệ thống chiếu sáng gồm 96 bộ đèn âm trần.",
+    "style": "Khoan",
+    "key": "phu-luc.5"
+   },
+   {
+    "text": "2.2 Hệ thống báo cháy và chữa cháy tự động theo thiết kế đã được thẩm duyệt.",
+    "style": "Khoan",
+    "key": "phu-luc.6"
+   },
+   {
+    "text": "2.3 Bốn (04) tủ điện tầng và 01 tủ mạng trung tâm.",
+    "style": "Khoan",
+    "key": "phu-luc.7"
+   },
+   {
+    "text": "3. Giờ hoạt động",
+    "style": "Khoan",
+    "key": "phu-luc.8"
+   },
+   {
+    "text": "3.1 Tòa Nhà mở cửa từ 6 giờ đến 22 giờ các Ngày Làm Việc; ngoài giờ này Bên Thuê đăng ký trước với ban quản lý.",
+    "style": "Khoan",
+    "key": "phu-luc.9"
+   },
+   {
+    "text": "",
+    "style": "",
+    "key": "ky.0"
+   },
+   {
+    "text": "ĐẠI DIỆN BÊN CHO THUÊ                                        ĐẠI DIỆN BÊN THUÊ",
+    "style": "Title0",
+    "key": "ky.1"
+   },
+   {
+    "text": "(Ký, ghi rõ họ tên và đóng dấu)",
+    "style": "",
+    "key": "ky.2"
+   },
+   {
+    "text": "Ông Trần Văn Minh                                                  Bà Lê Thu Hà",
+    "style": "",
+    "key": "ky.3"
+   }
+  ],
+  "loi": [
+   {
+    "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+    "style": "Title0",
+    "key": "tieu-de.1"
+   },
+   {
+    "text": "HỢP ĐỒNG THUÊ VĂN PHÒNG",
+    "style": "Title0",
+    "key": "tieu-de.2"
+   },
+   {
+    "text": "Số: 12/2026/HĐT-VP (bản thử của AI Đa Nguồn, nội dung không có thật)",
+    "style": "",
+    "key": "tieu-de.3"
+   },
+   {
+    "text": "Hôm nay, ngày ... tháng ... năm 2026, tại trụ sở Bên Cho Thuê, các bên gồm:",
+    "style": "",
+    "key": "mo-dau.1"
+   },
+   {
+    "text": "BÊN CHO THUÊ: Công ty Cổ phần Bất động sản Hồng Lĩnh, sau đây gọi là “Bên Cho Thuê”.",
+    "style": "Party",
+    "key": "ben.1"
+   },
+   {
+    "text": "BÊN THUÊ: Công ty TNHH Tư vấn Thiết kế Lam Giang, sau đây gọi là “Bên Thuê”.",
+    "style": "Party",
+    "key": "ben.2"
+   },
+   {
+    "text": "Hai bên thống nhất ký hợp đồng thuê văn phòng với các điều khoản sau:",
+    "style": "",
+    "key": "mo-dau.9"
+   },
+   {
+    "text": "Định nghĩa",
+    "style": "Heading1",
+    "key": "1"
+   },
+   {
+    "text": "“Tòa Nhà” là tòa nhà văn phòng Hồng Lĩnh Tower tại số 18 đường Trần Phú, do Bên Cho Thuê làm chủ sở hữu.",
+    "style": "Heading2",
+    "key": "1.1"
+   },
+   {
+    "text": "“Diện Tích Thuê” là phần diện tích 420 m² tại tầng 9 của Tòa Nhà, có vị trí và ranh giới mô tả tại Phụ lục 01.",
+    "style": "Heading2",
+    "key": "1.2"
+   },
+   {
+    "text": "“Ngày Bàn Giao” là ngày hai bên ký biên bản bàn giao Diện Tích Thuê theo Điều 5.",
+    "style": "Heading2",
+    "key": "1.3"
+   },
+   {
+    "text": "“Tiền Thuê” là khoản tiền Bên Thuê trả hằng tháng cho việc sử dụng Diện Tích Thuê, xác định theo Điều 4.",
+    "style": "Heading2",
+    "key": "1.4"
+   },
+   {
+    "text": "“Phí Dịch Vụ” là khoản phí quản lý vận hành Tòa Nhà mà Bên Thuê trả theo Điều 4.3.",
+    "style": "Heading2",
+    "key": "1.5"
+   },
+   {
+    "text": "“Tiền Đặt Cọc” là khoản tiền bảo đảm thực hiện hợp đồng quy định tại Điều 6.",
+    "style": "Heading2",
+    "key": "1.6"
+   },
+   {
+    "text": "“Ngày Làm Việc” là các ngày từ thứ Hai đến thứ Sáu, trừ ngày nghỉ lễ, tết theo quy định của pháp luật.",
+    "style": "Heading2",
+    "key": "1.7"
+   },
+   {
+    "text": "Đối tượng và mục đích thuê",
+    "style": "Heading1",
+    "key": "2"
+   },
+   {
+    "text": "Bên Cho Thuê đồng ý cho thuê và Bên Thuê đồng ý thuê Diện Tích Thuê để làm văn phòng làm việc.",
+    "style": "Heading2",
+    "key": "2.1"
+   },
+   {
+    "text": "Diện Tích Thuê được đo theo tim tường; chênh lệch dưới 1% so với số đo nêu tại Phụ lục 01 không làm thay đổi Tiền Thuê.",
+    "style": "Heading2",
+    "key": "2.2"
+   },
+   {
+    "text": "Bên Thuê không được dùng Diện Tích Thuê vào mục đích khác, như kho hàng, lưu trú, lớp học v.v... nếu chưa có chấp thuận bằng văn bản của Bên Cho Thuê.",
+    "style": "Heading2",
+    "key": "2.3"
+   },
+   {
+    "text": "Thời hạn thuê",
+    "style": "Heading1",
+    "key": "3"
+   },
+   {
+    "text": "Thời hạn thuê là 05 (năm) năm kể từ Ngày Bàn Giao.",
+    "style": "Heading2",
+    "key": "3.1"
+   },
+   {
+    "text": "Bên Thuê được ưu tiên gia hạn nếu gửi đề nghị bằng văn bản chậm nhất 06 (sáu) tháng trước ngày hết hạn.",
+    "style": "Heading2",
+    "key": "3.2"
+   },
+   {
+    "text": "Hết thời hạn thuê mà không gia hạn thì hợp đồng chấm dứt và Bên Thuê hoàn trả Diện Tích Thuê theo Điều 12.",
+    "style": "Heading2",
+    "key": "3.3"
+   },
+   {
+    "text": "Tiền thuê và phí dịch vụ",
+    "style": "Heading1",
+    "key": "4"
+   },
+   {
+    "text": "Tiền Thuê là 120.000.000 đồng (Một trăm hai mươi lăm triệu đồng) mỗi tháng, chưa gồm thuế giá trị gia tăng.",
+    "style": "Heading2",
+    "key": "4.1"
+   },
+   {
+    "text": "Tiền Thuê được giữ cố định trong 02 (hai) năm đầu; từ năm thứ ba, mỗi năm tăng 5% so với năm liền trước.",
+    "style": "Heading2",
+    "key": "4.2"
+   },
+   {
+    "text": "Phí Dịch Vụ là 85.000 đồng cho mỗi mét vuông mỗi tháng và được điều chỉnh theo thông báo của ban quản lý Tòa Nhà, nhưng mỗi lần tăng không quá 10%.",
+    "style": "Heading2",
+    "key": "4.3"
+   },
+   {
+    "text": "Bàn giao",
+    "style": "Heading1",
+    "key": "5"
+   },
+   {
+    "text": "Bên Cho Thuê bàn giao Diện Tích Thuê cho Bên Thuê chậm nhất vào ngày 01 tháng 02 năm 2027.",
+    "style": "Heading2",
+    "key": "5.1"
+   },
+   {
+    "text": "Tại ngày bàn giao, hai bên lập biên bản ghi nhận hiện trạng, chỉ số công tơ điện và danh mục trang thiết bị kèm theo.",
+    "style": "Heading2",
+    "key": "5.2"
+   },
+   {
+    "text": "Nếu Bên Cho Thuê chậm bàn giao quá 30 (ba mươi) ngày, Bên Thuê được miễn Tiền Thuê tương ứng với gấp đôi số ngày chậm.",
+    "style": "Heading2",
+    "key": "5.3"
+   },
+   {
+    "text": "Đặt cọc",
+    "style": "Heading1",
+    "key": "6"
+   },
+   {
+    "text": "Bên Thuê chuyển Tiền Đặt Cọc bằng 03 (ba) tháng Tiền Thuê, tương đương 360.000.000 đồng (Ba trăm sáu mươi triệu đồng), trong vòng 10 (mười) Ngày Làm Việc kể từ ngày ký hợp đồng.",
+    "style": "Heading2",
+    "key": "6.1"
+   },
+   {
+    "text": "Tiền Đặt Cọc không tính lãi và được hoàn trả trong vòng 30 ngày kể từ ngày Bên Thuê hoàn thành mọi nghĩa vụ khi chấm dứt hợp đồng.",
+    "style": "Heading2",
+    "key": "6.2"
+   },
+   {
+    "text": "Bên Cho Thuê được khấu trừ Tiền Đặt Cọc trong các trường hợp sau:",
+    "style": "Heading2",
+    "key": "6.3"
+   },
+   {
+    "text": "Bên Thuê chậm trả Tiền thuê hoặc Phí Dịch Vụ quá thời hạn quy định tại khoản 3 Điều 7;",
+    "style": "Heading3",
+    "key": "6.3.1"
+   },
+   {
+    "text": "Bên Thuê gây hư hỏng cho Tòa Nhà mà không khắc phục;",
+    "style": "Heading3",
+    "key": "6.3.2"
+   },
+   {
+    "text": "Bên Thuê đơn phương chấm dứt hợp đồng trái với Điều 11.",
+    "style": "Heading3",
+    "key": "6.3.3"
+   },
+   {
+    "text": "Thanh toán",
+    "style": "Heading1",
+    "key": "7"
+   },
+   {
+    "text": "Tiền Thuê và Phí Dịch Vụ được thanh toán theo quý, trong vòng 10 ngày đầu của mỗi quý, bằng chuyển khoản vào tài khoản của Bên Cho Thuê số ……………… tại Ngân hàng Thương mại Cổ phần Đông Hải.",
+    "style": "Heading2",
+    "key": "7.1"
+   },
+   {
+    "text": "Bên Cho Thuê xuất hóa đơn cho từng kỳ thanh toán trước ngày đến hạn ít nhất 07 ngày.",
+    "style": "Heading2",
+    "key": "7.2"
+   },
+   {
+    "text": "Nếu chậm thanh toán, Bên Thuê trả lãi chậm trả 0,05% mỗi ngày trên số tiền chậm trả; chậm quá 45 ngày là vi phạm nghiêm trọng theo Điều 11.2.",
+    "style": "Heading2",
+    "key": "7.3"
+   },
+   {
+    "text": "Lãi chậm trả nêu tại khoản 3 Điều này không vượt quá mức lãi suất tối đa theo Điều 357 của Bộ luật Dân sự.",
+    "style": "Heading2",
+    "key": "7.4"
+   },
+   {
+    "text": "Sử dụng và cải tạo",
+    "style": "Heading1",
+    "key": "8"
+   },
+   {
+    "text": "Bên Thuê sử dụng Diện Tích Thuê đúng công năng và tuân thủ nội quy Tòa Nhà.",
+    "style": "Heading2",
+    "key": "8.1"
+   },
+   {
+    "text": "Mọi cải tạo làm thay đổi kết cấu, hệ thống điện hoặc phòng cháy chữa cháy phải được Bên Cho Thuê chấp thuận bằng văn bản trước khi thi công.",
+    "style": "Heading2",
+    "key": "8.2"
+   },
+   {
+    "text": "Bên Cho Thuê trả lời đề nghị cải tạo trong vòng 10 Ngày Làm Việc; quá thời hạn này mà không trả lời thì coi như đồng ý.",
+    "style": "Heading2",
+    "key": "8.3"
+   },
+   {
+    "text": "Bảo trì và bảo hiểm",
+    "style": "Heading1",
+    "key": "9"
+   },
+   {
+    "text": "Bên Cho Thuê chịu trách nhiệm sửa chữa kết cấu, mặt ngoài và hệ thống kỹ thuật chung của Tòa Nhà.",
+    "style": "Heading2",
+    "key": "9.1"
+   },
+   {
+    "text": "Hư hỏng thuộc trách nhiệm của Bên Cho Thuê phải được khắc phục trong vòng 07 ngày kể từ ngày nhận thông báo; trường hợp khẩn cấp là 24 giờ.",
+    "style": "Heading2",
+    "key": "9.2"
+   },
+   {
+    "text": "Bên Thuê mua bảo hiểm cháy nổ cho tài sản của mình với mức trách nhiệm không thấp hơn 5.000.000.000 đồng (Năm tỷ đồng).",
+    "style": "Heading2",
+    "key": "9.3"
+   },
+   {
+    "text": "Quyền và nghĩa vụ của các bên",
+    "style": "Heading1",
+    "key": "10"
+   },
+   {
+    "text": "Bên Cho Thuê bảo đảm quyền sử dụng ổn định của Bên Thuê trong suốt thời hạn thuê nêu tại Điều 3.",
+    "style": "Heading2",
+    "key": "10.1"
+   },
+   {
+    "text": "Bên Thuê trả Tiền Thuê, Phí Quản Lý đầy đủ, đúng hạn theo Điều 7.1.",
+    "style": "Heading2",
+    "key": "10.2"
+   },
+   {
+    "text": "Mỗi bên chịu trách nhiệm về hành vi của nhân viên, khách và nhà thầu của mình trong Tòa Nhà.",
+    "style": "Heading2",
+    "key": "10.3"
+   },
+   {
+    "text": "Chấm dứt hợp đồng",
+    "style": "Heading1",
+    "key": "11"
+   },
+   {
+    "text": "Hợp đồng chấm dứt khi hết thời hạn thuê mà không gia hạn theo Điều 3.2, hoặc theo thỏa thuận bằng văn bản của hai bên.",
+    "style": "Heading2",
+    "key": "11.1"
+   },
+   {
+    "text": "Bên Cho Thuê được đơn phương chấm dứt hợp đồng nếu Bên Thuê chậm thanh toán quá thời hạn nêu tại khoản 6 Điều 7 mà không khắc phục trong 15 ngày kể từ ngày nhận thông báo.",
+    "style": "Heading2",
+    "key": "11.2"
+   },
+   {
+    "text": "Bên Thuê được chấm dứt hợp đồng trước hạn sau năm thứ hai, với điều kiện báo trước 06 tháng và trả khoản phí chấm dứt bằng 02 tháng Tiền Thuê.",
+    "style": "Heading2",
+    "key": "11.3"
+   },
+   {
+    "text": "Bên vi phạm chịu phạt 8% giá trị phần nghĩa vụ bị vi phạm và bồi thường thiệt hại thực tế.",
+    "style": "Heading2",
+    "key": "11.4"
+   },
+   {
+    "text": "Hoàn trả mặt bằng",
+    "style": "Heading1",
+    "key": "12"
+   },
+   {
+    "text": "Khi chấm dứt hợp đồng, Bên Thuê hoàn trả Diện Tích Thuê trong vòng 15 ngày theo hiện trạng lúc nhận bàn giao, trừ hao mòn tự nhiên.",
+    "style": "Heading2",
+    "key": "12.1"
+   },
+   {
+    "text": "Chậm hoàn trả, Bên Thuê trả tiền sử dụng bằng 150% Tiền Thuê tính theo ngày cho thời gian chậm.",
+    "style": "Heading2",
+    "key": "12.2"
+   },
+   {
+    "text": "Bất khả kháng và thông báo",
+    "style": "Heading1",
+    "key": "13"
+   },
+   {
+    "text": "Bên gặp sự kiện bất khả kháng thông báo cho bên kia trong vòng 07 ngày kể từ ngày sự kiện xảy ra, kèm tài liệu chứng minh.",
+    "style": "Heading2",
+    "key": "13.1"
+   },
+   {
+    "text": "Mọi thông báo lập bằng văn bản, gửi tới địa chỉ nêu tại phần đầu hợp đồng; bên thay đổi địa chỉ báo cho bên kia trong vòng 05 Ngày Làm Việc.",
+    "style": "Heading2",
+    "key": "13.2"
+   },
+   {
+    "text": "Điều 3 của hợp đồng này và Điều 19 vẫn được áp dụng trong thời gian xảy ra sự kiện bất khả kháng.",
+    "style": "Khoan",
+    "key": "free.13"
+   },
+   {
+    "text": "Giải quyết tranh chấp và hiệu lực",
+    "style": "Heading1",
+    "key": "14"
+   },
+   {
+    "text": "Tranh chấp được giải quyết bằng thương lượng trong vòng 30 ngày; không thành thì đưa ra Tòa án có thẩm quyền.",
+    "style": "Heading2",
+    "key": "14.1"
+   },
+   {
+    "text": "Hợp đồng có hiệu lực từ ngày ký và được lập thành 04 (bốn) bản có giá trị như nhau, mỗi bên giữ 02 (hai) bản.",
+    "style": "Heading2",
+    "key": "14.2"
+   },
+   {
+    "text": "Các phụ lục là phần không tách rời của hợp đồng.",
+    "style": "Heading2",
+    "key": "14.3"
+   },
+   {
+    "text": "PHỤ LỤC 01. MÔ TẢ DIỆN TÍCH THUÊ VÀ TRANG THIẾT BỊ",
+    "style": "TitlePL",
+    "key": "phu-luc.0"
+   },
+   {
+    "text": "1. Mô tả mặt bằng",
+    "style": "Khoan",
+    "key": "phu-luc.1"
+   },
+   {
+    "text": "1.1 Diện Tích Thuê nằm tại tầng 9, phía Đông Nam của Tòa Nhà, có 02 mặt thoáng.",
+    "style": "Khoan",
+    "key": "phu-luc.2"
+   },
+   {
+    "text": "1.2 Trần thạch cao, sàn nâng kỹ thuật và hệ thống điều hòa trung tâm đã được hoàn thiện.",
+    "style": "Khoan",
+    "key": "phu-luc.3"
+   },
+   {
+    "text": "2. Trang thiết bị bàn giao",
+    "style": "Khoan",
+    "key": "phu-luc.4"
+   },
+   {
+    "text": "2.1 Hệ thống chiếu sáng gồm 96 bộ đèn âm trần.",
+    "style": "Khoan",
+    "key": "phu-luc.5"
+   },
+   {
+    "text": "2.2 Hệ thống báo cháy và chữa cháy tự động theo thiết kế đã được thẩm duyệt.",
+    "style": "Khoan",
+    "key": "phu-luc.6"
+   },
+   {
+    "text": "2.4 Bốn (04) tủ điện tầng và 01 tủ mạng trung tâm.",
+    "style": "Khoan",
+    "key": "phu-luc.7"
+   },
+   {
+    "text": "3. Giờ hoạt động",
+    "style": "Khoan",
+    "key": "phu-luc.8"
+   },
+   {
+    "text": "3.1 Tòa Nhà mở cửa từ 6 giờ đến 22 giờ các Ngày Làm Việc; ngoài giờ này Bên Thuê đăng ký trước với ban quản lý.",
+    "style": "Khoan",
+    "key": "phu-luc.9"
+   },
+   {
+    "text": "",
+    "style": "",
+    "key": "ky.0"
+   },
+   {
+    "text": "ĐẠI DIỆN BÊN CHO THUÊ                                        ĐẠI DIỆN BÊN THUÊ",
+    "style": "Title0",
+    "key": "ky.1"
+   },
+   {
+    "text": "(Ký, ghi rõ họ tên và đóng dấu)",
+    "style": "",
+    "key": "ky.2"
+   },
+   {
+    "text": "Ông Trần Văn Minh                                                  Bà Lê Thu Hà",
+    "style": "",
+    "key": "ky.3"
+   }
+  ],
+  "v2": [
+   {
+    "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+    "style": "Title0",
+    "key": "tieu-de.1"
+   },
+   {
+    "text": "HỢP ĐỒNG THUÊ VĂN PHÒNG",
+    "style": "Title0",
+    "key": "tieu-de.2"
+   },
+   {
+    "text": "Số: 12/2026/HĐT-VP (bản thử của AI Đa Nguồn, nội dung không có thật)",
+    "style": "",
+    "key": "tieu-de.3"
+   },
+   {
+    "text": "Hôm nay, ngày 10 tháng 11 năm 2026, tại trụ sở Bên Cho Thuê, các bên gồm:",
+    "style": "",
+    "key": "mo-dau.1"
+   },
+   {
+    "text": "BÊN CHO THUÊ: Công ty Cổ phần Bất động sản Hồng Lĩnh, sau đây gọi là “Bên Cho Thuê”.",
+    "style": "Party",
+    "key": "ben.1"
+   },
+   {
+    "text": "BÊN THUÊ: Công ty TNHH Tư vấn Thiết kế Lam Giang, sau đây gọi là “Bên Thuê”.",
+    "style": "Party",
+    "key": "ben.2"
+   },
+   {
+    "text": "Hai bên thống nhất ký hợp đồng thuê văn phòng với các điều khoản sau:",
+    "style": "",
+    "key": "mo-dau.9"
+   },
+   {
+    "text": "Định nghĩa",
+    "style": "Heading1",
+    "key": "1"
+   },
+   {
+    "text": "“Tòa Nhà” là tòa nhà văn phòng Hồng Lĩnh Tower tại số 18 đường Trần Phú, do Bên Cho Thuê làm chủ sở hữu.",
+    "style": "Heading2",
+    "key": "1.1"
+   },
+   {
+    "text": "“Diện Tích Thuê” là phần diện tích 420 m² tại tầng 9 của Tòa Nhà, có vị trí và ranh giới mô tả tại Phụ lục 01.",
+    "style": "Heading2",
+    "key": "1.2"
+   },
+   {
+    "text": "“Ngày Bàn Giao” là ngày hai bên ký biên bản bàn giao Diện Tích Thuê theo Điều 5.",
+    "style": "Heading2",
+    "key": "1.3"
+   },
+   {
+    "text": "“Tiền Thuê” là khoản tiền Bên Thuê trả hằng tháng cho việc sử dụng Diện Tích Thuê, xác định theo Điều 4.",
+    "style": "Heading2",
+    "key": "1.4"
+   },
+   {
+    "text": "“Phí Dịch Vụ” là khoản phí quản lý vận hành Tòa Nhà mà Bên Thuê trả theo Điều 4.3.",
+    "style": "Heading2",
+    "key": "1.5"
+   },
+   {
+    "text": "“Tiền Đặt Cọc” là khoản tiền bảo đảm thực hiện hợp đồng quy định tại Điều 6.",
+    "style": "Heading2",
+    "key": "1.6"
+   },
+   {
+    "text": "“Ngày Làm Việc” là các ngày từ thứ Hai đến thứ Sáu, trừ ngày nghỉ lễ, tết theo quy định của pháp luật.",
+    "style": "Heading2",
+    "key": "1.7"
+   },
+   {
+    "text": "Đối tượng và mục đích thuê",
+    "style": "Heading1",
+    "key": "2"
+   },
+   {
+    "text": "Bên Cho Thuê đồng ý cho thuê và Bên Thuê đồng ý thuê Diện Tích Thuê để làm văn phòng làm việc.",
+    "style": "Heading2",
+    "key": "2.1"
+   },
+   {
+    "text": "Diện Tích Thuê được đo theo tim tường; chênh lệch dưới 1% so với số đo nêu tại Phụ lục 01 không làm thay đổi Tiền Thuê.",
+    "style": "Heading2",
+    "key": "2.2"
+   },
+   {
+    "text": "Bên Thuê không được dùng Diện Tích Thuê vào mục đích khác, như kho hàng, lưu trú, lớp học v.v... nếu chưa có chấp thuận bằng văn bản của Bên Cho Thuê.",
+    "style": "Heading2",
+    "key": "2.3"
+   },
+   {
+    "text": "Thời hạn thuê",
+    "style": "Heading1",
+    "key": "3"
+   },
+   {
+    "text": "Thời hạn thuê là 07 (bảy) năm kể từ Ngày Bàn Giao.",
+    "style": "Heading2",
+    "key": "3.1"
+   },
+   {
+    "text": "Bên Thuê được ưu tiên gia hạn nếu gửi đề nghị bằng văn bản chậm nhất 06 (sáu) tháng trước ngày hết hạn.",
+    "style": "Heading2",
+    "key": "3.2"
+   },
+   {
+    "text": "Hết thời hạn thuê mà không gia hạn thì hợp đồng chấm dứt và Bên Thuê hoàn trả Diện Tích Thuê theo Điều 12.",
+    "style": "Heading2",
+    "key": "3.3"
+   },
+   {
+    "text": "Tiền thuê và phí dịch vụ",
+    "style": "Heading1",
+    "key": "4"
+   },
+   {
+    "text": "Tiền Thuê là 135.000.000 đồng (Một trăm ba mươi lăm triệu đồng) mỗi tháng, chưa gồm thuế giá trị gia tăng.",
+    "style": "Heading2",
+    "key": "4.1"
+   },
+   {
+    "text": "Tiền Thuê được giữ cố định trong 02 (hai) năm đầu; từ năm thứ ba, mỗi năm tăng 7% so với năm liền trước.",
+    "style": "Heading2",
+    "key": "4.2"
+   },
+   {
+    "text": "Phí Dịch Vụ là 85.000 đồng cho mỗi mét vuông mỗi tháng và được điều chỉnh theo thông báo của ban quản lý Tòa Nhà, nhưng mỗi lần tăng không quá 10%.",
+    "style": "Heading2",
+    "key": "4.3"
+   },
+   {
+    "text": "Bàn giao",
+    "style": "Heading1",
+    "key": "5"
+   },
+   {
+    "text": "Bên Cho Thuê bàn giao Diện Tích Thuê cho Bên Thuê chậm nhất vào ngày 01 tháng 03 năm 2027.",
+    "style": "Heading2",
+    "key": "5.1"
+   },
+   {
+    "text": "Tại Ngày Bàn Giao, hai bên lập biên bản ghi nhận hiện trạng, chỉ số công tơ điện và danh mục trang thiết bị kèm theo.",
+    "style": "Heading2",
+    "key": "5.2"
+   },
+   {
+    "text": "Nếu Bên Cho Thuê chậm bàn giao quá 30 (ba mươi) ngày, Bên Thuê được miễn Tiền Thuê tương ứng với gấp đôi số ngày chậm.",
+    "style": "Heading2",
+    "key": "5.3"
+   },
+   {
+    "text": "Đặt cọc",
+    "style": "Heading1",
+    "key": "6"
+   },
+   {
+    "text": "Bên Thuê chuyển Tiền Đặt Cọc bằng 03 (ba) tháng Tiền Thuê, tương đương 360.000.000 đồng (Ba trăm sáu mươi triệu đồng), trong vòng 10 (mười) Ngày Làm Việc kể từ ngày ký hợp đồng.",
+    "style": "Heading2",
+    "key": "6.1"
+   },
+   {
+    "text": "Tiền Đặt Cọc không tính lãi và được hoàn trả trong vòng 45 ngày kể từ ngày Bên Thuê hoàn thành mọi nghĩa vụ khi chấm dứt hợp đồng.",
+    "style": "Heading2",
+    "key": "6.2"
+   },
+   {
+    "text": "Bên Cho Thuê được khấu trừ Tiền Đặt Cọc trong các trường hợp sau:",
+    "style": "Heading2",
+    "key": "6.3"
+   },
+   {
+    "text": "Bên Thuê chậm trả Tiền Thuê hoặc Phí Dịch Vụ quá thời hạn quy định tại khoản 3 Điều 7;",
+    "style": "Heading3",
+    "key": "6.3.1"
+   },
+   {
+    "text": "Bên Thuê gây hư hỏng cho Tòa Nhà mà không khắc phục;",
+    "style": "Heading3",
+    "key": "6.3.2"
+   },
+   {
+    "text": "Bên Thuê đơn phương chấm dứt hợp đồng trái với Điều 11.",
+    "style": "Heading3",
+    "key": "6.3.3"
+   },
+   {
+    "text": "Thanh toán",
+    "style": "Heading1",
+    "key": "7"
+   },
+   {
+    "text": "Tiền Thuê và Phí Dịch Vụ được thanh toán theo quý, trong vòng 10 ngày đầu của mỗi quý, bằng chuyển khoản vào tài khoản của Bên Cho Thuê số 0011 2233 4455 tại Ngân hàng Thương mại Cổ phần Đông Hải.",
+    "style": "Heading2",
+    "key": "7.1"
+   },
+   {
+    "text": "Bên Cho Thuê xuất hóa đơn cho từng kỳ thanh toán trước ngày đến hạn ít nhất 07 ngày.",
+    "style": "Heading2",
+    "key": "7.2"
+   },
+   {
+    "text": "Nếu chậm thanh toán, Bên Thuê trả lãi chậm trả 0,08% mỗi ngày trên số tiền chậm trả; chậm quá 45 ngày là vi phạm nghiêm trọng theo Điều 11.2.",
+    "style": "Heading2",
+    "key": "7.3"
+   },
+   {
+    "text": "Lãi chậm trả nêu tại khoản 3 Điều này không vượt quá mức lãi suất tối đa theo Điều 357 của Bộ luật Dân sự.",
+    "style": "Heading2",
+    "key": "7.4"
+   },
+   {
+    "text": "Sử dụng và cải tạo",
+    "style": "Heading1",
+    "key": "8"
+   },
+   {
+    "text": "Bên Thuê sử dụng Diện Tích Thuê đúng công năng và tuân thủ nội quy Tòa Nhà.",
+    "style": "Heading2",
+    "key": "8.1"
+   },
+   {
+    "text": "Mọi cải tạo làm thay đổi kết cấu, hệ thống điện hoặc phòng cháy chữa cháy phải được Bên Cho Thuê chấp thuận bằng văn bản trước khi thi công. Chi phí thẩm tra hồ sơ cải tạo do Bên Thuê chịu.",
+    "style": "Heading2",
+    "key": "8.2"
+   },
+   {
+    "text": "Bên Cho Thuê trả lời đề nghị cải tạo trong vòng 10 Ngày Làm Việc; quá thời hạn này mà không trả lời thì coi như đồng ý.",
+    "style": "Heading2",
+    "key": "8.3"
+   },
+   {
+    "text": "Bảo trì và bảo hiểm",
+    "style": "Heading1",
+    "key": "9"
+   },
+   {
+    "text": "Bên Cho Thuê chịu trách nhiệm sửa chữa kết cấu, mặt ngoài và hệ thống kỹ thuật chung của Tòa Nhà.",
+    "style": "Heading2",
+    "key": "9.1"
+   },
+   {
+    "text": "Hư hỏng thuộc trách nhiệm của Bên Cho Thuê phải được khắc phục trong vòng 07 ngày kể từ ngày nhận thông báo; trường hợp khẩn cấp là 24 giờ.",
+    "style": "Heading2",
+    "key": "9.2"
+   },
+   {
+    "text": "Bên Thuê mua bảo hiểm cháy nổ cho tài sản của mình với mức trách nhiệm không thấp hơn 5.000.000.000 đồng (Năm tỷ đồng).",
+    "style": "Heading2",
+    "key": "9.3"
+   },
+   {
+    "text": "Bên Cho Thuê mua bảo hiểm mọi rủi ro tài sản cho phần kết cấu của Tòa Nhà.",
+    "style": "Heading2",
+    "key": "9.3+"
+   },
+   {
+    "text": "Quyền và nghĩa vụ của các bên",
+    "style": "Heading1",
+    "key": "10"
+   },
+   {
+    "text": "Bên Cho Thuê bảo đảm quyền sử dụng ổn định của Bên Thuê trong suốt thời hạn thuê nêu tại Điều 3.",
+    "style": "Heading2",
+    "key": "10.1"
+   },
+   {
+    "text": "Bên Thuê trả Tiền Thuê, Phí Dịch Vụ đầy đủ, đúng hạn theo Điều 7.1.",
+    "style": "Heading2",
+    "key": "10.2"
+   },
+   {
+    "text": "Mỗi bên chịu trách nhiệm về hành vi của nhân viên, khách và nhà thầu của mình trong Tòa Nhà.",
+    "style": "Heading2",
+    "key": "10.3"
+   },
+   {
+    "text": "Chấm dứt hợp đồng",
+    "style": "Heading1",
+    "key": "11"
+   },
+   {
+    "text": "Hợp đồng chấm dứt khi hết thời hạn thuê mà không gia hạn theo Điều 3.2, hoặc theo thỏa thuận bằng văn bản của hai bên.",
+    "style": "Heading2",
+    "key": "11.1"
+   },
+   {
+    "text": "Bên Cho Thuê được đơn phương chấm dứt hợp đồng nếu Bên Thuê chậm thanh toán quá thời hạn nêu tại Điều 7.3 mà không khắc phục trong 15 ngày kể từ ngày nhận thông báo.",
+    "style": "Heading2",
+    "key": "11.2"
+   },
+   {
+    "text": "Bên vi phạm chịu phạt 8% giá trị phần nghĩa vụ bị vi phạm và bồi thường thiệt hại thực tế.",
+    "style": "Heading2",
+    "key": "11.4"
+   },
+   {
+    "text": "Hoàn trả mặt bằng",
+    "style": "Heading1",
+    "key": "12"
+   },
+   {
+    "text": "Khi chấm dứt hợp đồng, Bên Thuê hoàn trả Diện Tích Thuê trong vòng 15 ngày theo hiện trạng lúc nhận bàn giao, trừ hao mòn tự nhiên.",
+    "style": "Heading2",
+    "key": "12.1"
+   },
+   {
+    "text": "Chậm hoàn trả, Bên Thuê trả tiền sử dụng bằng 150% Tiền Thuê tính theo ngày cho thời gian chậm.",
+    "style": "Heading2",
+    "key": "12.2"
+   },
+   {
+    "text": "Bất khả kháng và thông báo",
+    "style": "Heading1",
+    "key": "13"
+   },
+   {
+    "text": "Bên gặp sự kiện bất khả kháng thông báo cho bên kia trong vòng 07 ngày kể từ ngày sự kiện xảy ra, kèm tài liệu chứng minh.",
+    "style": "Heading2",
+    "key": "13.1"
+   },
+   {
+    "text": "Mọi thông báo lập bằng văn bản, gửi tới địa chỉ nêu tại phần đầu hợp đồng; bên thay đổi địa chỉ báo cho bên kia trong vòng 05 Ngày Làm Việc.",
+    "style": "Heading2",
+    "key": "13.2"
+   },
+   {
+    "text": "Điều 3 của hợp đồng này và Điều 12 vẫn được áp dụng trong thời gian xảy ra sự kiện bất khả kháng.",
+    "style": "Khoan",
+    "key": "free.13"
+   },
+   {
+    "text": "Giải quyết tranh chấp và hiệu lực",
+    "style": "Heading1",
+    "key": "14"
+   },
+   {
+    "text": "Tranh chấp được giải quyết bằng thương lượng trong vòng 30 ngày; không thành thì đưa ra Tòa án có thẩm quyền.",
+    "style": "Heading2",
+    "key": "14.1"
+   },
+   {
+    "text": "Hợp đồng có hiệu lực từ ngày ký và được lập thành 04 (bốn) bản có giá trị như nhau, mỗi bên giữ 02 (hai) bản.",
+    "style": "Heading2",
+    "key": "14.2"
+   },
+   {
+    "text": "Các phụ lục là phần không tách rời của hợp đồng.",
+    "style": "Heading2",
+    "key": "14.3"
+   },
+   {
+    "text": "PHỤ LỤC 01. MÔ TẢ DIỆN TÍCH THUÊ VÀ TRANG THIẾT BỊ",
+    "style": "TitlePL",
+    "key": "phu-luc.0"
+   },
+   {
+    "text": "1. Mô tả mặt bằng",
+    "style": "Khoan",
+    "key": "phu-luc.1"
+   },
+   {
+    "text": "1.1 Diện Tích Thuê nằm tại tầng 9, phía Đông Nam của Tòa Nhà, có 02 mặt thoáng.",
+    "style": "Khoan",
+    "key": "phu-luc.2"
+   },
+   {
+    "text": "1.2 Trần thạch cao, sàn nâng kỹ thuật và hệ thống điều hòa trung tâm đã được hoàn thiện.",
+    "style": "Khoan",
+    "key": "phu-luc.3"
+   },
+   {
+    "text": "2. Trang thiết bị bàn giao",
+    "style": "Khoan",
+    "key": "phu-luc.4"
+   },
+   {
+    "text": "2.1 Hệ thống chiếu sáng gồm 108 bộ đèn âm trần.",
+    "style": "Khoan",
+    "key": "phu-luc.5"
+   },
+   {
+    "text": "2.2 Hệ thống báo cháy và chữa cháy tự động theo thiết kế đã được thẩm duyệt.",
+    "style": "Khoan",
+    "key": "phu-luc.6"
+   },
+   {
+    "text": "2.3 Bốn (04) tủ điện tầng và 01 tủ mạng trung tâm.",
+    "style": "Khoan",
+    "key": "phu-luc.7"
+   },
+   {
+    "text": "3. Giờ hoạt động",
+    "style": "Khoan",
+    "key": "phu-luc.8"
+   },
+   {
+    "text": "3.1 Tòa Nhà mở cửa từ 6 giờ đến 22 giờ các Ngày Làm Việc; ngoài giờ này Bên Thuê đăng ký trước với ban quản lý.",
+    "style": "Khoan",
+    "key": "phu-luc.9"
+   },
+   {
+    "text": "",
+    "style": "",
+    "key": "ky.0"
+   },
+   {
+    "text": "ĐẠI DIỆN BÊN CHO THUÊ                                        ĐẠI DIỆN BÊN THUÊ",
+    "style": "Title0",
+    "key": "ky.1"
+   },
+   {
+    "text": "(Ký, ghi rõ họ tên và đóng dấu)",
+    "style": "",
+    "key": "ky.2"
+   },
+   {
+    "text": "Ông Trần Văn Minh                                                  Bà Lê Thu Hà",
+    "style": "",
+    "key": "ky.3"
+   }
+  ]
+ },
+ "loi": [
+  {
+   "loai": "thuật ngữ lệch",
+   "o": "5.2",
+   "tu": "Tại Ngày Bàn Giao",
+   "thanh": "Tại ngày bàn giao"
+  },
+  {
+   "loai": "thuật ngữ lệch",
+   "o": "6.3.1",
+   "tu": "chậm trả Tiền Thuê",
+   "thanh": "chậm trả Tiền thuê"
+  },
+  {
+   "loai": "thuật ngữ lệch",
+   "o": "10.2",
+   "tu": "Phí Dịch Vụ",
+   "thanh": "Phí Quản Lý"
+  },
+  {
+   "loai": "dẫn chiếu hỏng",
+   "o": "free.13",
+   "tu": "và Điều 12 vẫn",
+   "thanh": "và Điều 19 vẫn"
+  },
+  {
+   "loai": "dẫn chiếu hỏng",
+   "o": "11.2",
+   "tu": "nêu tại Điều 7.3",
+   "thanh": "nêu tại khoản 6 Điều 7"
+  },
+  {
+   "loai": "nhảy số",
+   "o": "phu-luc.7",
+   "tu": "2.3 Bốn",
+   "thanh": "2.4 Bốn"
+  },
+  {
+   "loai": "số tiền lệch chữ",
+   "o": "4.1",
+   "tu": "(Một trăm hai mươi triệu đồng)",
+   "thanh": "(Một trăm hai mươi lăm triệu đồng)"
+  },
+  {
+   "loai": "chỗ trống",
+   "o": "mo-dau.1",
+   "tu": "ngày 10 tháng 11 năm 2026",
+   "thanh": "ngày ... tháng ... năm 2026"
+  },
+  {
+   "loai": "chỗ trống",
+   "o": "7.1",
+   "tu": "[[sdt:so_tai_khoan|Số tài khoản|0011 2233 4455]]",
+   "thanh": "………………"
+  }
+ ],
+ "v2": [
+  {
+   "dieu": "3.1",
+   "o": "3.1",
+   "tu": "05 (năm) năm",
+   "thanh": "07 (bảy) năm"
+  },
+  {
+   "dieu": "4.1",
+   "o": "4.1",
+   "tu": "120.000.000 đồng (Một trăm hai mươi triệu đồng)",
+   "thanh": "135.000.000 đồng (Một trăm ba mươi lăm triệu đồng)"
+  },
+  {
+   "dieu": "4.2",
+   "o": "4.2",
+   "tu": "tăng 5%",
+   "thanh": "tăng 7%"
+  },
+  {
+   "dieu": "5.1",
+   "o": "5.1",
+   "tu": "ngày 01 tháng 02 năm 2027",
+   "thanh": "ngày 01 tháng 03 năm 2027"
+  },
+  {
+   "dieu": "6.2",
+   "o": "6.2",
+   "tu": "trong vòng 30 ngày",
+   "thanh": "trong vòng 45 ngày"
+  },
+  {
+   "dieu": "7.3",
+   "o": "7.3",
+   "tu": "0,05%",
+   "thanh": "0,08%"
+  },
+  {
+   "dieu": "8.2",
+   "o": "8.2",
+   "tu": "trước khi thi công.",
+   "thanh": "trước khi thi công. Chi phí thẩm tra hồ sơ cải tạo do Bên Thuê chịu."
+  },
+  {
+   "dieu": "9.4 (khoản mới sau 9.3)",
+   "o": "9.3",
+   "kieu": "them-khoan",
+   "thanh": "Bên Cho Thuê mua bảo hiểm mọi rủi ro tài sản cho phần kết cấu của Tòa Nhà."
+  },
+  {
+   "dieu": "11.3 (bị bỏ)",
+   "o": "11.3",
+   "kieu": "xoa-khoan"
+  },
+  {
+   "dieu": "Phụ lục 01, mục 2.1",
+   "o": "phu-luc.5",
+   "tu": "96 bộ đèn",
+   "thanh": "108 bộ đèn"
+  }
+ ]
+}

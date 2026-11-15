@@ -1,0 +1,43 @@
+{
+ "target": "CompareTargetCurrent",
+ "truoc": {
+  "soDoan": 86,
+  "bam": -684884156,
+  "soSuaDoi": 2,
+  "theoTacGia": {
+   "Đối tác": 2
+  },
+  "cheDo": "Off",
+  "daLuu": false,
+  "vai": [
+   "Deleted: 15",
+   "Added: 10"
+  ]
+ },
+ "goi": "không lỗi",
+ "giay": 0.445,
+ "sau": {
+  "soDoan": 87,
+  "bam": -1612052767,
+  "soSuaDoi": 50,
+  "theoTacGia": {
+   "So sánh AIDN": 50
+  },
+  "cheDo": "Off",
+  "daLuu": false,
+  "vai": [
+   "Deleted: ",
+   "Added: 10",
+   "Deleted: ...",
+   "Added: 11",
+   "Deleted: ...",
+   "Deleted: \u0002",
+   "Added: 07 (bảy",
+   "Deleted: 05 (năm",
+   "Added: 135",
+   "Deleted: 120",
+   "Added: ba",
+   "Deleted: hai"
+  ]
+ }
+}

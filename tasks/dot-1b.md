@@ -47,6 +47,35 @@ Bước không đạt: làm lại riêng bước đó tối đa 3 lần rồi d�
 - Trước khi chọn cách làm tốn kém hoặc lệch kế hoạch (ví dụ `compareFromBase64` không dùng được và phải tự so hai tệp bằng mã).
 - Trước khi đóng Office đang có tài liệu không phải tệp thử.
 
-## Kết quả bước 2 — thăm dò
+## Kết quả bước 2 — thăm dò (15/11/2026, Word 16.0.20527, khung add-in bản 4.0.0)
 
-(Chưa chạy. Bảng kết quả ghi ở đây trước khi viết công cụ.)
+Máy hỗ trợ WordApi 1.4–1.9, WordApiDesktop 1.1–1.5, WordApiHiddenDocument 1.3–1.5. Văn bản thử: . Bằng chứng: tệp 01–04 trong .
+
+| Thứ cần đọc | API | Kết quả |
+|---|---|---|
+| Chú thích cuối trang, cuối văn bản |  /  (WordApi 1.5): ,  | **Đọc được**, kèm đoạn neo. Chữ chú thích mở đầu bằng ký tự  (phải bỏ) |
+| Đầu trang, chân trang |  | **Đọc được** cả chữ lẫn trường PAGE |
+| Bookmark | ,  (WordApi 1.4) | **Đọc được** cả bookmark ẩn (_Ref…);  (Desktop 1.4) chỉ liệt kê bookmark hiện |
+| Trường dẫn chiếu | : , ,  (WordApi 1.4–1.5) | **Đọc được** (REF _Ref7001 → "7.1") |
+| Ô điền mẫu |  trả rỗng;  (WordApi 1.5) | **Đọc được khi nêu rõ loại** (PlainText…); ô chưa điền trả chữ rỗng |
+| Hộp văn bản |  →  (WordApiDesktop 1.2) | **Đọc được**; chữ trong hộp không nằm trong đoạn của thân văn bản |
+| Lề, khổ giấy |  (WordApiDesktop 1.3), đơn vị điểm | **Đọc được** (20 mm = 56,7 điểm) |
+| Phông, cỡ chữ |  | **Đọc được** theo từng đoạn |
+
+Ghi nhận thêm:  chứa ký tự  tại mốc chú thích, còn  thì không → khi sửa đoạn phải coi mốc này là chữ "không sống" để không xóa mất chú thích (việc phải làm trong : bỏ  khỏi chữ đưa cho AI, thêm vị trí mốc vào , không thay cả đoạn khi đoạn có mốc).
+
+### So sánh phiên bản
+
+| Cách | Kết quả |
+|---|---|
+| , đích  | Chạy được (0,5 giây): Word mở cửa sổ mới "Compare Result 1" có 45 sửa đổi; **bản đang mở y nguyên** (số đoạn, chữ, 2 sửa đổi của Đối tác). Add-in **không đọc được** tài liệu kết quả (khung gắn với tài liệu gốc) |
+| , đích  | Chạy được nhưng **đổi bản đang mở và làm mất 2 sửa đổi chờ duyệt của Đối tác** (50 sửa đổi mới thế chỗ) → không dùng |
+|  (tài liệu ẩn) | **Đọc được tệp kia mà không mở, không đụng bản đang mở**: đủ đoạn, số điều do Word tự đánh, bản hiện tại (), sửa đổi, chú thích, đầu trang. Tài liệu ẩn nằm lại trong Word tới khi thoát (không có lệnh đóng) |
+
+**Cách làm đã chọn** (đúng phương án dự phòng ghi ở mục 8 của kế hoạch, cộng thêm bản redline): công cụ so sánh đọc tệp đính kèm qua tài liệu ẩn, **tự so bằng mã theo từng điều khoản** để AI tóm tắt (bản đang mở không đổi); khi người dùng muốn xem redline thì gọi  với đích là tài liệu mới. Lưu ý: đây là điểm lệch nhỏ so với giả định ban đầu (kết quả so sánh của Word không đọc được từ add-in) — **cần báo anh khi xin duyệt phát hành**.
+
+## Trạng thái khi phiên dừng vì hết hạn mức (15/11/2026)
+
+Đã xong: bước 1, 2; bộ dựng tệp thử (bước 3, chưa có PDF quét);  (bước 4, phần hàm thuần) — chạy thử trên tệp mẫu: **bản cài lỗi ra đúng 9/9, bản sạch và bản v2 ra 0** (chưa viết thành kiểm thử máy, chưa gắn vào công cụ Word); tra tài liệu nhà cung cấp cho bước 8, 9 (tệp 05).
+
+Chưa làm: kiểm thử máy  (dữ liệu mẫu đã có ở ); công cụ , đọc phần ngoài thân văn bản, kiểm thể thức trang, so sánh phiên bản; xử lý mốc chú thích khi sửa đoạn; PDF quét; công tắc Suy nghĩ kỹ và giữ khối suy nghĩ; Tự kiểm tra; Chạy thật; soát mã độc lập; cập nhật tài liệu; phát hành. **Chưa có tiêu chí nào đủ bằng chứng để ghi Đạt.**

@@ -35,6 +35,54 @@ export const field = (code, result = "") =>
 export const commented = (id, inner) =>
   `<w:commentRangeStart w:id="${id}"/>${inner}<w:commentRangeEnd w:id="${id}"/><w:r><w:commentReference w:id="${id}"/></w:r>`;
 
+// ───── Đợt 1B: chú thích, bookmark, trường dẫn chiếu, ô điền mẫu, hộp văn bản ─────
+/** Mốc chú thích cuối trang thứ n (1 = phần tử đầu của spec.footnotes) */
+export const footnoteRef = (n) => `<w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr><w:footnoteReference w:id="${n}"/></w:r>`;
+/** Mốc chú thích cuối văn bản thứ n (1 = phần tử đầu của spec.endnotes) */
+export const endnoteRef = (n) => `<w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr><w:endnoteReference w:id="${n}"/></w:r>`;
+let bmId = 500;
+/** Bookmark bọc `inner` (XML các run). Tên bắt đầu bằng "_" là bookmark ẩn (Word tạo cho dẫn chiếu chéo) */
+export const bookmark = (name, inner) => {
+  const id = bmId++;
+  return `<w:bookmarkStart w:id="${id}" w:name="${esc(name)}"/>${inner}<w:bookmarkEnd w:id="${id}"/>`;
+};
+let sdtId = 7000;
+/** Ô điền mẫu (content control) dạng chữ, nằm trong dòng. text rỗng = ô còn hiện chữ gợi ý `placeholder` */
+export const sdt = (tag, title, text, placeholder = "Bấm để nhập") =>
+  `<w:sdt><w:sdtPr><w:alias w:val="${esc(title)}"/><w:tag w:val="${esc(tag)}"/><w:id w:val="${sdtId++}"/>${text ? "" : "<w:showingPlcHdr/>"}<w:text/></w:sdtPr>` +
+  `<w:sdtContent>${run(text || placeholder)}</w:sdtContent></w:sdt>`;
+let shapeId = 900;
+/** Hộp văn bản nổi (DrawingML) neo vào đoạn chứa nó */
+export const textbox = (text, name = "Hộp văn bản") => {
+  const id = shapeId++;
+  return (
+    `<w:r><w:drawing><wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="${251659264 + id}" behindDoc="0" locked="0" layoutInCell="1" allowOverlap="1">` +
+    `<wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="column"><wp:posOffset>3200000</wp:posOffset></wp:positionH><wp:positionV relativeFrom="paragraph"><wp:posOffset>0</wp:posOffset></wp:positionV>` +
+    `<wp:extent cx="2400000" cy="620000"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapSquare wrapText="bothSides"/><wp:docPr id="${id}" name="${esc(name)} ${id}"/><wp:cNvGraphicFramePr/>` +
+    `<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">` +
+    `<wps:wsp><wps:cNvSpPr txBox="1"/><wps:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="2400000" cy="620000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom>` +
+    `<a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln w="6350"><a:solidFill><a:srgbClr val="000000"/></a:solidFill></a:ln></wps:spPr>` +
+    `<wps:txbx><w:txbxContent><w:p>${run(text)}</w:p></w:txbxContent></wps:txbx><wps:bodyPr rot="0" vert="horz" wrap="square" anchor="t"/></wps:wsp>` +
+    `</a:graphicData></a:graphic></wp:anchor></w:drawing></w:r>`
+  );
+};
+/** Chữ có phông và cỡ riêng (cỡ tính bằng điểm) */
+export const runFont = (text, font, pt, opts = {}) =>
+  `<w:r><w:rPr><w:rFonts w:ascii="${esc(font)}" w:hAnsi="${esc(font)}" w:cs="${esc(font)}"/>${opts.b ? "<w:b/>" : ""}${opts.i ? "<w:i/>" : ""}<w:sz w:val="${pt * 2}"/><w:szCs w:val="${pt * 2}"/></w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`;
+
+const W_NS = `xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"`;
+function notesXml(kind, texts) {
+  const ref = kind === "footnote" ? "<w:footnoteRef/>" : "<w:endnoteRef/>";
+  const sep = `<w:${kind} w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:${kind}><w:${kind} w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:${kind}>`;
+  const items = texts
+    .map((t, k) => `<w:${kind} w:id="${k + 1}"><w:p><w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr>${ref}</w:r>${run(" " + t)}</w:p></w:${kind}>`)
+    .join("");
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${kind}s ${W_NS}>${sep}${items}</w:${kind}s>`;
+}
+/** Đầu trang hoặc chân trang: content là chuỗi hoặc XML các đoạn */
+const hdrFtrXml = (tag, content) =>
+  `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:${tag} ${W_NS}>${/^<w:p[ >]/.test(content) ? content : para(content)}</w:${tag}>`;
+
 /** Một đoạn. content: chuỗi (chữ thường) hoặc XML các run. opts: style, num:[numId, ilvl], markDeleted, markInserted */
 export function para(content, opts = {}) {
   const inner = /^</.test(content) ? content : content ? run(content) : "";
@@ -102,9 +150,29 @@ export async function buildDocx(out, spec) {
   zip.file(ext, (await get(ext)).replace(/00000000-0000-0000-0000-000000000000/g, id).replace(/1\.0\.0\.0/g, version));
 
   const doc = await get("word/document.xml");
-  const sect = /<w:sectPr[\s\S]*?<\/w:sectPr>/.exec(doc)[0];
+  let sect = /<w:sectPr[\s\S]*?<\/w:sectPr>/.exec(doc)[0];
+  // spec.page: khổ giấy và lề tính bằng mm { w, h, top, right, bottom, left }
+  if (spec.page) {
+    const tw = (mm) => Math.round((mm / 25.4) * 1440);
+    const g = { w: 210, h: 297, top: 20, right: 15, bottom: 20, left: 30, ...spec.page };
+    sect = sect
+      .replace(/<w:pgSz[^>]*\/>/, `<w:pgSz w:w="${tw(g.w)}" w:h="${tw(g.h)}"${g.w > g.h ? ' w:orient="landscape"' : ""} />`)
+      .replace(/<w:pgMar[^>]*\/>/, `<w:pgMar w:top="${tw(g.top)}" w:right="${tw(g.right)}" w:bottom="${tw(g.bottom)}" w:left="${tw(g.left)}" w:header="720" w:footer="720" w:gutter="0" />`);
+  }
+  let refs = "";
+  if (spec.header !== undefined) refs += `<w:headerReference w:type="default" r:id="RaidnHdr"/>`;
+  if (spec.footer !== undefined) refs += `<w:footerReference w:type="default" r:id="RaidnFtr"/>`;
+  if (refs) sect = sect.replace(/(<w:sectPr[^>]*>)/, `$1${refs}`);
   zip.file("word/document.xml", doc.replace(/<w:body>[\s\S]*<\/w:body>/, `<w:body>${spec.body}${sect}</w:body>`));
-  zip.file("word/styles.xml", (await get("word/styles.xml")).replace("</w:styles>", extraStyles(spec.headingNumId || 0) + "</w:styles>"));
+  let styles = (await get("word/styles.xml")).replace("</w:styles>", extraStyles(spec.headingNumId || 0) + "</w:styles>");
+  // spec.font: phông và cỡ chữ mặc định của văn bản { name, pt }
+  if (spec.font) {
+    styles = styles.replace(
+      /<w:rPrDefault><w:rPr><w:rFonts[^>]*\/><w:sz w:val="\d+" \/><w:szCs w:val="\d+" \/>/,
+      `<w:rPrDefault><w:rPr><w:rFonts w:ascii="${esc(spec.font.name)}" w:hAnsi="${esc(spec.font.name)}" w:eastAsia="${esc(spec.font.name)}" w:cs="${esc(spec.font.name)}" /><w:sz w:val="${spec.font.pt * 2}" /><w:szCs w:val="${spec.font.pt * 2}" />`
+    );
+  }
+  zip.file("word/styles.xml", styles);
 
   let rels = await get("word/_rels/document.xml.rels");
   let types = await get("[Content_Types].xml");
@@ -119,6 +187,22 @@ export async function buildDocx(out, spec) {
   if (spec.comments?.length) {
     zip.file("word/comments.xml", commentsXml(spec.comments));
     addPart("comments.xml", "comments", "comments", "RaidnCmt");
+  }
+  if (spec.footnotes?.length) {
+    zip.file("word/footnotes.xml", notesXml("footnote", spec.footnotes));
+    addPart("footnotes.xml", "footnotes", "footnotes", "RaidnFn");
+  }
+  if (spec.endnotes?.length) {
+    zip.file("word/endnotes.xml", notesXml("endnote", spec.endnotes));
+    addPart("endnotes.xml", "endnotes", "endnotes", "RaidnEn");
+  }
+  if (spec.header !== undefined) {
+    zip.file("word/header1.xml", hdrFtrXml("hdr", spec.header));
+    addPart("header1.xml", "header", "header", "RaidnHdr");
+  }
+  if (spec.footer !== undefined) {
+    zip.file("word/footer1.xml", hdrFtrXml("ftr", spec.footer));
+    addPart("footer1.xml", "footer", "footer", "RaidnFtr");
   }
   zip.file("word/_rels/document.xml.rels", rels);
   zip.file("[Content_Types].xml", types);
