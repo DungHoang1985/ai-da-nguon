@@ -4,7 +4,8 @@
   "✅ Đọc Điều 8",
   "✅ Chèn điều khoản mới sau [¶44]",
   "✅ Tìm \"khoản 8.3\" trong văn bản",
-  "✅ Tìm \"Điều 8.3\" trong văn bản"
+  "✅ Tìm \"8.4\" trong văn bản",
+  "✅ Tìm \"theo khoản 8\" trong văn bản"
  ],
  "daHoi": [
   "AI muốn: Chèn điều khoản mới sau [¶44] | Cho phép | Cho phép hết lần này | Bỏ qua → all"
@@ -70,5 +71,5 @@
  "khoanMoiMangSo": "8.3.",
  "khoanCuNayLa": "8.4.",
  "cungKieu": true,
- "traLoi": "Đã thêm khoản mới 8.3 ngay sau Điều 8.2 [¶45], với nội dung: \"Bên Cho Thuê bàn giao kèm hồ sơ hoàn công và bản vẽ hiện trạng của Khu Nhà Xưởng.\" Thay đổi được ghi bằng Theo dõi thay đổi để bạn duyệt. Các khoản sau tự đánh số lại: khoản cũ 8.3 thành 8.4 [¶46] và cứ thế tiếp tục. Tôi đã tìm các dẫn chiếu \"khoản 8.3\" và \"Điều 8.3\" trong văn bản nhưng không thấy kết quả nào, nên không có tham chiếu nào bị lệch."
+ "traLoi": "⚠️ Chèn điều khoản mới sau [¶44] — Đoạn 44 không bắt đầu bằng “8.2” và không tìm thấy đoạn nào như vậy: văn bản đã đổi so với lúc đọc. Đọc lại rồi mới sửa. Đã chèn khoản mới 8.3 [¶45] ngay sau Điều 8.2, với nội dung: \"Bên Cho Thuê bàn giao kèm hồ sơ hoàn công và bản vẽ hiện trạng của Khu Nhà Xưởng.\" Thay đổi được ghi bằng Theo dõi thay đổi để bạn duyệt. Các khoản cũ 8.3 và 8.4 đã tự đánh số lại thành 8.4 và 8.5. Tôi không tìm thấy dẫn chiếu nào tới \"8.3\" hoặc \"8.4\" trong văn bản, nên không cần s"
 }

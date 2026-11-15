@@ -1,0 +1,42 @@
+{
+ "a. định dạng và đổi cấp khi TrackAll": {
+  "suaDoiTruoc": 30,
+  "sauDinhDang": 31,
+  "loaiMoi": [
+   "Formatted \"hiệu lực\""
+  ],
+  "sauDoiCap": 32
+ },
+ "b. tìm bằng chuỗi có khoảng trắng đầu / cuối": {
+  "\"lực \"": {
+   "wordTimRa": 13,
+   "tinhRa": 13,
+   "chuKetQuaDau": "\"lực \""
+  },
+  "\" từ\"": {
+   "wordTimRa": 2,
+   "tinhRa": 2,
+   "chuKetQuaDau": "\" từ\""
+  },
+  "\"ngày \"": {
+   "wordTimRa": 1,
+   "tinhRa": 1,
+   "chuKetQuaDau": "\"ngày \""
+  },
+  "\" \"": {
+   "wordTimRa": 363,
+   "tinhRa": 363,
+   "chuKetQuaDau": "\" \""
+  },
+  "\"  \"": {
+   "wordTimRa": 0,
+   "tinhRa": 0,
+   "chuKetQuaDau": null
+  }
+ },
+ "c. table.values khi ô có chữ đã xóa có theo dõi": {
+  "table.values[1][1]": "1224 tháng",
+  "paragraph.text": "1224 tháng",
+  "getText()": "12 tháng\t"
+ }
+}

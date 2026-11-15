@@ -98,15 +98,15 @@ Cách kiểm trong Office: Office mở bằng lệnh kèm cổng gỡ lỗi WebV
 | # | Tiêu chí | Kết quả | Bằng chứng |
 |---|---|---|---|
 | 1 | Bảng kết quả thăm dò ghi vào HANDOFF trước khi viết công cụ | **Đạt** — bảng ở trên và trong `tasks/HANDOFF.md`, commit `40f7380` có trước mọi commit mã | Tệp 01, 02, 03; `git log` |
-| 2 | 10 câu hỏi trên hợp đồng thử 54 trang: đúng số điều từ 9/10, mỗi câu không quá 4 bước công cụ | **Đạt** — 10/10 câu nêu đúng số điều và nội dung; 7 câu 1 bước, 2 câu 2 bước, 1 câu 3 bước. (Lần chạy đầu cũng 10/10 nhưng 2 câu tốn 5 và 7 bước vì tìm theo đúng chữ quá cứng → đã cho `word_find` tìm theo từng từ và thêm một dòng lời nhắc, rồi chạy lại) | Tệp 05 (54 trang, 165 đoạn, 168.800 ký tự), tệp 06 |
+| 2 | 10 câu hỏi trên hợp đồng thử 54 trang: đúng số điều từ 9/10, mỗi câu không quá 4 bước công cụ | **Đạt** — 10/10 câu nêu đúng số điều và nội dung; 8 câu 1 bước, 1 câu 2 bước, 1 câu 3 bước. (Lần chạy đầu cũng 10/10 nhưng 2 câu tốn 5 và 7 bước vì tìm theo đúng chữ quá cứng → đã cho `word_find` tìm theo từng từ và thêm một dòng lời nhắc, rồi chạy lại) | Tệp 05 (54 trang, 165 đoạn, 168.800 ký tự), tệp 06 |
 | 3 | "Viết lại Điều 4.2…": sửa đúng đoạn; hai từ cách xa nhau ra đúng hai cặp xóa/thêm; chữ đậm giữa câu còn nguyên | **Đạt** — Tự kiểm tra: sửa 2 chỗ trong một đoạn ra đúng `Deleted:30 · Added:45 · Deleted:0,05% · Added:0,03%`, chữ "45" vẫn đậm, chữ hai bên vẫn thường. Chạy thật: ba chỗ sửa trong Điều 4.2 ra `Deleted "chưa" · Added "đã" · Deleted "ba" · Added "hai" · Added " Đơn giá này không áp dụng cho diện tích sân bãi."`, câu sau sửa đúng từng chữ, hai đoạn bên cạnh không đổi, sửa đổi của đối tác và sửa đổi trước đó trong đoạn còn nguyên | Tệp 04, 10 (bước "Sửa mức từ"), tệp 08 |
 | 4 | "Thêm một khoản sau 8.2": khoản mới mang số 8.3, khoản cũ thành 8.4, cùng kiểu chữ | **Đạt** — Tự kiểm tra: sau 1.2 (có điểm a) khoản mới = 1.3, khoản cũ thành 1.4, cùng kiểu; khoản con = 2.1(a); đổi cấp (a) → 2.2. Chạy thật trên hợp đồng: khoản mới = 8.3, khoản cũ thành 8.4, cùng kiểu Heading 2; AI tự tìm dẫn chiếu tới 8.3 để soát | Tệp 04, 10, tệp 09 |
-| 5 | Chèn hai đoạn phía trên rồi sửa theo số đoạn cũ: từ chối hoặc tự định vị lại, không sửa nhầm | **Đạt** — Kiểm thử máy (`locateParagraph`: 6 kiểm thử). Tự kiểm tra: số đoạn cũ 47 → công cụ tự sửa đúng [¶49], đoạn ở số cũ không bị đụng; nội dung không khớp → từ chối | `test/unit/dot1a.test.ts`; tệp 04, 10 |
-| 6 | 30 sửa đổi và 5 nhận xét của "đối tác": tóm tắt đủ 30 kèm số điều; xử lý cả 5 nhận xét bằng Track Changes và trả lời từng nhận xét | **Đạt** — Lượt 1 (1 bước công cụ, 25 giây): nêu đúng tổng số 30, đủ 18/18 điều có sửa đổi kèm số điều và số đoạn. Lượt 2: 5 chỗ sửa đúng yêu cầu từng nhận xét (420.000 đồng; 02 tháng; trong vòng 05 Ngày Làm Việc; 05 năm; 20 ngày), ghi thành 10 sửa đổi có theo dõi; 5/5 nhận xét có câu trả lời; 30 sửa đổi của đối tác còn nguyên; không đánh dấu đã xử lý (đúng yêu cầu) | Tệp 07 |
+| 5 | Chèn hai đoạn phía trên rồi sửa theo số đoạn cũ: từ chối hoặc tự định vị lại, không sửa nhầm | **Đạt** — Kiểm thử máy (`locateParagraph`: 6 kiểm thử). Tự kiểm tra: số đoạn cũ 171 → công cụ tự sửa đúng [¶173], đoạn ở số cũ không bị đụng; nội dung không khớp → từ chối | `test/unit/dot1a.test.ts`; tệp 04, 10 |
+| 6 | 30 sửa đổi và 5 nhận xét của "đối tác": tóm tắt đủ 30 kèm số điều; xử lý cả 5 nhận xét bằng Track Changes và trả lời từng nhận xét | **Đạt** — Lượt 1 (1 bước công cụ, 23 giây): nêu đúng tổng số 30, đủ 18/18 điều có sửa đổi kèm số điều và số đoạn. Lượt 2: 5 chỗ sửa đúng yêu cầu từng nhận xét (420.000 đồng; 02 tháng; trong vòng 05 Ngày Làm Việc; 05 năm; 20 ngày), ghi thành 10 sửa đổi có theo dõi; 5/5 nhận xét có câu trả lời; 30 sửa đổi của đối tác còn nguyên; không đánh dấu đã xử lý (đúng yêu cầu) | Tệp 07 |
 | 7 | Sau 3 thao tác ghi và 1 nhận xét, bấm Hoàn tác: văn bản về như trước | **Đạt** — Tự kiểm tra: 4 thao tác (viết lại đoạn, thay cụm từ, chèn khoản, thêm nhận xét) rồi hoàn tác: số sửa đổi, số nhận xét, số đoạn, chữ của vùng thử y như trước; kể cả khoản chèn sát một khoản đang chờ duyệt (Word gộp hai sửa đổi) và lần sửa bên trong khoản chờ duyệt. Chạy thật: bấm nút "Hoàn tác thay đổi (3)" trên khung sau bài viết lại Điều 4.2 → khung báo "Đã hoàn tác 3 thao tác", đoạn và số sửa đổi (40) về đúng như trước | Tệp 04, 10 (bước "Hoàn tác"), tệp 08 |
 | 8 | Bảng đối chiếu từng bài với add-in Claude chính thức | **Chưa kiểm được** — cần anh ngồi trước máy mở add-in Claude chính thức (có tài khoản của anh) và chạy cùng 5 bài; bài và tệp thử đã sẵn (xem mục "Việc cần anh") | — |
-| 9 | Tự kiểm tra Word trong vùng cô lập, mỗi công cụ có bước, phần ngoài vùng thử không đổi | **Đạt 30/30** trên ba văn bản: văn bản trống; văn bản thăm dò (41 đoạn, 7 sửa đổi); hợp đồng 54 trang (166 đoạn, 41 sửa đổi, 5 nhận xét). Bước cuối so lại phần ngoài vùng thử: số đoạn, chữ, kiểu, số sửa đổi, số nhận xét, chế độ theo dõi đều y nguyên. 23/23 công cụ Word có bước | Tệp 04 (hợp đồng), tệp 10 (văn bản trống) |
-| 10 | `npm test`, kiểm kiểu, đóng gói; Excel, PowerPoint không giảm | **Đạt** — `npm test` 195/195 (150 cũ + 45 mới), `npx tsc --noEmit -p .` sạch, `npm run build` đạt. Tự kiểm tra bản 4.0: Excel 22/22; PowerPoint 13/14 lần đầu trên bài mới rồi 14/14 lần hai (đúng như bản 3.7.0: lỗi cũ "Biểu đồ gốc thêm một bố cục", để Đợt 3) | Tệp 12, 13, 13b |
+| 9 | Tự kiểm tra Word trong vùng cô lập, mỗi công cụ có bước, phần ngoài vùng thử không đổi | **Đạt 30/30** trên văn bản trống và trên hợp đồng 54 trang (165 đoạn, 30 sửa đổi, 5 nhận xét ngoài vùng thử); các lần chạy trước khi sửa theo soát mã còn đạt trên văn bản thăm dò (41 đoạn, 7 sửa đổi) và trên hợp đồng đang có 41 sửa đổi. Bước cuối so lại phần ngoài vùng thử: số đoạn, chữ, kiểu, số sửa đổi, số nhận xét, chế độ theo dõi đều y nguyên. 23/23 công cụ Word có bước | Tệp 04 (hợp đồng), tệp 10 (văn bản trống) |
+| 10 | `npm test`, kiểm kiểu, đóng gói; Excel, PowerPoint không giảm | **Đạt** — `npm test` 201/201 (150 cũ + 51 mới), `npx tsc --noEmit -p .` sạch, `npm run build` đạt. Tự kiểm tra bản 4.0: Excel 22/22; PowerPoint 13/14 lần đầu trên bài mới rồi 14/14 lần hai (đúng như bản 3.7.0: lỗi cũ "Biểu đồ gốc thêm một bố cục", để Đợt 3) | Tệp 12, 13, 13b |
 
 ### Việc đã làm theo 9 mục của kế hoạch
 
@@ -122,6 +122,24 @@ Cách kiểm trong Office: Office mở bằng lệnh kèm cổng gỡ lỗi WebV
 
 Ngoài kế hoạch, làm kèm vì cùng chỗ: cảnh báo rủi ro Word thêm hai loại (xóa hết chữ một đoạn; xóa một cụm ở nhiều chỗ); định dạng và nhận xét phải chỉ rõ vị trí (hết mặc nhiên dùng vùng chọn); "giai đoạn 2", "công đoạn 4" không còn thành liên kết tới đoạn; `kiem-thu/cdp.mjs serve` (nạp bản cục bộ), `kiem-thu/mo-office.ps1` (mở và đóng Office thử an toàn), `kiem-thu/docx-thu.mjs` và `kiem-thu/hop-dong-thu.mjs` (dựng tệp thử).
 
+### Soát mã độc lập (làm trong đợt này) và việc đã sửa theo đó
+
+Một tác tử khác đọc toàn bộ `git diff 217d4c4..HEAD -- src test` và tự chạy thử các hàm thuần: 2 phát hiện mức cao, 6 trung bình, 9 thấp, 5 điểm "chưa chắc" (báo cáo nguyên văn: `tasks/dot-1a-bang-chung/soat-ma-doc-lap.md`). Phần lõi so khác được thử 200.000 cặp câu ngẫu nhiên, không sai ca nào. **Đã sửa cả 17 phát hiện**, rồi chạy lại toàn bộ bài kiểm trong Word (các tệp bằng chứng 04–13b là của lần chạy lại này):
+
+| Phát hiện | Đã sửa thế nào | Kiểm bằng |
+|---|---|---|
+| Cao: duyệt tất cả sửa đổi "của An" khớp cả "Hoàng Anh" | Phải khớp đúng một tên tác giả; khớp nhiều tên thì từ chối và liệt kê; hộp xác nhận ghi tên thật và số sửa đổi | Kiểm thử máy + Tự kiểm tra |
+| Cao: câu thường mở đầu bằng "Điều 3 của Hợp đồng…", "Phụ lục 01 là…" bị nhận là điều khoản, làm sai cả cây mục lục | Số gõ tay chỉ được nhận khi phần sau trông như tiêu đề (có dấu phân cách sau số, hoặc ngắn, viết hoa, không kết thúc như một câu) | Kiểm thử máy (10 ca) |
+| Khoản đứng trước bị xóa có theo dõi hoặc nhảy số làm khoản sau thành khoản con | Anh em là khoản đứng trước có số nhỏ hơn, không đòi liền số | Kiểm thử máy |
+| Hoàn tác đưa câu về chữ cũ có thể trỏ vào chữ đã xóa | Lấy vị trí thật của khúc đã xóa; không có vị trí mà cách gán nhập nhằng thì từ chối; đọc lại sau khi sửa | Kiểm thử máy + Tự kiểm tra |
+| Hoàn tác chọn nhầm sửa đổi người dùng tự làm trùng hệt ở đoạn khác | Chọn theo đoạn mà công cụ đã đụng | Kiểm thử máy |
+| `expect` chưa bắt buộc ở 5 công cụ chỉ đoạn bằng số | Bắt buộc ở mọi công cụ ghi; thiếu thì từ chối | Tự kiểm tra |
+| Duyệt sửa đổi theo số không cần chữ đối chiếu; duyệt nhiều không hỏi | Bắt buộc chữ đối chiếu; quá 5 sửa đổi một lúc thì hỏi | Tự kiểm tra |
+| Chèn điều khoản sau điều cuối rơi xuống dưới phần chữ ký | Điều cuối: chỉ tính tới khoản con cuối cùng; đoạn mới được đưa về đúng danh sách của điều neo | Chạy thật (8.3) + Tự kiểm tra |
+| 9 mục thấp | Số đo đầu đoạn ("1.5 triệu đồng"), danh sách chữ hoa gõ tay; nhận xét quá dài không làm kẹt phân trang; giới hạn cửa sổ nạp sửa đổi; thay cụm trùng hệt thì bỏ qua; giới hạn 255 tính cả ký tự ^ nhân đôi; Hoàn tác báo khi không gỡ được; công cụ ghi chạy lần lượt; **ô bảng đọc theo bản hiện tại** (thăm dò xác nhận `table.values` lẫn chữ đã xóa: "1224 tháng") | Kiểm thử máy; tệp 14 |
+
+Ba điểm "chưa chắc" đã thăm dò trong Word (tệp 14): định dạng chữ và đổi cấp khi đang theo dõi **có** sinh sửa đổi được theo dõi (nên Hoàn tác được; bước Tự kiểm tra "Đổi cấp" nay có hoàn tác); tìm bằng chuỗi có khoảng trắng đầu hoặc cuối ra đúng số lần; đoạn trong ô bảng trả về kèm một dấu tab ở cuối (đã xử lý). Còn lại, chưa sửa: thay cả đoạn (chỉ xảy ra khi viết lại trên 60% một đoạn sạch) có thể làm mất ảnh hoặc trường nằm trong đoạn — là sửa đổi có theo dõi nên từ chối được, nhưng chưa có cảnh báo riêng.
+
 ### Giới hạn đã biết (chưa làm, có ghi chỗ)
 
 - Số của trường LISTNUM và AUTONUM không đọc được (hiếm gặp).
@@ -136,11 +154,12 @@ Ngoài kế hoạch, làm kèm vì cùng chỗ: cảnh báo rủi ro Word thêm 
 
 - Bản 4.0 gửi khoảng 25.800 token đầu vào cho một câu hỏi một bước (lời nhắc + 23 công cụ Word + trạng thái văn bản có mục lục 34 điều); với Anthropic gần hết đọc từ bộ nhớ đệm từ lượt hai.
 - Model (Haiku 5.5) thích dùng `word_replace_text` nhiều lần hơn `word_set_paragraph_text` với đoạn dài; cả hai lối nay đều cho dấu sửa đổi nhỏ nhất.
-- PowerPoint thoát chậm sau lệnh đóng (hơn 10 giây); script chờ tới 20 giây.
+- PowerPoint thoát chậm sau lệnh đóng (có lần hơn 20 giây); script báo "chưa thoát hẳn" nhưng tiến trình tự thoát sau đó.
+- Văn bản rất dài (192 trang, 1.501 đoạn, 120 sửa đổi): mỗi lần công cụ nạp toàn văn kèm số điều mất khoảng 2,1 giây, đọc bản hiện tại của mọi đoạn thêm 0,9 giây. Chấp nhận được; nếu sau này chậm thì chỉ đọc bản hiện tại cho các đoạn có sửa đổi.
 
 ### Dọn dẹp sau khi kiểm
 
-Đã xóa 25 hội thoại thử (lịch sử Word trở về 3 như trước), chọn lại nguồn OpenRouter, đóng Word, Excel, PowerPoint không lưu tệp thử, cổng gỡ lỗi đã đóng. Tệp thử nằm trong thư mục tạm của phiên, không vào kho. Thư mục bằng chứng đã soát: không chứa tên tài khoản Office.
+Đã xóa các hội thoại thử (hai lượt: 25 và 13; lịch sử Word trở về 3 như trước), chọn lại nguồn OpenRouter, đóng Word, Excel, PowerPoint không lưu tệp thử, cổng gỡ lỗi đã đóng. Tệp thử nằm trong thư mục tạm của phiên, không vào kho. Thư mục bằng chứng đã soát: không chứa tên tài khoản Office.
 
 ## Việc cần anh
 

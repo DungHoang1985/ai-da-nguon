@@ -33,7 +33,7 @@ src/core/            lõi không phụ thuộc Office, kiểm thử được b�
   conversations.ts db.ts share.ts attachments.ts refs.ts
 src/office/          công cụ Office.js: excel*, word*, ppt*, common, selftest (nút Tự kiểm tra; Word ở selftestWord.ts, chạy trong vùng cô lập)
 src/taskpane/components/   App.tsx, Chat.tsx (điều phối + giao diện), Settings.tsx
-test/unit/           mocha, 195 kiểm thử
+test/unit/           mocha, 201 kiểm thử
 cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry WEF\Developer)
 ```
 
@@ -41,7 +41,7 @@ cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry W
 
 ```
 npm ci                      # .npmrc phải trỏ registry.npmjs.org
-npm test                    # 195/195 phải đạt
+npm test                    # 201/201 phải đạt
 npx tsc --noEmit -p .       # không lỗi kiểu
 npm run build               # ra dist/, manifest tự đổi sang địa chỉ GitHub Pages
 ```

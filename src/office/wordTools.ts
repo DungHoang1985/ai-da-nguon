@@ -396,6 +396,39 @@ function mapStyle(s?: string): string {
 /** Bỏ dấu hết đoạn / hết ô bảng mà getText, getReviewedText trả kèm ở cuối */
 const strip = (s: any) => String(s ?? "").replace(/[\r\n\u0007\u000b\u000c]+$/, "");
 
+/** Bản hiện tại của một đoạn từ getText / getReviewedText: bỏ dấu hết đoạn; đoạn nằm trong ô bảng còn kèm một dấu tab ở cuối
+ *  (thăm dò 15/11/2026: "12 tháng\t") — bỏ nếu chuỗi đối chiếu `ref` không kết thúc bằng tab */
+const curOf = (value: any, ref: string) => {
+  const t = strip(value);
+  return t.endsWith("\t") && !ref.endsWith("\t") ? t.slice(0, -1) : t;
+};
+
+/** Giá trị HIỆN TẠI của các ô một bảng. table.values lẫn cả chữ đã bị xóa có theo dõi ("1224 tháng" thay vì "12 tháng" — thăm dò
+ *  15/11/2026), nên khi văn bản đang có sửa đổi phải đọc từng ô theo bản hiện tại. Bảng có ô gộp đọc không được thì trả values gốc. */
+async function currentTableValues(ctx: Word.RequestContext, t: Word.Table, values: string[][], maxRows = Infinity): Promise<string[][]> {
+  if (!supports("1.6")) return values;
+  const tc = ctx.document.body.getTrackedChanges();
+  tc.load("items/type");
+  await ctx.sync();
+  if (!tc.items.length) return values;
+  try {
+    const rows = Math.min(values.length, maxRows);
+    const res = values.slice(0, rows).map((row, r) => row.map((_, c) => t.getCell(r, c).body.getReviewedText("Current")));
+    await ctx.sync();
+    return values.map((row, r) =>
+      r < rows
+        ? row.map((_, c) =>
+            String(res[r][c].value ?? "")
+              .replace(/[\r\n\t\u0007]+$/, "")
+              .replace(/\r/g, "\n")
+          )
+        : row
+    );
+  } catch {
+    return values;
+  }
+}
+
 /** Một đoạn: text = bản hiện tại (không gồm chữ đã xóa có theo dõi); markup = chuỗi Word dùng để tìm kiếm (gồm cả chữ đã xóa) */
 interface Row extends ParaRow {
   markup: string;
@@ -437,7 +470,7 @@ async function loadRows(ctx: Word.RequestContext, withList = false): Promise<Loa
   if (hasChanges && supports("1.4")) {
     const res = paras.items.map((p) => (supports("1.7") ? p.getText() : p.getReviewedText("Current")));
     await ctx.sync();
-    current = res.map((r) => strip(r.value));
+    current = res.map((r, i) => curOf(r.value, paras.items[i].text));
   }
   const rows: Row[] = paras.items.map((p, i) => {
     const markup = p.text;
@@ -763,7 +796,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         p.load("text");
         const cur = supports("1.7") ? p.getText() : p.getReviewedText("Current");
         await ctx.sync();
-        const C = strip(cur.value);
+        const C = curOf(cur.value, p.text);
         if (C === prev) return;
         const info = await pendingInfo(ctx, p);
         const plan = planParagraphEdit(p.text, C, prev, info.spans);
@@ -771,7 +804,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         await applyPlan(ctx, p, plan);
         const now = supports("1.7") ? p.getText() : p.getReviewedText("Current");
         await ctx.sync();
-        if (strip(now.value) !== prev) throw new Error(`đoạn “${truncate(prev, 40)}” chưa về đúng câu cũ; xem thẻ Review của Word`);
+        if (curOf(now.value, prev) !== prev) throw new Error(`đoạn “${truncate(prev, 40)}” chưa về đúng câu cũ; xem thẻ Review của Word`);
       })
     );
 
@@ -1112,7 +1145,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             if (supports("1.4")) {
               const cur = supports("1.7") ? r.p.getText() : r.p.getReviewedText("Current");
               await ctx.sync();
-              now = strip(cur.value);
+              now = curOf(cur.value, raw);
             }
             if (now !== raw) {
               return {
@@ -1343,15 +1376,18 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             if (r.row.id) {
               const id = r.row.id;
               u.touched.push(id);
-              u.fallback.push(() =>
+              // Đổi cấp trên đoạn thường sinh một sửa đổi được theo dõi (hoàn tác bằng từ chối); trên đoạn đang là phần chèn chờ duyệt
+              // thì nhập vào sửa đổi đó, hoặc không sinh gì: khi ấy đặt lại cấp cũ
+              const setBack: UndoStep = () =>
                 Word.run(async (c2) => {
                   const back = c2.document.getParagraphByUniqueLocalId(id).listItemOrNullObject;
                   back.load("level");
                   await c2.sync();
                   if (!back.isNullObject && back.level !== oldLevel) back.level = oldLevel;
                   await c2.sync();
-                })
-              );
+                });
+              u.fallback.push(setBack);
+              u.inverse.push(setBack);
             }
             const after = await loadRows(ctx, true);
             const o = buildOutline(after.rows).find((x) => x.i === r.index);
@@ -1725,12 +1761,16 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
           await ctx.sync();
           const maxRows = Number(a.max_rows) || 40;
           const from = Math.max(0, Number(a.start) || 0);
-          const list = tables.items.slice(from, from + 30).map((t, k) => ({
+          const page = tables.items.slice(from, from + 30);
+          // Ô bảng đọc theo bản hiện tại (không lẫn chữ đã xóa có theo dõi)
+          const vals: string[][][] = [];
+          for (const t of page) vals.push(await currentTableValues(ctx, t, t.values, maxRows));
+          const list = page.map((t, k) => ({
             index: from + k,
             rows: t.rowCount,
             columns: t.values[0]?.length || 0,
             ...(t.rowCount > maxRows ? { rows_shown: maxRows } : {}),
-            values: t.values.slice(0, maxRows).map((r) => r.map((v) => truncate(v, 200))),
+            values: vals[k].slice(0, maxRows).map((r) => r.map((v) => truncate(v, 200))),
           }));
           const { picked, truncated } = takeWithinBudget(list, RESULT_JSON_BUDGET - 400, (x, room) => {
             // Bảng đầu quá lớn: bớt hàng cho vừa
@@ -1756,7 +1796,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             await ctx.sync();
             const t = tables.items[Number(a.table_index)];
             if (!t) throw new Error(`Không có bảng số ${a.table_index} (có ${tables.items.length} bảng).`);
-            const plan = planTableFill(t.values, a.values, a.start_row, a.start_col);
+            const plan = planTableFill(await currentTableValues(ctx, t, t.values), a.values, a.start_row, a.start_col);
             plan.writes.forEach((x) => (t.getCell(x.row, x.col).value = x.value));
             const written = plan.writes.length;
             const more = plan.extraRows;
@@ -1954,7 +1994,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         await ctx.sync();
         const t = tables.items[Number(a.table_index)];
         if (!t) return null; // công cụ sẽ tự báo không có bảng
-        const over = planTableFill(t.values, a.values, a.start_row, a.start_col).overwrites;
+        const over = planTableFill(await currentTableValues(ctx, t, t.values), a.values, a.start_row, a.start_col).overwrites;
         if (!over.length) return null;
         const x = over[0];
         return `Ghi đè ${over.length} ô đang có dữ liệu trong bảng ${a.table_index} (ví dụ hàng ${x.row}, cột ${x.col}: “${truncate(x.old, 30)}” → “${truncate(x.value, 30)}”).`;
