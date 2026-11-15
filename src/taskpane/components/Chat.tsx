@@ -48,6 +48,7 @@ import { createCommonTools } from "../../office/common";
 import { navigateTo } from "../../office/navigate";
 import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { inputKeyAction } from "../../core/keys";
+import { copyText } from "../fileio";
 
 const useStyles = makeStyles({
   wrap: { display: "flex", flexDirection: "column", gap: "6px", height: "100%", minWidth: 0 },
@@ -442,6 +443,13 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
           <Button appearance="primary" onClick={onOpenSettings} style={{ alignSelf: "flex-start" }}>
             Nhập API key
           </Button>
+          <Text size={200} className={s.muted}>
+            Từng dùng AI Đa Nguồn trên máy này mà giờ không thấy key, lịch sử? Office lưu dữ liệu add-in theo từng tài khoản Office: nếu vừa đổi tài khoản
+            hoặc Office vừa cập nhật, dữ liệu cũ nằm ở kho khác. Vào Cài đặt → Sao lưu → “Khôi phục từ tệp…”.
+          </Text>
+          <Button onClick={onOpenSettings} style={{ alignSelf: "flex-start" }}>
+            Khôi phục từ tệp sao lưu
+          </Button>
         </div>
       </div>
     );
@@ -687,12 +695,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
   };
 
   const copy = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setNotice({ text: "Đã sao chép." });
-    } catch {
-      setNotice({ text: "Không sao chép được trong môi trường này.", err: true });
-    }
+    setNotice((await copyText(text)) ? { text: "Đã sao chép." } : { text: "Không sao chép được trong môi trường này.", err: true });
   };
 
   const newChat = () => {

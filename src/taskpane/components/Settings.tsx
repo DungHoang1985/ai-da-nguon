@@ -10,6 +10,7 @@ import { Storage } from "../../core/storage";
 import { fetchModels } from "../../core/models";
 import { cleanKey, describeError, keyProblem, networkErrorMessage } from "../../core/errors";
 import ProviderCheckCard from "./ProviderCheck";
+import BackupCard from "./BackupCard";
 import { getKV } from "../../core/db";
 import { Command, Skill, SkillStore, importZip, parseCommandMd, parseSkillMd, toSkillName } from "../../core/skills";
 
@@ -457,8 +458,10 @@ const Settings: React.FC<Props> = (props) => {
   const keyed = PROVIDERS.filter((p) => keys[p.id]);
   const others = PROVIDERS.filter((p) => !keys[p.id]);
   const [showOthers, setShowOthers] = React.useState(keyed.length === 0);
+  /** Khôi phục xong thì dựng lại các thẻ để đọc dữ liệu mới */
+  const [gen, setGen] = React.useState(0);
   return (
-    <div className={s.page}>
+    <div className={s.page} key={gen}>
       <div className={s.header}>
         {props.onBack && (
           <Button appearance="subtle" size="small" icon={<ArrowLeftRegular />} onClick={props.onBack} title="Quay lại khung chat">
@@ -497,6 +500,14 @@ const Settings: React.FC<Props> = (props) => {
         <SkillsCard {...props} />
         <div className={s.section}>Đọc chéo ứng dụng</div>
         <CrossAppCard {...props} />
+        <div className={s.section}>Sao lưu</div>
+        <BackupCard
+          host={props.host}
+          onRestored={() => {
+            props.onChanged();
+            setGen((g) => g + 1);
+          }}
+        />
         <div className={s.section}>Kiểm tra</div>
         <SelfTestCard {...props} />
         <ProviderCheckCard storage={props.storage} />

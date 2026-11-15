@@ -7,6 +7,7 @@ import { fetchModels, isStale } from "../../core/models";
 import { describeError } from "../../core/errors";
 import { pickModel } from "../../core/catalog";
 import { CheckResult, CheckTarget, MatrixCell, matrixReport, runSwitchMatrix } from "../../core/providerCheck";
+import { copyText } from "../fileio";
 
 const useStyles = makeStyles({
   card: {
@@ -124,12 +125,8 @@ const ProviderCheckCard: React.FC<{ storage: Storage }> = ({ storage }) => {
   };
 
   const copyReport = async () => {
-    try {
-      await navigator.clipboard.writeText(matrixReport(targets, singles, cells));
-      setNote({ text: "Đã chép kết quả." });
-    } catch {
-      setNote({ text: "Không chép được trong môi trường này.", err: true });
-    }
+    const ok = await copyText(matrixReport(targets, singles, cells));
+    setNote(ok ? { text: "Đã chép kết quả." } : { text: "Không chép được trong môi trường này.", err: true });
   };
 
   const ids = targets.map((t) => t.provider.id);
