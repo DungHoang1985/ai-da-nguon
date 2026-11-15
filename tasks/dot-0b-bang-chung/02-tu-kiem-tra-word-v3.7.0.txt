@@ -1,0 +1,25 @@
+{
+ "ketQua": "Tất cả đạt · 19/19 bước đạt",
+ "phienBan": "v3.7",
+ "buoc": [
+  "✅ Xem tổng quan văn bản — 1 đoạn, Track Changes: Off",
+  "✅ Chèn tiêu đề + đoạn + gạch đầu dòng — Đã chèn; tiêu đề kiểu \"Heading 2\", dòng gạch đầu dòng là danh sách thật",
+  "✅ Ghi bằng Theo dõi thay đổi — 2 sửa đổi đang chờ duyệt",
+  "✅ Tắt Track Changes rồi AI sửa: vẫn ghi có theo dõi — Track Changes đang tắt: sửa đổi vẫn được ghi (2 → 3), trả lại chế độ Off",
+  "✅ Tìm và thay chữ — 01/2026 → 02/2026",
+  "✅ Viết lại một đoạn (chỉ sửa phần khác) — Đã sửa đoạn 1 (phần thay đổi)",
+  "✅ Định dạng chữ — Đã định dạng 1 vùng",
+  "✅ Thêm nhận xét — Đã thêm nhận xét",
+  "✅ Chèn bảng — Đã chèn bảng 2×2",
+  "✅ Đọc nhận xét kèm đoạn được neo — Neo vào \"AIDN-KT-q7wod\" ở [¶0]",
+  "✅ Trả lời và đánh dấu đã xử lý nhận xét — Đã trả lời và đánh dấu đã xử lý",
+  "✅ Đọc và duyệt sửa đổi được theo dõi — 4 sửa đổi; đã chấp nhận 1 (Added: \"Mục kiểm tra AIDN-KT-q7wod Hợp\")",
+  "✅ Cảnh báo rủi ro: ghi đè ô bảng có dữ liệu thì hỏi, điền hàng mới thì không — Có hỏi: “Ghi đè 1 ô đang có dữ liệu trong bảng 0 (ví dụ hàng 1, cột 1: “1” → “10”).” · ghi trùng giá trị cũ và thêm hàng mới: không hỏi",
+  "✅ Đọc và điền bảng có sẵn — Bảng 0: sửa 1 ô, thêm 1 hàng",
+  "✅ Đọc văn bản dài: đọc hết theo next_start, không sót đoạn — 101 đoạn, đọc 2 lượt theo next_start, không sót đoạn nào",
+  "✅ Nhận xét ở đoạn trùng nội dung: báo đúng số đoạn — Nhận xét neo ở đoạn trùng thứ hai: báo đúng [¶101]",
+  "✅ Cảnh báo rủi ro: thay nhiều chỗ một lúc, thay vùng chọn lớn — Có hỏi: “Thay 50 chỗ cùng lúc trong văn bản: “AIDN-KT-q7wod đoạn dài” → “x”.” · “Thay toàn bộ vùng đang chọn (6 đoạn, 2394 ký tự) bằng nội dung mới.” · thay 2 chỗ và chèn tại con trỏ: không hỏi",
+  "✅ Chuyển tới đoạn — Đã chuyển tới đoạn 0",
+  "✅ Dọn sạch nội dung thử — Đã xóa toàn bộ nội dung thử"
+ ]
+}

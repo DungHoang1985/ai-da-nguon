@@ -1,0 +1,22 @@
+Đợt 0B — Chạy thật trong Word, bản 3.7.0, Anthropic · Claude Haiku 5.5, 15/11/2026 (điều khiển khung add-in qua kiem-thu/cdp.mjs)
+Bài 5: tự tóm tắt hội thoại dài. Văn bản 100 đoạn (~40.000 ký tự), mỗi lượt AI đọc lại toàn bộ. Ngưỡng của model này: 400.000 ký tự.
+Ghi chú: cột câu trả lời ở lượt 2–10 bị lệch một lượt do cách script cắt chữ (dòng "Lượt k" hiện câu trả lời của lượt k−1); số token là của đúng lượt.
+
+{
+ "tomTatOLuot": 11,
+ "thongBao": "Cuộc trò chuyện dài: đã tự tóm tắt phần đầu để AI nhớ gọn hơn.",
+ "cacLuot": [
+  "Lượt 1 (6s): Văn bản có 101 đoạn (trong đó đoạn cuối là đoạn trống, nên thực có 100 đoạn nội dung) và “ | Token: vào 63.431 · ra 509 · đọc từ bộ nhớ đệm 37.372 · ghi vào bộ nhớ đệm 26.051",
+  "Lượt 2 (5s):  đoạn” của đoạn 100 là 700. | Token: vào 141.479 · ra 381 · đọc từ bộ nhớ đệm 115.455 · ghi vào bộ nhớ đệm 26.016",
+  "Lượt 3 (3s): có “mã cuối đoạn” là 70. | Token: vào 145.149 · ra 187 · đọc từ bộ nhớ đệm 119.122 · ghi vào bộ nhớ đệm 26.021",
+  "Lượt 4 (4s): ó “mã cuối đoạn” là 105. | Token: vào 197.191 · ra 231 · đọc từ bộ nhớ đệm 171.164 · ghi vào bộ nhớ đệm 26.021",
+  "Lượt 5 (4s): ó “mã cuối đoạn” là 140. | Token: vào 249.233 · ra 191 · đọc từ bộ nhớ đệm 223.206 · ghi vào bộ nhớ đệm 26.021",
+  "Lượt 6 (4s): ó “mã cuối đoạn” là 175. | Token: vào 301.275 · ra 193 · đọc từ bộ nhớ đệm 275.248 · ghi vào bộ nhớ đệm 26.021",
+  "Lượt 7 (4s): ó “mã cuối đoạn” là 210. | Token: vào 353.317 · ra 191 · đọc từ bộ nhớ đệm 327.290 · ghi vào bộ nhớ đệm 26.021",
+  "Lượt 8 (4s): ó “mã cuối đoạn” là 245. | Token: vào 405.359 · ra 189 · đọc từ bộ nhớ đệm 379.332 · ghi vào bộ nhớ đệm 26.021",
+  "Lượt 9 (4s): ó “mã cuối đoạn” là 280. | Token: vào 457.401 · ra 224 · đọc từ bộ nhớ đệm 431.374 · ghi vào bộ nhớ đệm 26.021",
+  "Lượt 10 (4s):  “mã cuối đoạn” là 315. | Token: vào 509.443 · ra 217 · đọc từ bộ nhớ đệm 483.416 · ghi vào bộ nhớ đệm 26.021",
+  "Lượt 11 (13s): Đoạn 55 có “mã cuối đoạn” là 385. | Token: vào 147.091 · ra 409 · đọc từ bộ nhớ đệm 68.026 · ghi vào bộ nhớ đệm 79.059"
+ ],
+ "hoiLaiSauTomTat": "Việc của phiên này là đọc lại toàn bộ văn bản thử AIDN-DAI bằng công cụ mỗi lần rồi tra “mã cuối đoạn” theo yêu cầu, không sửa văn bản; đoạn 100 có mã cuối đoạn là 700. / Token: vào 87.116 · ra 346 · đọc từ bộ nhớ đệm 85.981 · ghi vào bộ nhớ đệm 1.131 / Chèn vào chỗ con trỏ"
+}

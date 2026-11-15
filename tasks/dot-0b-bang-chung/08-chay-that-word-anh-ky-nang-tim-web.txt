@@ -1,0 +1,30 @@
+Đợt 0B — Chạy thật trong Word, bản 3.7.0, Anthropic · Claude Haiku 5.5, 15/11/2026 (điều khiển khung add-in qua kiem-thu/cdp.mjs)
+Bài 4: đính kèm ảnh assets/icon-128.png (hình tròn xám đậm có chữ "Logo" trắng); nhập kỹ năng từ tệp SKILL.md, gọi bằng "/", rồi xóa; tìm trên web.
+
+Đã đặt 1 tệp vào input[type=file][accept*="image/png"]
+{
+ "pha": "anh",
+ "theTep": "🖼 icon-128.png",
+ "traLoi": "AI Đa Nguồn\nv3.7\nKhông dùng công cụ. Mô tả ngắn ảnh đính kèm trong hai câu: hình gì, màu chủ đạo nào?\n📎 icon-128.png\nẢnh là một hình tròn màu đen xám đậm, bên trong có chữ \"Logo\" màu trắng ở giữa. Màu chủ đạo là đen xám (trắng dùng cho chữ).\nToken: vào 7.592 · ra 75 · đọc từ bộ nhớ đệm 6.922 · ghi vào bộ nhớ đệm 666\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}
+{
+ "pha": "kynang-mo",
+ "coONhapTep": true
+}
+Đã đặt 1 tệp vào input[type=file][accept*=".skill"]
+{
+ "pha": "kynang",
+ "baoCaoNhap": "Đã nhập 1 kỹ năng, 0 lệnh.",
+ "hienTrongMenu": [
+  "/aidn-kiem-thu-ky-nang Kỹ năng · Kỹ năng thử của Đợt 0B, chỉ để kiểm việc nhập kỹ năng. Dùng khi người dùng gọi /aidn-kiem-thu-ky-nang."
+ ],
+ "traLoi": "AI Đa Nguồn\nv3.7\n/aidn-kiem-thu-ky-nang chạy đi\nKY-NANG-THU-DA-CHAY-7391\nToken: vào 7.759 · ra 22 · ghi vào bộ nhớ đệm 7.755\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5",
+ "daXoaKyNangThu": true
+}
+{
+ "pha": "web",
+ "coMucTimWeb": true,
+ "daBatWeb": true,
+ "traLoi": "AI Đa Nguồn\nv3.7\nTìm trên web rồi trả lời một câu, kèm tên trang nguồn: phiên bản Node.js LTS mới nhất hiện nay là số mấy?\nPhiên bản Node.js LTS mới nhất hiện nay là 26.13.1 (nhánh \"Lithium\"), theo trang phát hành GitHub của nodejs/node (github.com/nodejs/node/releases). Trang này ghi bản đó ra mắt ngày 11/11/2026 (2026-11-11, Version 26.13.1 'Lithium' (LTS)).\nToken: vào 26.791 · ra 700 · đọc từ bộ nhớ đệm 10.097 · ghi vào bộ nhớ đệm 16.688\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\n🌐 Web ✕\nAnthropic · Claude Haiku 5.5",
+ "traLaiTrangThaiCu": true
+}

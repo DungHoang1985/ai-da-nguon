@@ -48,6 +48,8 @@ Phát hành tự động: đẩy lên `main` là GitHub Actions (`.github/workfl
 
 Xem bản mới trong Office: đặt con trỏ trong khung add-in rồi Ctrl+F5. Số phiên bản hiện ở đầu khung.
 
+Kiểm trong Office bằng mã (không cần điều khiển màn hình, dùng được cả khi anh không ngồi trước máy): `kiem-thu/cdp.mjs`, cách dùng ở đầu tệp và ở mục Bài học của `tasks/HANDOFF.md`; các bài thử mẫu ở `kiem-thu/cdp-bai/`.
+
 ## Quy tắc làm việc với anh Dũng
 
 - Trả lời bằng tiếng Việt, kết luận trước, giải thích ngắn. Không kể lại các bước đã làm.

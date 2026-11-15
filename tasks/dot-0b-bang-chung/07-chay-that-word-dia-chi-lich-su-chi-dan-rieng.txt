@@ -1,0 +1,26 @@
+Đợt 0B — Chạy thật trong Word, bản 3.7.0, Anthropic · Claude Haiku 5.5, 15/11/2026 (điều khiển khung add-in qua kiem-thu/cdp.mjs)
+Bài 3: bấm địa chỉ đoạn [¶3] trong câu trả lời; mở lại hội thoại cũ rồi hỏi tiếp; xóa một hội thoại; lưu Chỉ dẫn riêng và xem AI có làm theo (xong thì trả lại chỉ dẫn cũ).
+
+{
+ "bamDiaChi": {
+  "lienKet": "[¶3]",
+  "vungChonTruoc": "",
+  "vungChonSau": "Điều 3. Bên thuê đặt cọc 2 tháng tiền thuê.\r"
+ },
+ "moLai": {
+  "soHoiThoai": 6,
+  "hienLaiNoiDungCu": true,
+  "hoiTiep": "Không dùng công cụ. Ở câu trả lời trước, anh nói nhận xét neo ở đoạn số mấy và ai viết? Trả lời một câu. / Nhận xét neo ở đoạn [¶3] và do Hoàng Việt Dũng viết. / Token: vào 9.233 · ra 38 · đọc từ bộ nhớ đệm 8.205 · ghi vào bộ nhớ đệm 1.024 / Chèn vào chỗ con trỏ"
+ },
+ "xoa": {
+  "truoc": 6,
+  "sau": 5,
+  "conDong": false
+ },
+ "chiDan": {
+  "doDaiChiDanGoc": 0,
+  "aiLamTheo": true,
+  "traLoi": "  / [AIDN-CHI-DAN-OK] / Token: vào 7.626 · ra 31 · ghi vào bộ nhớ đệm 7.622 / Chèn vào chỗ con trỏ",
+  "daTraLaiNguyenVan": true
+ }
+}

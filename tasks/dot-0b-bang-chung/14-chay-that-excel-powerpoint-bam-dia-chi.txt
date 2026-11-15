@@ -1,0 +1,24 @@
+Đợt 0B — Chạy thật, bản 3.7.0, Anthropic · Claude Haiku 5.5, 15/11/2026: bấm địa chỉ ô trong Excel và "slide 1" trong PowerPoint
+--- Excel
+{
+ "daHoi": [
+  "AI muốn: Ghi dữ liệu vào Sheet1!D7 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "lienKet": "Sheet1!D7",
+ "vungChonSauKhiBam": {
+  "diaChi": "Sheet1!D7",
+  "giaTri": 5
+ },
+ "traLoi": "Đã ghi số 5 vào Sheet1!D7. / Token: vào 19.963 · ra 133 · đọc từ bộ nhớ đệm 9.892 · ghi vào bộ nhớ đệm 10.065 / Hoàn tác thay đổi (1) / Ghi vào ô đang chọn"
+}
+--- PowerPoint
+{
+ "lienKet": "slide 1",
+ "sauKhiBam": {
+  "slideDangChon": [
+   1
+  ],
+  "tongSlide": 1
+ },
+ "traLoi": "Bài trình chiếu hiện có 1 slide, là slide 1 (slide tiêu đề, hai khung chữ còn trống). / Token: vào 7.006 · ra 128 · ghi vào bộ nhớ đệm 7.002 / Chèn vào slide"
+}
