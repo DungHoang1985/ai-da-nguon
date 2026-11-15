@@ -121,7 +121,7 @@ export function anthropicHeaders(key: string): Record<string, string> {
 export async function fetchModels(provider: Provider, key: string, fetchFn: typeof fetch = fetch): Promise<ModelInfo[]> {
   const { url, init } = modelsRequest(provider, key);
   const res = await fetchDiagnosed(provider, url, init, fetchFn);
-  await ensureOk(res);
+  await ensureOk(res, provider);
   const json = await res.json();
   const models = normalizeModels(provider, json);
   if (!models.length) throw new Error("Nhà cung cấp không trả về model chat nào.");

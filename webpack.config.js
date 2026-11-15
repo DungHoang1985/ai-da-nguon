@@ -25,6 +25,8 @@ module.exports = async (env, options) => {
         dependOn: "react",
       },
       commands: "./src/commands/commands.ts",
+      // Trang mở trong hộp thoại của Office khi bấm "Đăng nhập" (Đợt 2)
+      "dang-nhap": "./src/dialog/dang-nhap.ts",
     },
     output: {
       clean: true,
@@ -93,6 +95,11 @@ module.exports = async (env, options) => {
             },
           },
         ],
+      }),
+      new HtmlWebpackPlugin({
+        filename: "dang-nhap.html",
+        template: "./src/dialog/dang-nhap.html",
+        chunks: ["dang-nhap"],
       }),
       new HtmlWebpackPlugin({
         filename: "commands.html",

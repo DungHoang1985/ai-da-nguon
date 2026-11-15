@@ -1,7 +1,7 @@
 /** Gọi model một bước, có khai báo công cụ, nhận chữ chạy dần + các lệnh gọi công cụ. 3 kiểu API: OpenAI-compatible, Anthropic, Gemini. */
 import { Provider } from "../providers";
 import { anthropicHeaders } from "../models";
-import { ApiError, ensureOk, fetchDiagnosed, isRetryable } from "../errors";
+import { ApiError, ensureOk, explainApiError, fetchDiagnosed, isRetryable } from "../errors";
 import { createSSEParser } from "../sse";
 import { AgentMessage, RawAssistant, StepResult, ToolCall, ToolSpec, Usage } from "./types";
 import { prepareHistory } from "./history";
@@ -302,7 +302,7 @@ export function buildStepRequest(
 }
 
 /** Gom các sự kiện luồng thành chữ + lệnh gọi công cụ. */
-export function createStepAccumulator(kind: string, onText: (d: string) => void, onThinking?: () => void) {
+export function createStepAccumulator(kind: string, onText: (d: string) => void, onThinking?: () => void, provider?: Provider) {
   let thinkingSeen = false;
   const noteThinking = () => {
     if (thinkingSeen) return;
@@ -369,7 +369,12 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void,
         const code = Number(j.error.code ?? j.error.status);
         const status =
           type === "overloaded_error" ? 529 : type === "rate_limit_error" ? 429 : type === "api_error" ? 500 : code >= 400 && code < 600 ? code : undefined;
-        throw new ApiError(`Nhà cung cấp báo lỗi: ${msg}`, status);
+        // Lỗi về key hoặc tiền báo giữa luồng (OpenRouter: hết credit sau khi đã trả 200): dùng câu của lý do, không thử lại
+        const x = explainApiError(status, String(msg), { provider, body: j });
+        if (x.reason) throw new ApiError(x.text, status, undefined, x.reason);
+        const err = new ApiError(`Nhà cung cấp báo lỗi: ${msg}`, status);
+        if (x.transient) err.transient = true;
+        throw err;
       }
       if (kind === "anthropic") {
         if (j.type === "message_start") {
@@ -613,8 +618,8 @@ async function callModelOnce(opts: CallModelOptions): Promise<StepResult> {
   });
   const fetchFn = opts.fetchFn || fetch;
   const res = await fetchDiagnosed(opts.provider, url, { ...init, signal: opts.signal }, fetchFn, opts.model);
-  await ensureOk(res);
-  const acc = createStepAccumulator(opts.provider.kind, opts.onText, opts.onThinking);
+  await ensureOk(res, opts.provider);
+  const acc = createStepAccumulator(opts.provider.kind, opts.onText, opts.onThinking, opts.provider);
   const parser = createSSEParser((d) => acc.push(d));
   if (res.body) {
     const reader = res.body.getReader();

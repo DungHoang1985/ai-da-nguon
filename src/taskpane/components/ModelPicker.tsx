@@ -56,9 +56,18 @@ const ModelPicker: React.FC<{
   agentOn: boolean;
   toolsOnly: boolean;
   onToolsOnly: (v: boolean) => void;
-}> = ({ cat, agentOn, toolsOnly, onToolsOnly }) => {
+  /** Cho khung chat mở bảng chọn từ nút "Đổi nguồn" cạnh thông báo lỗi */
+  openRef?: React.MutableRefObject<(() => void) | null>;
+}> = ({ cat, agentOn, toolsOnly, onToolsOnly, openRef }) => {
   const s = useStyles();
   const [open, setOpen] = React.useState(false);
+  React.useEffect(() => {
+    if (!openRef) return undefined;
+    openRef.current = () => setOpen(true);
+    return () => {
+      openRef.current = null;
+    };
+  }, [openRef]);
   const status = cat.catalog.status;
   const label =
     status === "loading" ? "Đang tải model…" : status === "error" ? "Chưa dùng được" : shortModelName(cat.model, "Chọn model");

@@ -10,6 +10,7 @@ import { Storage } from "../../core/storage";
 import { fetchModels } from "../../core/models";
 import { cleanKey, describeError, keyProblem, networkErrorMessage } from "../../core/errors";
 import ProviderCheckCard from "./ProviderCheck";
+import SignInCard from "./SignInCard";
 import BackupCard from "./BackupCard";
 import { getKV } from "../../core/db";
 import { Command, Skill, SkillStore, importZip, parseCommandMd, parseSkillMd, toSkillName } from "../../core/skills";
@@ -472,9 +473,11 @@ const SkillsCard: React.FC<Props> = ({ onChanged }) => {
 const Settings: React.FC<Props> = (props) => {
   const s = useStyles();
   const keys = props.storage.getKeys();
-  const keyed = PROVIDERS.filter((p) => keys[p.id]);
-  const others = PROVIDERS.filter((p) => !keys[p.id]);
-  const [showOthers, setShowOthers] = React.useState(keyed.length === 0);
+  // Nguồn có đăng nhập (OpenRouter) luôn đứng đầu, có thẻ riêng: đăng nhập, hạn mức, đăng xuất
+  const signIns = PROVIDERS.filter((p) => p.oauth);
+  const keyed = PROVIDERS.filter((p) => keys[p.id] && !p.oauth);
+  const others = PROVIDERS.filter((p) => !keys[p.id] && !p.oauth);
+  const [showOthers, setShowOthers] = React.useState(keyed.length === 0 && !signIns.some((p) => keys[p.id]));
   /** Khôi phục xong thì dựng lại các thẻ để đọc dữ liệu mới */
   const [gen, setGen] = React.useState(0);
   return (
@@ -500,6 +503,9 @@ const Settings: React.FC<Props> = (props) => {
           Key chỉ lưu trên máy này, trong add-in; chỉ gửi tới đúng nhà cung cấp khi gọi. Bấm “Lưu” để kiểm tra key và tải danh sách model. Model đã chọn
           được nhớ riêng cho từng nhà cung cấp (đổi ở nhãn model cạnh ô nhập).
         </Text>
+        {signIns.map((p) => (
+          <SignInCard key={p.id} p={p} storage={props.storage} onChanged={props.onChanged} />
+        ))}
         {keyed.map((p) => (
           <ProviderCard key={p.id} p={p} {...props} />
         ))}

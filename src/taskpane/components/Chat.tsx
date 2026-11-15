@@ -28,7 +28,10 @@ import {
 import ModelPicker from "./ModelPicker";
 import { getProvider } from "../../core/providers";
 import { Storage } from "../../core/storage";
-import { describeError, networkErrorMessage } from "../../core/errors";
+import { ErrorReason, describeError, networkErrorMessage } from "../../core/errors";
+import { chatCreditWarning } from "../../core/credits";
+import { useCredits } from "./useCredits";
+import { WelcomeSignIn } from "./SignInCard";
 import { useCatalog } from "./useCatalog";
 import { AgentMessage, ToolCall, UndoEntry, Usage } from "../../core/agent/types";
 import { isToolUnsupportedError } from "../../core/agent/llm";
@@ -179,6 +182,8 @@ interface Item {
   error?: string;
   /** Chi tiết kỹ thuật của lỗi (nút "Chép chi tiết") */
   errorDetail?: string;
+  /** Lỗi về key hoặc tiền: hiện nút Đổi nguồn / Mở Cài đặt */
+  errorReason?: ErrorReason;
   files?: string[];
   label?: string;
   skills?: string[];
@@ -191,6 +196,8 @@ interface Props {
   host: HostName;
   version: number;
   onOpenSettings: () => void;
+  /** Vừa đăng nhập ở màn chào: báo App dựng lại để danh sách nguồn có key được đọc lại */
+  onKeysChanged?: () => void;
 }
 
 const WEB_PROVIDERS = (p: { id: string; kind: string }) => p.id === "openrouter" || p.kind === "anthropic" || p.kind === "gemini";
@@ -293,7 +300,7 @@ const finalText = (it: Item) =>
         .trim()
     : it.text;
 
-const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
+const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysChanged }) => {
   const s = useStyles();
   const [settings, setSettingsState] = React.useState(storage.getSettings());
   const updateSettings = (patch: any) => {
@@ -355,6 +362,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
   const agentOn = settings.agentMode && !!hostTools;
   const cat = useCatalog(storage, { agentOn, toolsOnly: settings.toolsOnly, version });
   const { available, providerId, modelId, models, shown } = cat;
+  /** Mở bảng chọn nguồn và model từ nút "Đổi nguồn" cạnh thông báo lỗi */
+  const openPickerRef = React.useRef<(() => void) | null>(null);
+  /** Hạn mức OpenRouter: đọc lại sau mỗi lượt (thưa nhất 60 giây một lần) để cảnh báo khi thấp */
+  const credits = useCredits(storage, getProvider(providerId));
+  const creditWarn = chatCreditWarning(credits.info, { freeModel: !!cat.model?.free, balanceAllowed: credits.balanceAllowed });
 
   const refreshConvs = React.useCallback(async () => {
     try {
@@ -427,6 +439,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
     if (prevBusy.current && !busy && items.length) {
       saveConversation().then(refreshConvs);
       share();
+      credits.reload(false);
     }
     prevBusy.current = busy;
   }, [busy]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -456,8 +469,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
           <Text size={200} className={s.muted}>
             Key chỉ lưu trên máy này và chỉ gửi tới đúng nhà cung cấp. OpenRouter có nhiều model miễn phí.
           </Text>
-          <Button appearance="primary" onClick={onOpenSettings} style={{ alignSelf: "flex-start" }}>
-            Nhập API key
+          {getProvider("openrouter")?.oauth && (
+            <WelcomeSignIn p={getProvider("openrouter")!} storage={storage} onChanged={() => onKeysChanged?.()} />
+          )}
+          <Button onClick={onOpenSettings} style={{ alignSelf: "flex-start" }}>
+            Nhập API key của nhà cung cấp khác
           </Button>
           <Text size={200} className={s.muted}>
             Từng dùng AI Đa Nguồn trên máy này mà giờ không thấy key, lịch sử? Office lưu dữ liệu add-in theo từng tài khoản Office: nếu vừa đổi tài khoản
@@ -710,7 +726,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
               ? "Model này không gọi được công cụ nên không thao tác được trên tài liệu. Hãy chọn model khác (OpenRouter: bật “Chỉ model thao tác được”) hoặc tắt “AI tự thao tác” để chỉ trò chuyện."
               : info.text;
         const detail = `${info.detail}\nModel: ${modelId}\nPhiên bản: ${APP_VERSION_FULL}\nLúc: ${new Date().toLocaleString("vi-VN")}`;
-        patchLast((it) => ({ ...it, error: msg, errorDetail: info.kind === "aborted" ? undefined : detail }));
+        patchLast((it) => ({ ...it, error: msg, errorDetail: info.kind === "aborted" ? undefined : detail, errorReason: info.reason }));
       }
     } catch (e: any) {
       // runTurn không ném lỗi; tới đây là lỗi trong chính add-in
@@ -984,6 +1000,18 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
                   </Text>
                 ) : null}
                 {it.error && <Text className={s.err}>{it.error}</Text>}
+                {it.error && it.errorReason && !isLastBusy(i) && i === items.length - 1 && (
+                  <div className={s.row}>
+                    {available.length > 1 && (
+                      <Button size="small" appearance="primary" onClick={() => openPickerRef.current?.()}>
+                        Đổi nguồn
+                      </Button>
+                    )}
+                    <Button size="small" onClick={onOpenSettings}>
+                      Mở Cài đặt
+                    </Button>
+                  </div>
+                )}
                 {it.error && it.errorDetail && !isLastBusy(i) && (
                   <Button size="small" appearance="subtle" style={{ alignSelf: "flex-start" }} onClick={() => copy(`${it.error}\n\n${it.errorDetail}`)}>
                     Chép chi tiết lỗi
@@ -1212,9 +1240,14 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
           </Text>
         )}
         <div className={s.modelSlot}>
-          <ModelPicker cat={cat} agentOn={agentOn} toolsOnly={settings.toolsOnly} onToolsOnly={(v) => updateSettings({ toolsOnly: v })} />
+          <ModelPicker cat={cat} agentOn={agentOn} toolsOnly={settings.toolsOnly} onToolsOnly={(v) => updateSettings({ toolsOnly: v })} openRef={openPickerRef} />
         </div>
       </div>
+      {!busy && creditWarn && (
+        <Text size={100} className={`${s.fixed} ${creditWarn.level === "out" ? s.err : s.muted}`} data-aidn="canh-bao-han-muc">
+          ⚠️ {creditWarn.text}
+        </Text>
+      )}
       {!busy && cat.blockReason && (
         <Text size={100} className={`${s.fixed} ${cat.catalog.status === "error" ? s.err : s.muted}`}>
           {cat.blockReason}

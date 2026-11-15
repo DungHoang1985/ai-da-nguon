@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <title>AI Đa Nguồn — Đăng nhập</title>
+    <!-- office.js xóa history.replaceState khi nạp: giữ lại một bản để gỡ mã đăng nhập khỏi thanh địa chỉ sau khi dùng xong -->
+    <script type="text/javascript">try { window.__aidnReplaceState = window.history.replaceState.bind(window.history); } catch (e) { }</script>
+    <script type="text/javascript" src="https://officeapis.public.onecdn.static.microsoft/1/office.js"></script>
+    <style>
+        body { margin: 0; padding: 24px; font-family: 'Segoe UI', sans-serif; font-size: 14px; color: #242424; background: #fff; }
+        h1 { font-size: 18px; margin: 0 0 12px; }
+        p { margin: 0 0 10px; line-height: 20px; }
+        .muted { color: #616161; }
+        .err { color: #b10e1c; }
+        #code { width: 100%; box-sizing: border-box; padding: 8px; font-family: Consolas, monospace; font-size: 13px; margin: 6px 0 10px; }
+        button { padding: 6px 14px; font-size: 14px; cursor: pointer; }
+    </style>
+</head>
+
+<body>
+    <h1 id="title">AI Đa Nguồn</h1>
+    <p id="text">Đang mở…</p>
+    <div id="codeBox" style="display: none;">
+        <input id="code" type="text" readonly autocomplete="off" />
+        <button id="copy" type="button">Chép mã</button>
+        <span id="copied" class="muted"></span>
+    </div>
+</body>
+
+</html>

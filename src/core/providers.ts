@@ -18,6 +18,24 @@ export interface Provider {
   blockedReason?: string;
   /** Mọi model của nguồn này nhận ảnh (true) / không nhận (false); không ghi = tùy model hoặc chưa rõ */
   vision?: boolean;
+  /** Nguồn cho đăng nhập để nhận key (OAuth PKCE) thay cho dán key. Thêm nguồn cùng kiểu: chỉ thêm cấu hình này. */
+  oauth?: OAuthConfig;
+  /** Trang quản lý key của người dùng (để thu hồi key sau khi đăng xuất) */
+  manageKeysUrl?: string;
+  /** Trang xem số dư, nạp tiền */
+  billingUrl?: string;
+}
+
+/** Cấu hình đăng nhập kiểu OAuth PKCE trả về API key (đối chiếu openrouter.ai/docs/guides/overview/auth/oauth, 15/11/2026). */
+export interface OAuthConfig {
+  /** Trang đăng nhập và cho phép của nhà cung cấp */
+  authUrl: string;
+  /** Địa chỉ đổi mã lấy key (POST JSON: code, code_verifier, code_challenge_method) */
+  exchangeUrl: string;
+  /** Tên gợi ý cho key mới, hiện ở trang quản lý key của nhà cung cấp */
+  keyLabel?: string;
+  /** Tên miền của authUrl: trang hộp thoại chỉ chuyển tới đúng tên miền này */
+  host: string;
 }
 
 /** Đo ngày 14 và 15/11/2026: máy chủ không trả tiêu đề Access-Control-Allow-Origin nên trình duyệt trong Office chặn. */
@@ -31,6 +49,14 @@ export const PROVIDERS: Provider[] = [
     baseUrl: "https://openrouter.ai/api/v1",
     keyUrl: "https://openrouter.ai/keys",
     note: "Nhiều model miễn phí (đuôi :free)",
+    oauth: {
+      authUrl: "https://openrouter.ai/auth",
+      exchangeUrl: "https://openrouter.ai/api/v1/auth/keys",
+      keyLabel: "AI Da Nguon (Office)",
+      host: "openrouter.ai",
+    },
+    manageKeysUrl: "https://openrouter.ai/settings/keys",
+    billingUrl: "https://openrouter.ai/settings/credits",
   },
   {
     id: "gemini",

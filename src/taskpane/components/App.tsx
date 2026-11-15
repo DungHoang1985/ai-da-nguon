@@ -32,7 +32,7 @@ const App: React.FC = () => {
   return (
     <div className={s.root}>
       <div className={s.page} style={{ display: view === "chat" ? "flex" : "none" }}>
-        <Chat storage={storage} host={host} version={version} onOpenSettings={() => setView("settings")} />
+        <Chat storage={storage} host={host} version={version} onOpenSettings={() => setView("settings")} onKeysChanged={() => setVersion((v) => v + 1)} />
       </div>
       {view === "settings" && (
         <div className={s.page}>
