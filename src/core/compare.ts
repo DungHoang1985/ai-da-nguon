@@ -2,7 +2,7 @@
  *  Hàm thuần, không cần Office — kiểm thử bằng npm test. A = văn bản đang mở, B = phiên bản khác (tệp đính kèm).
  *  Thăm dò 15/11/2026 (tasks/dot-1b.md): kết quả so sánh của chính Word (compareFromBase64) nằm ở một tài liệu khác mà add-in
  *  không đọc được, còn ghi thẳng vào tài liệu đang mở thì làm mất sửa đổi chờ duyệt — nên phần tóm tắt cho AI tự so bằng mã. */
-import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseName } from "./outline";
+import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseLabel } from "./outline";
 import { diffWords } from "./worddiff";
 
 export interface VersionDiff {
@@ -229,8 +229,8 @@ export function compareVersions(current: ParaRow[], other: ParaRow[], opts: { ou
     A.map((l) => l.norm),
     B.map((l) => l.norm)
   );
-  const nameA = (i: number) => clauseName(clauseAt(oa, i));
-  const nameB = (i: number) => clauseName(clauseAt(ob, i));
+  const nameA = (i: number) => clauseLabel(oa, clauseAt(oa, i));
+  const nameB = (i: number) => clauseLabel(ob, clauseAt(ob, i));
   const diffs: VersionDiff[] = [];
   const renumbered: CompareResult["renumbered"] = [];
   const headA = new Set(oa.map((o) => o.i));

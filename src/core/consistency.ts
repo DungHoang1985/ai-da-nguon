@@ -2,7 +2,7 @@
  *  tồn tại; thuật ngữ định nghĩa dùng lệch hoặc dùng mà chưa định nghĩa; một bên được gọi bằng nhiều tên; chỗ trống chưa điền;
  *  số bằng số không khớp bằng chữ. Hàm thuần, không cần Office — kiểm thử bằng npm test (test/unit/dot1b.test.ts).
  *  Đây là các phép dò theo mẫu: kết quả là điểm CẦN XEM, người đọc (hoặc AI) quyết định có phải lỗi không. */
-import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseKey, clauseName, findClause, outlineByParagraph, romanValue } from "./outline";
+import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseKey, clauseLabel, clauseName, findClause, outlineByParagraph, romanValue } from "./outline";
 
 export type IssueKind = "numbering" | "reference" | "term" | "party" | "blank" | "amount";
 
@@ -100,21 +100,22 @@ export function checkNumbering(rows: ParaRow[], outline: OutlineItem[]): Issue[]
     const prev = last.get(group);
     last.set(group, it);
     const where = clauseName(it);
+    const label = clauseLabel(outline, it);
     if (it.kind === "letter") {
       const cur = it.key.split(".").pop() || "";
       if (!prev) {
         if (cur !== "a" && it.parent >= 0 && NUMERIC.includes(outline[it.parent].kind)) {
-          issues.push({ kind: "numbering", p: it.i, clause: where, message: `Đánh số bắt đầu từ “${it.label}” (${where}), không có điểm a đứng trước.` });
+          issues.push({ kind: "numbering", p: it.i, clause: label, message: `Đánh số bắt đầu từ “${it.label}” (${where}), không có điểm a đứng trước.` });
         }
         continue;
       }
       const step = letterStep(prev.key.split(".").pop() || "", cur);
-      if (step === "same") issues.push({ kind: "numbering", p: it.i, clause: where, message: `Đánh số trùng: ${where} xuất hiện hai lần.`, also: [prev.i] });
+      if (step === "same") issues.push({ kind: "numbering", p: it.i, clause: label, message: `Đánh số trùng: ${where} xuất hiện hai lần.`, also: [prev.i] });
       else if (step === "jump") {
         issues.push({
           kind: "numbering",
           p: it.i,
-          clause: where,
+          clause: label,
           message: `Đánh số nhảy: sau ${clauseName(prev)} là ${where}${deletedBetween(prev.i, it.i) ? " (ở giữa có đoạn đã bị xóa có theo dõi, chờ duyệt)" : ""}.`,
         });
       }
@@ -125,19 +126,19 @@ export function checkNumbering(rows: ParaRow[], outline: OutlineItem[]): Issue[]
     if (!prev) {
       // Khoản đầu tiên của một điều mà không mang số 1 ("5.2" đứng ngay sau "Điều 5")
       if (it.kind === "dotted" && n > 1 && it.parent >= 0 && outline[it.parent].key === prefix) {
-        issues.push({ kind: "numbering", p: it.i, clause: where, message: `Đánh số bắt đầu từ ${where}: không có ${prefix}.1${n > 2 ? ` … ${prefix}.${n - 1}` : ""} đứng trước.` });
+        issues.push({ kind: "numbering", p: it.i, clause: label, message: `Đánh số bắt đầu từ ${where}: không có ${prefix}.1${n > 2 ? ` … ${prefix}.${n - 1}` : ""} đứng trước.` });
       }
       continue;
     }
     const pn = ordinalOf(prev);
     if (pn === null) continue;
-    if (n === pn) issues.push({ kind: "numbering", p: it.i, clause: where, message: `Đánh số trùng: ${where} xuất hiện hai lần.`, also: [prev.i] });
+    if (n === pn) issues.push({ kind: "numbering", p: it.i, clause: label, message: `Đánh số trùng: ${where} xuất hiện hai lần.`, also: [prev.i] });
     else if (n > pn + 1) {
       const missing = n - pn - 1;
       issues.push({
         kind: "numbering",
         p: it.i,
-        clause: where,
+        clause: label,
         message: `Đánh số nhảy: sau ${clauseName(prev)} là ${where} (thiếu ${missing} số)${deletedBetween(prev.i, it.i) ? "; ở giữa có đoạn đã bị xóa có theo dõi, chờ duyệt" : ""}.`,
       });
     }
@@ -182,7 +183,7 @@ export function checkReferences(rows: ParaRow[], outline: OutlineItem[]): Issue[
       hit.count = (hit.count || 1) + 1;
       return;
     }
-    found.set(target, { kind: "reference", p: row.i, clause: clauseName(clauseAt(outline, row.i)), message, excerpt: around(row.text, at, len), count: 1 });
+    found.set(target, { kind: "reference", p: row.i, clause: clauseLabel(outline, clauseAt(outline, row.i)), message, excerpt: around(row.text, at, len), count: 1 });
   };
   const hasArticles = outline.filter((o) => o.kind === "article" || (o.kind === "single" && o.level === 0) || o.kind === "dotted").length >= 2;
   const appendices = outline.filter((o) => o.kind === "chapter" && /^phụ lục/i.test(o.num));
@@ -389,7 +390,7 @@ export function checkTerms(rows: ParaRow[], outline: OutlineItem[], which: { ter
   const defs = findDefinitions(live);
   const byPara = outlineByParagraph(outline);
   const issues: Issue[] = [];
-  const clauseOf = (p: number) => clauseName(clauseAt(outline, p));
+  const clauseOf = (p: number) => clauseLabel(outline, clauseAt(outline, p));
   /** Dòng tiêu đề (tên điều, tên chương, dòng viết hoa toàn bộ): cách viết hoa ở đó theo thể thức tiêu đề, không soát */
   const isTitle = (r: Live) => isAllCaps(r.text) || (byPara.has(r.i) && r.text.length <= 100 && !/[.;:!?]$/.test(r.text.trim()));
   const termList = [...defs.terms.keys()].sort((a, b) => b.length - a.length);
@@ -548,7 +549,7 @@ export function checkBlanks(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
     issues.push({
       kind: "blank",
       p: r.i,
-      clause: clauseName(clauseAt(outline, r.i)),
+      clause: clauseLabel(outline, clauseAt(outline, r.i)),
       message: `Chỗ trống chưa điền${merged.length > 1 ? ` (${merged.length} chỗ trong đoạn)` : ""}.`,
       excerpt: cut((s > 0 ? "…" : "") + text.slice(s, e) + (e < text.length ? "…" : ""), 220),
       count: merged.length,
@@ -654,7 +655,7 @@ export function checkAmounts(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
     issues.push({
       kind: "amount",
       p: r.i,
-      clause: clauseName(clauseAt(outline, r.i)),
+      clause: clauseLabel(outline, clauseAt(outline, r.i)),
       message: `Số bằng số và bằng chữ không khớp: ${figText} (= ${fmt(figure)}) nhưng chữ ghi “${wordsText.trim()}” (= ${fmt(value)}).`,
       excerpt: around(text, at, len, 30),
     });

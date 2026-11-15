@@ -67,7 +67,7 @@ describe("Đợt 1B – soát nhất quán: bài nghiệm thu (9 lỗi cài sẵ
   it("bản cài lỗi: thông báo nêu đúng số điều và nội dung", () => {
     const r = checkConsistency(toRows(fx.doan.loi));
     const msg = (k: string) => r.issues.filter((x) => x.kind === k).map((x) => `${x.clause}|${x.message}`);
-    assert.ok(msg("numbering")[0].includes("sau 2.2 là 2.4"));
+    assert.ok(msg("numbering")[0].startsWith("Phụ lục 01, mục 2.4|") && msg("numbering")[0].includes("sau 2.2 là 2.4"));
     assert.ok(msg("reference").some((m) => m.startsWith("11.2|") && m.includes("khoản 6 Điều 7") && m.includes("Điều 7")));
     assert.ok(msg("reference").some((m) => m.includes("“Điều 19”")));
     assert.ok(msg("term").some((m) => m.startsWith("5.2|") && m.includes("“Ngày Bàn Giao”") && m.includes("“ngày bàn giao”")));
@@ -431,7 +431,7 @@ describe("Đợt 1B – so phiên bản", () => {
     assert.strictEqual(r.diffs.length, 10);
     assert.deepStrictEqual(
       r.diffs.map((d) => `${d.type}:${d.clause}`),
-      ["changed:3.1", "changed:4.1", "changed:4.2", "changed:5.1", "changed:6.2", "changed:7.3", "changed:8.2", "only_other:9.3", "only_current:11.3", "changed:2.1"]
+      ["changed:3.1", "changed:4.1", "changed:4.2", "changed:5.1", "changed:6.2", "changed:7.3", "changed:8.2", "only_other:9.3", "only_current:11.3", "changed:Phụ lục 01, mục 2.1"]
     );
     // Khoản mới 9.4 của phiên bản khác; khoản 11.4 thành 11.3 vì 11.3 bị bỏ
     const added = r.diffs.find((d) => d.type === "only_other");

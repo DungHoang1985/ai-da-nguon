@@ -165,7 +165,7 @@ const useStyles = makeStyles({
 
 type Segment =
   | { type: "text"; text: string }
-  | { type: "step"; id: string; label: string; status: "running" | "ok" | "error"; detail?: string };
+  | { type: "step"; id: string; label: string; status: "running" | "ok" | "error"; detail?: string; /** Một dòng kết quả của bước chỉ đọc (soát, so sánh…) */ brief?: string };
 
 interface Item {
   role: "user" | "assistant";
@@ -647,7 +647,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
               ...it,
               wrote: it.wrote || (isWrite && !ev.error),
               segments: (it.segments || []).map((sg) =>
-                sg.type === "step" && sg.id === ev.call.id ? { ...sg, status: ev.error ? "error" : "ok", detail: ev.error || ev.result?.message } : sg
+                sg.type === "step" && sg.id === ev.call.id
+                  ? { ...sg, status: ev.error ? "error" : "ok", detail: ev.error || ev.result?.message, brief: !ev.error && typeof ev.result?.brief === "string" ? ev.result.brief : undefined }
+                  : sg
               ),
             }));
           } else if (ev.type === "review_start") {
@@ -661,7 +663,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
               ...it,
               segments: (it.segments || []).map((sg) =>
                 sg.type === "step" && sg.id === "review:" + ev.call.id
-                  ? { ...sg, status: ev.ok ? "ok" : "error", detail: ev.ok ? ev.note || "Đạt" : `Chưa ghi — ${ev.note || "có vấn đề"}` }
+                  ? { ...sg, status: ev.ok ? "ok" : "error", detail: ev.ok ? ev.note || "Đạt" : `Chưa ghi — ${ev.note || "có vấn đề"}`, brief: ev.ok ? ev.note || "đạt" : undefined }
                   : sg
               ),
             }));
@@ -937,7 +939,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
                     <span key={k} className={sg.status === "error" ? s.stepErr : s.step}>
                       {sg.status === "running" ? "⏳" : sg.status === "ok" ? "✅" : "⚠️"}{" "}
                       <Linked text={sg.label} host={host} onNav={onNav} cls={s.link} />
-                      {sg.detail && sg.status === "error" ? ` — ${sg.detail}` : ""}
+                      {sg.detail && sg.status === "error" ? ` — ${sg.detail}` : sg.brief && sg.status === "ok" ? ` — ${sg.brief}` : ""}
                     </span>
                   )
                 )}

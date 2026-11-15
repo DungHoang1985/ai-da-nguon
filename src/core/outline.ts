@@ -413,6 +413,17 @@ export function clauseName(it: OutlineItem | null): string {
   return it.num || it.title.slice(0, 40);
 }
 
+/** Như clauseName, nhưng mục nằm trong một phụ lục thì ghi rõ phụ lục ("Phụ lục 01, mục 2.1"): phụ lục thường đánh số lại từ 1
+ *  nên "2.1" đứng một mình dễ bị hiểu là khoản 2.1 của phần chính. */
+export function clauseLabel(items: OutlineItem[], it: OutlineItem | null): string {
+  if (!it) return "";
+  for (let p = it.parent; p >= 0; p = items[p].parent) {
+    const a = items[p];
+    if (a.kind === "chapter" && /^(phụ lục|appendix|annex|schedule)/i.test(a.num)) return it.num ? `${a.num}, mục ${it.num}` : `${a.num}: ${it.title.slice(0, 40)}`;
+  }
+  return clauseName(it);
+}
+
 /** Số điều của từng đoạn mở đầu điều khoản: chỉ số đoạn → mục */
 export function outlineByParagraph(items: OutlineItem[]): Map<number, OutlineItem> {
   const m = new Map<number, OutlineItem>();

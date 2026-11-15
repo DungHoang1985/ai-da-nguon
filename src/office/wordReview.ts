@@ -3,7 +3,7 @@
  *  bookmark, trường, ô điền mẫu, hộp văn bản), kiểm thể thức trang, so sánh với phiên bản khác. Cả bốn đều CHỈ ĐỌC.
  *  Căn cứ kỹ thuật: bảng thăm dò trong tasks/dot-1b.md (đo trong Word ngày 15/11/2026). */
 import { ToolSpec } from "../core/agent/types";
-import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseName } from "../core/outline";
+import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseLabel } from "../core/outline";
 import { ALL_CHECKS, IssueKind, checkConsistency } from "../core/consistency";
 import { PageSetupInfo, ParaFont, VAN_BAN_HANH_CHINH, checkPageFormat, customStandard } from "../core/pageformat";
 import { compareVersions } from "../core/compare";
@@ -123,7 +123,7 @@ export function createWordReviewTools(deps: ReviewDeps) {
         if (t) i = rows.findIndex((r) => r.text === t);
       }
       if (i < 0) return {};
-      const c = clauseName(clauseAt(outline, i));
+      const c = clauseLabel(outline, clauseAt(outline, i));
       return { i, ...(c ? { clause: c } : {}) };
     };
   };
@@ -169,6 +169,11 @@ export function createWordReviewTools(deps: ReviewDeps) {
       const next = from + picked.length;
       return {
         ok: true,
+        brief: issues.length
+          ? `${issues.length} điểm cần xem: ${Object.entries(byKind)
+              .map(([k, n]) => `${k} ${n}`)
+              .join(", ")}`
+          : "không thấy điểm nào",
         total: issues.length,
         by_kind: byKind,
         checks_run: checks,
@@ -239,6 +244,10 @@ export function createWordReviewTools(deps: ReviewDeps) {
               const f = s.getFooter(t as any);
               h.load("text");
               f.load("text");
+              if (supports("1.5")) {
+                h.fields.load("items/type");
+                f.fields.load("items/type");
+              }
               return { section: k + 1, pages: label, h, f };
             })
           );
@@ -252,7 +261,15 @@ export function createWordReviewTools(deps: ReviewDeps) {
             const key = `${x.pages}|${header}|${footer}`;
             if (seen.has(key)) continue;
             seen.add(key);
-            res.push({ section: x.section, pages: x.pages, ...(header ? { header: truncate(header, 1200) } : {}), ...(footer ? { footer: truncate(footer, 1200) } : {}) });
+            const auto = supports("1.5") ? Array.from(new Set([...x.h.fields.items, ...x.f.fields.items].map((fd) => String(fd.type)))) : [];
+            res.push({
+              section: x.section,
+              pages: x.pages,
+              ...(header ? { header: truncate(header, 1200) } : {}),
+              ...(footer ? { footer: truncate(footer, 1200) } : {}),
+              // Trường tự động trong đầu / chân trang (Page = số trang): con số đọc được là giá trị của một trang, Word tự đổi theo trang
+              ...(auto.length ? { auto_fields: auto } : {}),
+            });
           }
           return { sections: secs.items.length, items: res, ...(res.length ? {} : { note: "Văn bản không có đầu trang hay chân trang." }) };
         });
@@ -382,6 +399,21 @@ export function createWordReviewTools(deps: ReviewDeps) {
       }
     }
 
+    // Một dòng cho khung chat: đọc được những gì
+    const n = (v: any) => (Array.isArray(v) ? v.length : typeof v?.total === "number" ? v.total : Array.isArray(v?.items) ? v.items.length : -1);
+    const LABEL: [Part, string][] = [
+      ["footnotes", "chú thích cuối trang"],
+      ["endnotes", "chú thích cuối văn bản"],
+      ["headers_footers", "đầu và chân trang"],
+      ["bookmarks", "bookmark"],
+      ["fields", "trường"],
+      ["content_controls", "ô điền mẫu"],
+      ["text_boxes", "hộp văn bản"],
+    ];
+    out.brief = LABEL.filter(([k]) => out[k] !== undefined)
+      .map(([k, label]) => (out[k]?.unavailable ? `${label}: không đọc được` : `${k === "headers_footers" ? out[k].items.length : n(out[k])} ${label}`))
+      .join(", ");
+
     // Kết quả quá dài: rút gọn danh sách dài nhất cho tới khi vừa ngân sách
     for (let guard = 0; guard < 40 && JSON.stringify(out).length > RESULT_JSON_BUDGET; guard++) {
       let longest = "";
@@ -427,6 +459,7 @@ export function createWordReviewTools(deps: ReviewDeps) {
       const line = (x: (typeof rep.issues)[number]) => `${x.label}${x.section ? ` (phần ${x.section})` : ""}: ${x.actual} — chuẩn ${x.expected}${x.p !== undefined ? ` [¶${x.p}]` : ""}`;
       return {
         ok: true,
+        brief: rep.issues.length ? `${rep.issues.length} điểm lệch chuẩn: ${rep.issues.map((x) => `${x.label.toLowerCase()} ${x.actual}`).join(", ")}` : marginNote ? "không đọc được lề" : "đúng chuẩn",
         standard: rep.standard,
         conforms: rep.ok && !marginNote,
         problems: rep.issues.length,
@@ -497,6 +530,7 @@ export function createWordReviewTools(deps: ReviewDeps) {
       const count = (t: keyof typeof TYPE_VI) => res.diffs.filter((d) => d.type === t).length;
       return {
         ok: true,
+        brief: res.identical ? "hai phiên bản giống hệt nhau" : `${res.diffs.length} chỗ khác (${count("changed")} sửa, ${count("only_current")} chỉ ở bản đang mở, ${count("only_other")} chỉ ở phiên bản khác); văn bản đang mở không đổi`,
         file: f.name,
         open_document_modified: false,
         paragraphs_current: res.paragraphs_current,

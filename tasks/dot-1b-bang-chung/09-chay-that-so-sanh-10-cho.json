@@ -1,0 +1,30 @@
+{
+ "bai": "soSanh",
+ "phienBan": "v4.1",
+ "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cauHoi": "So văn bản đang mở với tệp đính kèm (phiên bản khác của hợp đồng). Liệt kê đầy đủ mọi chỗ khác nhau, mỗi chỗ một dòng kèm số điều; cuối cùng ghi tổng số chỗ khác. Không sửa gì trong văn bản.",
+ "tepDinhKem": [
+  "📄 aidn-thu-v2.docx"
+ ],
+ "giay": 14,
+ "daHoi": [],
+ "soBuocCongCu": 1,
+ "cacBuoc": [
+  "✅ So với phiên bản khác (aidn-thu-v2.docx) — 10 chỗ khác (8 sửa, 1 chỉ ở bản đang mở, 1 chỉ ở phiên bản khác); văn bản đang mở không đổi"
+ ],
+ "token": "Token: vào 38.377 · ra 2.759 · đọc từ bộ nhớ đệm 31.298 · ghi vào bộ nhớ đệm 7.073",
+ "vanBanTruoc": {
+  "soDoan": 85,
+  "soSuaDoi": 2,
+  "soNhanXet": 1,
+  "bamChu": 691592023
+ },
+ "vanBanSau": {
+  "soDoan": 85,
+  "soSuaDoi": 2,
+  "soNhanXet": 1,
+  "bamChu": 691592023
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "📎 aidn-thu-v2.docx\nTôi đã so hai bản bằng công cụ so sánh. Có 10 chỗ khác nhau, không có thay đổi nào trong văn bản đang mở.\nĐang mở → Phiên bản khác (aidn-thu-v2.docx):\n1. Điều 2.1 [¶76]: số bộ đèn âm trần chiếu sáng 96 → 108 (Phụ lục 01).\n2. Điều 3.1 [¶20]: thời hạn thuê 05 (năm) → 07 (bảy) năm.\n3. Điều 4.1 [¶24]: Tiền Thuê 120.000.000 đồng (Một trăm hai mươi triệu) → 135.000.000 đồng (Một trăm ba mươi lăm triệu).\n4. Điều 4.2 [¶25]: mức tăng hằng năm từ năm thứ ba 5% → 7%.\n5. Điều 5.1 [¶28]: ngày bàn giao chậm nhất 01/02/2027 → 01/03/2027.\n6. Điều 6.2 [¶33]: thời hạn hoàn trả Tiền Đặt Cọc 30 ngày → 45 ngày.\n7. Điều 7.3 [¶41]: lãi chậm trả 0,05%/ngày → 0,08%/ngày.\n8. Điều 8.2 [¶45]: phiên bản khác có thêm câu \"Chi phí thẩm tra hồ sơ cải tạo do Bên Thuê chịu.\"\n9. Điều 9 [¶50]: phiên bản khác có thêm khoản 9.4 \"Bên Cho Thuê mua bảo hiểm mọi rủi ro tài sản cho phần kết cấu của Tòa Nhà.\" Bản đang mở không có khoản này.\n10. Điều 11.3 [¶58]: bản đang mở có khoản \"Bên Thuê được chấm dứt hợp đồng trước hạn sau năm thứ hai, với điều kiện báo trước 06 tháng và trả khoản phí chấm dứt bằng 02 tháng Tiền Thuê.\" Phiên bản khác không có khoản này. Vì vậy khoản 11.4 ở bản đang mở thành 11.3 ở phiên bản khác.\nLưu ý: ở mục 8 và 9, công cụ ghi nhận theo hướng phiên bản khác có thêm nội dung. Tôi chưa mở đoạn văn bản đang mở để đối chiếu lại từng chữ, nên nên xác nhận lại hai chỗ này trước khi dùng.\nTổng số chỗ khác nhau: 10 (8 chỗ sửa, 1 chỉ có ở phiên bản khác, 1 chỉ có ở bản đang mở).\nĐiểm đáng chú ý: các chỗ 3, 4, 5, 6 và 7 đều liên quan đến số tiền hoặc thời hạn. Riêng mục 3 không khớp với Phụ lục và điều khoản khác của phiên bản khác: Tiền Đặt Cọc tại Điều 6.1 vẫn ghi 360.000.000 đồng, tương đương 3 tháng Tiền Thuê 120.000.000 đồng, nên cần rà lại nếu Tiền Thuê đổi thành 135.000.000 đồng (3 tháng là 405.000.000 đồng).\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
+}
