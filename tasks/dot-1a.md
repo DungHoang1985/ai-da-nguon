@@ -89,9 +89,9 @@ Kết luận:
 
 ## Kết quả Đợt 1A — bản 4.0.0 (15/11/2026 buổi tối, phiên trên máy)
 
-**Mã xong, đã kiểm trong Word thật bằng bản đóng gói cục bộ; CHƯA phát hành** (chờ anh duyệt đẩy `main`). Nhánh `claude/dot-1a-9f0fea`.
+**Đợt 1A đạt, trừ bài đối chiếu với add-in Claude chính thức (chưa kiểm được). Đã phát hành 4.0.0** (anh duyệt 15/11/2026 buổi tối): commit `8a6dc67` trên `main`, gh-pages có "Bản chạy thật v4.0.0 (main@8a6dc67)", GitHub Pages phục vụ `taskpane.af9e4c08.js`. Kiểm lại trên bản đã phát hành (khung tải từ GitHub Pages, không nạp bản cục bộ): đầu khung v4.0, Tự kiểm tra Word 30/30 trên hợp đồng 54 trang, hai câu hỏi Chạy thật đúng số điều trong 1 bước (tệp 15–18).
 
-Cách kiểm trong Office: Office mở bằng lệnh kèm cổng gỡ lỗi WebView2 (`kiem-thu/mo-office.ps1`), khung add-in được điều khiển bằng `kiem-thu/cdp.mjs`. Bản 4.0.0 chưa phát hành được nạp vào khung bằng lệnh mới `node kiem-thu/cdp.mjs serve 9229 dist`: mọi yêu cầu tới địa chỉ add-in được trả bằng tệp trong `dist/` trên máy, không đẩy gì lên mạng; đầu khung hiện "v4.0" (ảnh 11). Đây vẫn là Word thật, model thật (Anthropic · Claude Haiku 5.5). Anh theo dõi bằng điện thoại nên không xin quyền điều khiển màn hình.
+Cách kiểm trong Office: Office mở bằng lệnh kèm cổng gỡ lỗi WebView2 (`kiem-thu/mo-office.ps1`), khung add-in được điều khiển bằng `kiem-thu/cdp.mjs`. Trước khi phát hành, bản 4.0.0 được nạp vào khung bằng lệnh mới `node kiem-thu/cdp.mjs serve 9229 dist`: mọi yêu cầu tới địa chỉ add-in được trả bằng tệp trong `dist/` trên máy, không đẩy gì lên mạng; đầu khung hiện "v4.0" (ảnh 11). Đây vẫn là Word thật, model thật (Anthropic · Claude Haiku 5.5). Anh theo dõi bằng điện thoại nên không xin quyền điều khiển màn hình.
 
 ### Bảng nghiệm thu
 
@@ -163,5 +163,5 @@ Ba điểm "chưa chắc" đã thăm dò trong Word (tệp 14): định dạng c
 
 ## Việc cần anh
 
-1. **Duyệt phát hành 4.0.0** (đẩy nhánh này lên `main`): sau khi phát hành tôi chạy lại Tự kiểm tra Word trên bản tải từ GitHub Pages.
-2. **Bài đối chiếu với add-in Claude chính thức** (tiêu chí 8), khi anh ngồi trước máy: mở tệp hợp đồng thử (tạo bằng `node kiem-thu/hop-dong-thu.mjs <tệp>`) trong Word, mở add-in Claude, lần lượt giao 5 bài: (a) "Điều 18.2(b) nói gì?"; (b) "Lãi chậm thanh toán được quy định ở điều nào và mức bao nhiêu?"; (c) "Tóm tắt toàn bộ các sửa đổi của đối tác, liệt kê đủ theo số điều"; (d) "Xử lý cả 5 nhận xét của đối tác bằng Track Changes và trả lời từng nhận xét"; (e) "Thêm một khoản mới ngay sau Điều 8.2…". Tôi ghi bảng đạt ngang / kém / hơn.
+1. ~~Duyệt phát hành 4.0.0~~ — anh duyệt 15/11/2026, đã phát hành và kiểm lại.
+2. **Bài đối chiếu với add-in Claude chính thức** (tiêu chí 8) — anh chọn 15/11/2026: để sau, khi anh ngồi trước máy: mở tệp hợp đồng thử (tạo bằng `node kiem-thu/hop-dong-thu.mjs <tệp>`) trong Word, mở add-in Claude, lần lượt giao 5 bài: (a) "Điều 18.2(b) nói gì?"; (b) "Lãi chậm thanh toán được quy định ở điều nào và mức bao nhiêu?"; (c) "Tóm tắt toàn bộ các sửa đổi của đối tác, liệt kê đủ theo số điều"; (d) "Xử lý cả 5 nhận xét của đối tác bằng Track Changes và trả lời từng nhận xét"; (e) "Thêm một khoản mới ngay sau Điều 8.2…". Tôi ghi bảng đạt ngang / kém / hơn.

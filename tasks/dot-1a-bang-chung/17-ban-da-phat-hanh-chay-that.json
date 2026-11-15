@@ -1,0 +1,31 @@
+{
+ "tongKet": "2/2 câu nêu đúng số điều và nội dung; số bước công cụ nhiều nhất: 1",
+ "ketQua": [
+  {
+   "cauHoi": "Điều 18.2(b) nói gì?",
+   "dieuDung": "18.2(b)",
+   "soBuocCongCu": 1,
+   "cacBuoc": [
+    "✅ Đọc 18.2(b)"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 6,
+   "traLoi": "Điều 18.2(b) [¶87] quy định: \"nguồn điện hoặc nước bị gián đoạn quá 72 giờ liên tục do lỗi của Bên Cho Thuê;\" Đây là một trong các trường hợp thuộc khoản 18.2 (Quyền của Bên Thuê). Tôi chỉ đọc đúng đoạn này, nên chưa rõ khoản 18.2 gắn với quyền cụ thể nào (ví dụ đơn phương chấm dứt hay tạm ngừng thanh toán tiền thuê). Nếu bạn cần, tôi có thể đọc toàn bộ Điều 18.2 để xác định hệ quả pháp lý. Chèn vào chỗ con trỏ Sao chép Hỏi trước Anthropic · Claude Haiku 5.5",
+   "token": "Token: vào 25.841 · ra 390 · đọc từ bộ nhớ đệm 12.789 · ghi vào bộ nhớ đệm 13.046"
+  },
+  {
+   "cauHoi": "Lãi chậm thanh toán được quy định ở điều nào và mức bao nhiêu?",
+   "dieuDung": "6.3",
+   "soBuocCongCu": 1,
+   "cacBuoc": [
+    "✅ Tìm \"lãi chậm thanh toán\" trong văn bản"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 4,
+   "traLoi": "Lãi chậm thanh toán được quy định tại Điều 6.3 [¶35]: nếu Bên Thuê chậm thanh toán, phải trả lãi chậm trả 0,05% mỗi ngày trên số tiền chậm trả, tính từ ngày đến hạn đến ngày trả đủ. Liên quan: Điều 6.4 [¶36] quy định chậm thanh toán quá 90 ngày là vi phạm nghiêm trọng, Bên Cho Thuê có quyền chấm dứt hợp đồng theo Điều 22. Chèn vào chỗ con trỏ Sao chép Hỏi trước Anthropic · Claude Haiku 5.5",
+   "token": "Token: vào 26.916 · ra 260 · đọc từ bộ nhớ đệm 23.651 · ghi vào bộ nhớ đệm 3.259"
+  }
+ ]
+}
