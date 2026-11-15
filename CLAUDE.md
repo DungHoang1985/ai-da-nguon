@@ -1,12 +1,12 @@
 # AI Đa Nguồn — add-in AI cho Word, Excel, PowerPoint
 
-Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v3.6.1**; kế hoạch lên v4 (bản 2) đã duyệt ngày 15/11/2026.
+Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v3.7.0**; kế hoạch lên v4 (bản 2) đã duyệt ngày 15/11/2026.
 
 ## Đọc trước khi làm bất cứ việc gì
 
 1. `tasks/HANDOFF.md` — trạng thái, quyết định, vấn đề mở, bài học.
 2. `tasks/ke-hoach-v4.md` — hiện trạng đã kiểm, phương án đăng nhập, kế hoạch theo đợt (0A, 0B, 1A, 1B, 2, 3, 4) và tiêu chí nghiệm thu. Bằng chứng rà soát: `tasks/ra-soat-2026-11-15/DOC-TRUOC.md`.
-3. `tasks/dot-0b.md` — việc cụ thể của đợt đang làm (Đợt 0A: `tasks/dot-0.md`, đã xong).
+3. `tasks/dot-0b.md` — việc và kết quả của Đợt 0B (Đợt 0A: `tasks/dot-0.md`, đã xong). Đợt kế tiếp là 1A: viết `tasks/dot-1a.md` trước khi làm.
 4. `docs/so-sanh-claude-chinh-thuc.md` — bảng so sánh 67 khả năng với bản chính thức.
 
 ## Nguồn mã
@@ -21,15 +21,17 @@ Từ 15/11/2026 (bước 1 của `tasks/dot-0.md`), thư mục này là bản l�
 
 ```
 src/core/            lõi không phụ thuộc Office, kiểm thử được bằng npm test
-  agent/loop.ts      vòng lặp tác tử (gọi model → chạy công cụ → lặp)
-  agent/llm.ts       gọi model, gom 3 kiểu API: OpenAI, Anthropic, Gemini
-  agent/compaction.ts  tự tóm tắt hội thoại dài
+  agent/turn.ts      điều phối một lượt (tóm tắt → dựng lời nhắc → chạy tác tử hoặc trò chuyện); giao diện chỉ gọi runTurn
+  agent/loop.ts      vòng lặp tác tử (gọi model → chạy công cụ → lặp); lịch sử chỉ thêm, hạn chờ công cụ
+  agent/llm.ts       gọi model, gom 3 kiểu API: OpenAI, Anthropic, Gemini; tự thử lại, bộ nhớ đệm Anthropic, đếm token
+  agent/prompt.ts    lời nhắc hệ thống cố định + quy tắc an toàn; trạng thái tài liệu đi trong tin nhắn của lượt
+  agent/compaction.ts  tự tóm tắt hội thoại dài, ngưỡng theo sức chứa model
   providers.ts models.ts storage.ts   nhà cung cấp, danh mục model, key lưu cục bộ
   skills.ts skillpack.ts              kỹ năng (SKILL.md), 17 kỹ năng dựng sẵn
   conversations.ts db.ts share.ts attachments.ts refs.ts
 src/office/          công cụ Office.js: excel*, word*, ppt*, common, selftest (nút Tự kiểm tra)
 src/taskpane/components/   App.tsx, Chat.tsx (điều phối + giao diện), Settings.tsx
-test/unit/           mocha, 120 kiểm thử
+test/unit/           mocha, 150 kiểm thử
 cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry WEF\Developer)
 ```
 
@@ -37,7 +39,7 @@ cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry W
 
 ```
 npm ci                      # .npmrc phải trỏ registry.npmjs.org
-npm test                    # 120/120 phải đạt
+npm test                    # 150/150 phải đạt
 npx tsc --noEmit -p .       # không lỗi kiểu
 npm run build               # ra dist/, manifest tự đổi sang địa chỉ GitHub Pages
 ```
@@ -62,6 +64,7 @@ Xem bản mới trong Office: đặt con trỏ trong khung add-in rồi Ctrl+F5.
 - Thêm hoặc sửa công cụ Office: phải thêm bước tương ứng vào `src/office/selftest.ts`.
 - Word: mọi sửa đổi ghi bằng Track Changes. Thao tác rủi ro (ghi đè ô có dữ liệu, xóa ô/đoạn/slide/sheet, chấp nhận hoặc từ chối tất cả sửa đổi) luôn hỏi người dùng kèm lý do.
 - Kỹ năng dựng sẵn: không ghi số hiệu văn bản pháp luật (có kiểm thử chặn).
+- Lịch sử hội thoại gửi model là **chỉ thêm**: không sửa, không cắt tin nhắn cũ giữa hai lần tóm tắt; lời nhắc hệ thống không chứa thứ hay đổi (ngày giờ, trạng thái tài liệu). Sửa khác đi là mất bộ nhớ đệm lời nhắc (tốn tiền) — có kiểm thử chặn trong `test/unit/dot0b.test.ts`.
 - Tài liệu của nhà cung cấp và của Office.js thay đổi nhanh: đối chiếu tài liệu chính thức hiện hành trước khi viết mã gọi API, không viết theo trí nhớ.
 - Không thêm máy chủ riêng, không đổi khung giao diện, không viết lại từ đầu (đã cân nhắc và loại ở mục A của kế hoạch).
 - Kho GitHub là **công khai**: không đưa key, token, thông tin riêng tư vào bất kỳ tệp nào.
