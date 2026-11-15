@@ -1,6 +1,6 @@
 # AI Đa Nguồn — add-in AI cho Word, Excel, PowerPoint
 
-Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v3.6**; kế hoạch lên v4 (bản 2) đã duyệt ngày 15/11/2026.
+Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v3.6.1**; kế hoạch lên v4 (bản 2) đã duyệt ngày 15/11/2026.
 
 ## Đọc trước khi làm bất cứ việc gì
 

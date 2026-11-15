@@ -1,10 +1,10 @@
-# So sánh AI Đa Nguồn (v3.6) với add-in Claude chính thức
+# So sánh AI Đa Nguồn (v3.6.1) với add-in Claude chính thức
 
 Cập nhật 15/11/2026 (bước 9 Đợt 0A): sửa theo mục 7 của `tasks/ke-hoach-v4.md` sau khi đối chiếu lại 13 trang tài liệu chính thức (bản `.md`) và tệp `pivot.claude.ai/shortcuts.json` tải từ máy cùng ngày. Số dòng 1–55 giữ nguyên như bản 14/11; dòng 56–67 là khả năng mới của bản chính thức.
 
 ## Cách đọc cột "Bằng chứng"
 
-- **Tự kiểm tra**: nút Tự kiểm tra chạy thao tác thật trong Office trên máy anh. Bản 3.6, chạy 15/11/2026: Excel 22/22 · Word 16/17 (bước trượt là bước kiểm đo sai, không phải lỗi sản phẩm — xem dòng 42) · PowerPoint 14/14 ở lần chạy thứ hai (lần đầu trên bài mới tinh 13/14 — xem dòng 53). Ảnh: `tasks/dot-0a-bang-chung/16`–`20`.
+- **Tự kiểm tra**: nút Tự kiểm tra chạy thao tác thật trong Office trên máy anh. Chạy 15/11/2026: Excel 22/22 (bản 3.6) · Word 17/17 (bản 3.6.1; bản 3.6 ra 16/17 vì một bước kiểm đo sai — xem dòng 42) · PowerPoint 14/14 ở lần chạy thứ hai (bản 3.6; lần đầu trên bài mới tinh 13/14 — xem dòng 53). Ảnh: `tasks/dot-0a-bang-chung/16`–`21`.
 - **Chạy thật**: đã giao việc cho AI thật và thấy kết quả trong tài liệu (Claude Opus 5.5 với key Anthropic; ngày 15/11 thêm Groq · GPT OSS 20B).
 - **Kiểm thử máy**: chỉ có kiểm thử tự động ngoài Office (`npm test`). Chưa thấy chạy trong Office.
 - **Giao diện**: thấy hiện đúng trên màn hình, chưa thao tác thật.
@@ -62,7 +62,7 @@ Nguồn (viết tắt ở cột 2): [X] Excel · [W] Word · [P] PowerPoint · [
 | 39 | Hỏi đáp về văn bản, trích dẫn mục bấm được | Có [W] | **Có** (dạng [¶ số đoạn]) | Tự kiểm tra (đọc); bấm: Kiểm thử máy | Cao |
 | 40 | Hiểu đánh số pháp lý nhiều cấp, thuật ngữ định nghĩa, dẫn chiếu chéo | Có [W] | **Một phần** — **chưa đọc số điều khoản do Word tự đánh**, nên AI có thể không biết đoạn nào là "Điều 5.3" | — | **Cao nhất** |
 | 41 | Sửa đoạn đang chọn, giữ kiểu chữ và đánh số | Có [W] | **Một phần** — sửa được vùng chọn và đoạn, nhưng nhiều kiểu sửa rơi về thay cả đoạn; việc giữ định dạng trong đoạn và đánh số chưa được kiểm (Đợt 1A) | Chưa có bước Tự kiểm tra cho sửa vùng chọn; sửa một đoạn "chỉ phần khác": Tự kiểm tra | Cao |
-| 42 | Mọi sửa đổi ghi bằng Track Changes | Có, khi người dùng vào "tracked changes mode" [W] | **Có** từ bản 3.6 — mọi công cụ sửa nội dung và nút "Chèn vào chỗ con trỏ" luôn ghi có theo dõi, kể cả khi Track Changes đang tắt, xong trả lại chế độ cũ; Word dưới WordApi 1.4 thì từ chối ghi. (Bản 3.5 còn công tắc tắt nên chữ "mọi" khi đó là ghi quá.) | Chạy thật 15/11 (Track Changes tắt, nhờ AI chèn rồi thay chữ: Word hiện đúng phần thêm và phần xóa có theo dõi — ảnh 17). Bước Tự kiểm tra tương ứng ở 3.6 đo sai, đã sửa, chờ phát hành | Cao |
+| 42 | Mọi sửa đổi ghi bằng Track Changes | Có, khi người dùng vào "tracked changes mode" [W] | **Có** từ bản 3.6 — mọi công cụ sửa nội dung và nút "Chèn vào chỗ con trỏ" luôn ghi có theo dõi, kể cả khi Track Changes đang tắt, xong trả lại chế độ cũ; Word dưới WordApi 1.4 thì từ chối ghi. (Bản 3.5 còn công tắc tắt nên chữ "mọi" khi đó là ghi quá.) | Chạy thật 15/11 (Track Changes tắt, nhờ AI chèn rồi thay chữ: Word hiện đúng phần thêm và phần xóa có theo dõi — ảnh 17). Tự kiểm tra bản 3.6.1: "sửa đổi vẫn được ghi (2 → 3), trả lại chế độ Off" (ảnh 21); bước này ở bản 3.6 đo sai | Cao |
 | 43 | Xử lý nhận xét: sửa đúng chỗ được neo, trả lời nhận xét | Có [W] | **Có** | Tự kiểm tra | Cao |
 | 44 | Tóm tắt sửa đổi của đối tác, phân mức độ | Có [W] | **Một phần** — đọc được và chấp nhận/từ chối từng sửa đổi; nhưng chỉ đọc tối đa 200 sửa đổi, không phân trang, không kèm số điều và câu trước/sau; phân mức độ hoàn toàn do model (Đợt 1A) | Tự kiểm tra (đọc 3 sửa đổi, chấp nhận 1) | Cao |
 | 45 | Điền mẫu theo kiểu chữ của văn bản; điền bảng tại chỗ | Có [W] | **Một phần** — điền bảng tại chỗ: có (bảng đơn giản, không ô gộp). Theo kiểu chữ riêng của văn bản: chưa (chỉ dùng 8 kiểu dựng sẵn) | Tự kiểm tra (điền bảng) | Cao |
