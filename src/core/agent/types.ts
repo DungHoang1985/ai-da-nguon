@@ -18,7 +18,7 @@ export interface FilePart {
 
 /** Nội dung gốc của nhà cung cấp, để gửi lại nguyên vẹn ở các bước sau (lịch sử chỉ thêm: không bao giờ sửa sau khi ghi).
  *  kind "gemini": parts (kèm chữ ký suy nghĩ) · kind "anthropic": blocks = thứ tự các khối của câu trả lời, trong đó khối
- *  thinking / redacted_thinking giữ nguyên văn (kèm signature), khối text và tool_use chỉ là mốc vị trí ·
+ *  thinking / redacted_thinking giữ nguyên văn (kèm signature), khối text giữ nguyên chữ của riêng nó, khối tool_use là mốc vị trí ·
  *  kind "openrouter": reasoning = reasoning_details của câu trả lời */
 export interface RawAssistant {
   kind: string;

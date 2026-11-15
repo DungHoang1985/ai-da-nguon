@@ -178,7 +178,7 @@ describe("Đợt 1B – giữ khối suy nghĩ trong lịch sử (lịch sử v�
     const r = acc.result();
     assert.strictEqual(thinking, 1);
     assert.strictEqual(r.text, "Tôi đọc trước.");
-    assert.deepStrictEqual(r.raw, { kind: "anthropic", blocks: [{ type: "thinking", thinking: "nghĩ", signature: SIG }, { type: "text" }, { type: "tool_use" }] });
+    assert.deepStrictEqual(r.raw, { kind: "anthropic", blocks: [{ type: "thinking", thinking: "nghĩ", signature: SIG }, { type: "text", text: "Tôi đọc trước." }, { type: "tool_use" }] });
     assert.strictEqual(r.toolCalls[0].id, "toolu_1");
   });
   it("Khối suy nghĩ chưa có chữ ký (câu trả lời bị cắt) không được giữ; câu trả lời không suy nghĩ thì không có raw", () => {
@@ -519,5 +519,120 @@ describe("Đợt 1B – tệp đính kèm và công cụ Word mới", () => {
     const reviewable = WORD_SPECS.filter((x) => x.reviewable).map((x) => x.name).sort();
     assert.deepStrictEqual(reviewable, ["word_insert_clause", "word_replace_selection", "word_replace_text", "word_set_paragraph_text"]);
     assert.ok(reviewable.every((n) => WORD_SPECS.find((x) => x.name === n)!.write));
+  });
+});
+
+describe("Đợt 1B – sửa theo lần soát mã độc lập", () => {
+  it("M5: câu trả lời xen chữ giữa các khối suy nghĩ được gửi lại đúng từng khối, đúng thứ tự, đúng nguyên văn", () => {
+    const acc = createStepAccumulator("anthropic", () => {});
+    const ev = [
+      { type: "content_block_start", index: 0, content_block: { type: "thinking", thinking: "", signature: "S1" } },
+      { type: "content_block_start", index: 1, content_block: { type: "text", text: "" } },
+      { type: "content_block_delta", index: 1, delta: { type: "text_delta", text: "Đoạn A." } },
+      { type: "content_block_start", index: 2, content_block: { type: "thinking", thinking: "", signature: "S2" } },
+      { type: "content_block_start", index: 3, content_block: { type: "text", text: "" } },
+      { type: "content_block_delta", index: 3, delta: { type: "text_delta", text: "Đoạn B." } },
+      { type: "content_block_start", index: 4, content_block: { type: "tool_use", id: "t1", name: "doc_read" } },
+      { type: "content_block_delta", index: 4, delta: { type: "input_json_delta", partial_json: "{}" } },
+    ];
+    ev.forEach((e) => acc.push(JSON.stringify(e)));
+    const r = acc.result();
+    assert.strictEqual(r.text, "Đoạn A.Đoạn B.");
+    const history: AgentMessage[] = [
+      { role: "user", content: "x" },
+      { role: "assistant", content: r.text, toolCalls: r.toolCalls, raw: r.raw },
+      { role: "tool", toolCallId: "t1", name: "doc_read", content: "{}" },
+    ];
+    const sent = bodyOf(buildStepRequest(P("anthropic"), "K", "claude-haiku-5-5", history, TOOLS)).messages[1].content;
+    assert.deepStrictEqual(
+      sent.map((b: any) => (b.type === "text" ? `text:${b.text}` : b.type === "thinking" ? `thinking:${b.signature}` : b.type)),
+      ["thinking:S1", "text:Đoạn A.", "thinking:S2", "text:Đoạn B.", "tool_use"]
+    );
+    // Dựng hai lần ra cùng một kết quả (phần đầu hội thoại ổn định)
+    assert.deepStrictEqual(bodyOf(buildStepRequest(P("anthropic"), "K", "claude-haiku-5-5", history, TOOLS)).messages[1].content, sent);
+  });
+
+  it("M4: model đã biết chỉ đọc chữ thì không gửi PDF quét, kể cả ở nguồn nhận tệp; tổng cỡ tệp trong hội thoại đếm được", () => {
+    const h: AgentMessage[] = [{ role: "user", content: "đọc tệp", files: [PDF] }];
+    const out = prepareHistory(h, { provider: P("openrouter"), vision: false });
+    assert.strictEqual((out[0] as any).files, undefined);
+    assert.ok(out[0].content.includes("chỉ đọc chữ"));
+    assert.strictEqual((prepareHistory(h, { provider: P("openrouter"), vision: true })[0] as any).files.length, 1);
+    assert.strictEqual((prepareHistory(h, { provider: P("openrouter") })[0] as any).files.length, 1);
+    const { filesBase64Chars, MAX_FILES_TOTAL_B64 } = require("../../src/core/attachments");
+    assert.strictEqual(filesBase64Chars([...h, { role: "assistant", content: "ok" }, { role: "user", content: "nữa", files: [PDF, PDF] }]), 3 * PDF.data.length);
+    assert.ok(MAX_FILES_TOTAL_B64 < 32 * 1024 * 1024);
+  });
+
+  it("M6: gỡ được một tệp khỏi kho tệp đính kèm của phiên", () => {
+    const { unregisterAttachedFile } = require("../../src/core/attachedFiles");
+    clearAttachedFiles();
+    registerAttachedFile("that.docx", "A");
+    registerAttachedFile("aidn-thu-so-sanh-X.docx", "B");
+    unregisterAttachedFile("aidn-thu-so-sanh-X.docx");
+    assert.deepStrictEqual(listAttachedFiles(), ["that.docx"]);
+    assert.strictEqual(findAttachedFile()?.data, "A");
+    clearAttachedFiles();
+  });
+
+  it("T7: nguồn mà add-in không gửi tham số suy nghĩ thì lỗi 400 có chữ “reasoning” không kích hoạt gửi lại", async () => {
+    let calls = 0;
+    const events: string[] = [];
+    await assert.rejects(
+      callModelStep({
+        provider: P("deepseek"),
+        key: "K",
+        model: "deepseek-reasoner",
+        messages: [{ role: "user", content: "x" }],
+        tools: [],
+        onText: () => {},
+        onThinkingOff: () => events.push("off"),
+        fetchFn: (async () => {
+          calls++;
+          return new Response('{"error":{"message":"Missing reasoning_content field in the assistant message"}}', { status: 400 });
+        }) as any,
+      })
+    );
+    assert.strictEqual(calls, 1);
+    assert.deepStrictEqual(events, []);
+  });
+
+  it("T6 và thứ tự: soát lập luận xong mới hiện bước ghi; bấm Dừng trong lúc soát thì có sự kiện kết thúc và mọi lệnh đều có kết quả", async () => {
+    const oaCall = (id: string) => sse([{ choices: [{ delta: { tool_calls: [{ index: 0, id, function: { name: "doc_write", arguments: '{"text":"a"}' } }] } }] }]);
+    const tools: HostToolSet = { host: "Word", specs: TOOLS, overview: async () => ({}), systemPrompt: () => "S", execute: async () => ({ ok: true }) };
+    const events: string[] = [];
+    const replies = [oaCall("c1"), sse([{ choices: [{ delta: { content: "xong" } }] }])];
+    await runAgent({ provider: P("groq"), key: "K", model: "m", tools, system: "S", messages: [{ role: "user", content: "x" }], log: [], onEvent: (e) => events.push(e.type), review: async () => ({ ok: true }), fetchFn: (async () => replies.shift()) as any });
+    const order = events.filter((e) => /^(review|tool)_/.test(e));
+    assert.deepStrictEqual(order, ["review_start", "review_end", "tool_start", "tool_end"]);
+    const ac = new AbortController();
+    const ev2: string[] = [];
+    let latest: AgentMessage[] = [];
+    await assert.rejects(
+      runAgent({
+        provider: P("groq"),
+        key: "K",
+        model: "m",
+        tools,
+        system: "S",
+        messages: [{ role: "user", content: "x" }],
+        log: [],
+        signal: ac.signal,
+        onHistory: (h) => (latest = h),
+        onEvent: (e) => ev2.push(e.type),
+        review: async () => {
+          ac.abort();
+          throw new DOMException("Đã dừng", "AbortError");
+        },
+        fetchFn: (async () => oaCall("c9")) as any,
+      }),
+      (e: any) => e.name === "AbortError"
+    );
+    assert.deepStrictEqual(
+      ev2.filter((e) => /^(review|tool)_/.test(e)),
+      ["review_start", "review_end"]
+    );
+    const tool = latest.find((m) => m.role === "tool") as any;
+    assert.ok(tool && tool.toolCallId === "c9" && tool.content.includes("Chưa thực hiện"));
   });
 });

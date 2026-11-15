@@ -1,0 +1,18 @@
+[
+ {
+  "trangThai": 200,
+  "thinking": {
+   "type": "adaptive",
+   "block_binding": {
+    "prefix_mismatch_behavior": "drop_block"
+   }
+  },
+  "effort": "high",
+  "coTieuDeBeta": true,
+  "soTinNhan": 9,
+  "khoiSuyNghiGuiLai": 4,
+  "khoiTaiLieu": 0,
+  "soCongCu": 29,
+  "coLoiNhacHeThong": true
+ }
+]

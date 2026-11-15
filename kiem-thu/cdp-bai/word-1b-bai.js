@@ -16,6 +16,8 @@ window.__aidnBai1B = {
   theThuc: "Kiểm thể thức trang của công văn này theo chuẩn văn bản hành chính: lề, khổ giấy, phông và cỡ chữ. Nêu rõ từng chỗ lệch chuẩn. Không sửa gì.",
   // Suy nghĩ kỹ + giữ khối suy nghĩ qua nhiều bước công cụ — mở bản "sach"
   nghiKy: "Đọc Điều 6 và Điều 7 rồi cho biết: nếu Bên Thuê chậm trả Tiền Thuê 50 ngày thì Bên Cho Thuê có những quyền gì theo hợp đồng này? Dẫn số điều cho từng quyền.",
+  // Lượt hai trong cùng hội thoại (đặt window.__aidnGiuHoiThoai = true): khối suy nghĩ của lượt trước được gửi lại, bộ nhớ đệm vẫn đọc được
+  nghiKyTiep: "Còn nếu chỉ chậm 20 ngày thì khác gì? Trả lời ngắn, dẫn số điều.",
   // Soát lập luận trước khi ghi — mở bản "sach", bật tùy chọn trong Cài đặt
   soatLapLuan: "Sửa Điều 9.2: đổi thời hạn khắc phục từ 07 ngày thành 05 ngày, giữ nguyên phần còn lại của câu.",
 };

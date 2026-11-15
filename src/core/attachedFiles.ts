@@ -18,6 +18,11 @@ export function registerAttachedFile(name: string, data: string, now = Date.now(
   while (files.length > MAX_FILES) files.shift();
 }
 
+export function unregisterAttachedFile(name: string): void {
+  const at = files.findIndex((f) => f.name === name);
+  if (at >= 0) files.splice(at, 1);
+}
+
 export function listAttachedFiles(): string[] {
   return files.map((f) => f.name);
 }

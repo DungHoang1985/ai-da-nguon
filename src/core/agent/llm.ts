@@ -126,9 +126,15 @@ export function buildStepRequest(
         if (!opts.plain && m.raw?.kind === "anthropic" && Array.isArray(m.raw.blocks)) {
           for (const b of m.raw.blocks) {
             if (b?.type === "thinking" || b?.type === "redacted_thinking") blocks.push(b);
-            else if (b?.type === "text") useText();
-            else if (b?.type === "tool_use") {
-              useText();
+            else if (b?.type === "text") {
+              // Mỗi khối chữ gửi lại đúng vị trí và đúng nguyên văn của nó (câu trả lời có thể xen chữ giữa các khối suy nghĩ:
+              // gộp chữ lại một chỗ là đổi phần đứng trước khối suy nghĩ sau — soát mã độc lập 15/11/2026, mục M5)
+              if (typeof b.text === "string") {
+                if (nonBlank(b.text)) blocks.push({ type: "text", text: b.text });
+                textDone = true;
+              } else useText();
+            } else if (b?.type === "tool_use") {
+              if (!m.raw.blocks.some((x: any) => x?.type === "text" && typeof x.text === "string")) useText();
               useCall();
             }
           }
@@ -337,7 +343,7 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void,
   const oaCalls: { id: string; name: string; args: string }[] = [];
   let lastKey = -1;
   // Anthropic
-  const blocks: Record<number, { type: string; id?: string; name?: string; json: string; thinking?: string; signature?: string; data?: string }> = {};
+  const blocks: Record<number, { type: string; id?: string; name?: string; json: string; thinking?: string; signature?: string; data?: string; text?: string }> = {};
   // Gemini
   const gParts: any[] = [];
   const gCalls: ToolCall[] = [];
@@ -371,6 +377,7 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void,
         } else if (j.type === "content_block_start") {
           const b = j.content_block || {};
           blocks[j.index] = { type: b.type, id: b.id, name: b.name, json: "" };
+          if (b.type === "text") blocks[j.index].text = b.text || "";
           if (b.type === "text" && b.text) addText(b.text);
           if (b.type === "thinking" || b.type === "redacted_thinking") {
             noteThinking();
@@ -380,7 +387,11 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void,
           }
         } else if (j.type === "content_block_delta") {
           const d = j.delta || {};
-          if (d.type === "text_delta") addText(d.text || "");
+          if (d.type === "text_delta") {
+            addText(d.text || "");
+            const b = blocks[j.index];
+            if (b && b.type === "text") b.text = (b.text || "") + (d.text || "");
+          }
           else if (d.type === "input_json_delta") {
             const b = blocks[j.index] || (blocks[j.index] = { type: "tool_use", json: "" });
             b.json += d.partial_json || "";
@@ -469,7 +480,7 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void,
             if (b.signature) rawBlocks.push({ type: "thinking", thinking: b.thinking || "", signature: b.signature });
           } else if (b.type === "redacted_thinking") {
             if (b.data) rawBlocks.push({ type: "redacted_thinking", data: b.data });
-          } else if (b.type === "text") rawBlocks.push({ type: "text" });
+          } else if (b.type === "text") rawBlocks.push({ type: "text", text: b.text || "" });
           else if (b.type === "tool_use" && b.name) rawBlocks.push({ type: "tool_use" });
         }
         const raw: RawAssistant | undefined = rawBlocks.some((b) => b.type === "thinking" || b.type === "redacted_thinking") ? { kind: "anthropic", blocks: rawBlocks } : undefined;
@@ -574,7 +585,8 @@ export async function callModelStep(input: CallModelOptions): Promise<StepResult
     } catch (e: any) {
       // Nhà cung cấp không nhận tham số suy nghĩ, hoặc từ chối khối suy nghĩ gửi lại (tài liệu Anthropic: bỏ hết khối suy nghĩ
       // rồi gửi lại một lần): gửi lại không kèm các phần đó, và giữ cách gửi này cho các bước sau của lượt.
-      if (!opts.signal?.aborted && !emitted && opts.state && !opts.state.plain && isThinkingParamError(e)) {
+      const mayThink = opts.provider.kind === "anthropic" || opts.provider.kind === "gemini" || opts.provider.id === "openrouter" || opts.provider.id === "openai";
+      if (mayThink && !opts.signal?.aborted && !emitted && opts.state && !opts.state.plain && isThinkingParamError(e)) {
         opts.state.plain = true;
         opts.onThinkingOff?.(String(e?.message || ""));
         attempt--;

@@ -152,10 +152,15 @@ export function checkNumbering(rows: ParaRow[], outline: OutlineItem[]): Issue[]
 const LAW_WORDS =
   "bộ luật|luật|nghị định|thông tư|quyết định|nghị quyết|pháp lệnh|hiến pháp|quy chế|điều lệ|quy chuẩn|tiêu chuẩn|công ước|hiệp định|văn bản hợp nhất|chỉ thị|law|decree|circular|code|act";
 const LAW_AFTER = new RegExp(`^\\s*(?:(?:của|tại|theo|thuộc|trong)\\s+)?(?:${LAW_WORDS})(?![\\p{L}\\p{N}])`, "iu");
-const LAW_BEFORE = new RegExp(`(?:${LAW_WORDS})[^.;!?]{0,40}$`, "iu");
-/** Văn bản khác (hợp đồng số…, thỏa thuận khung…): dẫn chiếu ra ngoài, không soát */
+/** Tên văn bản pháp luật viết tắt (phân biệt hoa thường): "Điều 468 BLDS 2015", "khoản 1 Điều 6 NĐ 99/2022/NĐ-CP" */
+const LAW_ABBR_AFTER = /^\s*(?:(?:của|tại|theo|thuộc|trong)\s+)?(?:BLDS|BLTTDS|BLLĐ|BLHS|BLTTHS|LĐĐ|LNƠ|LNO|LKDBĐS|LKDBDS|LDN|LĐT|LXD|LTM|LQH|LĐTC|NĐ|TT|TTLT|QĐ|NQ|PL)(?![\p{L}])/u;
+/** Tên văn bản đứng trước, dẫn chiếu nằm trong ngoặc ngay sau: "Luật Đất đai (Điều 45)" */
+const LAW_BEFORE = new RegExp(`(?<![\\p{L}])(?<!pháp )(?:${LAW_WORDS})(?![\\p{L}])[^.;!?()]{0,40}\\(\\s*$`, "iu");
+/** Văn bản khác (hợp đồng số…, thỏa thuận khung…, hợp đồng đã ký trong một phụ lục sửa đổi): dẫn chiếu ra ngoài, không soát */
 const OTHER_DOC_AFTER =
-  /^\s*(?:(?:của|tại|theo|thuộc|trong)\s+)?(?:hợp đồng|thỏa thuận|thoả thuận|biên bản|quy định|nội quy|quy trình|văn bản|công văn|agreement|contract)\s+(?:số|khung|nguyên tắc|gốc|chính|mua bán|chuyển nhượng|thế chấp|tín dụng|ngày|no\.?|dated|[0-9])/iu;
+  /^\s*(?:(?:của|tại|theo|thuộc|trong)\s+)?(?:hợp đồng|thỏa thuận|thoả thuận|biên bản|quy định|nội quy|quy trình|văn bản|công văn|agreement|contract)\s+(?:số|khung|nguyên tắc|gốc|chính|đã ký|ban đầu|hiện hành|mua bán|chuyển nhượng|thế chấp|tín dụng|thuê|vay|đặt cọc|dịch vụ|lao động|hợp tác|ngày|no\.?|dated|[0-9])/iu;
+/** "…của Hợp đồng thuê này": vẫn là văn bản đang soát */
+const THIS_DOC = /^[^.;,()]{0,60}(?<![\p{L}])(?:này|this)(?![\p{L}])/iu;
 /** Phần nối trong một chuỗi dẫn chiếu ("…, Điều 6 và Điều 7 của Luật…") — bỏ qua để nhìn thấy tên văn bản phía sau */
 const REF_CHAIN = /^(?:\s*(?:,|;|và|hoặc|đến|tới|-|–)\s*(?:các\s+)?(?:(?:điều|khoản|điểm|article|clause)\s+)?[0-9a-zđ.()]+(?![\p{L}]))+/iu;
 const FIELD_ERROR = /Error! Reference source not found\.?|Lỗi! Không tìm thấy nguồn tham chiếu\.?|Error! Bookmark not defined\.?|Lỗi! Thẻ đánh dấu không được xác định\.?/g;
@@ -191,7 +196,7 @@ export function checkReferences(rows: ParaRow[], outline: OutlineItem[]): Issue[
   const sections = outline.filter((o) => o.kind === "section" && /^mục/i.test(o.num));
   const external = (text: string, start: number, end: number) => {
     const after = text.slice(end).replace(REF_CHAIN, "");
-    return LAW_AFTER.test(after) || OTHER_DOC_AFTER.test(after) || LAW_BEFORE.test(text.slice(Math.max(0, start - 60), start));
+    return LAW_AFTER.test(after) || LAW_ABBR_AFTER.test(after) || (OTHER_DOC_AFTER.test(after) && !THIS_DOC.test(after)) || LAW_BEFORE.test(text.slice(Math.max(0, start - 70), start));
   };
   /** Điểm (a), (ii) viết liền trong chữ của khoản cha, không tách thành đoạn riêng */
   const inlineMarker = (parentKey: string, mark: string) =>
@@ -335,6 +340,8 @@ const titleCase = (s: string) =>
     .split(/\s+/)
     .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
     .join(" ");
+/** Trần số thuật ngữ đem soát (văn bản có hàng nghìn định nghĩa sẽ làm khung add-in đứng hình) */
+const MAX_TERMS = 400;
 const termRegex = (t: string) => new RegExp(`(?<![\\p{L}\\p{N}])${t.split(/\s+/).map(esc).join("\\s+")}(?![\\p{L}\\p{N}])`, "giu");
 /** Các cụm sau "Bên" không phải tên một bên của hợp đồng */
 const NOT_PARTY = /^Bên (Thứ Ba|Kia|Vi Phạm|Bị Vi Phạm|Liên Quan|Còn Lại|Nhận|Giao|Dưới|Trên|Trong|Ngoài|Cạnh)$/;
@@ -404,16 +411,18 @@ export function checkTerms(rows: ParaRow[], outline: OutlineItem[], which: { ter
   const strayParties = new Map<string, { ps: number[]; at: number; text: string }>();
   const usedParty = new Map<string, number>();
 
+  // Thuật ngữ chỉ viết hoa chữ cái đầu của cả cụm (“Hợp đồng”, “Ngày làm việc”): chỗ viết toàn chữ thường thường là danh từ chung
+  // ("hợp đồng lao động") nên không tính là lệch; thuật ngữ viết hoa từng chữ (“Ngày Bàn Giao”) thì vẫn tính
+  const compiled = termList.slice(0, MAX_TERMS).map((t) => ({ t, re: termRegex(t), multi: t.includes(" "), firstCapOnly: t.slice(1) === t.slice(1).toLowerCase() }));
   for (const r of live) {
     if (isTitle(r)) continue;
     let masked = r.text;
-    for (const t of termList) {
-      const multi = t.includes(" ");
-      masked = masked.replace(termRegex(t), (m, off: number) => {
+    for (const { t, re, multi, firstCapOnly } of compiled) {
+      masked = masked.replace(re, (m, off: number) => {
         const form = m.replace(/\s+/g, " ");
         if (form === t) {
           if (defs.parties.has(t) && defs.terms.get(t) !== r.i) usedParty.set(t, (usedParty.get(t) || 0) + 1);
-        } else if (which.term && multi && !isAllCaps(form) && defs.terms.get(t) !== r.i) {
+        } else if (which.term && multi && !isAllCaps(form) && defs.terms.get(t) !== r.i && !(firstCapOnly && form === form.toLowerCase())) {
           // Một chữ cái đầu câu viết hoa khác đi thì không tính là lệch
           const k = `${t}→${form}`;
           const v = variants.get(k);
@@ -531,7 +540,7 @@ export function checkBlanks(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
   for (const r of rows) {
     if (r.deleted || !r.text) continue;
     const text = clean(r.text);
-    if (SIGN_LINE.test(text)) continue;
+    if (text.length <= 100 && SIGN_LINE.test(text)) continue;
     const hits: { at: number; len: number }[] = [];
     for (const re of BLANKS) for (const m of text.matchAll(re)) hits.push({ at: m.index as number, len: m[0].length });
     if (!hits.length) continue;
@@ -642,7 +651,11 @@ export function parseFigure(s: string): number | null {
 }
 
 const fmt = (n: number) => (Number.isInteger(n) ? n.toLocaleString("vi-VN") : String(n).replace(".", ","));
-const FIGURE_THEN_WORDS = /(?<![\p{L}\p{N}.,])(\d[\d.,]*\d|\d)\s*(nghìn|ngàn|triệu|tỷ|tỉ)?\s*((?:[^\s()\d,.;:]{1,12}\s*){0,3}?)[,;:]?\s*\(\s*(?:(?:viết\s+)?bằng chữ|in words)?\s*:?\s*([^()]{2,200})\)/giu;
+/** Từ đơn vị được phép đứng sau con số viết bằng chữ trong ngoặc ("… triệu đồng chẵn", "… phần trăm", "… ngày làm việc") */
+const UNIT_WORDS = new Set(
+  "đồng việt nam vnd vnđ usd đô la mỹ euro chẵn phần trăm ngày làm việc tháng năm tuần giờ phút quý kỳ đợt lần bản người căn lô thửa tầng chiếc bộ cái trang mét vuông khối m2 m3 ha km kg tấn".split(" ")
+);
+const FIGURE_THEN_WORDS = /(?<![\p{L}\p{N}.,/])(\d[\d.,]*\d|\d)\s*(nghìn|ngàn|triệu|tỷ|tỉ)?\s*((?:[^\s()\d,.;:]{1,12}\s*){0,3}?)[,;:]?\s*\(\s*(?:(?:viết\s+)?bằng chữ|in words)?\s*:?\s*([^()]{2,200})\)/giu;
 const WORDS_THEN_FIGURE = /\(\s*(\d[\d.,]*\d|\d)\s*\)/g;
 
 export function checkAmounts(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
@@ -672,8 +685,14 @@ export function checkAmounts(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
       if (all.some((t) => /^phẩy$/i.test(t))) continue; // số thập phân viết bằng chữ: không soát
       const parsed = parseVnNumber(all);
       if (!parsed) continue;
-      // Phần còn lại sau con số phải ngắn (đơn vị: "đồng", "ngày làm việc", "phần trăm"), nếu không thì đây không phải số viết bằng chữ
-      if (all.length - parsed.used > 4) continue;
+      // Phần còn lại sau con số phải là đơn vị ("đồng", "ngày làm việc", "phần trăm") hoặc lặp lại đơn vị đứng sau con số;
+      // nếu không thì ngoặc này không phải số viết bằng chữ ("khoản 5 (một số trường hợp)", "1/2 (một phần hai)")
+      const rest = all.slice(parsed.used).map((t) => t.toLowerCase());
+      if (rest.length > 4) continue;
+      const unitAfter = new Set((m[3] || "").toLowerCase().split(/\s+/).filter(Boolean));
+      if (!rest.every((t) => UNIT_WORDS.has(t) || unitAfter.has(t))) continue;
+      // "phần" phải đi với "trăm" ("tám phần trăm"); "một phần ba" là phân số
+      if (rest.includes("phần") && !rest.includes("trăm")) continue;
       const values = [parsed.value];
       // "năm" đứng cuối có thể là đơn vị thời gian: "(hai mươi năm)" = 20 năm hoặc 25
       if (all[parsed.used - 1]?.toLowerCase() === "năm" && parsed.used > 1) {
@@ -700,7 +719,13 @@ export function checkAmounts(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
       if (numWords.length === 1 && numWords[0].toLowerCase() === "năm") continue;
       const parsed = parseVnNumber(numWords);
       if (!parsed || parsed.used !== numWords.length) continue;
-      if (Math.abs(parsed.value - figure) < 1e-9) continue;
+      const values = [parsed.value];
+      // "hai mươi năm (20)": "năm" đứng cuối có thể là đơn vị thời gian
+      if (numWords.length > 1 && numWords[numWords.length - 1].toLowerCase() === "năm") {
+        const alt = parseVnNumber(numWords.slice(0, -1));
+        if (alt && alt.used === numWords.length - 1) values.push(alt.value);
+      }
+      if (values.some((v) => Math.abs(v - figure) < 1e-9)) continue;
       const at = text.lastIndexOf(numWords[0], m.index as number);
       push(r, text, Math.max(0, at), (m.index as number) + m[0].length - Math.max(0, at), figure, m[1], numWords.join(" "), parsed.value);
     }

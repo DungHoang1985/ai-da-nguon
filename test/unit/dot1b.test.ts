@@ -487,3 +487,77 @@ describe("Đợt 1B – so phiên bản", () => {
     assert.ok(describeChanges("Giao hàng tại kho trong giờ hành chính của bên bán.", "Giao hàng tại kho.")[0].includes("bỏ “"));
   });
 });
+
+describe("Đợt 1B – soát nhất quán: các ca báo nhầm và bỏ sót do lần soát mã độc lập tìm ra", () => {
+  const typedRows = (texts: string[]): ParaRow[] => texts.map((text, i) => ({ i, text }));
+  const BASE = ["Điều 1. Phạm vi", "1.1 Một.", "1.2 Hai.", "Điều 2. Giá", "2.1 Giá là 100.", "Điều 3. Hiệu lực"];
+
+  it("thuật ngữ chỉ viết hoa chữ đầu (“Hợp đồng”, “Ngày làm việc”): chỗ viết thường là danh từ chung, không báo; viết hoa khác đi thì vẫn báo", () => {
+    const rs = typedRows([
+      "“Hợp đồng” là hợp đồng mua bán này cùng các phụ lục.",
+      "“Ngày làm việc” là các ngày từ thứ Hai đến thứ Sáu.",
+      "Bên A có quyền chấm dứt hợp đồng lao động với nhân viên vi phạm; các hợp đồng thế chấp vẫn có hiệu lực.",
+      "Trong vòng 05 ngày làm việc, bên vi phạm phải khắc phục.",
+      "Bản Hợp Đồng này lập thành hai bản.",
+    ]);
+    const out = checkTerms(rs, buildOutline(rs)).issues;
+    assert.deepStrictEqual(
+      out.map((x) => x.message.match(/có chỗ viết “([^”]+)”/)?.[1]),
+      ["Hợp Đồng"]
+    );
+  });
+
+  it("dẫn chiếu tới luật viết tắt và tới hợp đồng gốc trong phụ lục sửa đổi: không báo", () => {
+    const rs = typedRows([
+      ...BASE,
+      "3.1 Theo Điều 468 BLDS 2015 và Điều 12 LĐĐ 2024.",
+      "3.2 Theo khoản 1 Điều 6 NĐ 99/2022/NĐ-CP, Điều 7 TT 01/2021/TT-BXD.",
+      "3.3 Sửa đổi khoản 2 Điều 7 của Hợp đồng đã ký như sau.",
+      "3.4 Theo Điều 12 của Hợp đồng thuê nhà ngày 1/1/2025.",
+    ]);
+    assert.deepStrictEqual(checkReferences(rs, buildOutline(rs)), []);
+  });
+
+  it("“pháp luật”, “quyết định” đứng trước không che dẫn chiếu hỏng; “của Hợp đồng thuê này” vẫn là văn bản đang soát", () => {
+    const rs = typedRows([
+      ...BASE,
+      "3.1 Bên B phải tuân thủ pháp luật và thực hiện đúng Điều 99 của Hợp đồng.",
+      "3.2 Bên B tuân thủ quyết định của Bên A theo Điều 98 Hợp đồng.",
+      "3.3 Theo Điều 97 của Hợp đồng thuê này.",
+    ]);
+    const out = checkReferences(rs, buildOutline(rs)).map((x) => x.message.match(/“Điều (\d+)”/)?.[1]);
+    assert.deepStrictEqual(out, ["99", "98", "97"]);
+  });
+
+  it("phân số, ngoặc không phải số viết bằng chữ, “năm” là đơn vị, số rưỡi: không báo số lệch chữ", () => {
+    const rs = typedRows([
+      "Bên A góp 1/2 (một phần hai) vốn, Bên B góp 1/3 (một phần ba) vốn.",
+      "Theo khoản 5 (một số trường hợp đặc biệt) của quy chế.",
+      "Thời hạn hai mươi năm (20) kể từ ngày ký; thời hạn 1,5 năm (một năm rưỡi).",
+      "Thanh toán 03 (ba) đợt, mỗi đợt 02 (hai) lần, tổng 30 (ba mươi) ngày làm việc.",
+    ]);
+    assert.deepStrictEqual(
+      checkAmounts(rs, buildOutline(rs)).map((x) => x.message),
+      []
+    );
+    const bad = typedRows(["Phạt 8% (chín phần trăm) giá trị; thời hạn hai mươi năm (30)."]);
+    assert.strictEqual(checkAmounts(bad, buildOutline(bad)).length, 2);
+  });
+
+  it("đoạn dài có nhắc “chữ ký và đóng dấu” vẫn được soát chỗ trống; dòng ký tên ngắn thì miễn", () => {
+    const rs = typedRows(["Hợp đồng có hiệu lực khi có chữ ký và đóng dấu của hai bên, lập thành bốn bản có giá trị như nhau. Phí dịch vụ là ……… đồng.", "Ký tên: ____________"]);
+    assert.deepStrictEqual(
+      checkBlanks(rs, buildOutline(rs)).map((x) => x.p),
+      [0]
+    );
+  });
+
+  it("văn bản lớn: soát 1.500 đoạn với 60 thuật ngữ xong dưới 3 giây", () => {
+    const texts: string[] = [];
+    for (let k = 0; k < 60; k++) texts.push(`“Thuật Ngữ Số ${k}” là khái niệm thứ ${k} của hợp đồng này.`);
+    for (let k = 0; k < 1440; k++) texts.push(`Bên A thực hiện Thuật Ngữ Số ${k % 60} theo Điều ${1 + (k % 5)} trong 30 (ba mươi) ngày, giá 1.500.000 đồng.`);
+    const t0 = Date.now();
+    checkConsistency(typedRows(texts));
+    assert.ok(Date.now() - t0 < 3000, `mất ${Date.now() - t0} ms`);
+  });
+});

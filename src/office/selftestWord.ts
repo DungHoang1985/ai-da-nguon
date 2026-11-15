@@ -856,9 +856,15 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       const after = await run("word_read_parts", { parts: ["footnotes"] });
       expect((after.footnotes || []).some((x: any) => String(x.text).includes(NOTE) && x.i === i), "Sửa đoạn làm mất chú thích cuối trang");
       expect((await inspect(i)).current.replace(/\u0002/g, "") === PX.replace("có thời hạn", "có kỳ hạn"), "Câu sau khi sửa không đúng");
+      // Đoạn lúc này vừa có mốc chú thích vừa có chữ đã xóa chờ duyệt ("thời" → "kỳ"): sửa tiếp một chữ khác vẫn phải đúng chỗ
+      const again = await run("word_set_paragraph_text", { index: i, expect: "Đoạn thử phần ngoài thân", text: PX.replace("có thời hạn", "có kỳ hạn").replace("Đoạn thử", "Đoạn kiểm") });
+      expect(again.ok, `Sửa lần hai trên đoạn có chú thích và sửa đổi chờ duyệt: ${again.message}`);
+      expect((await inspect(i)).current.replace(/\u0002/g, "") === PX.replace("có thời hạn", "có kỳ hạn").replace("Đoạn thử", "Đoạn kiểm"), "Câu sau lần sửa thứ hai không đúng");
+      const still = await run("word_read_parts", { parts: ["footnotes"] });
+      expect((still.footnotes || []).some((x: any) => String(x.text).includes(NOTE) && x.i === i), "Lần sửa thứ hai làm mất chú thích cuối trang");
       for (const u of log.slice(mark).reverse()) await u.undo();
       log.length = mark;
-      return `Đọc được chú thích (đúng đoạn ${i}), bookmark, ô điền mẫu, đầu và chân trang (${r.headers_footers.items.length} mục); đọc đoạn kèm chú thích; sửa một chữ trong đoạn có chú thích thì chú thích còn nguyên`;
+      return `Đọc được chú thích (đúng đoạn ${i}), bookmark, ô điền mẫu, đầu và chân trang (${r.headers_footers.items.length} mục); đọc đoạn kèm chú thích; sửa hai lần trong đoạn có chú thích (lần hai khi đoạn đã có chữ xóa chờ duyệt) thì chú thích còn nguyên`;
     } finally {
       await untracked(async (ctx) => {
         if (sup("1.4")) ctx.document.deleteBookmark(BM);
@@ -919,6 +925,8 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     const EDIT = `Đoạn so sánh sẽ được sửa SS${code}, ký ngày 01/01/2026.`;
     const DROP = `Điều khoản phạt chậm giao hàng SS${code} bị bỏ ở phiên bản khác.`;
     const ADDED = `Phụ lục bảng giá ${code} mới thêm vào.`;
+    const name = `aidn-thu-so-sanh-${code}.docx`;
+    const { registerAttachedFile, unregisterAttachedFile } = await import("../core/attachedFiles");
     await addTemp([KEEP, EDIT, DROP]);
     try {
       const s = await need(START);
@@ -955,8 +963,6 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
           .map((t) => `<w:p><w:r><w:t xml:space="preserve">${xml(t)}</w:t></w:r></w:p>`)
           .join("")}</w:body></w:document>`
       );
-      const name = `aidn-thu-so-sanh-${code}.docx`;
-      const { registerAttachedFile } = await import("../core/attachedFiles");
       registerAttachedFile(name, await zip.generateAsync({ type: "base64" }));
       const before = await countAll();
       const r = await run("word_compare_versions", { file: name, from: s, to: e });
@@ -987,6 +993,8 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       expect(/Không thấy tệp đính kèm/.test(miss), "Gọi với tên tệp không có mà không báo lỗi rõ");
       return `So ${r.paragraphs_current} đoạn của vùng thử với tệp dựng sẵn: đúng 3 chỗ khác, đúng loại và đúng chỗ — sửa ở [¶${ch.i}] (${ch.clause}): ${ch.changes[0]}; bỏ [¶${gone.i}]; thêm một đoạn sau [¶${added.i}]. Văn bản đang mở không đổi (${after.changes} sửa đổi, ${after.comments} nhận xét như trước)`;
     } finally {
+      // Tệp thử không được nằm lại trong kho tệp đính kèm của phiên (người dùng hỏi "so với bản đính kèm" sẽ so nhầm)
+      unregisterAttachedFile(name);
       await removeTemp(["SS" + code]);
     }
   });

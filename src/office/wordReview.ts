@@ -54,6 +54,7 @@ export const WORD_REVIEW_SPECS: ToolSpec[] = [
       properties: {
         parts: { type: "array", items: { type: "string", enum: PARTS as unknown as string[] }, description: "Which parts to read. Default: all." },
         include_hidden_bookmarks: { type: "boolean", description: "Also list hidden bookmarks (names starting with _, created by Word for cross-references). Default false." },
+        start: { type: "number", description: "Skip the first N items of each requested list (paging: when a list comes back with truncated=true, call again with parts set to that one part and start=next_start)." },
       },
     },
   },
@@ -288,7 +289,7 @@ export function createWordReviewTools(deps: ReviewDeps) {
             await ctx.sync();
             const names = (all.value || []).slice().sort();
             const hidden = names.filter((n) => n.startsWith("_"));
-            const shown = (a.include_hidden_bookmarks ? names : names.filter((n) => !n.startsWith("_"))).slice(0, 80);
+            const shown = (a.include_hidden_bookmarks ? names : names.filter((n) => !n.startsWith("_"))).slice(0, 400);
             const rs = shown.map((n) => {
               const r = ctx.document.getBookmarkRangeOrNullObject(n);
               r.load("text");
@@ -318,7 +319,7 @@ export function createWordReviewTools(deps: ReviewDeps) {
             const fs = ctx.document.body.fields;
             fs.load(supports("1.5") ? "items/code,items/type,items/result/text" : "items/code,items/result/text");
             await ctx.sync();
-            const items = fs.items.slice(0, 150);
+            const items = fs.items.slice(0, 600);
             const ps = items.map((f) => {
               const p = f.result.paragraphs.getFirstOrNullObject();
               p.load(anchorProps());
@@ -354,7 +355,7 @@ export function createWordReviewTools(deps: ReviewDeps) {
             const cc = ctx.document.getContentControls({ types: CC_TYPES as any });
             cc.load("items/title,items/tag,items/text,items/type");
             await ctx.sync();
-            const items = cc.items.slice(0, 150);
+            const items = cc.items.slice(0, 600);
             const ps = items.map((c) => {
               const p = c.paragraphs.getFirstOrNullObject();
               p.load(anchorProps());
@@ -384,7 +385,7 @@ export function createWordReviewTools(deps: ReviewDeps) {
             const sh = ctx.document.body.shapes;
             sh.load("items/id,items/name,items/type");
             await ctx.sync();
-            const boxes = sh.items.filter((s) => s.type === "TextBox").slice(0, 60);
+            const boxes = sh.items.filter((s) => s.type === "TextBox").slice(0, 200);
             boxes.forEach((s) => s.body.load("text"));
             await ctx.sync();
             return {
@@ -414,6 +415,14 @@ export function createWordReviewTools(deps: ReviewDeps) {
       .map(([k, label]) => (out[k]?.unavailable ? `${label}: không đọc được` : `${k === "headers_footers" ? out[k].items.length : n(out[k])} ${label}`))
       .join(", ");
 
+    // Phân trang: bỏ N mục đầu của mỗi danh sách (dùng khi lần gọi trước trả truncated cho một phần)
+    const skip = Math.max(0, Math.floor(Number(a.start)) || 0);
+    if (skip) {
+      for (const [k, v] of Object.entries(out)) {
+        if (Array.isArray(v)) out[k] = { total: v.length, start: skip, items: v.slice(skip) };
+        else if (Array.isArray((v as any)?.items) && k !== "headers_footers") out[k] = { ...(v as any), start: skip, items: (v as any).items.slice(skip) };
+      }
+    }
     // Kết quả quá dài: rút gọn danh sách dài nhất cho tới khi vừa ngân sách
     for (let guard = 0; guard < 40 && JSON.stringify(out).length > RESULT_JSON_BUDGET; guard++) {
       let longest = "";
@@ -427,8 +436,9 @@ export function createWordReviewTools(deps: ReviewDeps) {
       }
       if (!longest || size <= 3) break;
       const keep = Math.max(3, Math.floor(size * 0.7));
-      if (Array.isArray(out[longest])) out[longest] = { shown: keep, total: size, truncated: true, items: out[longest].slice(0, keep) };
-      else out[longest] = { ...out[longest], shown: keep, truncated: true, items: out[longest].items.slice(0, keep) };
+      const hint = `Danh sách dài: gọi lại với parts = ["${longest}"] và start = next_start để đọc tiếp.`;
+      if (Array.isArray(out[longest])) out[longest] = { shown: keep, total: size, truncated: true, next_start: skip + keep, note: hint, items: out[longest].slice(0, keep) };
+      else out[longest] = { ...out[longest], shown: keep, truncated: true, next_start: skip + keep, note: hint, items: out[longest].items.slice(0, keep) };
     }
     return out;
   }

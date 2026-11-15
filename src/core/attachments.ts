@@ -16,6 +16,13 @@ export interface Attachment {
 
 /** Cỡ tối đa của một PDF gửi nguyên tệp. Anthropic nhận tối đa 32 MB cho cả yêu cầu (base64 làm tệp to thêm một phần ba). */
 export const MAX_PDF_FILE_BYTES = 15 * 1024 * 1024;
+/** Tổng cỡ (ký tự base64) của mọi tệp gửi nguyên vẹn trong một hội thoại. Tệp nằm lại trong lịch sử và được gửi lại ở mọi lượt
+ *  (lịch sử chỉ thêm), nên quá trần này thì yêu cầu vượt giới hạn 32 MB của Anthropic và mọi lượt sau đều lỗi. */
+export const MAX_FILES_TOTAL_B64 = 24 * 1024 * 1024;
+/** Tổng số ký tự base64 của các tệp gửi nguyên vẹn đang nằm trong một lịch sử hội thoại */
+export function filesBase64Chars(history: { role: string; files?: { data: string }[] }[]): number {
+  return history.reduce((n, m) => n + (m.role === "user" && m.files ? m.files.reduce((k, f) => k + f.data.length, 0) : 0), 0);
+}
 /** Cỡ tối đa của tệp .docx được giữ bản gốc để so sánh phiên bản */
 export const MAX_DOCX_KEEP_BYTES = 20 * 1024 * 1024;
 export const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -51,7 +58,7 @@ function toBase64(buf: ArrayBuffer): string {
   return btoa(s);
 }
 
-async function pdfText(buf: ArrayBuffer): Promise<{ text: string; pages: number }> {
+async function pdfText(buf: ArrayBuffer): Promise<{ text: string; pages: number; blank: number[] }> {
   const pdfjs: any = await import("pdfjs-dist");
   if (!pdfjs.GlobalWorkerOptions.workerSrc) {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdf.worker.min.js", document.baseURI).toString();
@@ -59,6 +66,8 @@ async function pdfText(buf: ArrayBuffer): Promise<{ text: string; pages: number 
   // pdf.js chiếm lấy vùng nhớ được đưa vào: đưa một bản sao để còn giữ được tệp gốc (gửi nguyên tệp khi là PDF quét)
   const doc = await pdfjs.getDocument({ data: new Uint8Array(buf.slice(0)) }).promise;
   const pages: string[] = [];
+  /** Các trang không có lớp chữ (ảnh quét lẫn trong tệp) */
+  const blank: number[] = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
     const tc = await page.getTextContent();
@@ -72,10 +81,11 @@ async function pdfText(buf: ArrayBuffer): Promise<{ text: string; pages: number 
       }
     }
     if (line) out.push(line);
+    if (!out.join("").trim()) blank.push(i);
     pages.push(`[Trang ${i}]\n${out.join("\n")}`);
     if (pages.join("\n").length > MAX_ATTACH_CHARS) break;
   }
-  return { text: pages.join("\n\n"), pages: doc.numPages };
+  return { text: pages.join("\n\n"), pages: doc.numPages, blank };
 }
 
 export async function readAttachment(file: File): Promise<Attachment> {
@@ -87,7 +97,7 @@ export async function readAttachment(file: File): Promise<Attachment> {
   }
   if (lower.endsWith(".pdf")) {
     const buf = await file.arrayBuffer();
-    const { text: t, pages } = await pdfText(buf);
+    const { text: t, pages, blank } = await pdfText(buf);
     if (!t.replace(/\[Trang \d+\]/g, "").trim()) {
       // PDF quét: không có lớp chữ → giữ nguyên tệp để model tự đọc (Anthropic, Gemini… ; nguồn khác sẽ được báo rõ khi gửi)
       if (file.size > MAX_PDF_FILE_BYTES) {
@@ -95,7 +105,10 @@ export async function readAttachment(file: File): Promise<Attachment> {
       }
       return { name, kind: "file", mime: "application/pdf", data: toBase64(buf), pages, note: `PDF quét, ${pages} trang, gửi nguyên tệp` };
     }
-    return { name, kind: "text", pages, ...clipText(t) };
+    const clipped = clipText(t);
+    // Tệp lẫn trang quét: nói rõ trang nào chưa đọc được, không bỏ im lặng
+    const scanNote = blank.length ? `${blank.length} trang không có lớp chữ (ảnh quét: trang ${blank.slice(0, 20).join(", ")}${blank.length > 20 ? "…" : ""}) nên CHƯA được đọc; cần đọc thì tách các trang đó thành tệp PDF riêng rồi đính kèm` : "";
+    return { name, kind: "text", pages, text: clipped.text, ...(clipped.note || scanNote ? { note: [clipped.note, scanNote].filter(Boolean).join(" ") } : {}) };
   }
   if (lower.endsWith(".docx")) {
     const JSZip = (await import("jszip")).default;

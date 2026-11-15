@@ -37,8 +37,8 @@ import { getKV } from "../../core/db";
 import { ConversationMeta, ConversationStore, newConversationId, slimForStorage, titleFrom } from "../../core/conversations";
 import { Command, Skill, SkillStore, resolveSlash, skillCatalog } from "../../core/skills";
 import { CORE_GUIDES, autoSelectSkills } from "../../core/skillpack";
-import { Attachment, DOCX_MIME, readAttachment, withAttachments } from "../../core/attachments";
-import { registerAttachedFile } from "../../core/attachedFiles";
+import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, filesBase64Chars, readAttachment, withAttachments } from "../../core/attachments";
+import { clearAttachedFiles, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
 import { RefTarget, findRefs } from "../../core/refs";
@@ -549,6 +549,17 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
       }
     }
     const atts = attachments;
+    // Tệp gửi nguyên vẹn nằm lại trong lịch sử và được gửi lại ở mọi lượt: quá trần thì nhà cung cấp từ chối mọi lượt sau
+    const newFiles = atts.filter((a) => a.kind === "file" && a.data).reduce((n, a) => n + a.data!.length, 0);
+    if (newFiles && filesBase64Chars(historyRef.current as any) + newFiles > MAX_FILES_TOTAL_B64) {
+      setNotice({
+        text: "Các tệp PDF quét trong hội thoại này đã quá lớn để gửi tiếp (tệp được gửi lại ở mỗi lượt). Bấm “Hội thoại mới” rồi đính kèm lại tệp cần hỏi, hoặc tách tệp nhỏ hơn.",
+        err: true,
+      });
+      return;
+    }
+    // Bản gốc của tệp .docx: đăng ký (lại) lúc gửi để công cụ so sánh phiên bản của Word đọc được
+    atts.forEach((a) => a.mime === DOCX_MIME && a.data && registerAttachedFile(a.name, a.data));
     content = withAttachments(content, atts, { compare: host === "Word" && agentOn });
     const images = atts.filter((a) => a.kind === "image" && a.data).map((a) => ({ mime: a.mime || "image/png", data: a.data! }));
     // PDF quét: gửi nguyên tệp cho model tự đọc; nguồn không đọc được thì báo rõ (và model cũng được báo trong tin nhắn)
@@ -753,6 +764,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
   };
 
   const newChat = () => {
+    // Tệp .docx đính kèm để so sánh thuộc về hội thoại cũ (tệp đang chờ gửi được đăng ký lại lúc gửi)
+    clearAttachedFiles();
     setItems([]);
     historyRef.current = [];
     lastInputRef.current = undefined;

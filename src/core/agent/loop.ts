@@ -190,6 +190,31 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         markStopped();
         throw stopError();
       }
+      // Soát lập luận trước khi ghi sửa đổi vào điều khoản (tùy chọn): một lượt model riêng, không nằm trong lịch sử.
+      // Chạy trước khi hiện bước ghi và trước khi hỏi người dùng.
+      let blocked = "";
+      const reviewSpec = specMap.get(call.name);
+      if (o.review && reviewSpec?.reviewable && !call.args?.__invalid_json && reviewBlocks < MAX_REVIEW_BLOCKS) {
+        o.onEvent({ type: "review_start", call });
+        let verdict: { ok: boolean; note?: string };
+        try {
+          verdict = await o.review(call, reviewSpec);
+        } catch (e: any) {
+          if (aborted() || e?.name === "AbortError") {
+            // Bấm Dừng trong lúc soát: lệnh này và các lệnh sau đều chưa chạy
+            o.onEvent({ type: "review_end", call, ok: false, note: "Đã dừng" });
+            for (const rest of res.toolCalls.slice(i)) push(toolMsg(rest, { ok: false, error: NOT_RUN_STOPPED }));
+            markStopped();
+            throw stopError();
+          }
+          verdict = { ok: true, note: "Không soát được: " + (e?.message || String(e)) };
+        }
+        o.onEvent({ type: "review_end", call, ok: verdict.ok, note: verdict.note });
+        if (!verdict.ok) {
+          reviewBlocks++;
+          blocked = `CHƯA GHI vào văn bản. Bước soát lập luận trước khi sửa nêu vấn đề: ${verdict.note || "(không nêu lý do)"} — Hãy xem lại đề xuất: nếu vấn đề đúng thì sửa đề xuất rồi gọi lại công cụ; nếu bạn chắc đề xuất ban đầu đúng thì nói rõ lý do với người dùng và hỏi ý họ trước khi ghi.`;
+        }
+      }
       o.onEvent({ type: "tool_start", call });
       let result: any;
       let error: string | undefined;
@@ -197,24 +222,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         const spec = specMap.get(call.name);
         if (!spec) throw new Error(`Không có công cụ tên "${call.name}".`);
         if (call.args?.__invalid_json) throw new Error("Tham số gửi lên không phải JSON hợp lệ, hãy gọi lại.");
-        // Soát lập luận trước khi ghi sửa đổi vào điều khoản (tùy chọn): một lượt model riêng, không nằm trong lịch sử
-        if (o.review && spec.reviewable && reviewBlocks < MAX_REVIEW_BLOCKS) {
-          o.onEvent({ type: "review_start", call });
-          let verdict: { ok: boolean; note?: string };
-          try {
-            verdict = await o.review(call, spec);
-          } catch (e: any) {
-            if (aborted() || e?.name === "AbortError") throw e;
-            verdict = { ok: true, note: "Không soát được: " + (e?.message || String(e)) };
-          }
-          o.onEvent({ type: "review_end", call, ok: verdict.ok, note: verdict.note });
-          if (!verdict.ok) {
-            reviewBlocks++;
-            throw new Error(
-              `CHƯA GHI vào văn bản. Bước soát lập luận trước khi sửa nêu vấn đề: ${verdict.note || "(không nêu lý do)"} — Hãy xem lại đề xuất: nếu vấn đề đúng thì sửa đề xuất rồi gọi lại công cụ; nếu bạn chắc đề xuất ban đầu đúng thì nói rõ lý do với người dùng và hỏi ý họ trước khi ghi.`
-            );
-          }
-        }
+        if (blocked) throw new Error(blocked);
         let reason: string | null = null;
         if (o.confirmRisky && spec.risky) reason = await spec.risky(call.args || {});
         if (reason || (spec.write && o.askBeforeWrite)) {
@@ -228,12 +236,6 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
           : o.tools.execute(call.name, call.args || {}, { log: o.log });
         result = await withTimeout(Promise.resolve(run), spec.timeoutMs ?? o.toolTimeoutMs ?? TOOL_TIMEOUT_MS, call.name);
       } catch (e: any) {
-        if (e?.name === "AbortError" && aborted()) {
-          // Bấm Dừng trong lúc soát lập luận: lệnh này và các lệnh sau đều chưa chạy
-          for (const rest of res.toolCalls.slice(i)) push(toolMsg(rest, { ok: false, error: NOT_RUN_STOPPED }));
-          markStopped();
-          throw stopError();
-        }
         error = e?.message || String(e);
         if (e?.code && !String(error).includes(e.code)) error += ` [${e.code}]`;
         if (e?.debugInfo?.errorLocation) error += ` (${e.debugInfo.errorLocation})`;

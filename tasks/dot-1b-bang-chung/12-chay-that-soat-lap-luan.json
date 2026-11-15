@@ -1,0 +1,32 @@
+{
+ "bai": "soatLapLuan",
+ "phienBan": "v4.1",
+ "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cauHoi": "Sửa Điều 9.2: đổi thời hạn khắc phục từ 07 ngày thành 05 ngày, giữ nguyên phần còn lại của câu.",
+ "tepDinhKem": [],
+ "giay": 8,
+ "daHoi": [
+  "AI muốn: Thay \"07 ngày\" → \"05 ngày\" ở [¶49] | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "soBuocCongCu": 3,
+ "cacBuoc": [
+  "✅ Đọc 9.2",
+  "✅ Thay \"07 ngày\" → \"05 ngày\" ở [¶49]",
+  "✅ Soát lập luận trước khi ghi: Thay \"07 ngày\" → \"05 ngày\" ở [¶49] — đạt"
+ ],
+ "token": "Token: vào 43.871 · ra 700 · đọc từ bộ nhớ đệm 41.143 · ghi vào bộ nhớ đệm 2.716",
+ "vanBanTruoc": {
+  "soDoan": 85,
+  "soSuaDoi": 2,
+  "soNhanXet": 1,
+  "bamChu": 691592023
+ },
+ "vanBanSau": {
+  "soDoan": 85,
+  "soSuaDoi": 4,
+  "soNhanXet": 1,
+  "bamChu": 1533373596
+ },
+ "vanBanKhongDoi": false,
+ "traLoi": "Đã sửa Điều 9.2 [¶49]: \"07 ngày\" thành \"05 ngày\", theo dõi thay đổi. Phần còn lại của câu, gồm \"trường hợp khẩn cấp là 24 giờ\", giữ nguyên.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
+}

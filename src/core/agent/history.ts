@@ -132,11 +132,13 @@ export function prepareHistory(messages: AgentMessage[], target: HistoryTarget):
 
   // 4b) Tệp gửi nguyên vẹn (PDF quét): nguồn không nhận tệp → thay bằng một dòng ghi rõ, để model báo lại cho người dùng.
   //     Nguồn nhận tệp thì giữ ở mọi lượt (không bỏ ở lượt sau: bỏ là sửa tin nhắn cũ, làm vỡ bộ nhớ đệm lời nhắc).
-  if (!pdfCapable(p)) {
+  // Model đã biết là không nhận ảnh (chỉ đọc chữ) thì cũng không đọc được PDF quét: gửi tệp sẽ bị từ chối ở mọi lượt sau
+  if (!pdfCapable(p) || target.vision === false) {
+    const why = pdfCapable(p) ? `model đang chọn của nguồn ${p.name} chỉ đọc chữ, không đọc được PDF quét` : `nguồn ${p.name} không đọc được PDF quét`;
     out = out.map((m) => {
       if (m.role !== "user" || !m.files?.length) return m;
       const { files, ...rest } = m;
-      const note = `[Tệp ${files.map((f) => `“${f.name}”`).join(", ")} là PDF quét (không có lớp chữ) nên KHÔNG gửi được cho nguồn ${p.name}: nguồn này không đọc được PDF quét. Hãy nói rõ điều này với người dùng và gợi ý chuyển sang nguồn Anthropic hoặc Gemini để đọc tệp.]`;
+      const note = `[Tệp ${files.map((f) => `“${f.name}”`).join(", ")} là PDF quét (không có lớp chữ) nên KHÔNG gửi được: ${why}. Hãy nói rõ điều này với người dùng và gợi ý chuyển sang nguồn Anthropic hoặc Gemini (hoặc một model đọc được tệp) để đọc tệp.]`;
       return { ...rest, content: rest.content ? `${rest.content}\n${note}` : note };
     });
   }
