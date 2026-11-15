@@ -1,0 +1,74 @@
+{
+ "yeuCau": "Thêm một khoản mới ngay sau Điều 8.2 với nội dung: “Bên Cho Thuê bàn giao kèm hồ sơ hoàn công và bản vẽ hiện trạng của Khu Nhà Xưởng.”",
+ "cacBuoc": [
+  "✅ Đọc Điều 8",
+  "✅ Chèn điều khoản mới sau [¶44]",
+  "✅ Tìm \"khoản 8.3\" trong văn bản",
+  "✅ Tìm \"Điều 8.3\" trong văn bản"
+ ],
+ "daHoi": [
+  "AI muốn: Chèn điều khoản mới sau [¶44] | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "truoc": [
+  {
+   "i": 42,
+   "so": "Điều 8.",
+   "kieu": "Heading 1",
+   "chu": "Bàn giao mặt bằng"
+  },
+  {
+   "i": 43,
+   "so": "8.1.",
+   "kieu": "Heading 2",
+   "chu": "Bên Cho Thuê bàn giao Khu Nhà Xưởng cho Bên Thuê chậm nhất vào ngày 01"
+  },
+  {
+   "i": 44,
+   "so": "8.2.",
+   "kieu": "Heading 2",
+   "chu": "Tại thời điểm bàn giao, hai bên lập biên bản ghi nhận hiện trạng, chỉ "
+  },
+  {
+   "i": 45,
+   "so": "8.3.",
+   "kieu": "Heading 2",
+   "chu": "Nếu Bên Cho Thuê chậm bàn giao quá 30 ngày, Bên Thuê được miễn Tiền Th"
+  }
+ ],
+ "sau": [
+  {
+   "i": 42,
+   "so": "Điều 8.",
+   "kieu": "Heading 1",
+   "chu": "Bàn giao mặt bằng"
+  },
+  {
+   "i": 43,
+   "so": "8.1.",
+   "kieu": "Heading 2",
+   "chu": "Bên Cho Thuê bàn giao Khu Nhà Xưởng cho Bên Thuê chậm nhất vào ngày 01"
+  },
+  {
+   "i": 44,
+   "so": "8.2.",
+   "kieu": "Heading 2",
+   "chu": "Tại thời điểm bàn giao, hai bên lập biên bản ghi nhận hiện trạng, chỉ "
+  },
+  {
+   "i": 45,
+   "so": "8.3.",
+   "kieu": "Heading 2",
+   "chu": "Bên Cho Thuê bàn giao kèm hồ sơ hoàn công và bản vẽ hiện trạng của Khu"
+  },
+  {
+   "i": 46,
+   "so": "8.4.",
+   "kieu": "Heading 2",
+   "chu": "Nếu Bên Cho Thuê chậm bàn giao quá 30 ngày, Bên Thuê được miễn Tiền Th"
+  }
+ ],
+ "khoanMoiMangSo": "8.3.",
+ "khoanCuNayLa": "8.4.",
+ "cungKieu": true,
+ "traLoi": "Đã thêm khoản mới 8.3 ngay sau Điều 8.2 [¶45], với nội dung: \"Bên Cho Thuê bàn giao kèm hồ sơ hoàn công và bản vẽ hiện trạng của Khu Nhà Xưởng.\" Thay đổi được ghi bằng Theo dõi thay đổi để bạn duyệt. Các khoản sau tự đánh số lại: khoản cũ 8.3 thành 8.4 [¶46] và cứ thế tiếp tục. Tôi đã tìm các dẫn chiếu \"khoản 8.3\" và \"Điều 8.3\" trong văn bản nhưng không thấy kết quả nào, nên không có tham chiếu nào bị lệch."
+}

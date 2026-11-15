@@ -9,6 +9,8 @@ const TITLES = [
   /^Việc của phiên này: kiểm văn bản thử AIDN-DAI/,
   /^Ghi số 5 vào ô D7/,
   /^Không dùng công cụ ghi\. Bài này có mấy slide/,
+  // Thêm tiêu đề của bài thử khác: đặt window.__aidnTieuDeThem = ["^chuỗi mẫu", …] ở một tệp ghép phía trước
+  ...(window.__aidnTieuDeThem || []).map((s) => new RegExp(s)),
 ];
 // Hội thoại "Xử lý các nhận xét…" trùng tên câu gợi ý có sẵn: chỉ xóa bản mới nhất (bản do bài thử tạo và vừa mở lại)
 const ONCE = /^(▶ )?Xử lý các nhận xét trong văn bản/;
@@ -22,7 +24,7 @@ const count = () => Number((/Lịch sử trong \S+ \((\d+)\)/.exec(document.body
 const truoc = count();
 const daXoa = [];
 let onceDone = !window.__aidnXoaXuLyNhanXet;
-for (let guard = 0; guard < 30; guard++) {
+for (let guard = 0; guard < 60; guard++) {
   const r = rows().find((x) => {
     const t = x.innerText.replace(/^▶ /, "");
     return TITLES.some((re) => re.test(t)) || (!onceDone && ONCE.test(t));

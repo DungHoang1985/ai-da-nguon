@@ -1,0 +1,29 @@
+{
+ "phienBan": "v4.0",
+ "giay": 5,
+ "tongKet": "Tất cả đạt · 22/22 bước đạt",
+ "buoc": [
+  "✅ Xem tổng quan sổ tính — 1 sheet, đang mở \"Sheet1\"",
+  "✅ Tạo sheet thử — Đã tạo sheet \"AIDN_KT_fy2u\"",
+  "✅ Ghi giá trị + công thức — B4 = SUM(B2:B3) = 300",
+  "✅ Đọc lại dữ liệu — Đọc đúng giá trị và công thức",
+  "✅ Sắp xếp — 3,1,2 → 1,2,3",
+  "✅ Định dạng — Đậm, tô nền, kẻ viền, định dạng số",
+  "✅ Tạo bảng (Table) — Đã tạo bảng Table1 tại AIDN_KT_fy2u!A1:B4",
+  "✅ Vẽ biểu đồ — Đã vẽ biểu đồ column từ AIDN_KT_fy2u!A1:B3",
+  "✅ Xóa vùng — D1:D4 đã trống",
+  "✅ Cảnh báo trước khi ghi đè ô có dữ liệu — Ghi đè 2 ô đang có dữ liệu tại AIDN_KT_fy2u!A1:B1 (có thể Hoàn tác).",
+  "✅ Tìm kiếm — Thấy ở AIDN_KT_fy2u!B1",
+  "✅ Quét lỗi công thức — Có 1 ô lỗi: AIDN_KT_fy2u!F1 = #DIV/0!",
+  "✅ Lần ô được công thức tham chiếu — Nguồn của AIDN_KT_fy2u!B4: B4 ← B2:B3",
+  "✅ Định dạng có điều kiện — Thanh dữ liệu cho B2:B3 (1 quy tắc)",
+  "✅ Danh sách chọn — G2:G4 chọn Đạt / Chưa đạt",
+  "✅ Ghi chú vào ô — Đã thêm nhận xét vào AIDN_KT_fy2u!B4",
+  "✅ Lọc dữ liệu — Lọc > 150 ẩn đúng dòng 100, rồi bỏ lọc",
+  "✅ PivotTable — Đã tạo PivotTable \"PivotAIDNfzmp\" ở sheet Pivot",
+  "✅ Chèn hàng — Đã chèn 2 hàng tại 8",
+  "✅ Cố định dòng tiêu đề — Đã cố định 1 hàng đầu ở \"AIDN_KT_fy2u\"",
+  "✅ Chọn vùng kết quả — Đã chọn AIDN_KT_fy2u!A1:B4",
+  "✅ Hoàn tác từng thao tác — Hoàn tác 18 thao tác (cả nội dung lẫn định dạng), sổ tính trở lại như cũ"
+ ]
+}

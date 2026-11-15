@@ -1,0 +1,21 @@
+{
+ "phienBan": "v4.0",
+ "giay": 3,
+ "tongKet": "Tất cả đạt · 14/14 bước đạt",
+ "buoc": [
+  "✅ Xem tổng quan bài trình chiếu — 1 slide, 12 bố cục",
+  "✅ Thêm slide có tiêu đề + nội dung — Đã thêm slide 2 (bố cục \"Title and Content\")",
+  "✅ Sửa chữ trong hình — Đã đổi tiêu đề",
+  "✅ Thêm ô chữ — Đã thêm ô chữ ở slide 2",
+  "✅ Thêm hình — Đã thêm hình rounded_rectangle ở slide 2",
+  "✅ Thêm bảng — Đã thêm bảng 2×2 ở slide 2",
+  "✅ Biểu đồ gốc (sửa được dữ liệu) — Đã chèn biểu đồ gốc (sửa được dữ liệu) ở slide 3, bố cục \"Title Only\" của mẫu (1 biểu đồ, 1 bảng dữ liệu nhúng; slide dùng bố cục \"Title Only\", mẫu không bị thêm bố cục)",
+  "✅ Sơ đồ quy trình tự dàn trang — Đã vẽ sơ đồ chevron 4 bước ở slide 2 (đã nhóm)",
+  "✅ Sửa vị trí, màu, chữ của hình — Dời 60 → 90 điểm, đổi màu nền, cỡ chữ 12",
+  "✅ Nhân bản và di chuyển slide — Bản sao ở slide 3 → chuyển xuống cuối (slide 4)",
+  "✅ Xóa hình (hỏi trước, có hoàn tác) — Cảnh báo: \"Xóa hình \"TextBox 3\" trên slide 2 (có thể Hoàn tác).\" → đã xóa",
+  "✅ Xóa slide (hỏi trước, có hoàn tác) — Đã xóa slide 4",
+  "✅ Chuyển tới slide — Đã chuyển tới slide 2",
+  "✅ Hoàn tác toàn bộ — Hoàn tác 12 thao tác, bài trình chiếu trở lại như cũ"
+ ]
+}

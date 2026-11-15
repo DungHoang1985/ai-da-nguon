@@ -87,6 +87,62 @@ Kết luận:
 - Sửa đổi do add-in tạo mang tên tài khoản Office của người dùng; **ngày chỉ chính xác tới phút** (12:03:00 trong khi giờ máy 12:03:29) → không lọc "sửa đổi của lượt này" theo mốc thời gian được. Cách làm: chụp danh sách sửa đổi trước và sau mỗi công cụ ghi, phần chênh là của AI; Hoàn tác = từ chối đúng các sửa đổi đó. Thử từ chối 12 sửa đổi của add-in: 4 sửa đổi của "Đối tác" còn nguyên, hai đoạn thử trở về đúng trạng thái trước.
 - `Document.undo(1)` (WordApiDesktop 1.4) hoàn tác được một lần sửa của add-in, nhưng lẫn với thao tác tay của người dùng trong ngăn xếp Undo → không dùng làm lối chính.
 
-## Việc đã làm và kết quả
+## Kết quả Đợt 1A — bản 4.0.0 (15/11/2026 buổi tối, phiên trên máy)
 
-(ghi tiếp khi làm xong từng bước)
+**Mã xong, đã kiểm trong Word thật bằng bản đóng gói cục bộ; CHƯA phát hành** (chờ anh duyệt đẩy `main`). Nhánh `claude/dot-1a-9f0fea`.
+
+Cách kiểm trong Office: Office mở bằng lệnh kèm cổng gỡ lỗi WebView2 (`kiem-thu/mo-office.ps1`), khung add-in được điều khiển bằng `kiem-thu/cdp.mjs`. Bản 4.0.0 chưa phát hành được nạp vào khung bằng lệnh mới `node kiem-thu/cdp.mjs serve 9229 dist`: mọi yêu cầu tới địa chỉ add-in được trả bằng tệp trong `dist/` trên máy, không đẩy gì lên mạng; đầu khung hiện "v4.0" (ảnh 11). Đây vẫn là Word thật, model thật (Anthropic · Claude Haiku 5.5). Anh theo dõi bằng điện thoại nên không xin quyền điều khiển màn hình.
+
+### Bảng nghiệm thu
+
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| 1 | Bảng kết quả thăm dò ghi vào HANDOFF trước khi viết công cụ | **Đạt** — bảng ở trên và trong `tasks/HANDOFF.md`, commit `40f7380` có trước mọi commit mã | Tệp 01, 02, 03; `git log` |
+| 2 | 10 câu hỏi trên hợp đồng thử 54 trang: đúng số điều từ 9/10, mỗi câu không quá 4 bước công cụ | **Đạt** — 10/10 câu nêu đúng số điều và nội dung; 7 câu 1 bước, 2 câu 2 bước, 1 câu 3 bước. (Lần chạy đầu cũng 10/10 nhưng 2 câu tốn 5 và 7 bước vì tìm theo đúng chữ quá cứng → đã cho `word_find` tìm theo từng từ và thêm một dòng lời nhắc, rồi chạy lại) | Tệp 05 (54 trang, 165 đoạn, 168.800 ký tự), tệp 06 |
+| 3 | "Viết lại Điều 4.2…": sửa đúng đoạn; hai từ cách xa nhau ra đúng hai cặp xóa/thêm; chữ đậm giữa câu còn nguyên | **Đạt** — Tự kiểm tra: sửa 2 chỗ trong một đoạn ra đúng `Deleted:30 · Added:45 · Deleted:0,05% · Added:0,03%`, chữ "45" vẫn đậm, chữ hai bên vẫn thường. Chạy thật: ba chỗ sửa trong Điều 4.2 ra `Deleted "chưa" · Added "đã" · Deleted "ba" · Added "hai" · Added " Đơn giá này không áp dụng cho diện tích sân bãi."`, câu sau sửa đúng từng chữ, hai đoạn bên cạnh không đổi, sửa đổi của đối tác và sửa đổi trước đó trong đoạn còn nguyên | Tệp 04, 10 (bước "Sửa mức từ"), tệp 08 |
+| 4 | "Thêm một khoản sau 8.2": khoản mới mang số 8.3, khoản cũ thành 8.4, cùng kiểu chữ | **Đạt** — Tự kiểm tra: sau 1.2 (có điểm a) khoản mới = 1.3, khoản cũ thành 1.4, cùng kiểu; khoản con = 2.1(a); đổi cấp (a) → 2.2. Chạy thật trên hợp đồng: khoản mới = 8.3, khoản cũ thành 8.4, cùng kiểu Heading 2; AI tự tìm dẫn chiếu tới 8.3 để soát | Tệp 04, 10, tệp 09 |
+| 5 | Chèn hai đoạn phía trên rồi sửa theo số đoạn cũ: từ chối hoặc tự định vị lại, không sửa nhầm | **Đạt** — Kiểm thử máy (`locateParagraph`: 6 kiểm thử). Tự kiểm tra: số đoạn cũ 47 → công cụ tự sửa đúng [¶49], đoạn ở số cũ không bị đụng; nội dung không khớp → từ chối | `test/unit/dot1a.test.ts`; tệp 04, 10 |
+| 6 | 30 sửa đổi và 5 nhận xét của "đối tác": tóm tắt đủ 30 kèm số điều; xử lý cả 5 nhận xét bằng Track Changes và trả lời từng nhận xét | **Đạt** — Lượt 1 (1 bước công cụ, 25 giây): nêu đúng tổng số 30, đủ 18/18 điều có sửa đổi kèm số điều và số đoạn. Lượt 2: 5 chỗ sửa đúng yêu cầu từng nhận xét (420.000 đồng; 02 tháng; trong vòng 05 Ngày Làm Việc; 05 năm; 20 ngày), ghi thành 10 sửa đổi có theo dõi; 5/5 nhận xét có câu trả lời; 30 sửa đổi của đối tác còn nguyên; không đánh dấu đã xử lý (đúng yêu cầu) | Tệp 07 |
+| 7 | Sau 3 thao tác ghi và 1 nhận xét, bấm Hoàn tác: văn bản về như trước | **Đạt** — Tự kiểm tra: 4 thao tác (viết lại đoạn, thay cụm từ, chèn khoản, thêm nhận xét) rồi hoàn tác: số sửa đổi, số nhận xét, số đoạn, chữ của vùng thử y như trước; kể cả khoản chèn sát một khoản đang chờ duyệt (Word gộp hai sửa đổi) và lần sửa bên trong khoản chờ duyệt. Chạy thật: bấm nút "Hoàn tác thay đổi (3)" trên khung sau bài viết lại Điều 4.2 → khung báo "Đã hoàn tác 3 thao tác", đoạn và số sửa đổi (40) về đúng như trước | Tệp 04, 10 (bước "Hoàn tác"), tệp 08 |
+| 8 | Bảng đối chiếu từng bài với add-in Claude chính thức | **Chưa kiểm được** — cần anh ngồi trước máy mở add-in Claude chính thức (có tài khoản của anh) và chạy cùng 5 bài; bài và tệp thử đã sẵn (xem mục "Việc cần anh") | — |
+| 9 | Tự kiểm tra Word trong vùng cô lập, mỗi công cụ có bước, phần ngoài vùng thử không đổi | **Đạt 30/30** trên ba văn bản: văn bản trống; văn bản thăm dò (41 đoạn, 7 sửa đổi); hợp đồng 54 trang (166 đoạn, 41 sửa đổi, 5 nhận xét). Bước cuối so lại phần ngoài vùng thử: số đoạn, chữ, kiểu, số sửa đổi, số nhận xét, chế độ theo dõi đều y nguyên. 23/23 công cụ Word có bước | Tệp 04 (hợp đồng), tệp 10 (văn bản trống) |
+| 10 | `npm test`, kiểm kiểu, đóng gói; Excel, PowerPoint không giảm | **Đạt** — `npm test` 195/195 (150 cũ + 45 mới), `npx tsc --noEmit -p .` sạch, `npm run build` đạt. Tự kiểm tra bản 4.0: Excel 22/22; PowerPoint 13/14 lần đầu trên bài mới rồi 14/14 lần hai (đúng như bản 3.7.0: lỗi cũ "Biểu đồ gốc thêm một bố cục", để Đợt 3) | Tệp 12, 13, 13b |
+
+### Việc đã làm theo 9 mục của kế hoạch
+
+1. **Thăm dò** — xong (bảng ở trên). Bước "Bộ API Word máy hỗ trợ" nằm đầu Tự kiểm tra.
+2. **Mục lục điều khoản** — `src/core/outline.ts` (thuần): số do Word tự đánh (ghép nhãn cấp con với cấp cha thành "1.2(a)"), số gõ tay ("Điều 7.", "7.1", "a)", "(ii)", khoản "1." dưới "Điều 5" → 5.1), Chương / Mục / Phụ lục, tiêu đề không đánh số; phạm vi đoạn của từng điều. Công cụ `word_get_outline`. Mọi kết quả đọc kèm số điều (`num`); tổng quan văn bản gửi cho AI có mục lục cấp cao nhất.
+3. **Tìm và đọc theo điều** — `word_find` (tìm trên bản hiện tại, không phân biệt hoa thường; không thấy thì thử bỏ dấu, rồi tìm theo từng từ và xếp đoạn khớp nhất lên đầu), `word_read_clause` ("Điều 5", "5.3(a)", "khoản 2 Điều 5", "Chương II"). Lời nhắc hệ thống và 4 kỹ năng pháp lý xem mục lục trước; có kiểm thử chặn kỹ năng nhắc tên công cụ không tồn tại.
+4. **Chống sửa nhầm đoạn** — tham số `expect` (mấy chữ đầu của đoạn như AI đã đọc), bắt buộc với sửa đoạn, xóa đoạn, chèn điều khoản, đổi cấp: lệch thì tự định vị lại nếu chỉ một đoạn khớp, không thì từ chối kèm ứng viên. `word_replace_text` có phạm vi (đoạn nào, lần thứ mấy); nhiều chỗ khớp mà chưa chỉ rõ thì không thay, trả danh sách. Hộp xác nhận xóa hiện trích nội dung từng đoạn. Kết quả chèn trả chỉ số mới. Định danh đoạn ổn định (`uniqueLocalId`) dùng nội bộ: số đoạn của nhận xét, sửa đổi, đoạn vừa chèn, và Hoàn tác.
+5. **Sửa mức từ** — `src/core/worddiff.ts` (thuần): so khác theo từ, nhiều chỗ trong một đoạn, định vị bằng "lần xuất hiện thứ k" trên chuỗi Word dùng để tìm; áp trong một lần `sync`. `word_replace_text` cũng chỉ đổi đúng từ khác đi khi cụm cũ và mới có phần chung. Viết lại gần hết một đoạn sạch (trên 60% và từ 4 chỗ) thì thay cả đoạn cho dễ đọc. Sau khi sửa, công cụ đọc lại đoạn và báo nếu câu khác câu yêu cầu.
+6. **Văn bản đang có sửa đổi** — đọc bản hiện tại (`getText`), cờ `changed` / `deleted`, `view: "original"` cho bản gốc; kết quả tìm và thay bỏ qua chữ đã xóa; trên đoạn đang có sửa đổi chờ duyệt không bao giờ thay cả đoạn. `word_list_revisions`: gộp theo đoạn, kèm số điều, câu trước/sau, phân trang theo ngân sách, lọc theo tác giả, đếm theo tác giả. `word_review_revision`: đối chiếu chữ của từng sửa đổi trước khi duyệt; duyệt tất cả của một tác giả.
+7. **Chèn điều khoản** — `word_insert_clause` (kế thừa kiểu và đánh số; chèn sau toàn bộ điều neo gồm khoản con; cùng cấp / xuống cấp / lên cấp; trả số mới và số của điều kế sau), `word_change_level`. `word_insert_paragraphs`: dòng "5. Thanh toán" đứng lẻ giữ nguyên số (chỉ hai dòng "1." "2." trở lên mới thành danh sách); chèn sau đoạn chữ thường thì giữ kiểu của đoạn đó; sửa lỗi tạo gạch đầu dòng sau tiêu đề có gắn đánh số.
+8. **Hoàn tác cho Word** — mỗi công cụ ghi chụp danh sách sửa đổi trước và sau; phần mới hẳn được hoàn tác bằng từ chối đúng các sửa đổi đó; phần bị Word gộp vào sửa đổi có từ trước được hoàn tác bằng cách khác (gỡ đoạn đã chèn theo định danh, đưa câu về chữ cũ). Nhận xét, câu trả lời, trạng thái đã xử lý: gỡ theo id. Chấp nhận / từ chối sửa đổi: không hoàn tác được, công cụ nói rõ.
+9. **Tự kiểm tra Word trong vùng cô lập** — `src/office/selftestWord.ts`, 30 bước, vùng thử nằm giữa hai đoạn mốc đặt trước đoạn cuối của văn bản.
+
+Ngoài kế hoạch, làm kèm vì cùng chỗ: cảnh báo rủi ro Word thêm hai loại (xóa hết chữ một đoạn; xóa một cụm ở nhiều chỗ); định dạng và nhận xét phải chỉ rõ vị trí (hết mặc nhiên dùng vùng chọn); "giai đoạn 2", "công đoạn 4" không còn thành liên kết tới đoạn; `kiem-thu/cdp.mjs serve` (nạp bản cục bộ), `kiem-thu/mo-office.ps1` (mở và đóng Office thử an toàn), `kiem-thu/docx-thu.mjs` và `kiem-thu/hop-dong-thu.mjs` (dựng tệp thử).
+
+### Giới hạn đã biết (chưa làm, có ghi chỗ)
+
+- Số của trường LISTNUM và AUTONUM không đọc được (hiếm gặp).
+- Điều cuối của văn bản kéo tới hết văn bản (gồm cả phần chữ ký) vì không có mốc kết thúc.
+- Danh sách liệt kê gõ tay "1. 2." nằm trong một điều cũng gõ tay "1. 2." không phân biệt được bằng mã (danh sách do Word đánh thì phân biệt được nhờ mã danh sách).
+- `word_format_text`, `word_fill_table`, `word_delete_paragraphs`, `word_replace_selection`: Hoàn tác bằng từ chối sửa đổi; nếu sửa đổi bị gộp vào sửa đổi có từ trước thì báo không hoàn tác riêng được.
+- Liên kết bấm theo số điều ("Điều 5.3") trong câu trả lời: chưa làm; AI dẫn "Điều 5.3 [¶57]" và phần [¶57] bấm được.
+- Bảng có ô gộp, bảng lồng; chú thích, đầu/chân trang, bookmark, hộp văn bản: Đợt 1B.
+- Soát lại hình thức bằng model sau khi sửa (bản chính thức có): chưa làm; hiện công cụ tự đọc lại câu sau khi sửa.
+
+### Ghi nhận khi kiểm
+
+- Bản 4.0 gửi khoảng 25.800 token đầu vào cho một câu hỏi một bước (lời nhắc + 23 công cụ Word + trạng thái văn bản có mục lục 34 điều); với Anthropic gần hết đọc từ bộ nhớ đệm từ lượt hai.
+- Model (Haiku 5.5) thích dùng `word_replace_text` nhiều lần hơn `word_set_paragraph_text` với đoạn dài; cả hai lối nay đều cho dấu sửa đổi nhỏ nhất.
+- PowerPoint thoát chậm sau lệnh đóng (hơn 10 giây); script chờ tới 20 giây.
+
+### Dọn dẹp sau khi kiểm
+
+Đã xóa 25 hội thoại thử (lịch sử Word trở về 3 như trước), chọn lại nguồn OpenRouter, đóng Word, Excel, PowerPoint không lưu tệp thử, cổng gỡ lỗi đã đóng. Tệp thử nằm trong thư mục tạm của phiên, không vào kho. Thư mục bằng chứng đã soát: không chứa tên tài khoản Office.
+
+## Việc cần anh
+
+1. **Duyệt phát hành 4.0.0** (đẩy nhánh này lên `main`): sau khi phát hành tôi chạy lại Tự kiểm tra Word trên bản tải từ GitHub Pages.
+2. **Bài đối chiếu với add-in Claude chính thức** (tiêu chí 8), khi anh ngồi trước máy: mở tệp hợp đồng thử (tạo bằng `node kiem-thu/hop-dong-thu.mjs <tệp>`) trong Word, mở add-in Claude, lần lượt giao 5 bài: (a) "Điều 18.2(b) nói gì?"; (b) "Lãi chậm thanh toán được quy định ở điều nào và mức bao nhiêu?"; (c) "Tóm tắt toàn bộ các sửa đổi của đối tác, liệt kê đủ theo số điều"; (d) "Xử lý cả 5 nhận xét của đối tác bằng Track Changes và trả lời từng nhận xét"; (e) "Thêm một khoản mới ngay sau Điều 8.2…". Tôi ghi bảng đạt ngang / kém / hơn.
