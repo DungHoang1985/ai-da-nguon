@@ -268,6 +268,8 @@ Bộ nhớ dài hạn giữa các hội thoại · tải bản ghi hội thoại
 
 ## 7. Sửa bảng so sánh (làm ở Đợt 0A)
 
+> **Đã làm 15/11/2026** (bước 9 Đợt 0A): `docs/so-sanh-claude-chinh-thuc.md` nay 67 dòng. Đối chiếu lại tài liệu cùng ngày: mọi điểm dưới đây còn đúng. "Phát hiện va chạm khi người dùng đang sửa" có thật nhưng chỉ ở Excel và chỉ là bộ đếm trong trang OpenTelemetry (`office_agent.cell_edit_collision_total`), tài liệu không tả người dùng thấy gì. Phím tắt Ctrl+Alt+C xác nhận lại bằng `pivot.claude.ai/shortcuts.json` tải từ máy. Dòng 42 ghi quá ở bản 3.5; từ 3.6 (bỏ công tắc) là đúng. Outlook không thêm dòng mới mà sửa dòng 23.
+
 - **Sai, phải sửa:** dòng 10 và câu tổng hợp (lối gateway của bản chính thức nay có Skills và tệp đính kèm, chỉ thiếu chéo ứng dụng và đọc giọng nói); ghi chú bỏ Ctrl+Alt+C (phím tắt vẫn còn).
 - **Hết nguồn xác minh:** dòng 34–37 (bốn bài hỗ trợ đã gộp vào trang tài liệu, các chi tiết này không còn).
 - **Ghi quá mức thực tế của AI Đa Nguồn:** dòng 5, 41, 42, 44, 45 (phần Word).

@@ -97,6 +97,15 @@ export function diffMiddle(oldText: string, newText: string): { prefix: string; 
 }
 
 /** Word coi ^ là ký tự đặc biệt trong tìm kiếm */
+/**
+ * Số chỗ tối đa được thay trong một lần gọi. Model hay truyền 0 hoặc -1 với ý "tất cả":
+ * giá trị không phải số nguyên dương thì dùng mặc định, không được ra số âm (thay 0 chỗ mà vẫn báo "đã thay").
+ */
+export function replaceLimit(v: any, def = 50): number {
+  const n = Math.floor(Number(v));
+  return Number.isFinite(n) && n >= 1 ? n : def;
+}
+
 export function escapeWordSearch(s: string): string {
   return s.replace(/\^/g, "^^");
 }

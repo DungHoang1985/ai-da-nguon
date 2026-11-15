@@ -1,0 +1,12 @@
+Kiểm tra nhà cung cấp — bản 3.6, chạy trong Word (khung add-in), 12:10:25 15/11/2026
+Nguồn: nút "Chép kết quả" trong Cài đặt → Kiểm tra nhà cung cấp → "Kiểm tra từng nguồn".
+
+Từng nguồn (gọi công cụ → nhận kết quả → trả lời): đạt 4/8
+- OpenRouter · thinkingmachines/inkling-2-small:free: KHÔNG ĐẠT — Key không đúng hoặc không có quyền (thinkingmachines/inkling-2-small:free is only available on agentic harnesses. Try plugging it into a coding agent or productivity app listed on https://openrouter.ai/apps)
+- Google Gemini · gemini-3.8-flash: KHÔNG ĐẠT — Tài khoản hết tiền hoặc cần nạp thêm (Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. )
+- Groq · openai/gpt-oss-20b: ĐẠT — Đạt (1,6 giây)
+- Anthropic (Claude) · claude-haiku-5-5: ĐẠT — Đạt (1,8 giây)
+- OpenAI · gpt-5.5: KHÔNG ĐẠT — OpenAI trả về lỗi nhưng không cho add-in đọc chi tiết. Thường do: key sai hoặc hết hạn, tài khoản hết tiền, hoặc tài khoản chưa được dùng model “gpt-5.5” (OpenAI yêu cầu xác minh tổ chức với một số model mới). Kiểm tra key và số dư trên trang OpenAI, hoặc chọn model khác.
+- Cerebras · gpt-oss-120b: ĐẠT — Đạt (1,0 giây)
+- DeepSeek · deepseek-v4-pro: KHÔNG ĐẠT — Tài khoản hết tiền hoặc cần nạp thêm (Insufficient Balance (request_id: 33e8b87d-e50b-4672-9c85-fe4caed291f6))
+- Cohere · command-a-03-2025: ĐẠT — Đạt (2,2 giây)

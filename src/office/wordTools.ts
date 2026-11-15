@@ -10,6 +10,7 @@ import {
   packParagraphs,
   paragraphIndex,
   parseMarkdownLine,
+  replaceLimit,
   takeWithinBudget,
   truncate,
 } from "./util";
@@ -49,7 +50,7 @@ export const WORD_SPECS: ToolSpec[] = [
         replace: { type: "string" },
         match_case: { type: "boolean" },
         whole_word: { type: "boolean" },
-        max_replacements: { type: "number", description: "Default 50." },
+        max_replacements: { type: "number", description: "Positive integer, default 50. Omit to replace every match (up to 50)." },
       },
       required: ["find", "replace"],
     },
@@ -392,7 +393,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             });
             res.load("items");
             await ctx.sync();
-            const n = Math.min(res.items.length, Number(a.max_replacements) || 50);
+            const n = Math.min(res.items.length, replaceLimit(a.max_replacements));
             for (let i = 0; i < n; i++) res.items[i].insertText(String(a.replace ?? ""), "Replace");
             await ctx.sync();
             return {

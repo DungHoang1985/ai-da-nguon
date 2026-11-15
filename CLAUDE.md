@@ -1,13 +1,13 @@
 # AI Đa Nguồn — add-in AI cho Word, Excel, PowerPoint
 
-Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v3.5**; kế hoạch lên v4 (bản 2) đã duyệt ngày 15/11/2026.
+Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v3.6**; kế hoạch lên v4 (bản 2) đã duyệt ngày 15/11/2026.
 
 ## Đọc trước khi làm bất cứ việc gì
 
 1. `tasks/HANDOFF.md` — trạng thái, quyết định, vấn đề mở, bài học.
 2. `tasks/ke-hoach-v4.md` — hiện trạng đã kiểm, phương án đăng nhập, kế hoạch theo đợt (0A, 0B, 1A, 1B, 2, 3, 4) và tiêu chí nghiệm thu. Bằng chứng rà soát: `tasks/ra-soat-2026-11-15/DOC-TRUOC.md`.
-3. `tasks/dot-0.md` — việc cụ thể của đợt đang làm.
-4. `docs/so-sanh-claude-chinh-thuc.md` — bảng so sánh 55 khả năng với bản chính thức.
+3. `tasks/dot-0b.md` — việc cụ thể của đợt đang làm (Đợt 0A: `tasks/dot-0.md`, đã xong).
+4. `docs/so-sanh-claude-chinh-thuc.md` — bảng so sánh 67 khả năng với bản chính thức.
 
 ## Nguồn mã
 
@@ -29,7 +29,7 @@ src/core/            lõi không phụ thuộc Office, kiểm thử được b�
   conversations.ts db.ts share.ts attachments.ts refs.ts
 src/office/          công cụ Office.js: excel*, word*, ppt*, common, selftest (nút Tự kiểm tra)
 src/taskpane/components/   App.tsx, Chat.tsx (điều phối + giao diện), Settings.tsx
-test/unit/           mocha, 71 kiểm thử
+test/unit/           mocha, 120 kiểm thử
 cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry WEF\Developer)
 ```
 
@@ -37,7 +37,7 @@ cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry W
 
 ```
 npm ci                      # .npmrc phải trỏ registry.npmjs.org
-npm test                    # 71/71 phải đạt
+npm test                    # 120/120 phải đạt
 npx tsc --noEmit -p .       # không lỗi kiểu
 npm run build               # ra dist/, manifest tự đổi sang địa chỉ GitHub Pages
 ```

@@ -281,19 +281,25 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
     });
     await step("Tắt Track Changes rồi AI sửa: vẫn ghi có theo dõi", async () => {
       if (!Office.context.requirements.isSetSupported("WordApi", "1.6")) throw new Skip("Word chưa hỗ trợ đếm Track Changes");
+      // Đoạn thường, chèn khi đang tắt theo dõi. Không sửa trong đoạn AI vừa chèn: đoạn đó còn là sửa đổi chờ duyệt,
+      // Word gộp chỗ sửa mới vào sửa đổi cũ nên số sửa đổi không tăng (bản 3.6 báo lỗi nhầm "2 → 2").
+      const plain = "AIDN đoạn thường chưa theo dõi";
       const before = await Word.run(async (ctx) => {
         ctx.document.load("changeTrackingMode");
         await ctx.sync();
         const prev = ctx.document.changeTrackingMode;
         ctx.document.changeTrackingMode = Word.ChangeTrackingMode.off;
+        ctx.document.body.insertParagraph(plain, "End");
+        await ctx.sync();
         const tc = ctx.document.body.getTrackedChanges();
         tc.load("items");
         await ctx.sync();
         return { prev, n: tc.items.length };
       });
       let after = { n: 0, mode: "" as string };
+      let replaced = 0;
       try {
-        await run("word_replace_text", { find: "Ý thứ nhất", replace: "Ý thứ nhất (đã sửa)" });
+        replaced = (await run("word_replace_text", { find: plain, replace: plain + " (đã sửa)" })).replaced;
       } finally {
         after = await Word.run(async (ctx) => {
           const tc = ctx.document.body.getTrackedChanges();
@@ -306,6 +312,7 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
           return { n: tc.items.length, mode };
         });
       }
+      expect(replaced === 1, `Thay ${replaced} chỗ (phải là 1)`);
       expect(after.n > before.n, `Sửa đổi được theo dõi: ${before.n} → ${after.n}`);
       expect(after.mode === "Off", `Sau khi AI sửa, chế độ là ${after.mode} (phải trả lại Off như người dùng đặt)`);
       return `Track Changes đang tắt: sửa đổi vẫn được ghi (${before.n} → ${after.n}), trả lại chế độ Off`;

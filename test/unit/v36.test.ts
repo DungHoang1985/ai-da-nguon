@@ -3,6 +3,7 @@ import * as assert from "assert";
 import { getProvider } from "../../src/core/providers";
 import { buildStepRequest, callModelStep } from "../../src/core/agent/llm";
 import { displayVersion, APP_VERSION } from "../../src/core/version";
+import { replaceLimit } from "../../src/office/util";
 
 const P = (id: string) => getProvider(id)!;
 
@@ -121,5 +122,17 @@ describe("Đợt 0A – bước 8: ba lỗi Word", () => {
     assert.strictEqual(j.headings_truncated, true);
     assert.strictEqual(j.headings_total, 100);
     assert.ok(Object.keys(j).indexOf("selection") < Object.keys(j).indexOf("headings"), "vùng chọn đứng trước danh sách tiêu đề");
+  });
+});
+
+describe("Đợt 0A – bước 9: số chỗ thay tối đa của word_replace_text", () => {
+  it("Model truyền -1, 0, chuỗi lạ hay bỏ trống thì dùng mặc định 50, không ra số âm", () => {
+    for (const v of [-1, 0, undefined, null, "", "all", NaN, -Infinity]) assert.strictEqual(replaceLimit(v), 50, String(v));
+  });
+  it("Số nguyên dương thì giữ; số lẻ làm tròn xuống; chuỗi số vẫn nhận", () => {
+    assert.strictEqual(replaceLimit(1), 1);
+    assert.strictEqual(replaceLimit(3.9), 3);
+    assert.strictEqual(replaceLimit("7"), 7);
+    assert.strictEqual(replaceLimit(0.5), 50);
   });
 });
