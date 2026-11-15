@@ -1,9 +1,9 @@
 /** Gọi model một bước, có khai báo công cụ, nhận chữ chạy dần + các lệnh gọi công cụ. 3 kiểu API: OpenAI-compatible, Anthropic, Gemini. */
 import { Provider } from "../providers";
 import { anthropicHeaders } from "../models";
-import { ApiError, ensureOk, fetchDiagnosed } from "../errors";
+import { ApiError, ensureOk, fetchDiagnosed, isRetryable } from "../errors";
 import { createSSEParser } from "../sse";
-import { AgentMessage, StepResult, ToolCall, ToolSpec } from "./types";
+import { AgentMessage, StepResult, ToolCall, ToolSpec, Usage } from "./types";
 import { prepareHistory } from "./history";
 
 const ID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -52,6 +52,15 @@ export function toGeminiSchema(schema: any): any {
   return out;
 }
 
+/** Trần độ dài đầu ra gửi cho Anthropic. Biết trần của model (Models API, trường max_tokens) thì dùng, tối đa 32.000;
+ *  không biết thì theo đời model: Claude 3 là 4.096, Claude 3.5 là 8.192, còn lại 16.000 (mọi model từ 3.7 đều nhận). */
+export function anthropicMaxTokens(model: string, modelMax?: number): number {
+  if (modelMax && modelMax > 0) return Math.min(Math.floor(modelMax), 32000);
+  if (/claude-3-(haiku|opus|sonnet)/.test(model)) return 4096;
+  if (/claude-3-5/.test(model)) return 8192;
+  return 16000;
+}
+
 function hasParams(t: ToolSpec): boolean {
   return !!t.parameters && Object.keys(t.parameters.properties || {}).length > 0;
 }
@@ -63,7 +72,7 @@ export function buildStepRequest(
   model: string,
   messages: AgentMessage[],
   tools: ToolSpec[],
-  opts: { webSearch?: boolean; vision?: boolean } = {}
+  opts: { webSearch?: boolean; vision?: boolean; maxOutput?: number } = {}
 ): { url: string; init: RequestInit } {
   const system = messages
     .filter((m) => m.role === "system")
@@ -95,13 +104,21 @@ export function buildStepRequest(
         out.push({ role: "assistant", content: blocks });
       }
     }
+    // Bộ nhớ đệm lời nhắc: một mốc ở cuối lời nhắc hệ thống (phủ cả danh sách công cụ, đứng trước trong thứ tự dựng),
+    // một mốc ở khối cuối của tin nhắn cuối (phủ phần hội thoại đã có). Lịch sử chỉ thêm nên lượt sau đọc lại được phần đầu.
+    const CACHE = { type: "ephemeral" };
+    const lastMsg = out[out.length - 1];
+    if (lastMsg?.content?.length) {
+      const i = lastMsg.content.length - 1;
+      lastMsg.content[i] = { ...lastMsg.content[i], cache_control: CACHE };
+    }
     const body: any = {
       model,
-      max_tokens: /claude-3-(haiku|opus|sonnet)/.test(model) ? 4096 : 8192,
+      max_tokens: anthropicMaxTokens(model, opts.maxOutput),
       stream: true,
       messages: out,
     };
-    if (system) body.system = system;
+    if (system) body.system = [{ type: "text", text: system, cache_control: CACHE }];
     if (tools.length) {
       body.tools = tools.map((t) => ({
         name: t.name,
@@ -169,9 +186,10 @@ export function buildStepRequest(
         },
       ];
     }
+    // Key đi trong tiêu đề, không nằm trong đường dẫn (đường dẫn dễ lọt vào nhật ký, thông báo lỗi)
     return {
-      url: `${provider.baseUrl}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`,
-      init: { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) },
+      url: `${provider.baseUrl}/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`,
+      init: { method: "POST", headers: { "content-type": "application/json", "x-goog-api-key": key }, body: JSON.stringify(body) },
     };
   }
 
@@ -220,6 +238,19 @@ export function buildStepRequest(
 export function createStepAccumulator(kind: string, onText: (d: string) => void) {
   let text = "";
   let finishReason: string | undefined;
+  let usage: Usage | undefined;
+  const num = (v: any): number | undefined => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
+  // Anthropic báo token rải ở message_start (đầu vào) và message_delta (đầu ra): gom dần
+  const anth: { in?: number; out?: number; cr?: number; cw?: number } = {};
+  const mergeAnthropic = (u: any) => {
+    if (!u) return;
+    anth.in = num(u.input_tokens) ?? anth.in;
+    anth.out = num(u.output_tokens) ?? anth.out;
+    anth.cr = num(u.cache_read_input_tokens) ?? anth.cr;
+    anth.cw = num(u.cache_creation_input_tokens) ?? anth.cw;
+    // input_tokens của Anthropic KHÔNG gồm phần đệm → cộng lại để "input" là tổng đầu vào
+    usage = { input: (anth.in || 0) + (anth.cr || 0) + (anth.cw || 0), output: anth.out, cacheRead: anth.cr, cacheWrite: anth.cw };
+  };
   // OpenAI
   const oaCalls: { id: string; name: string; args: string }[] = [];
   let lastKey = -1;
@@ -245,10 +276,17 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
       }
       if (j?.error) {
         const msg = j.error.message || (typeof j.error === "string" ? j.error : JSON.stringify(j.error));
-        throw new ApiError(`Nhà cung cấp báo lỗi: ${msg}`);
+        // Lỗi giữa luồng không có mã HTTP: suy ra từ loại lỗi để biết có nên tự thử lại
+        const type = String(j.error.type || "");
+        const code = Number(j.error.code ?? j.error.status);
+        const status =
+          type === "overloaded_error" ? 529 : type === "rate_limit_error" ? 429 : type === "api_error" ? 500 : code >= 400 && code < 600 ? code : undefined;
+        throw new ApiError(`Nhà cung cấp báo lỗi: ${msg}`, status);
       }
       if (kind === "anthropic") {
-        if (j.type === "content_block_start") {
+        if (j.type === "message_start") {
+          mergeAnthropic(j.message?.usage);
+        } else if (j.type === "content_block_start") {
           const b = j.content_block || {};
           blocks[j.index] = { type: b.type, id: b.id, name: b.name, json: "" };
           if (b.type === "text" && b.text) addText(b.text);
@@ -261,10 +299,19 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
           }
         } else if (j.type === "message_delta") {
           finishReason = j.delta?.stop_reason || finishReason;
+          mergeAnthropic(j.usage);
         }
         return;
       }
       if (kind === "gemini") {
+        const um = j?.usageMetadata;
+        if (um) {
+          usage = {
+            input: num(um.promptTokenCount),
+            output: (num(um.candidatesTokenCount) || 0) + (num(um.thoughtsTokenCount) || 0) || undefined,
+            cacheRead: num(um.cachedContentTokenCount),
+          };
+        }
         const cand = j?.candidates?.[0];
         if (!cand) return;
         for (const p of cand.content?.parts || []) {
@@ -280,6 +327,15 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
         }
         if (cand.finishReason) finishReason = cand.finishReason;
         return;
+      }
+      // Khối cuối của nhiều nguồn kiểu OpenAI chỉ có usage, không có choices (Groq đặt trong x_groq)
+      const u = j?.usage || j?.x_groq?.usage;
+      if (u && (num(u.prompt_tokens) !== undefined || num(u.completion_tokens) !== undefined)) {
+        usage = {
+          input: num(u.prompt_tokens),
+          output: num(u.completion_tokens),
+          cacheRead: num(u.prompt_tokens_details?.cached_tokens) ?? num(u.prompt_cache_hit_tokens),
+        };
       }
       const choice = j?.choices?.[0];
       if (!choice) return;
@@ -307,15 +363,15 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
           .map((i) => blocks[i])
           .filter((b) => b.type === "tool_use" && b.name)
           .map((b) => ({ id: b.id || newCallId(), name: b.name!, args: parseArgs(b.json) }));
-        return { text, toolCalls: calls, finishReason };
+        return { text, toolCalls: calls, finishReason, truncated: finishReason === "max_tokens", usage };
       }
       if (kind === "gemini") {
-        return { text, toolCalls: gCalls, raw: { kind: "gemini", parts: gParts }, finishReason };
+        return { text, toolCalls: gCalls, raw: { kind: "gemini", parts: gParts }, finishReason, truncated: finishReason === "MAX_TOKENS", usage };
       }
       const calls = oaCalls
         .filter((c) => c && c.name)
         .map((c) => ({ id: c.id || newCallId(), name: c.name, args: parseArgs(c.args) }));
-      return { text, toolCalls: calls, finishReason };
+      return { text, toolCalls: calls, finishReason, truncated: finishReason === "length", usage };
     },
   };
 }
@@ -331,7 +387,36 @@ export function isToolUnsupportedError(e: any): boolean {
   return (status === 400 || status === 404 || status === 422 || status === undefined) && NO_TOOL_SUPPORT.test(msg);
 }
 
-export async function callModelStep(opts: {
+/** Khoảng chờ trước mỗi lần tự thử lại (mili giây). Số phần tử = số lần thử lại tối đa. */
+export const RETRY_DELAYS_MS = [2000, 6000, 15000];
+/** Nhà cung cấp bảo chờ lâu hơn mức này (giây) thì không tự chờ, báo người dùng luôn. */
+export const MAX_RETRY_AFTER_S = 60;
+
+/** Chờ có thể hủy bằng nút Dừng. */
+export function sleepAbortable(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) return reject(new DOMException("Đã dừng", "AbortError"));
+    const onAbort = () => {
+      clearTimeout(t);
+      reject(new DOMException("Đã dừng", "AbortError"));
+    };
+    const t = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
+export interface RetryInfo {
+  /** Lần thử lại thứ mấy (từ 1) */
+  attempt: number;
+  max: number;
+  waitMs: number;
+  reason: string;
+}
+
+export interface CallModelOptions {
   provider: Provider;
   key: string;
   model: string;
@@ -343,10 +428,46 @@ export async function callModelStep(opts: {
   webSearch?: boolean;
   /** Model đích nhận ảnh (true/false/không rõ) */
   vision?: boolean;
-}): Promise<StepResult> {
+  /** Trần độ dài đầu ra của model nếu biết (Anthropic) */
+  maxOutput?: number;
+  /** Được gọi trước mỗi lần chờ để thử lại */
+  onRetry?: (info: RetryInfo) => void;
+  /** Thay bảng khoảng chờ (kiểm thử); mảng rỗng = không thử lại */
+  retryDelaysMs?: number[];
+  sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
+}
+
+/** Gọi model một bước; tự thử lại khi nhà cung cấp quá tải hoặc hết hạn mức tạm thời (429, 5xx, 529),
+ *  miễn là chưa có chữ nào hiện ra cho người dùng (tránh lặp chữ) và người dùng chưa bấm Dừng. */
+export async function callModelStep(opts: CallModelOptions): Promise<StepResult> {
+  const delays = opts.retryDelaysMs ?? RETRY_DELAYS_MS;
+  for (let attempt = 0; ; attempt++) {
+    let emitted = false;
+    try {
+      return await callModelOnce({
+        ...opts,
+        onText: (d) => {
+          emitted = true;
+          opts.onText(d);
+        },
+      });
+    } catch (e: any) {
+      if (opts.signal?.aborted || emitted || !isRetryable(e) || attempt >= delays.length) throw e;
+      const ra: number | undefined = e.retryAfter;
+      if (ra !== undefined && ra > MAX_RETRY_AFTER_S) throw e;
+      const waitMs = ra !== undefined ? Math.max(Math.ceil(ra * 1000), delays[attempt]) : delays[attempt];
+      const reason = e.status === 429 ? "hết hạn mức tạm thời" : e.status === 529 ? "nhà cung cấp quá tải" : `máy chủ nhà cung cấp lỗi ${e.status}`;
+      opts.onRetry?.({ attempt: attempt + 1, max: delays.length, waitMs, reason });
+      await (opts.sleep || sleepAbortable)(waitMs, opts.signal);
+    }
+  }
+}
+
+async function callModelOnce(opts: CallModelOptions): Promise<StepResult> {
   const { url, init } = buildStepRequest(opts.provider, opts.key, opts.model, opts.messages, opts.tools, {
     webSearch: opts.webSearch,
     vision: opts.vision,
+    maxOutput: opts.maxOutput,
   });
   const fetchFn = opts.fetchFn || fetch;
   const res = await fetchDiagnosed(opts.provider, url, { ...init, signal: opts.signal }, fetchFn, opts.model);

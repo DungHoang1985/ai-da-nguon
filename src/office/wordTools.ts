@@ -814,7 +814,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     specs: WORD_SPECS.map((sp) => (RISK[sp.name] ? { ...sp, risky: async (a: any) => RISK[sp.name](a) } : sp)),
     execute,
     overview,
-    systemPrompt: (ov) =>
+    systemPrompt: () =>
       [
         "Bạn là trợ lý AI được tích hợp trong Microsoft Word, có thể thao tác trực tiếp trên văn bản đang mở bằng các công cụ (word_*).",
         "Nguyên tắc:",
@@ -824,9 +824,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         "- Rà soát văn bản/hợp đồng: ghi nhận xét đúng chỗ bằng word_add_comment; chỉ sửa trực tiếp khi được yêu cầu.",
         "- Giữ nguyên văn phong, định dạng; không tự bịa số hiệu văn bản, điều khoản hay căn cứ pháp lý.",
         "- Xong việc: trả lời ngắn gọn bằng tiếng Việt: đã sửa/chèn gì, ở đoạn nào.",
-        "",
-        "Trạng thái hiện tại của văn bản (JSON):",
-        overviewForPrompt(ov),
       ].join("\n"),
+    stateText: (ov) => `Trạng thái hiện tại của văn bản (JSON):\n${overviewForPrompt(ov)}`,
   };
 }

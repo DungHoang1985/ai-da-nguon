@@ -30,10 +30,9 @@ import { getProvider } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { describeError, networkErrorMessage } from "../../core/errors";
 import { useCatalog } from "./useCatalog";
-import { AgentMessage, ToolCall, UndoEntry } from "../../core/agent/types";
-import { compactHistory, runAgent } from "../../core/agent/loop";
-import { callModelStep, isToolUnsupportedError } from "../../core/agent/llm";
-import { compactIfNeeded } from "../../core/agent/compaction";
+import { AgentMessage, ToolCall, UndoEntry, Usage } from "../../core/agent/types";
+import { isToolUnsupportedError } from "../../core/agent/llm";
+import { addUsage, formatUsage, runTurn } from "../../core/agent/turn";
 import { getKV } from "../../core/db";
 import { ConversationMeta, ConversationStore, newConversationId, slimForStorage, titleFrom } from "../../core/conversations";
 import { Command, Skill, SkillStore, resolveSlash, skillCatalog } from "../../core/skills";
@@ -181,6 +180,8 @@ interface Item {
   files?: string[];
   label?: string;
   skills?: string[];
+  /** Số token của lượt (cộng mọi bước) */
+  usage?: Usage;
 }
 
 interface Props {
@@ -189,9 +190,6 @@ interface Props {
   version: number;
   onOpenSettings: () => void;
 }
-
-const PLAIN_SYSTEM =
-  "Bạn là trợ lý trong Microsoft Office. Trả lời bằng tiếng Việt, ngắn gọn, đúng trọng tâm. Khi trình bày dữ liệu dạng bảng, dùng bảng Markdown.";
 
 const WEB_PROVIDERS = (p: { id: string; kind: string }) => p.id === "openrouter" || p.kind === "anthropic" || p.kind === "gemini";
 
@@ -293,12 +291,6 @@ const finalText = (it: Item) =>
         .trim()
     : it.text;
 
-/** Hội thoại gửi model ở chế độ trò chuyện thường: bỏ lời gọi công cụ */
-const plainHistory = (h: AgentMessage[]): AgentMessage[] =>
-  h
-    .filter((m) => m.role === "user" || (m.role === "assistant" && m.content))
-    .map((m) => (m.role === "assistant" ? { role: "assistant", content: m.content } : { role: "user", content: m.content })) as AgentMessage[];
-
 const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
   const s = useStyles();
   const [settings, setSettingsState] = React.useState(storage.getSettings());
@@ -332,6 +324,18 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
   const [slashClosedFor, setSlashClosedFor] = React.useState<string | null>(null);
   const busyRef = React.useRef(false);
   const prevBusy = React.useRef(false);
+  /** Bản mới nhất của các mục hiển thị và mã hội thoại, để lưu theo từng bước mà không chờ React vẽ lại */
+  const itemsRef = React.useRef<Item[]>([]);
+  itemsRef.current = items;
+  const convIdRef = React.useRef("");
+  const saveChain = React.useRef<Promise<void>>(Promise.resolve());
+  const lastSaveAt = React.useRef(0);
+  /** Token đầu vào thực đo của bước gần nhất: đo độ đầy ngữ cảnh để quyết định tóm tắt */
+  const lastInputRef = React.useRef<number | undefined>(undefined);
+  const setConv = (id: string) => {
+    convIdRef.current = id;
+    setConvId(id);
+  };
 
   // Ô nhập tự giãn 1–6 dòng
   React.useLayoutEffect(() => {
@@ -392,24 +396,34 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
     return () => clearInterval(t);
   }, [share, settings.shareContext]);
 
-  /** Lưu hội thoại sau mỗi lượt (khi AI chạy xong) */
+  /** Lưu hội thoại xuống máy. Gọi sau mỗi bước của AI (để Office có đổ giữa chừng vẫn còn phần đã làm) và khi lượt kết thúc. */
+  const saveConversation = React.useCallback((): Promise<void> => {
+    const its = itemsRef.current;
+    if (!its.length) return saveChain.current;
+    if (!convIdRef.current) {
+      convIdRef.current = newConversationId();
+      setConvId(convIdRef.current);
+    }
+    const firstUser = its.find((it) => it.role === "user");
+    const conv = {
+      id: convIdRef.current,
+      host,
+      title: titleFrom(firstUser?.text || ""),
+      updatedAt: Date.now(),
+      items: its.map((it) => ({ ...it, undo: undefined, undoCount: it.undo?.length || it.undoCount })),
+      history: slimForStorage(historyRef.current),
+    };
+    lastSaveAt.current = Date.now();
+    // Xếp hàng để hai lần lưu không ghi đè chỉ mục của nhau
+    saveChain.current = saveChain.current.then(() => convStore.save(conv)).catch(() => undefined);
+    return saveChain.current;
+  }, [convStore, host]);
+
+  /** Lưu hội thoại khi lượt kết thúc (xong, bị dừng hoặc lỗi) */
   React.useEffect(() => {
     busyRef.current = busy;
     if (prevBusy.current && !busy && items.length) {
-      const id = convId || newConversationId();
-      if (!convId) setConvId(id);
-      const firstUser = items.find((it) => it.role === "user");
-      convStore
-        .save({
-          id,
-          host,
-          title: titleFrom(firstUser?.text || ""),
-          updatedAt: Date.now(),
-          items: items.map((it) => ({ ...it, undo: undefined, undoCount: it.undo?.length || it.undoCount })),
-          history: slimForStorage(historyRef.current),
-        })
-        .then(refreshConvs)
-        .catch(() => undefined);
+      saveConversation().then(refreshConvs);
       share();
     }
     prevBusy.current = busy;
@@ -546,113 +560,119 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
     ]);
     setInput("");
     setAttachments([]);
+    setShowHistory(false);
     setBusy(true);
     allowAllRef.current = false;
     const ac = new AbortController();
     abortRef.current = ac;
     const key = storage.getKey(p.id);
     const instr = (settings.instructions || {})[host]?.trim();
+    const log: UndoEntry[] = [];
+    let needSep = false;
+    let retrying = false;
+    const clearRetry = () => {
+      if (!retrying) return;
+      retrying = false;
+      setNotice(undefined);
+    };
 
     try {
-      const comp = await compactIfNeeded({ history: historyRef.current, provider: p, key, model: modelId, signal: ac.signal });
-      if (comp.compacted) {
-        historyRef.current = comp.history;
-        setNotice({ text: "Cuộc trò chuyện dài: đã tự tóm tắt phần đầu để AI nhớ gọn hơn." });
-      }
-
-      if (useAgent && hostTools) {
-        let ov: any;
-        try {
-          ov = await hostTools.overview();
-        } catch (e) {
-          ov = { error: "Không đọc được trạng thái tài liệu: " + networkErrorMessage(e) };
-        }
-        const system = [
-          hostTools.systemPrompt(ov),
-          CORE_GUIDES[host] || "",
-          instr ? `## Chỉ dẫn riêng của người dùng cho ${host} (luôn tuân theo)\n${instr}` : "",
-          skillCatalog(skills),
-          auto.length
-            ? `## Kỹ năng đã nạp sẵn cho yêu cầu này (làm theo)\n${auto.map((k) => `<skill name="${k.name}">\n${k.body}\n</skill>`).join("\n")}`
-            : "",
-        ]
-          .filter(Boolean)
-          .join("\n\n");
-        const log: UndoEntry[] = [];
-        let needSep = false;
-        const msgs = await runAgent({
-          provider: p,
-          key,
-          model: modelId,
-          tools: hostTools,
-          extra: createCommonTools({ host, skills, shareContext: settings.shareContext }),
-          system,
-          messages: [...compactHistory(historyRef.current), userMsg],
-          signal: ac.signal,
-          log,
-          approve: askApproval,
-          askBeforeWrite: settings.askBeforeWrite,
-          confirmRisky: settings.confirmRisky,
-          webSearch: settings.webSearch && webCapable,
-          vision,
-          onEvent: (ev) => {
-            if (ev.type === "step") {
-              if (ev.step > 1) needSep = true;
-            } else if (ev.type === "text") {
-              appendText(needSep ? "\n" + ev.delta : ev.delta);
-              needSep = false;
-            } else if (ev.type === "tool_start") {
-              patchLast((it) => ({
-                ...it,
-                segments: [
-                  ...(it.segments || []),
-                  { type: "step", id: ev.call.id, label: describeCall(ev.call), status: "running" },
-                ],
-              }));
-            } else if (ev.type === "tool_end") {
-              const isWrite = hostTools.specs.some((t) => t.name === ev.call.name && t.write);
-              patchLast((it) => ({
-                ...it,
-                wrote: it.wrote || (isWrite && !ev.error),
-                segments: (it.segments || []).map((sg) =>
-                  sg.type === "step" && sg.id === ev.call.id
-                    ? { ...sg, status: ev.error ? "error" : "ok", detail: ev.error || ev.result?.message }
-                    : sg
-                ),
-              }));
-            } else if (ev.type === "limit") {
-              appendText(`\n(Đã đạt giới hạn ${ev.maxSteps} bước. Gửi "tiếp tục" nếu muốn AI làm tiếp.)`);
-            }
-          },
-        });
-        historyRef.current = msgs;
-        if (log.length) patchLast((it) => ({ ...it, undo: log }));
-      } else {
-        const system = [PLAIN_SYSTEM, instr ? `## Chỉ dẫn riêng của người dùng (luôn tuân theo)\n${instr}` : ""].filter(Boolean).join("\n\n");
-        const res = await callModelStep({
-          provider: p,
-          key,
-          model: modelId,
-          tools: [],
-          messages: [{ role: "system", content: system }, ...plainHistory(historyRef.current), userMsg],
-          signal: ac.signal,
-          onText: (d) => appendText(d),
-          webSearch: settings.webSearch && webCapable,
-          vision,
-        });
-        historyRef.current = [...historyRef.current, userMsg, { role: "assistant", content: res.text }];
+      const res = await runTurn({
+        provider: p,
+        key,
+        model: modelId,
+        context: model?.context,
+        maxOutput: model?.maxOutput,
+        vision,
+        host,
+        history: historyRef.current,
+        text: content,
+        images: images.length ? images : undefined,
+        instructions: instr,
+        agent:
+          useAgent && hostTools
+            ? {
+                tools: hostTools,
+                extra: createCommonTools({ host, skills, shareContext: settings.shareContext }),
+                guide: CORE_GUIDES[host],
+                skillCatalog: skillCatalog(skills),
+                autoSkills: auto.map((k) => ({ name: k.name, body: k.body })),
+                askBeforeWrite: settings.askBeforeWrite,
+                confirmRisky: settings.confirmRisky,
+                approve: askApproval,
+                log,
+              }
+            : undefined,
+        webSearch: settings.webSearch && webCapable,
+        lastInputTokens: lastInputRef.current,
+        signal: ac.signal,
+        onHistory: (h) => {
+          historyRef.current = h;
+          // Lưu theo từng bước, thưa nhất 1,5 giây một lần; lần lưu cuối lượt mới là bản đầy đủ
+          if (Date.now() - lastSaveAt.current > 1500) setTimeout(saveConversation, 0);
+        },
+        onEvent: (ev) => {
+          if (ev.type === "compacted") {
+            setNotice({ text: "Cuộc trò chuyện dài: đã tự tóm tắt phần đầu để AI nhớ gọn hơn." });
+          } else if (ev.type === "step") {
+            if (ev.step > 1) needSep = true;
+          } else if (ev.type === "text") {
+            clearRetry();
+            appendText(needSep ? "\n" + ev.delta : ev.delta);
+            needSep = false;
+          } else if (ev.type === "tool_start") {
+            clearRetry();
+            patchLast((it) => ({
+              ...it,
+              segments: [...(it.segments || []), { type: "step", id: ev.call.id, label: describeCall(ev.call), status: "running" }],
+            }));
+          } else if (ev.type === "tool_end") {
+            const isWrite = !!hostTools?.specs.some((t) => t.name === ev.call.name && t.write);
+            patchLast((it) => ({
+              ...it,
+              wrote: it.wrote || (isWrite && !ev.error),
+              segments: (it.segments || []).map((sg) =>
+                sg.type === "step" && sg.id === ev.call.id ? { ...sg, status: ev.error ? "error" : "ok", detail: ev.error || ev.result?.message } : sg
+              ),
+            }));
+          } else if (ev.type === "limit") {
+            appendText(`\n(Đã đạt giới hạn ${ev.maxSteps} bước. Gửi "tiếp tục" nếu muốn AI làm tiếp.)`);
+          } else if (ev.type === "retry") {
+            retrying = true;
+            const why = ev.reason.charAt(0).toUpperCase() + ev.reason.slice(1);
+            setNotice({ text: `${why}: đang thử lại lần ${ev.attempt}/${ev.max} sau ${Math.round(ev.waitMs / 1000)} giây… Bấm Dừng để hủy.` });
+          } else if (ev.type === "usage") {
+            clearRetry();
+            patchLast((it) => ({ ...it, usage: addUsage(it.usage || {}, ev.usage) }));
+          } else if (ev.type === "truncated") {
+            if (!ev.skipped) appendText("\n(Câu trả lời bị cắt vì quá dài. Gửi “tiếp tục” để AI viết tiếp.)");
+            else if (ev.gaveUp)
+              appendText("\n(Dừng lượt: câu trả lời bị cắt vì quá dài nhiều lần liên tiếp, các lệnh ghi dở chưa được thực hiện. Hãy nhờ AI làm từng phần nhỏ hơn.)");
+          }
+        },
+      });
+      historyRef.current = res.history;
+      lastInputRef.current = res.lastInputTokens;
+      // Kể cả khi bị dừng hay lỗi giữa chừng: các bước đã làm vẫn hoàn tác được
+      if (log.length) patchLast((it) => ({ ...it, undo: log }));
+      if (res.error) {
+        const e: any = res.error;
+        const info = describeError(e, { provider: p });
+        const msg =
+          info.kind === "aborted"
+            ? "Đã dừng."
+            : isToolUnsupportedError(e)
+              ? "Model này không gọi được công cụ nên không thao tác được trên tài liệu. Hãy chọn model khác (OpenRouter: bật “Chỉ model thao tác được”) hoặc tắt “AI tự thao tác” để chỉ trò chuyện."
+              : info.text;
+        const detail = `${info.detail}\nModel: ${modelId}\nPhiên bản: ${APP_VERSION_FULL}\nLúc: ${new Date().toLocaleString("vi-VN")}`;
+        patchLast((it) => ({ ...it, error: msg, errorDetail: info.kind === "aborted" ? undefined : detail }));
       }
     } catch (e: any) {
+      // runTurn không ném lỗi; tới đây là lỗi trong chính add-in
       const info = describeError(e, { provider: p });
-      const msg =
-        info.kind === "aborted"
-          ? "Đã dừng."
-          : isToolUnsupportedError(e)
-            ? "Model này không gọi được công cụ nên không thao tác được trên tài liệu. Hãy chọn model khác (OpenRouter: bật “Chỉ model thao tác được”) hoặc tắt “AI tự thao tác” để chỉ trò chuyện."
-            : info.text;
-      const detail = `${info.detail}\nModel: ${modelId}\nPhiên bản: ${APP_VERSION_FULL}\nLúc: ${new Date().toLocaleString("vi-VN")}`;
-      patchLast((it) => ({ ...it, error: msg, errorDetail: info.kind === "aborted" ? undefined : detail }));
+      patchLast((it) => ({ ...it, error: info.text, errorDetail: info.detail }));
     } finally {
+      retrying = false;
       setBusy(false);
       setPending(null);
       abortRef.current = null;
@@ -701,7 +721,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
   const newChat = () => {
     setItems([]);
     historyRef.current = [];
-    setConvId("");
+    lastInputRef.current = undefined;
+    setConv("");
     setNotice(undefined);
     setShowHistory(false);
   };
@@ -712,7 +733,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
       if (!c) return;
       setItems(c.items as Item[]);
       historyRef.current = c.history || [];
-      setConvId(c.id);
+      lastInputRef.current = undefined;
+      setConv(c.id);
       setShowHistory(false);
       setNotice({ text: "Đã mở lại hội thoại. Nút Hoàn tác chỉ dùng được trong phiên làm việc đã tạo ra thay đổi." });
     } catch (e) {
@@ -908,6 +930,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
                     </div>
                   </div>
                 )}
+                {it.usage && formatUsage(it.usage) ? (
+                  <Text size={100} className={s.muted} title="Số token của lượt này, cộng mọi bước. Phần đọc từ bộ nhớ đệm được nhà cung cấp tính rẻ hơn nhiều.">
+                    {formatUsage(it.usage)}
+                  </Text>
+                ) : null}
                 {it.error && <Text className={s.err}>{it.error}</Text>}
                 {it.error && it.errorDetail && !isLastBusy(i) && (
                   <Button size="small" appearance="subtle" style={{ alignSelf: "flex-start" }} onClick={() => copy(`${it.error}\n\n${it.errorDetail}`)}>

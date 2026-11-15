@@ -11,6 +11,8 @@ export interface ModelInfo {
   tools?: boolean;
   /** Nhận ảnh. undefined = không rõ */
   vision?: boolean;
+  /** Trần độ dài đầu ra (token), nếu nhà cung cấp có báo */
+  maxOutput?: number;
   /** Thời điểm nhà cung cấp phát hành (giây, nếu có) — để chọn bản mới nhất */
   created?: number;
 }
@@ -33,7 +35,7 @@ export function normalizeModels(provider: Provider, json: any): ModelInfo[] {
         .filter((m) => (m.supportedGenerationMethods || []).includes("generateContent"))
         .map((m) => {
           const id = String(m.name || "").replace(/^models\//, "");
-          return { id, name: m.displayName ? `${m.displayName} (${id})` : id, context: m.inputTokenLimit };
+          return { id, name: m.displayName ? `${m.displayName} (${id})` : id, context: m.inputTokenLimit, maxOutput: m.outputTokenLimit };
         })
         .filter((m) => !NON_CHAT.test(m.id))
     );
@@ -46,6 +48,9 @@ export function normalizeModels(provider: Provider, json: any): ModelInfo[] {
         return {
           id: m.id,
           name: m.display_name ? `${m.display_name} (${m.id})` : m.id,
+          // Models API (từ 3/2026): max_input_tokens = sức chứa, max_tokens = trần đầu ra
+          ...(typeof m.max_input_tokens === "number" ? { context: m.max_input_tokens } : {}),
+          ...(typeof m.max_tokens === "number" ? { maxOutput: m.max_tokens } : {}),
           ...(Number.isFinite(t) ? { created: Math.floor(t / 1000) } : {}),
         };
       })
@@ -87,8 +92,9 @@ export function normalizeModels(provider: Provider, json: any): ModelInfo[] {
 export function modelsRequest(provider: Provider, key: string): { url: string; init: RequestInit } {
   if (provider.kind === "gemini") {
     return {
-      url: `${provider.baseUrl}/models?pageSize=1000&key=${encodeURIComponent(key)}`,
-      init: { method: "GET" },
+      url: `${provider.baseUrl}/models?pageSize=1000`,
+      // Key đi trong tiêu đề, không nằm trong đường dẫn
+      init: { method: "GET", headers: { "x-goog-api-key": key } },
     };
   }
   if (provider.kind === "anthropic") {

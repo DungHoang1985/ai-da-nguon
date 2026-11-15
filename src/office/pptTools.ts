@@ -402,7 +402,7 @@ export const pptTools: HostToolSet = {
   },
   snapshot: async () => ({ title: "Bài trình chiếu PowerPoint đang mở", data: await overview() }),
   overview,
-  systemPrompt: (ov) =>
+  systemPrompt: () =>
     [
       "Bạn là trợ lý AI được tích hợp trong Microsoft PowerPoint, có thể thao tác trực tiếp trên bài trình chiếu đang mở bằng các công cụ (ppt_*).",
       "Nguyên tắc:",
@@ -413,8 +413,6 @@ export const pptTools: HostToolSet = {
       "- Nội dung slide ngắn gọn: tiêu đề ≤ 10 từ, mỗi slide 3–6 ý, mỗi ý một dòng.",
       "- Đặt hình/ô chữ không chồng lên nhau, cách mép ≥ 40 điểm.",
       "- Xong việc: trả lời ngắn gọn bằng tiếng Việt: đã tạo/sửa slide nào.",
-      "",
-      "Trạng thái hiện tại của bài trình chiếu (JSON):",
-      JSON.stringify(ov).slice(0, 6000),
     ].join("\n"),
+  stateText: (ov) => `Trạng thái hiện tại của bài trình chiếu (JSON):\n${JSON.stringify(ov).slice(0, 6000)}`,
 };

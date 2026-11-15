@@ -29,6 +29,19 @@ export interface ToolSpec {
   write?: boolean;
   /** Trả về lời cảnh báo nếu lần gọi này rủi ro (ghi đè dữ liệu, xóa…) → luôn hỏi người dùng */
   risky?: (args: any) => Promise<string | null>;
+  /** Hạn chờ riêng cho công cụ này (mili giây); không ghi = hạn chờ chung của vòng lặp */
+  timeoutMs?: number;
+}
+
+/** Số token của một lần gọi model (đã quy về cùng nghĩa cho mọi nhà cung cấp). */
+export interface Usage {
+  /** Tổng token đầu vào, gồm cả phần đọc từ và ghi vào bộ nhớ đệm */
+  input?: number;
+  output?: number;
+  /** Token đầu vào đọc từ bộ nhớ đệm lời nhắc (rẻ hơn nhiều) */
+  cacheRead?: number;
+  /** Token đầu vào ghi vào bộ nhớ đệm */
+  cacheWrite?: number;
 }
 
 export interface StepResult {
@@ -36,6 +49,9 @@ export interface StepResult {
   toolCalls: ToolCall[];
   raw?: { kind: string; parts?: any[] };
   finishReason?: string;
+  /** Câu trả lời bị cắt vì hết độ dài đầu ra: lệnh gọi công cụ (nếu có) có thể dở dang, không được chạy */
+  truncated?: boolean;
+  usage?: Usage;
 }
 
 export interface UndoEntry {
@@ -49,7 +65,10 @@ export interface HostToolSet {
   specs: ToolSpec[];
   execute(name: string, args: any, ctx: { log: UndoEntry[] }): Promise<any>;
   overview(): Promise<any>;
-  systemPrompt(overview: any): string;
+  /** Lời nhắc hệ thống CỐ ĐỊNH của ứng dụng (không chứa trạng thái tài liệu) — để bộ nhớ đệm lời nhắc có tác dụng */
+  systemPrompt(): string;
+  /** Trạng thái tài liệu lúc gửi, đưa vào tin nhắn của lượt (không vào lời nhắc hệ thống) */
+  stateText?(overview: any): string;
   /** Ảnh chụp nội dung gọn để chia sẻ sang ứng dụng khác */
   snapshot?(): Promise<{ title?: string; data: any }>;
 }
@@ -65,4 +84,10 @@ export type AgentEvent =
   | { type: "step"; step: number }
   | { type: "tool_start"; call: ToolCall }
   | { type: "tool_end"; call: ToolCall; result: any; error?: string }
-  | { type: "limit"; maxSteps: number };
+  | { type: "limit"; maxSteps: number }
+  /** Nhà cung cấp quá tải hoặc hết hạn mức tạm thời: sắp thử lại lần `attempt` sau `waitMs` */
+  | { type: "retry"; attempt: number; max: number; waitMs: number; reason: string }
+  /** Số token của bước vừa xong */
+  | { type: "usage"; step: number; usage: Usage }
+  /** Câu trả lời bị cắt vì hết độ dài; `skipped` = số lệnh công cụ không được chạy; `gaveUp` = dừng vì bị cắt liên tiếp */
+  | { type: "truncated"; skipped: number; gaveUp?: boolean };

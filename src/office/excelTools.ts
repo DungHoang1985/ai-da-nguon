@@ -491,7 +491,7 @@ export const excelTools: HostToolSet = {
   },
   snapshot: shareSnapshot,
   overview,
-  systemPrompt: (ov) =>
+  systemPrompt: () =>
     [
       "Bạn là trợ lý AI được tích hợp trong Microsoft Excel, có thể thao tác trực tiếp trên sổ tính đang mở bằng các công cụ (excel_*).",
       "Nguyên tắc:",
@@ -503,8 +503,6 @@ export const excelTools: HostToolSet = {
       "- Công cụ nâng cao: excel_find (tìm), excel_find_errors (quét lỗi công thức), excel_trace (lần ô phụ thuộc/được tham chiếu), excel_filter, excel_create_pivot, excel_conditional_format, excel_data_validation (danh sách chọn), excel_add_comment, excel_insert_delete (chèn/xóa hàng cột), excel_sheet (đổi tên, cố định dòng/cột, xóa sheet).",
       "- Khi nhắc tới ô hay vùng, ghi rõ dạng Sheet!A1 hoặc Sheet!A1:B5 để người dùng bấm vào xem.",
       "- Xong việc: dùng excel_select_range để chỉ cho người dùng thấy kết quả, rồi trả lời ngắn gọn bằng tiếng Việt: đã làm gì, ở sheet/ô nào.",
-      "",
-      "Trạng thái hiện tại của sổ tính (JSON):",
-      JSON.stringify(ov).slice(0, 6000),
     ].join("\n"),
+  stateText: (ov) => `Trạng thái hiện tại của sổ tính (JSON):\n${JSON.stringify(ov).slice(0, 6000)}`,
 };

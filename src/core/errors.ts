@@ -4,18 +4,32 @@ import type { Provider } from "./providers";
 export class ApiError extends Error {
   constructor(
     message: string,
-    public status?: number
+    public status?: number,
+    /** Số giây nhà cung cấp yêu cầu chờ trước khi gọi lại (tiêu đề retry-after), nếu đọc được */
+    public retryAfter?: number
   ) {
     super(message);
   }
 }
 
+/** Lỗi tạm thời nên tự thử lại: hết hạn mức tạm thời (429), máy chủ lỗi hoặc quá tải (5xx, 529 của Anthropic). */
+export function isRetryable(e: unknown): boolean {
+  const s = (e as any)?.status;
+  return e instanceof ApiError && typeof s === "number" && (s === 429 || s >= 500);
+}
+
 export function messageForStatus(status: number, detail = ""): string {
   const d = detail ? ` (${detail.slice(0, 200)})` : "";
-  if (status === 401 || status === 403) return `Key không đúng hoặc không có quyền${d}`;
+  if (status === 401) return `Key không đúng hoặc đã hết hạn${d}`;
+  // 403 không chỉ là sai key: nhà cung cấp còn dùng khi model bị giới hạn nơi dùng, vùng, hoặc tài khoản chưa được cấp model
+  if (status === 403)
+    return /(api[ _-]?key|token|credential|unauthori[sz]ed|authenticat)/i.test(detail)
+      ? `Key không đúng hoặc không có quyền${d}`
+      : `Nhà cung cấp từ chối yêu cầu (403): tài khoản hoặc key không được dùng model này, hoặc model bị giới hạn nơi dùng. Hãy chọn model khác${d}`;
   if (status === 402) return `Tài khoản hết tiền hoặc cần nạp thêm${d}`;
   if (status === 404) return `Không tìm thấy model hoặc địa chỉ API${d}`;
   if (status === 429) return `Hết hạn mức (gọi quá nhiều). Thử lại sau hoặc đổi model${d}`;
+  if (status === 529) return `Nhà cung cấp đang quá tải (529). Thử lại sau hoặc đổi model${d}`;
   if (status >= 500) return `Máy chủ nhà cung cấp đang lỗi (${status}). Thử lại sau${d}`;
   return `Lỗi ${status}${d}`;
 }
@@ -140,5 +154,12 @@ export async function ensureOk(res: Response): Promise<void> {
   } catch {
     /* bỏ qua */
   }
-  throw new ApiError(messageForStatus(res.status, detail), res.status);
+  let retryAfter: number | undefined;
+  try {
+    const ra = Number(res.headers?.get("retry-after"));
+    if (Number.isFinite(ra) && ra >= 0) retryAfter = ra;
+  } catch {
+    /* tiêu đề không đọc được (CORS) */
+  }
+  throw new ApiError(messageForStatus(res.status, detail), res.status, retryAfter);
 }
