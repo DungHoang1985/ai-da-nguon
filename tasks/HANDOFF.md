@@ -65,7 +65,7 @@
     3. Lỗi mất kết nối khi đổi nhà cung cấp: anh không nhớ rõ cặp nguồn → Claude tự thử mọi cặp nguồn anh có key trong Office.
     4. **Bỏ công tắc tắt Track Changes**: sửa đổi của AI trong Word luôn ghi có theo dõi.
 - **Vấn đề mở:**
-  - **Tên tài khoản Office của anh còn trong lịch sử kho công khai**, ở đúng một commit (`a42347a`, 15/11 buổi chiều): hai tệp bằng chứng 05 và 07 chép câu trả lời của AI có nhắc tên người viết nhận xét. Các tệp hiện hành đã che tên (commit `46835c8`). Muốn xóa khỏi lịch sử phải ghi đè nhánh `main` (force push); chế độ tự động đã chặn lệnh này, chờ anh quyết định.
+  - **Tên tài khoản Office của anh còn trong lịch sử kho công khai**, ở đúng một commit (`a42347a`, 15/11 buổi chiều): hai tệp bằng chứng 05 và 07 chép câu trả lời của AI có nhắc tên người viết nhận xét. Các tệp hiện hành đã che tên (commit `46835c8`). **Anh quyết định 15/11: không cần xóa khỏi lịch sử**, không ghi đè nhánh `main`. Mục này đóng.
   - Tìm ra khi kiểm bản 3.6 (15/11), chưa sửa: (1) PowerPoint — lần chèn biểu đồ đầu tiên trên bài mới tinh làm mẫu thêm một bố cục (11 → 12), các lần sau dùng lại; (2) OpenRouter — model đang nhớ `thinkingmachines/inkling-2-small:free` chỉ chạy trong "agentic harnesses", add-in báo nhầm là "Key không đúng hoặc không có quyền"; (3) bấm Gửi khi bảng Lịch sử đang mở thì bảng vẫn che hội thoại; (4) ~~Enter với bộ gõ Telex của Windows~~ anh bỏ mục này 15/11. Mục (2) và (3) đã sửa ở bản 3.7.0; mục (1) còn.
   - Tệp sao lưu thử `AI-Da-Nguon-sao-luu-20261115-1212-BI-MAT.json` còn trong thư mục Tải xuống của máy (chứa key thật): anh quyết giữ hay xóa.
   - Lỗi đổi nhà cung cấp: đã tái hiện và sửa ở bước 4 Đợt 0A (mục này của bản trước đã cũ).
