@@ -4,6 +4,7 @@ import { anthropicHeaders } from "../models";
 import { ApiError, ensureOk } from "../errors";
 import { createSSEParser } from "../sse";
 import { AgentMessage, StepResult, ToolCall, ToolSpec } from "./types";
+import { prepareHistory } from "./history";
 
 const ID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 /** id 9 ký tự chữ-số: hợp lệ với mọi nhà cung cấp (Mistral bắt buộc đúng 9 ký tự) */
@@ -62,13 +63,15 @@ export function buildStepRequest(
   model: string,
   messages: AgentMessage[],
   tools: ToolSpec[],
-  opts: { webSearch?: boolean } = {}
+  opts: { webSearch?: boolean; vision?: boolean } = {}
 ): { url: string; init: RequestInit } {
   const system = messages
     .filter((m) => m.role === "system")
     .map((m) => (m as any).content)
     .join("\n\n");
-  const turns = messages.filter((m) => m.role !== "system");
+  // Chuẩn hóa cho nguồn đích: mã lời gọi công cụ, cặp gọi–kết quả, ảnh cũ, chữ trắng (đổi nguồn giữa hội thoại)
+  const turns = prepareHistory(messages, { provider, vision: opts.vision });
+  const nonBlank = (t: string) => !!t && !!t.trim();
 
   if (provider.kind === "anthropic") {
     const out: any[] = [];
@@ -78,16 +81,15 @@ export function buildStepRequest(
       else out.push({ role: "user", content: blocks });
     };
     for (const m of turns) {
-      if (m.role === "user")
-        pushUser([
-          ...(m.images || []).map((im) => ({ type: "image", source: { type: "base64", media_type: im.mime, data: im.data } })),
-          { type: "text", text: m.content || " " },
-        ]);
-      else if (m.role === "tool")
-        pushUser([{ type: "tool_result", tool_use_id: m.toolCallId, content: m.content || "(trống)" }]);
+      if (m.role === "user") {
+        const imgs = (m.images || []).map((im) => ({ type: "image", source: { type: "base64", media_type: im.mime, data: im.data } }));
+        // Anthropic từ chối khối chữ rỗng hoặc chỉ có khoảng trắng
+        pushUser(nonBlank(m.content) ? [...imgs, { type: "text", text: m.content }] : imgs.length ? imgs : [{ type: "text", text: "(trống)" }]);
+      } else if (m.role === "tool")
+        pushUser([{ type: "tool_result", tool_use_id: m.toolCallId, content: nonBlank(m.content) ? m.content : "(trống)" }]);
       else if (m.role === "assistant") {
         const blocks: any[] = [];
-        if (m.content) blocks.push({ type: "text", text: m.content });
+        if (nonBlank(m.content)) blocks.push({ type: "text", text: m.content });
         for (const tc of m.toolCalls || []) blocks.push({ type: "tool_use", id: tc.id, name: tc.name, input: tc.args || {} });
         if (!blocks.length) blocks.push({ type: "text", text: "(trống)" });
         out.push({ role: "assistant", content: blocks });
@@ -186,7 +188,7 @@ export function buildStepRequest(
             ...m.images.map((im) => ({ type: "image_url", image_url: { url: `data:${im.mime};base64,${im.data}` } })),
           ],
         });
-      } else msgs.push({ role: "user", content: m.content });
+      } else msgs.push({ role: "user", content: nonBlank(m.content) ? m.content : "(trống)" });
     } else if (m.role === "tool") msgs.push({ role: "tool", tool_call_id: m.toolCallId, content: m.content });
     else if (m.role === "assistant") {
       const calls = m.toolCalls || [];
@@ -318,13 +320,15 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void)
   };
 }
 
+/** Lỗi do model không hỗ trợ gọi công cụ. Chỉ khớp câu báo "không hỗ trợ", không khớp lỗi về mã lời gọi hay tham số công cụ
+ *  (trước đây mọi lỗi có chữ "tool" đều bị báo nhầm là "model không gọi được công cụ"). */
+const NO_TOOL_SUPPORT =
+  /(does ?n[o']t support (tools|tool[ _-]?(use|calling)|function[ _-]?calling)|tools? (is|are) not supported|(tool[ _-]?(use|calling)|function[ _-]?calling) (is )?not (supported|enabled|available)|not support(ed)? (for )?(tool[ _-]?(use|calling)|function[ _-]?calling)|No endpoints found that support tool|tool_choice[^.]*(not supported|unsupported))/i;
+
 export function isToolUnsupportedError(e: any): boolean {
   const msg = String(e?.message || "");
   const status = e?.status;
-  return (
-    (status === 400 || status === 404 || status === 422 || status === undefined) &&
-    /(tool|function[ _-]?call|tool_choice|does not support tools|No endpoints found that support)/i.test(msg)
-  );
+  return (status === 400 || status === 404 || status === 422 || status === undefined) && NO_TOOL_SUPPORT.test(msg);
 }
 
 export async function callModelStep(opts: {
@@ -337,9 +341,12 @@ export async function callModelStep(opts: {
   onText: (d: string) => void;
   fetchFn?: typeof fetch;
   webSearch?: boolean;
+  /** Model đích nhận ảnh (true/false/không rõ) */
+  vision?: boolean;
 }): Promise<StepResult> {
   const { url, init } = buildStepRequest(opts.provider, opts.key, opts.model, opts.messages, opts.tools, {
     webSearch: opts.webSearch,
+    vision: opts.vision,
   });
   const fetchFn = opts.fetchFn || fetch;
   const res = await fetchFn(url, { ...init, signal: opts.signal });

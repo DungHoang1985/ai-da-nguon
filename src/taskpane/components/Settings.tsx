@@ -6,7 +6,8 @@ import { TestStep, runSelfTest } from "../../office/selftest";
 import { PROVIDERS, Provider } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { fetchModels } from "../../core/models";
-import { networkErrorMessage } from "../../core/errors";
+import { cleanKey, describeError, keyProblem, networkErrorMessage } from "../../core/errors";
+import ProviderCheckCard from "./ProviderCheck";
 import { getKV } from "../../core/db";
 import { Command, Skill, SkillStore, importZip, parseCommandMd, parseSkillMd, toSkillName } from "../../core/skills";
 
@@ -43,15 +44,23 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
   );
 
   const save = async () => {
-    if (!key.trim()) return;
-    storage.setKey(p.id, key);
+    // Bỏ ký tự ẩn, khoảng trắng, dấu nháy lẫn vào khi dán; key còn ký tự lạ thì không lưu
+    const k = cleanKey(key);
+    if (!k) return;
+    const problem = keyProblem(k);
+    if (problem) {
+      setStatus({ kind: "err", text: problem });
+      return;
+    }
+    setKey(k);
+    storage.setKey(p.id, k);
     setStatus({ kind: "busy", text: "Đang kiểm tra key…" });
     try {
-      const models = await fetchModels(p, key.trim());
+      const models = await fetchModels(p, k);
       storage.setModels(p.id, models);
       setStatus({ kind: "ok", text: `Đã kết nối · ${models.length} model` });
     } catch (e) {
-      setStatus({ kind: "err", text: networkErrorMessage(e) });
+      setStatus({ kind: "err", text: describeError(e, { provider: p }).text });
     }
     onChanged();
   };
@@ -72,6 +81,11 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
         </Link>
       </div>
       {p.note && <Text size={200} className={s.muted}>{p.note}</Text>}
+      {p.blockedReason && (
+        <Text size={200} className={s.err}>
+          ⚠️ {p.blockedReason}
+        </Text>
+      )}
       <div className={s.row}>
         <Input
           type="password"
@@ -404,6 +418,7 @@ const Settings: React.FC<Props> = (props) => {
   return (
     <div>
       <AgentSettings {...props} />
+      <ProviderCheckCard storage={props.storage} />
       <InstructionsCard {...props} />
       <SkillsCard {...props} />
       <Text size={200} className={s.muted} block style={{ marginBottom: 10 }}>

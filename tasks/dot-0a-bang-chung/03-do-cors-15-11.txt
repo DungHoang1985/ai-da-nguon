@@ -1,0 +1,11 @@
+openrouter.ai | HTTP/1.1 204 No Content | Access-Control-Allow-Origin: *
+generativelanguage.googleapis.com | HTTP/1.1 403 Forbidden | KHONG CO Access-Control-Allow-Origin
+api.groq.com | HTTP/1.1 204 No Content | access-control-allow-origin: *
+api.anthropic.com | HTTP/1.1 200 OK | access-control-allow-origin: *
+api.openai.com | HTTP/1.1 200 OK | Access-Control-Allow-Origin: *
+api.mistral.ai | HTTP/1.1 200 OK | access-control-allow-origin: *
+api.cerebras.ai | HTTP/1.1 200 OK | access-control-allow-origin: *
+api.deepseek.com | HTTP/1.1 200 OK | access-control-allow-origin: https://dunghoang1985.github.io
+api.sambanova.ai | HTTP/1.1 200 OK | KHONG CO Access-Control-Allow-Origin
+integrate.api.nvidia.com | HTTP/1.1 200 OK | KHONG CO Access-Control-Allow-Origin
+api.cohere.ai | HTTP/1.1 200 OK | access-control-allow-origin: *

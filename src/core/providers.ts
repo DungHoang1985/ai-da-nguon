@@ -14,7 +14,14 @@ export interface Provider {
   modelsUrl?: string;
   /** Ghi chú hiển thị trong Cài đặt */
   note?: string;
+  /** Nhà cung cấp không cho gọi trực tiếp từ add-in (đo được): hiện lý do ngay khi chọn */
+  blockedReason?: string;
+  /** Mọi model của nguồn này nhận ảnh (true) / không nhận (false); không ghi = tùy model hoặc chưa rõ */
+  vision?: boolean;
 }
+
+/** Đo ngày 14 và 15/11/2026: máy chủ không trả tiêu đề Access-Control-Allow-Origin nên trình duyệt trong Office chặn. */
+const NO_CORS = "nhà cung cấp này chặn gọi trực tiếp từ add-in (đo 15/11/2026: máy chủ không trả tiêu đề CORS). Dùng model này qua OpenRouter nếu cần.";
 
 export const PROVIDERS: Provider[] = [
   {
@@ -31,6 +38,7 @@ export const PROVIDERS: Provider[] = [
     kind: "gemini",
     baseUrl: "https://generativelanguage.googleapis.com/v1beta",
     keyUrl: "https://aistudio.google.com/apikey",
+    vision: true,
   },
   {
     id: "groq",
@@ -45,6 +53,7 @@ export const PROVIDERS: Provider[] = [
     kind: "anthropic",
     baseUrl: "https://api.anthropic.com/v1",
     keyUrl: "https://console.anthropic.com/settings/keys",
+    vision: true,
   },
   {
     id: "openai",
@@ -73,6 +82,7 @@ export const PROVIDERS: Provider[] = [
     kind: "openai",
     baseUrl: "https://api.deepseek.com/v1",
     keyUrl: "https://platform.deepseek.com/api_keys",
+    vision: false,
   },
   {
     id: "sambanova",
@@ -80,6 +90,7 @@ export const PROVIDERS: Provider[] = [
     kind: "openai",
     baseUrl: "https://api.sambanova.ai/v1",
     keyUrl: "https://cloud.sambanova.ai/apis",
+    blockedReason: NO_CORS,
   },
   {
     id: "nvidia",
@@ -87,7 +98,7 @@ export const PROVIDERS: Provider[] = [
     kind: "openai",
     baseUrl: "https://integrate.api.nvidia.com/v1",
     keyUrl: "https://build.nvidia.com/",
-    note: "Có thể bị chặn khi gọi từ add-in (CORS)",
+    blockedReason: NO_CORS,
   },
   {
     id: "cohere",

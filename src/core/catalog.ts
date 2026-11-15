@@ -1,0 +1,109 @@
+/** Trạng thái danh mục model của nguồn đang chọn — hàm thuần, tách khỏi Chat.tsx để kiểm thử.
+ *  Sửa lỗi đổi nhà cung cấp (kế hoạch v4 mục 3.3): đổi nguồn là xóa ngay danh sách và model cũ; bỏ kết quả tải về muộn;
+ *  không cho gửi khi model không thuộc nguồn đang chọn; nhớ model theo từng nguồn. */
+import type { ModelInfo } from "./models";
+import type { Provider } from "./providers";
+
+export type CatalogStatus = "loading" | "ready" | "error";
+
+export interface CatalogState {
+  providerId: string;
+  status: CatalogStatus;
+  /** Chỉ chứa model của providerId */
+  models: ModelInfo[];
+  /** Thời điểm danh sách được tải (ms) */
+  at?: number;
+  /** Lý do tải lỗi (khi có) */
+  error?: string;
+  /** Số hiệu lần tải: kết quả về muộn của lần cũ bị bỏ */
+  token: number;
+}
+
+export function startCatalog(providerId: string, cached: { at: number; models: ModelInfo[] } | undefined, token: number): CatalogState {
+  return cached?.models?.length
+    ? { providerId, status: "ready", models: cached.models, at: cached.at, token }
+    : { providerId, status: "loading", models: [], token };
+}
+
+export function applyLoaded(s: CatalogState, providerId: string, token: number, models: ModelInfo[], at: number): CatalogState {
+  if (providerId !== s.providerId || token !== s.token) return s;
+  return { providerId, status: "ready", models, at, token };
+}
+
+/** Tải lỗi: còn danh sách cũ (bộ nhớ đệm) thì vẫn dùng được, ghi kèm lý do; không còn gì thì là lỗi. */
+export function applyFailed(s: CatalogState, providerId: string, token: number, error: string): CatalogState {
+  if (providerId !== s.providerId || token !== s.token) return s;
+  return { ...s, status: s.models.length ? "ready" : "error", error };
+}
+
+export interface FilterOptions {
+  providerId: string;
+  freeOnly: boolean;
+  toolsOnly: boolean;
+  agentOn: boolean;
+  search: string;
+}
+
+/** "Miễn phí" và "Chỉ model thao tác được" chỉ có nghĩa với OpenRouter (nơi danh mục có dữ liệu đó). */
+export function filterModels(models: ModelInfo[], o: FilterOptions): ModelInfo[] {
+  const or = o.providerId === "openrouter";
+  const q = o.search.trim().toLowerCase();
+  return models
+    .filter((m) => !(or && o.freeOnly) || m.free)
+    .filter((m) => !(or && o.agentOn && o.toolsOnly) || m.tools !== false)
+    .filter((m) => !q || m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q));
+}
+
+/** Model nên chọn cho nguồn chưa từng dùng: theo thứ tự ưu tiên, bản mới nhất trước. Lối cuối: model gọi được công cụ. */
+const PREFER: Record<string, RegExp[]> = {
+  openrouter: [/^anthropic\/claude-sonnet/i, /^openai\/gpt-5/i, /^google\/gemini-[\d.]+-flash/i, /^google\/gemini-[\d.]+-pro/i],
+  anthropic: [/claude-sonnet/i, /claude-opus/i, /claude-haiku/i],
+  openai: [/^gpt-5(\.\d+)?$/i, /^gpt-5(\.\d+)?-mini$/i, /^gpt-4\.1$/i, /^gpt-4o$/i],
+  gemini: [/^gemini-[\d.]+-flash$/i, /^gemini-[\d.]+-pro$/i, /^gemini-.*flash(?!.*(lite|image|tts|live))/i],
+  groq: [/gpt-oss-120b/i, /llama-3\.3-70b/i, /kimi/i, /qwen/i],
+  cerebras: [/gpt-oss-120b/i, /qwen-3/i, /llama-3\.3-70b/i],
+  deepseek: [/^deepseek-chat$/i],
+  mistral: [/^mistral-large-latest$/i, /^mistral-medium-latest$/i, /^mistral-small-latest$/i],
+  cohere: [/^command-a-(?!vision|reasoning)/i, /^command-a/i, /^command-r-plus/i],
+  sambanova: [/llama-3\.3-70b/i, /deepseek-v3/i],
+  nvidia: [/llama-3\.3-70b/i, /nemotron/i],
+};
+
+function newestFirst(a: ModelInfo, b: ModelInfo): number {
+  if ((b.created || 0) !== (a.created || 0)) return (b.created || 0) - (a.created || 0);
+  return b.id.localeCompare(a.id);
+}
+
+export function pickModel(
+  models: ModelInfo[],
+  o: { providerId: string; remembered?: string; agentOn: boolean; freeOnly: boolean }
+): string {
+  if (!models.length) return "";
+  if (o.remembered && models.some((m) => m.id === o.remembered)) return o.remembered;
+  let pool = models;
+  if (o.providerId === "openrouter" && o.freeOnly) pool = pool.filter((m) => m.free);
+  if (o.agentOn) {
+    const usable = pool.filter((m) => m.tools !== false);
+    if (usable.length) pool = usable;
+  }
+  if (!pool.length) pool = models;
+  for (const re of PREFER[o.providerId] || []) {
+    const hit = pool.filter((m) => re.test(m.id)).sort(newestFirst);
+    if (hit.length) return hit[0].id;
+  }
+  const withTools = pool.filter((m) => m.tools === true);
+  return (withTools[0] || pool[0]).id;
+}
+
+/** Lý do chưa gửi được (hiện ngay cạnh nút Gửi); null = gửi được. */
+export function sendBlockReason(o: { provider?: Provider; catalog: CatalogState; modelId: string }): string | null {
+  if (!o.provider) return "Chưa chọn nhà cung cấp.";
+  const c = o.catalog;
+  if (c.providerId !== o.provider.id) return "Đang đổi nhà cung cấp…";
+  if (c.status === "loading") return `Đang tải danh sách model của ${o.provider.name}…`;
+  if (c.status === "error") {
+    return `${o.provider.name}: ${c.error || "không tải được danh sách model"}${o.provider.blockedReason ? "" : ". Bấm “Làm mới” để thử lại."}`;
+  }
+  if (!o.modelId || !c.models.some((m) => m.id === o.modelId)) return `Hãy chọn model của ${o.provider.name}.`;
+  return null;
+}

@@ -36,6 +36,8 @@ export interface RunAgentOptions {
   /** Công cụ dùng chung (use_skill, read_other_app…) */
   extra?: ExtraTools;
   webSearch?: boolean;
+  /** Model nhận ảnh (true/false/không rõ) — để bỏ ảnh cũ khi đổi sang model không nhận ảnh */
+  vision?: boolean;
   fetchFn?: typeof fetch;
 }
 
@@ -60,6 +62,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       onText: (d) => o.onEvent({ type: "text", delta: d }),
       fetchFn: o.fetchFn,
       webSearch: o.webSearch,
+      vision: o.vision,
     });
     msgs.push({ role: "assistant", content: res.text, toolCalls: res.toolCalls, raw: res.raw });
     if (!res.toolCalls.length) return msgs;

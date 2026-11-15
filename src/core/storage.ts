@@ -1,5 +1,6 @@
 /** Lưu cục bộ trên máy (localStorage của add-in). Không gửi đi đâu ngoài nhà cung cấp tương ứng. */
 import type { ModelInfo } from "./models";
+import { cleanKey } from "./errors";
 
 export interface KVStore {
   getItem(k: string): string | null;
@@ -64,6 +65,15 @@ export const DEFAULT_SETTINGS: AppSettings = {
   instructions: {},
 };
 
+export interface Selection {
+  providerId?: string;
+  /** Bản cũ (≤3.5): một model chung cho mọi nguồn */
+  modelId?: string;
+  freeOnly?: boolean;
+  /** Từ 3.6: model đã dùng lần trước theo từng nguồn */
+  models?: Record<string, string>;
+}
+
 export class Storage {
   constructor(private store: KVStore = defaultStore()) {}
 
@@ -89,12 +99,13 @@ export class Storage {
   }
 
   getKey(providerId: string): string {
-    return this.getKeys()[providerId] || "";
+    // Làm sạch cả key đã lưu từ bản cũ (có thể lẫn ký tự ẩn khi dán)
+    return cleanKey(this.getKeys()[providerId] || "");
   }
 
   setKey(providerId: string, key: string): void {
     const keys = this.getKeys();
-    keys[providerId] = key.trim();
+    keys[providerId] = cleanKey(key);
     this.write("keys", keys);
   }
 
@@ -125,11 +136,29 @@ export class Storage {
     this.write("settings", { ...this.getSettings(), ...s });
   }
 
-  getSelection(): { providerId?: string; modelId?: string; freeOnly?: boolean } {
-    return this.read("selection", {});
+  getSelection(): Selection {
+    return this.read<Selection>("selection", {});
   }
 
-  setSelection(sel: { providerId?: string; modelId?: string; freeOnly?: boolean }): void {
+  setSelection(sel: Partial<Selection>): void {
     this.write("selection", { ...this.getSelection(), ...sel });
+  }
+
+  /** Model đã dùng lần trước ở nguồn này (bản cũ chỉ nhớ một model chung → coi là model của nguồn đang chọn khi đó). */
+  getModelFor(providerId: string): string {
+    const sel = this.getSelection();
+    const byProvider = sel.models || {};
+    if (byProvider[providerId]) return byProvider[providerId];
+    if (!sel.models && sel.providerId === providerId && sel.modelId) return sel.modelId;
+    return "";
+  }
+
+  setModelFor(providerId: string, modelId: string): void {
+    const sel = this.getSelection();
+    const models = { ...(sel.models || {}) };
+    if (!sel.models && sel.providerId && sel.modelId) models[sel.providerId] = sel.modelId;
+    if (modelId) models[providerId] = modelId;
+    else delete models[providerId];
+    this.write("selection", { ...sel, models });
   }
 }

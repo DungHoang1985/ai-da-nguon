@@ -11,10 +11,10 @@ import {
   makeStyles,
   tokens,
 } from "@fluentui/react-components";
-import { PROVIDERS, getProvider } from "../../core/providers";
+import { getProvider } from "../../core/providers";
 import { Storage } from "../../core/storage";
-import { ModelInfo, fetchModels, isStale } from "../../core/models";
-import { networkErrorMessage } from "../../core/errors";
+import { describeError, networkErrorMessage } from "../../core/errors";
+import { useCatalog } from "./useCatalog";
 import { AgentMessage, ToolCall, UndoEntry } from "../../core/agent/types";
 import { compactHistory, runAgent } from "../../core/agent/loop";
 import { callModelStep, isToolUnsupportedError } from "../../core/agent/llm";
@@ -31,6 +31,7 @@ import { HostName, INSERT_LABEL, insertAnswer, readSelection } from "../../offic
 import { QUICK_PROMPTS, describeCall, getHostTools } from "../../office/tools";
 import { createCommonTools } from "../../office/common";
 import { navigateTo } from "../../office/navigate";
+import { APP_VERSION_FULL } from "../../core/version";
 
 const useStyles = makeStyles({
   wrap: { display: "flex", flexDirection: "column", gap: "8px", height: "100%", minWidth: 0 },
@@ -140,6 +141,8 @@ interface Item {
   undoCount?: number;
   wrote?: boolean;
   error?: string;
+  /** Chi tiết kỹ thuật của lỗi (nút "Chép chi tiết") */
+  errorDetail?: string;
   files?: string[];
   label?: string;
   skills?: string[];
@@ -263,9 +266,6 @@ const plainHistory = (h: AgentMessage[]): AgentMessage[] =>
 
 const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
   const s = useStyles();
-  const keys = storage.getKeys();
-  const available = PROVIDERS.filter((p) => keys[p.id]);
-  const sel = storage.getSelection();
   const [settings, setSettingsState] = React.useState(storage.getSettings());
   const updateSettings = (patch: any) => {
     storage.setSettings(patch);
@@ -273,14 +273,6 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
   };
   React.useEffect(() => setSettingsState(storage.getSettings()), [version, storage]);
 
-  const [providerId, setProviderId] = React.useState<string>(
-    sel.providerId && keys[sel.providerId] ? sel.providerId : available[0]?.id || ""
-  );
-  const [modelId, setModelId] = React.useState<string>(sel.modelId || "");
-  const [freeOnly, setFreeOnly] = React.useState<boolean>(!!sel.freeOnly);
-  const [search, setSearch] = React.useState("");
-  const [models, setModels] = React.useState<ModelInfo[]>([]);
-  const [catalogNote, setCatalogNote] = React.useState("");
   const [items, setItems] = React.useState<Item[]>([]);
   const [input, setInput] = React.useState("");
   const [withSelection, setWithSelection] = React.useState(false);
@@ -309,6 +301,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
 
   const hostTools = React.useMemo(() => getHostTools(host, () => storage.getSettings()), [host, storage]);
   const agentOn = settings.agentMode && !!hostTools;
+  const cat = useCatalog(storage, { agentOn, toolsOnly: settings.toolsOnly, version });
+  const { available, providerId, modelId, models, shown } = cat;
 
   const refreshConvs = React.useCallback(async () => {
     try {
@@ -329,38 +323,6 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
     })();
     refreshConvs();
   }, [skillStore, host, version, refreshConvs]);
-
-  const loadModels = React.useCallback(
-    async (force = false) => {
-      const p = getProvider(providerId);
-      if (!p) return;
-      const cached = storage.getModelCache()[p.id];
-      if (cached) {
-        setModels(cached.models);
-        setCatalogNote(`Cập nhật lúc ${new Date(cached.at).toLocaleString("vi-VN")}`);
-      }
-      if (force || isStale(cached?.at)) {
-        setCatalogNote("Đang tải danh sách model…");
-        try {
-          const list = await fetchModels(p, storage.getKey(p.id));
-          storage.setModels(p.id, list);
-          setModels(list);
-          setCatalogNote(`Cập nhật lúc ${new Date().toLocaleString("vi-VN")} · ${list.length} model`);
-        } catch (e) {
-          setCatalogNote(
-            (cached ? `Dùng danh sách cũ (${new Date(cached.at).toLocaleString("vi-VN")}). ` : "") +
-              "Không tải được: " +
-              networkErrorMessage(e)
-          );
-        }
-      }
-    },
-    [providerId, storage]
-  );
-
-  React.useEffect(() => {
-    loadModels();
-  }, [loadModels, version]);
 
   React.useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
@@ -406,20 +368,6 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
     }
     prevBusy.current = busy;
   }, [busy]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const toolsFilter = agentOn && providerId === "openrouter" && settings.toolsOnly;
-  const shown = models
-    .filter((m) => !freeOnly || m.free)
-    .filter((m) => !toolsFilter || m.tools !== false)
-    .filter((m) => !search || m.name.toLowerCase().includes(search.toLowerCase()));
-
-  React.useEffect(() => {
-    if (shown.length && !shown.some((m) => m.id === modelId)) setModelId(shown[0].id);
-  }, [shown.map((m) => m.id).join("|")]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  React.useEffect(() => {
-    storage.setSelection({ providerId, modelId, freeOnly });
-  }, [providerId, modelId, freeOnly, storage]);
 
   if (!available.length) {
     return (
@@ -486,9 +434,14 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
   };
 
   const send = async (text?: string) => {
+    // Nguồn và model lấy tại lúc gửi: đổi nguồn khi đang chạy chỉ có hiệu lực từ lượt sau
     const p = getProvider(providerId);
     const typed = (text ?? input).trim();
-    if (!p || !modelId || !typed) return;
+    if (!p || !typed) return;
+    if (cat.blockReason) {
+      setNotice({ text: cat.blockReason, err: true });
+      return;
+    }
     setNotice(undefined);
     const slash = resolveSlash(typed, skills, commands);
     let content = slash.content;
@@ -507,6 +460,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
     const userMsg: AgentMessage = images.length ? { role: "user", content, images } : { role: "user", content };
 
     const model = models.find((m) => m.id === modelId);
+    const vision = model?.vision ?? p.vision;
     const useAgent = agentOn && !!hostTools && model?.tools !== false;
     const auto = useAgent && !slash.label ? autoSelectSkills(typed, skills as any) : [];
 
@@ -565,6 +519,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
           askBeforeWrite: settings.askBeforeWrite,
           confirmRisky: settings.confirmRisky,
           webSearch: settings.webSearch && webCapable,
+          vision,
           onEvent: (ev) => {
             if (ev.type === "step") {
               if (ev.step > 1) needSep = true;
@@ -608,17 +563,20 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
           signal: ac.signal,
           onText: (d) => appendText(d),
           webSearch: settings.webSearch && webCapable,
+          vision,
         });
         historyRef.current = [...historyRef.current, userMsg, { role: "assistant", content: res.text }];
       }
     } catch (e: any) {
-      const aborted = e instanceof DOMException && e.name === "AbortError";
-      const msg = aborted
-        ? "Đã dừng."
-        : isToolUnsupportedError(e)
-          ? "Model này không gọi được công cụ nên không thao tác được trên tài liệu. Hãy chọn model khác (OpenRouter: bật “Chỉ model thao tác được”) hoặc tắt “AI tự thao tác” để chỉ trò chuyện."
-          : networkErrorMessage(e);
-      patchLast((it) => ({ ...it, error: msg }));
+      const info = describeError(e, { provider: p });
+      const msg =
+        info.kind === "aborted"
+          ? "Đã dừng."
+          : isToolUnsupportedError(e)
+            ? "Model này không gọi được công cụ nên không thao tác được trên tài liệu. Hãy chọn model khác (OpenRouter: bật “Chỉ model thao tác được”) hoặc tắt “AI tự thao tác” để chỉ trò chuyện."
+            : info.text;
+      const detail = `${info.detail}\nModel: ${modelId}\nPhiên bản: ${APP_VERSION_FULL}\nLúc: ${new Date().toLocaleString("vi-VN")}`;
+      patchLast((it) => ({ ...it, error: msg, errorDetail: info.kind === "aborted" ? undefined : detail }));
     } finally {
       setBusy(false);
       setPending(null);
@@ -715,29 +673,34 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
   return (
     <div className={s.wrap}>
       <div className={s.row}>
-        <Select value={providerId} onChange={(_, d) => setProviderId(d.value)} style={{ flex: 1, minWidth: 0 }}>
+        <Select value={providerId} onChange={(_, d) => cat.selectProvider(d.value)} style={{ flex: 1, minWidth: 0 }}>
           {available.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
             </option>
           ))}
         </Select>
-        <Button size="small" onClick={() => loadModels(true)} title="Tải lại danh sách model">
+        <Button size="small" onClick={() => cat.reload()} title="Tải lại danh sách model">
           Làm mới
         </Button>
       </div>
+      {cat.provider?.blockedReason && (
+        <Text size={200} className={s.err}>
+          ⚠️ {cat.provider.name}: {cat.provider.blockedReason}
+        </Text>
+      )}
       <div className={s.row}>
         <Input
           placeholder="Tìm model…"
           autoComplete="off"
           name="aidn-model-search"
-          value={search}
-          onChange={(_, d) => setSearch(d.value)}
+          value={cat.search}
+          onChange={(_, d) => cat.setSearch(d.value)}
           size="small"
           style={{ flex: 1, minWidth: 0 }}
         />
         {providerId === "openrouter" && (
-          <Switch label="Miễn phí" checked={freeOnly} onChange={(_, d) => setFreeOnly(d.checked)} />
+          <Switch label="Miễn phí" checked={cat.freeOnly} onChange={(_, d) => cat.setFreeOnly(d.checked)} />
         )}
         {providerId === "openrouter" && agentOn && (
           <Switch
@@ -747,7 +710,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
           />
         )}
       </div>
-      <Select value={modelId} onChange={(_, d) => setModelId(d.value)}>
+      <Select value={modelId} onChange={(_, d) => cat.selectModel(d.value)} disabled={cat.catalog.status !== "ready"}>
+        {cat.model && !shown.some((m) => m.id === modelId) && <option value={modelId}>{cat.model.name}</option>}
         {shown.map((m) => (
           <option key={m.id} value={m.id}>
             {m.free ? "🆓 " : ""}
@@ -756,8 +720,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
           </option>
         ))}
       </Select>
-      <Text size={200} className={s.muted}>
-        {catalogNote} {shown.length !== models.length ? `· đang hiện ${shown.length}/${models.length}` : ""}
+      <Text size={200} className={cat.catalog.status === "error" ? s.err : s.muted}>
+        {cat.catalog.status === "error" ? cat.blockReason : cat.note}{" "}
+        {cat.catalog.status === "ready" && shown.length !== models.length ? `· đang hiện ${shown.length}/${models.length}` : ""}
       </Text>
       <div className={s.row}>
         <Switch
@@ -880,6 +845,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
                   </div>
                 )}
                 {it.error && <Text className={s.err}>{it.error}</Text>}
+                {it.error && it.errorDetail && !isLastBusy(i) && (
+                  <Button size="small" appearance="subtle" style={{ alignSelf: "flex-start" }} onClick={() => copy(`${it.error}\n\n${it.errorDetail}`)}>
+                    Chép chi tiết lỗi
+                  </Button>
+                )}
                 {!isLastBusy(i) && (
                   <div className={s.row} style={{ marginTop: 4 }}>
                     {it.undo?.length && !it.undone ? (
@@ -989,9 +959,14 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
         {busy ? (
           <Button onClick={stop}>Dừng</Button>
         ) : (
-          <Button appearance="primary" onClick={() => send()} disabled={!input.trim() || !modelId || attachBusy}>
+          <Button appearance="primary" onClick={() => send()} disabled={!input.trim() || !!cat.blockReason || attachBusy}>
             Gửi
           </Button>
+        )}
+        {!busy && cat.blockReason && cat.catalog.status !== "error" && (
+          <Text size={200} className={s.muted}>
+            {cat.blockReason}
+          </Text>
         )}
         <Button onClick={() => fileRef.current?.click()} disabled={busy || attachBusy} title="Đính kèm PDF, DOCX, TXT, CSV, ảnh…">
           {attachBusy ? "Đang đọc…" : "📎 Tệp"}
