@@ -1,6 +1,6 @@
-# So sánh AI Đa Nguồn (v3.6.1) với add-in Claude chính thức
+# So sánh AI Đa Nguồn (v3.7.0) với add-in Claude chính thức
 
-Cập nhật 15/11/2026 (bước 9 Đợt 0A): sửa theo mục 7 của `tasks/ke-hoach-v4.md` sau khi đối chiếu lại 13 trang tài liệu chính thức (bản `.md`) và tệp `pivot.claude.ai/shortcuts.json` tải từ máy cùng ngày. Số dòng 1–55 giữ nguyên như bản 14/11; dòng 56–67 là khả năng mới của bản chính thức.
+Cập nhật 15/11/2026 (bước 9 Đợt 0A): sửa theo mục 7 của `tasks/ke-hoach-v4.md` sau khi đối chiếu lại 13 trang tài liệu chính thức (bản `.md`) và tệp `pivot.claude.ai/shortcuts.json` tải từ máy cùng ngày. Số dòng 1–55 giữ nguyên như bản 14/11; dòng 56–67 là khả năng mới của bản chính thức. Cập nhật 15/11/2026 buổi chiều (Đợt 0B, bản 3.7.0): sửa dòng 5, 9, 61, 66; các thay đổi này mới có Kiểm thử máy, chưa kiểm trong Office.
 
 ## Cách đọc cột "Bằng chứng"
 
@@ -23,11 +23,11 @@ Nguồn (viết tắt ở cột 2): [X] Excel · [W] Word · [P] PowerPoint · [
 | 2 | Kết nối bằng token/key, không cần tài khoản Claude | Có, qua "Cloud provider or gateway" [3P] | **Có** — nhập key của 11 nhà cung cấp | Chạy thật: Kiểm tra nhà cung cấp 15/11 đạt 4 nguồn (Groq, Anthropic, Cerebras, Cohere) | Cao |
 | 3 | Chọn model | Có, danh sách Claude chọn lọc [X] | **Có**, rộng hơn (cả model miễn phí); nhớ model theo từng nguồn | Chạy thật (Anthropic, Groq): đổi qua lại hai nguồn, mỗi nguồn về đúng model đã dùng | Cao |
 | 4 | AI tự đọc và sửa tài liệu qua nhiều bước | Có | **Có** (54 công cụ) | Tự kiểm tra + Chạy thật | Cao |
-| 5 | Hỏi xác nhận trước thao tác rủi ro; cảnh báo trước khi ghi đè | Có [X][W] | **Một phần** — Excel, PowerPoint: có. Word: chỉ hỏi khi xóa đoạn và khi chấp nhận/từ chối tất cả sửa đổi; chưa hỏi khi ghi đè ô bảng có dữ liệu, thay vùng chọn lớn, thay nhiều chỗ một lúc (Đợt 0B) | Tự kiểm tra (Excel, PowerPoint); Word chưa có bước kiểm cảnh báo | Cao |
+| 5 | Hỏi xác nhận trước thao tác rủi ro; cảnh báo trước khi ghi đè | Có [X][W] | **Có** từ bản 3.7 — Excel, PowerPoint: có. Word: hỏi khi xóa đoạn, chấp nhận/từ chối tất cả sửa đổi, ghi đè ô bảng đang có dữ liệu, thay vùng chọn lớn (từ 3 đoạn hoặc 1.000 ký tự), thay quá 5 chỗ một lúc | Tự kiểm tra (Excel, PowerPoint). Word, ba cảnh báo mới: Kiểm thử máy cho phần tính ô bị ghi đè; hai bước Tự kiểm tra mới **chưa chạy trong Office** | Cao |
 | 6 | Ba mức quyền: Ask before edits / Accept all edits / Skip all permissions | Có [3P] | **Một phần** — hai mức cạnh ô nhập ("Hỏi trước" / "Tự sửa, hỏi khi rủi ro") và "Cho phép hết lần này"; không làm mức bỏ qua mọi xin phép (trái quy tắc dự án) | Chạy thật (thẻ duyệt Cho phép / Cho phép hết lần này / Bỏ qua) | Trung bình |
 | 7 | Chỉ dẫn riêng lưu sẵn cho từng ứng dụng | Có [X][W][P] | **Có** | Chạy thật 15/11: lưu, xóa, khôi phục từ tệp sao lưu (Word); chưa kiểm AI có làm theo chỉ dẫn | Cao |
 | 8 | Lịch sử hội thoại lưu trên máy, xóa được | Có, 50 hội thoại gần nhất cho mỗi người dùng, mỗi tổ chức, mỗi ứng dụng [D] | **Có**, 60 hội thoại; thêm Sao lưu/Khôi phục ra tệp | Chạy thật 15/11: xóa một hội thoại, khôi phục lại từ tệp sao lưu; mở lại hội thoại cũ: Kiểm thử máy | Trung bình |
-| 9 | Tự thu gọn hội thoại dài | Có [X] | **Có** — nhưng ngưỡng cố định, không theo sức chứa của từng model | Kiểm thử máy | Trung bình |
+| 9 | Tự thu gọn hội thoại dài | Có [X] | **Có** — từ bản 3.7 ngưỡng theo sức chứa của từng model (60% sức chứa; token thực đo vượt 75% cũng tóm tắt); giữa hai lần tóm tắt lịch sử không bị sửa | Kiểm thử máy; chưa chạy thật | Trung bình |
 | 10 | Tệp đính kèm làm nguồn | Có, kể cả ở chế độ third-party/gateway (ở chế độ đó tệp tải lên chỉ không dùng được cho chạy mã) [3P] | **Một phần** — PDF có lớp chữ, DOCX, TXT/CSV/MD/JSON, ảnh. **PDF quét (scan) chưa đọc được** | Chạy thật (PDF + DOCX); ảnh: Kiểm thử máy | **Cao** — hồ sơ pháp lý phần lớn là bản quét |
 | 11 | Kỹ năng (Skills) tự áp dụng theo việc | Có [C] | **Có** — 17 kỹ năng dựng sẵn | Chạy thật (1 kỹ năng); còn lại Kiểm thử máy | Cao |
 | 12 | Gọi kỹ năng bằng "/", lọc theo ứng dụng | Có [C] | **Có** | Giao diện (Excel) | Trung bình |
@@ -83,17 +83,17 @@ Nguồn (viết tắt ở cột 2): [X] Excel · [W] Word · [P] PowerPoint · [
 | 58 | Soát lập luận trước khi sửa ngôn từ pháp lý | Có ở Word [D] | **Chưa** (Đợt 1B) | — | Cao |
 | 59 | Tải bản ghi hội thoại | Có: ⋮ > Download Transcript [D][Pf] | **Chưa** (Đợt 5). Việc tải tệp từ khung add-in ra đĩa đã thử được 15/11 (tệp sao lưu) | — | Trung bình |
 | 60 | Công cụ chạy mã Office.js do model viết | Có: nhật ký nêu công cụ `execute_office_js` bên cạnh công cụ chuyên biệt [OT] | **Chưa** — 54 công cụ khai báo sẵn; cân nhắc ở Đợt 5 (rủi ro cao, luôn hỏi kèm hiện mã) | — | Trung bình |
-| 61 | Giới hạn thời gian và cỡ tệp | Có số cụ thể: chờ 90 giây cho bước chạy mã, 5 phút cho bước khác (web 2 phút), 30 giây cho một sửa chữ ở Word; mỗi lần đọc 2.000 ô có dữ liệu; rủi ro tăng khi Excel quá 1 triệu ô, PowerPoint từ 100 slide [Pf] | **Một phần** — giới hạn mỗi lần đọc (2.500 ô, văn bản dài đọc theo lượt); chưa có hạn chờ cho từng bước công cụ, chưa cảnh báo tệp lớn (Đợt 0B) | Tự kiểm tra (đọc văn bản dài 100 đoạn theo 2 lượt) | Trung bình |
+| 61 | Giới hạn thời gian và cỡ tệp | Có số cụ thể: chờ 90 giây cho bước chạy mã, 5 phút cho bước khác (web 2 phút), 30 giây cho một sửa chữ ở Word; mỗi lần đọc 2.000 ô có dữ liệu; rủi ro tăng khi Excel quá 1 triệu ô, PowerPoint từ 100 slide [Pf] | **Một phần** — giới hạn mỗi lần đọc (2.500 ô, văn bản dài đọc theo lượt); từ bản 3.7 có hạn chờ 120 giây cho từng bước công cụ; chưa cảnh báo tệp lớn | Tự kiểm tra (đọc văn bản dài 100 đoạn theo 2 lượt); hạn chờ: Kiểm thử máy | Trung bình |
 | 62 | Phát hiện va chạm khi người dùng đang sửa | Có ở Excel, mức đo đếm: bộ đếm `office_agent.cell_edit_collision_total` ghi khi người dùng đang sửa ô lúc công cụ ghi [OT]; tài liệu không tả người dùng thấy gì. Kèm: phát hiện bước bị treo hoặc Office đổ giữa chừng (bản ghi cho mỗi bước đang chạy, quá 10 phút thì báo) [D][Pf] | **Chưa** | — | Thấp |
 | 63 | Hội thoại gắn với tệp, tự mở khung cùng tài liệu | Có: ghi `claude.fileId` (nhận ra tệp sau khi đổi tên, Save As) và `Office.AutoShowTaskpaneWithDocument` vào tài liệu [D] | **Chưa** | — | Trung bình |
 | 64 | Lấy lại phần ngữ cảnh đã đẩy ra | Có: phần bị đẩy khỏi ngữ cảnh làm việc được lưu riêng, Claude xin lại được [D] | **Chưa** — chỉ có tóm tắt hội thoại dài (dòng 9) | — | Cao (hợp đồng dài) |
 | 65 | Dò khả năng của model khi kết nối | Có: gửi yêu cầu thử khi kết nối và khi đổi model để biết model, tìm web, chạy mã có dùng được [3P][D] | **Một phần** — nút Kiểm tra nhà cung cấp (bấm tay) và dấu 🛠 cho model gọi được công cụ; chưa tự dò khi đổi model | Chạy thật 15/11 (8 nguồn có key) | Cao |
-| 66 | Bộ nhớ đệm lời nhắc ở mọi lượt | Có: add-in yêu cầu prompt caching ở mọi lần gọi [OT] | **Chưa** (Đợt 0B, key Anthropic) | — | Cao (chi phí) |
+| 66 | Bộ nhớ đệm lời nhắc ở mọi lượt | Có: add-in yêu cầu prompt caching ở mọi lần gọi [OT] | **Có** từ bản 3.7 với key Anthropic (mốc đệm ở lời nhắc hệ thống và ở cuối hội thoại; số token đọc từ bộ nhớ đệm hiện dưới mỗi câu trả lời). Nguồn khác: chỉ hiện số token đệm nếu nhà cung cấp tự báo | Kiểm thử máy; **chưa chạy thật** (chưa thấy số token đọc từ bộ nhớ đệm > 0 với key thật) | Cao (chi phí) |
 | 67 | Phím tắt mở khung | Có: Ctrl+Alt+C, hành động ShowTaskpane [SJ] | **Chưa** — phải chuyển sang shared runtime; Đợt 5 | — | Thấp |
 
 ## Tổng hợp
 
-- 67 dòng: **Có**: 25 · **Một phần**: 17 · **Chưa**: 21 · **Không làm được**: 1 · **Không cần / hai bên đều không**: 3. (Bản 14/11, 55 dòng: 29 · 11 · 11 · 1 · 3. Thay đổi: dòng 5, 41, 44, 45 từ Có xuống Một phần; 12 dòng mới gồm 2 Một phần và 10 Chưa.)
+- 67 dòng: **Có**: 27 · **Một phần**: 16 · **Chưa**: 20 · **Không làm được**: 1 · **Không cần / hai bên đều không**: 3. (Bản 3.6.1: 25 · 17 · 21 · 1 · 3; bản 3.7.0 chuyển dòng 5 từ Một phần lên Có và dòng 66 từ Chưa lên Có, cả hai mới có Kiểm thử máy. Bản 14/11, 55 dòng: 29 · 11 · 11 · 1 · 3.)
 - Ba khoảng trống ảnh hưởng nhất tới việc pháp lý – BĐS: số điều khoản tự đánh trong Word (#40), PDF quét (#10), ghi chéo ứng dụng (#20). Trong 12 dòng mới, ba dòng đáng làm sớm: soát lập luận trước khi sửa (#58), tự kiểm hình thức sau khi sửa (#57), lấy lại ngữ cảnh đã đẩy ra (#64).
 - Điểm AI Đa Nguồn hơn: nhiều nhà cung cấp và model miễn phí; nút Hoàn tác riêng; nút Tự kiểm tra. Ngoài ra, ở chế độ third-party/gateway của bản chính thức (không dùng tài khoản Claude) chỉ **thiếu chéo ứng dụng và đọc giọng nói** (và không có thư mục connector); Skills dựng sẵn, Skills tải lên và tệp đính kèm vẫn có [3P]. AI Đa Nguồn có đọc chéo ứng dụng, chưa ghi chéo.
 
