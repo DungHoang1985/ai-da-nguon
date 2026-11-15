@@ -44,7 +44,7 @@ Bấm đúp `cai-dat/cai-dat.cmd`: tải manifest bản chạy thật về `%LOC
 
 ## Cập nhật bản chạy thật
 
-`npm ci && npm run build`, rồi đưa nội dung `dist/` (bỏ `*.map`) lên nhánh `gh-pages`. Office tự dùng bản mới khi mở lại khung add-in (trang HTML được lưu tạm tối đa 10 phút).
+Tự động: mỗi lần đẩy mã lên `main`, GitHub Actions (`.github/workflows/phat-hanh.yml`) chạy `npm test`, kiểm kiểu, `npm run build` rồi đưa `dist/` (bỏ `*.map`) lên nhánh `gh-pages`. Bước kiểm nào trượt thì không phát hành. Office tự dùng bản mới khi mở lại khung add-in (trang HTML được lưu tạm tối đa 10 phút; Ctrl+F5 trong khung để tải lại ngay).
 
 ## Phát triển
 

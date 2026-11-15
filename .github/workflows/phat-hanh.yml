@@ -1,0 +1,81 @@
+# Kiểm thử và phát hành tự động.
+# - Đẩy lên main: kiểm thử, kiểm kiểu, đóng gói rồi đưa dist/ (không kèm .map) lên nhánh gh-pages (GitHub Pages).
+# - Đẩy lên nhánh thu/**: chạy y hệt nhưng bước phát hành chỉ chạy thử, không đẩy (dùng để kiểm quy trình).
+# Bất kỳ bước kiểm nào trượt thì các bước sau, kể cả phát hành, đều không chạy.
+name: Kiểm thử và phát hành
+
+on:
+  push:
+    branches: [main, "thu/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phat-hanh-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  kiem-thu-va-phat-hanh:
+    name: Kiểm thử, đóng gói, phát hành
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Lấy mã
+        uses: actions/checkout@v7
+
+      - name: Cài Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Cài thư viện
+        run: npm ci --no-audit --no-fund
+
+      - name: Kiểm thử máy (npm test)
+        run: npm test
+
+      - name: Kiểm kiểu (tsc)
+        run: npx tsc --noEmit -p .
+
+      - name: Đóng gói (npm run build)
+        run: npm run build
+
+      - name: Chuẩn bị bản phát hành
+        run: |
+          find dist -name "*.map" -delete
+          touch dist/.nojekyll
+          test -f dist/taskpane.html
+          grep -q "c95713b4-2c26-42c9-944c-cdbd5f4ff7e9" dist/manifest.xml
+          if grep -q "localhost" dist/manifest.xml; then echo "manifest còn localhost"; exit 1; fi
+          ls -la dist
+
+      - name: Phát hành lên gh-pages
+        env:
+          CHAY_THAT: ${{ github.ref == 'refs/heads/main' && 'co' || 'khong' }}
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./package.json').version")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --depth=1 origin gh-pages
+          git worktree add --detach "$RUNNER_TEMP/pages" FETCH_HEAD
+          cd "$RUNNER_TEMP/pages"
+          git rm -rq --ignore-unmatch .
+          cp -r "$GITHUB_WORKSPACE/dist/." .
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Bản phát hành không đổi, không cần đẩy."
+            exit 0
+          fi
+          git commit -q -m "Bản chạy thật v$VERSION (main@${GITHUB_SHA::7})"
+          git show --stat --oneline HEAD | head -40
+          if [ "$CHAY_THAT" = "co" ]; then
+            git push origin HEAD:gh-pages
+            echo "Đã phát hành v$VERSION lên gh-pages."
+          else
+            echo "Nhánh thử (${GITHUB_REF_NAME}): chỉ chạy thử, không đẩy lên gh-pages."
+          fi
