@@ -9,9 +9,9 @@
  "soBuocCongCu": 2,
  "cacBuoc": [
   "✅ Đọc 4.3",
-  "✅ Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản — 3 chú thích cuối trang, 1 chú thích cuối văn bản, 1 đầu và chân trang, 2 bookmar"
+  "✅ Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản — 3 chú thích cuối trang, 1 chú thích cuối văn bản, 1 đầu và chân trang"
  ],
- "token": "Token: vào 29.643 · ra 982 · đọc từ bộ nhớ đệm 26.796 · ghi vào bộ nhớ đệm 2.841",
+ "token": "Token: vào 29.261 · ra 807 · đọc từ bộ nhớ đệm 26.922 · ghi vào bộ nhớ đệm 2.333",
  "vanBanTruoc": {
   "soDoan": 85,
   "soSuaDoi": 2,
@@ -25,5 +25,5 @@
   "bamChu": 691592023
  },
  "vanBanKhongDoi": true,
- "traLoi": "Điều 4.3 [¶26] quy định: Phí Dịch Vụ là 85.000 đồng cho mỗi mét vuông mỗi tháng, và được điều chỉnh theo thông báo của ban quản lý Tòa Nhà, nhưng mỗi lần tăng không quá 10%.\nChú thích cuối trang: Có một chú thích gắn với Điều 4.3 (chú thích số 2): \"Mức Phí Dịch Vụ năm 2027 do ban quản lý Tòa Nhà thông báo ngày 01/12/2026.\" Chú thích này chỉ nêu nguồn của mức phí năm 2027, không sửa con số 85.000 đồng trong điều khoản.\nĐầu trang: \"Hợp đồng thuê văn phòng số 12/2026/HĐT-VP\"\nChân trang: \"Bản dự thảo lần 3 ngày 10/11/2026 — Lưu hành nội bộ — Trang 6\"\nNgoài ra, hộp văn bản trong tài liệu ghi \"DỰ THẢO LẦN 3 — chưa có giá trị pháp lý\". Số \"Trang 6\" ở chân trang có vẻ là chữ gõ cứng, không phải trường số trang tự động, nên sẽ không đúng khi tài liệu thay đổi số trang. Bạn nên kiểm tra lại.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
+ "traLoi": "Điều 4.3 [¶26] quy định: Phí Dịch Vụ là 85.000 đồng cho mỗi mét vuông mỗi tháng, và được điều chỉnh theo thông báo của ban quản lý Tòa Nhà, nhưng mỗi lần tăng không quá 10%.\nChú thích cuối trang: Có một chú thích gắn với đoạn này (chú thích số 2): \"Mức Phí Dịch Vụ năm 2027 do ban quản lý Tòa Nhà thông báo ngày 01/12/2026.\"\nĐầu trang và chân trang:\n• Đầu trang: \"Hợp đồng thuê văn phòng số 12/2026/HĐT-VP\"\n• Chân trang: \"Bản dự thảo lần 3 ngày 10/11/2026 — Lưu hành nội bộ — Trang 6\", trong đó số trang là trường tự động.\nNgoài ra, văn bản còn có hai chú thích cuối trang khác (Điều 1.4 [¶11] và Điều 9.3 [¶50]) và một chú thích cuối văn bản (Điều 10.3 [¶54]).\nLưu ý: đoạn 4.3 đang có kiểu \"Heading 2\" nên toàn bộ câu xuất hiện trong mục lục điều khoản như tiêu đề. Nên đổi sang kiểu nội dung thường nếu muốn mục lục gọn hơn.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
 }

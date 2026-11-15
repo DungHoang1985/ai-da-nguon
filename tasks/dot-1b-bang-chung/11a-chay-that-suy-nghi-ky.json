@@ -4,7 +4,7 @@
  "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
  "cauHoi": "Đọc Điều 6 và Điều 7 rồi cho biết: nếu Bên Thuê chậm trả Tiền Thuê 50 ngày thì Bên Cho Thuê có những quyền gì theo hợp đồng này? Dẫn số điều cho từng quyền.",
  "tepDinhKem": [],
- "giay": 16,
+ "giay": 17,
  "daHoi": [],
  "soBuocCongCu": 3,
  "cacBuoc": [
@@ -12,7 +12,7 @@
   "✅ Đọc Điều 7",
   "✅ Đọc Điều 11"
  ],
- "token": "Token: vào 45.917 · ra 2.805 · đọc từ bộ nhớ đệm 42.324 · ghi vào bộ nhớ đệm 3.585",
+ "token": "Token: vào 46.183 · ra 3.218 · đọc từ bộ nhớ đệm 42.506 · ghi vào bộ nhớ đệm 3.669",
  "vanBanTruoc": {
   "soDoan": 85,
   "soSuaDoi": 2,
@@ -26,5 +26,5 @@
   "bamChu": 691592023
  },
  "vanBanKhongDoi": true,
- "traLoi": "Nếu Bên Thuê chậm trả Tiền Thuê 50 ngày, Bên Cho Thuê có bốn quyền sau:\n1. Tính lãi chậm trả 0,05% mỗi ngày trên số tiền chậm, theo Điều 7.3 [¶41]. Mức lãi không vượt trần theo Điều 357 Bộ luật Dân sự (Điều 7.4 [¶42]). Tôi chưa đối chiếu mức trần này với văn bản gốc.\n2. Khấu trừ Tiền Đặt Cọc theo Điều 6.3(a) [¶35], vì Bên Thuê chậm trả Tiền Thuê quá thời hạn.\n3. Đơn phương chấm dứt hợp đồng theo Điều 11.2 [¶57]. Điều kiện là Bên Thuê chậm thanh toán quá thời hạn tại Điều 7.3 và không khắc phục trong 15 ngày kể từ ngày nhận thông báo. Vì vậy Bên Cho Thuê phải gửi thông báo và chờ hết 15 ngày trước khi chấm dứt.\n4. Phạt vi phạm 8% giá trị phần nghĩa vụ bị vi phạm và bồi thường thiệt hại thực tế theo Điều 11.4 [¶59].\nBa điểm cần lưu ý:\n• Điều 7.3 nói chậm quá 45 ngày là \"vi phạm nghiêm trọng theo Điều 11.2\", nên 50 ngày đã vượt ngưỡng này. Nhưng Điều 11.2 không nêu mốc 45 ngày mà chỉ dẫn lại \"thời hạn tại Điều 7.3\", và Điều 7.3 không có thời hạn nào khác ngoài mốc 45 ngày. Quy định này chưa rõ, nên nên làm rõ trước khi ký.\n• Điều 6.3(a) [¶35] dẫn \"khoản 3 Điều 7\", nhưng khoản 3 Điều 7 là quy định lãi chậm trả. Thời hạn thanh toán nằm ở khoản 1 Điều 7 [¶39]. Có thể đây là dẫn chiếu sai.\n• Hợp đồng không quy định Bên Cho Thuê được thu hồi mặt bằng ngay khi chậm trả. Quyền này chỉ phát sinh nếu chấm dứt theo Điều 11.2.\nNếu bạn muốn, tôi có thể thêm nhận xét vào Điều 6.3(a) và Điều 7.3 để đánh dấu hai chỗ này.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
+ "traLoi": "Nếu Bên Thuê chậm trả Tiền Thuê 50 ngày, Bên Cho Thuê có bốn quyền sau:\n1. Khấu trừ Tiền Đặt Cọc (Điều 6.3(a) [¶35]). Tiền Đặt Cọc 360.000.000 đồng có thể bị khấu trừ vì Bên Thuê chậm trả Tiền Thuê quá thời hạn quy định tại Điều 7. Điều 6.3(a) không đặt ngưỡng số ngày, nên quyền này phát sinh ngay khi chậm.\n2. Thu lãi chậm trả 0,05% mỗi ngày (Điều 7.3 [¶41]). Với 50 ngày, lãi là 2,5% số tiền chậm trả. Ví dụ, nếu chậm đúng một kỳ quý khoảng 360.000.000 đồng (suy từ 3 tháng tiền thuê đặt cọc), lãi khoảng 9.000.000 đồng. Mức lãi không vượt trần theo Điều 357 Bộ luật Dân sự (Điều 7.4 [¶42]).\n3. Đơn phương chấm dứt hợp đồng (Điều 11.2 [¶57]). Điều 7.3 coi chậm quá 45 ngày là vi phạm nghiêm trọng theo Điều 11.2, nên 50 ngày đã vượt ngưỡng này. Bên Cho Thuê chỉ chấm dứt được nếu Bên Thuê không khắc phục trong 15 ngày kể từ ngày nhận thông báo. Nếu Bên Thuê trả đủ trong thời hạn đó thì quyền chấm dứt không phát sinh.\n4. Phạt vi phạm và bồi thường thiệt hại (Điều 11.4 [¶59]). Bên vi phạm chịu phạt 8% giá trị phần nghĩa vụ bị vi phạm và bồi thường thiệt hại thực tế. Điều khoản này nêu chung, không ghi rõ áp dụng riêng cho chậm trả, nên cần xác định lại khi áp dụng.\nLưu ý về văn bản: Điều 11.2 dẫn chiếu tới \"thời hạn nêu tại Điều 7.3\", nhưng Điều 7.3 chỉ nêu mốc 45 ngày để coi là vi phạm nghiêm trọng, không có thời hạn thanh toán riêng. Mốc chấm dứt nên được làm rõ là 45 ngày hay hạn thanh toán ở Điều 7.1 [¶39] (trong 10 ngày đầu mỗi quý). Tôi chưa sửa gì trong văn bản; nếu cần, tôi có thể ghi nhận xét tại Điều 11.2 để đề xuất cách diễn đạt.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
 }

@@ -1,0 +1,32 @@
+{
+ "bai": "soat",
+ "phienBan": "v4.1",
+ "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cauHoi": "Soát nhất quán văn bản này trước khi trình ký. Liệt kê đầy đủ từng điểm cần sửa, mỗi điểm một dòng, kèm số điều và số đoạn; cuối cùng ghi tổng số điểm. Chỉ soát, không sửa gì.",
+ "tepDinhKem": [],
+ "giay": 34,
+ "daHoi": [],
+ "soBuocCongCu": 5,
+ "cacBuoc": [
+  "✅ Đọc các sửa đổi được theo dõi",
+  "✅ Đọc các nhận xét",
+  "✅ Soát nhất quán: đánh số, dẫn chiếu, thuật ngữ, tên các bên, chỗ trống, số và chữ — 9 điểm cần xem: đánh số 1, dẫn chiếu 2, thuật ngữ 3, chỗ trống 2, số và chữ",
+  "✅ Đọc đoạn 0–90",
+  "✅ Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản — 3 chú thích cuối trang, 1 chú thích cuối văn bản, 1 đầu và chân trang, 2 bookmar"
+ ],
+ "token": "Token: vào 67.283 · ra 7.318 · đọc từ bộ nhớ đệm 52.170 · ghi vào bộ nhớ đệm 15.105",
+ "vanBanTruoc": {
+  "soDoan": 85,
+  "soSuaDoi": 2,
+  "soNhanXet": 1,
+  "bamChu": 1032539499
+ },
+ "vanBanSau": {
+  "soDoan": 85,
+  "soSuaDoi": 2,
+  "soNhanXet": 1,
+  "bamChu": 1032539499
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "Kỹ năng áp dụng: kiem-tra-truoc-ky\nKết luận: CÓ VẤN ĐỀ, chưa nên trình ký. Tôi chỉ soát, không sửa gì trong văn bản. Đã đối chiếu sửa đổi chờ duyệt, nhận xét, mã tự dò, toàn văn, chú thích, đầu/chân trang và hộp văn bản.\nDanh sách điểm cần sửa\n1. Đầu văn bản, ¶2: dòng \"(bản thử của AI Đa Nguồn, nội dung không có thật)\" phải gỡ trước khi ký.\n2. Phần mở đầu, ¶3: ngày ký còn để trống \"ngày ... tháng ...\".\n3. Điều 7.1, ¶39: số tài khoản Bên Cho Thuê còn để trống \"………………\".\n4. Điều 4.1, ¶24: số và chữ không khớp. Ghi 120.000.000 đồng nhưng chữ là \"Một trăm hai mươi lăm triệu đồng\" (125.000.000). Điều 6.1 (3 tháng = 360.000.000) cho thấy 120 triệu là đúng, nên cần sửa chữ thành \"Một trăm hai mươi triệu đồng\". Bookmark GiaThue cũng nằm ở đoạn này.\n5. Điều 1.4, ¶11 và Điều 7.1, ¶39: 1.4 ghi Tiền Thuê trả \"hằng tháng\", nhưng 7.1 quy định thanh toán theo quý.\n6. Điều 11.2, ¶57: dẫn chiếu \"khoản 6 Điều 7\" không tồn tại, vì Điều 7 chỉ có 7.1–7.4. Có lẽ là khoản 7.3 (chậm thanh toán), cần xác nhận.\n7. Điều 7.3, ¶41: chậm quá 45 ngày là \"vi phạm nghiêm trọng theo Điều 11.2\", nhưng 11.2 cho khắc phục trong 15 ngày. Hai mốc thời gian lệch nhau, cần thống nhất.\n8. Điều 13.2, ¶66: dẫn chiếu \"Điều 19\" không tồn tại. Đoạn này cũng không có số khoản (kiểu \"Khoản hợp đồng\" lạc), có lẽ phải là khoản 13.3 và dẫn chiếu Điều 3.\n9. Điều 5.2, ¶29: \"ngày bàn giao\" viết thường, phải là \"Ngày Bàn Giao\" theo định nghĩa 1.3 [¶10].\n10. Điều 6.3(a), ¶35: \"Tiền thuê\" viết thường, phải là \"Tiền Thuê\" theo định nghĩa 1.4 [¶11].\n11. Điều 10.2, ¶53: \"Phí Quản Lý\" không được định nghĩa. Thuật ngữ đã định nghĩa là \"Phí Dịch Vụ\" (1.5 [¶12]), nên có lẽ phải sửa thành Phí Dịch Vụ.\n12. Phụ lục 01, mục 2.4, ¶78: đánh số nhảy, sau 2.2 là 2.4 (thiếu 2.3).\n13. Điều 8.3, ¶46: còn sửa đổi chờ duyệt của Đối tác (15 → 10 Ngày Làm Việc). Phải chấp nhận hoặc từ chối trước khi ký.\n14. Điều 12.2, ¶62: nhận xét của Đối tác (\"Đề nghị giảm xuống 120%\") chưa xử lý, đang neo ở mức 150%.\n15. Phần chủ thể, ¶4–5: thiếu địa chỉ và mã số doanh nghiệp của hai bên. Điều 13.2 [¶65] lại dẫn chiếu \"địa chỉ nêu tại phần đầu hợp đồng\", nhưng phần đầu không có địa chỉ.\n16. Phần ký, ¶82–84: chỉ có tên người đại diện (Ông Trần Văn Minh, Bà Lê Thu Hà), thiếu chức danh và căn cứ ủy quyền (số, ngày văn bản ủy quyền nếu không phải người đại diện theo pháp luật).\n17. Chân trang và hộp văn bản: chân trang ghi \"Bản dự thảo lần 3 ngày 10/11/2026 — Lưu hành nội bộ\", hộp văn bản ghi \"DỰ THẢO LẦN 3 — chưa có giá trị pháp lý\". Cả hai phải gỡ trước khi ký.\n18. Phụ lục 01, ¶72–77: số mục xuất hiện hai lần (\"1.1 1.1 ...\"; \"1. Mô tả...\"). Cần kiểm tra xem số tự động và số gõ tay có bị hiển thị trùng không.\nTổng: 18 điểm cần xử lý. Trong đó, 2 điểm (13, 14) là sửa đổi và nhận xét của Đối tác chưa duyệt. Các điểm 1, 2, 3, 17 là chỗ trống hoặc dấu dự thảo cần xóa khi chốt bản ký. Các điểm 4 đến 12 là lỗi nhất quán nội dung và thuật ngữ. Điểm 15 và 16 là thiếu thông tin chủ thể và thẩm quyền ký.\nĐã đối chiếu và không thấy lỗi: số bản hợp đồng (4 bản, mỗi bên 2 bản); tiền đặt cọc 360.000.000 đồng so với Tiền Thuê; ngày bàn giao 01/02/2027 so với thời hạn thuê; các chú thích cuối trang.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
+}

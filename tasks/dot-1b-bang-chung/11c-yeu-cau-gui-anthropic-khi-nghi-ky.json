@@ -1,18 +1,87 @@
-[
- {
-  "trangThai": 200,
-  "thinking": {
-   "type": "adaptive",
-   "block_binding": {
-    "prefix_mismatch_behavior": "drop_block"
-   }
+{
+ "ghiChu": "Các yêu cầu add-in gửi Anthropic (Claude Haiku 5.5) khi bật Suy nghĩ kỹ, ghi bằng kiem-thu/cdp-bai/word-1b-theo-doi-goi.js (chỉ cờ và số đếm). luotMot: 4 bước của bài nghiKy (3 lần đọc điều khoản rồi trả lời); luotHoiTiep: một lượt hỏi tiếp sau đó trong cùng hội thoại (dòng token của lượt này: vào 24.259, đọc từ bộ nhớ đệm 22.512).",
+ "luotMot": [
+  {
+   "trangThai": 200,
+   "thinking": {
+    "type": "adaptive",
+    "block_binding": {
+     "prefix_mismatch_behavior": "drop_block"
+    }
+   },
+   "effort": "high",
+   "coTieuDeBeta": true,
+   "soTinNhan": 1,
+   "khoiSuyNghiGuiLai": 0,
+   "khoiTaiLieu": 0,
+   "soCongCu": 29,
+   "coLoiNhacHeThong": true
   },
-  "effort": "high",
-  "coTieuDeBeta": true,
-  "soTinNhan": 9,
-  "khoiSuyNghiGuiLai": 4,
-  "khoiTaiLieu": 0,
-  "soCongCu": 29,
-  "coLoiNhacHeThong": true
- }
-]
+  {
+   "trangThai": 200,
+   "thinking": {
+    "type": "adaptive",
+    "block_binding": {
+     "prefix_mismatch_behavior": "drop_block"
+    }
+   },
+   "effort": "high",
+   "coTieuDeBeta": true,
+   "soTinNhan": 3,
+   "khoiSuyNghiGuiLai": 1,
+   "khoiTaiLieu": 0,
+   "soCongCu": 29,
+   "coLoiNhacHeThong": true
+  },
+  {
+   "trangThai": 200,
+   "thinking": {
+    "type": "adaptive",
+    "block_binding": {
+     "prefix_mismatch_behavior": "drop_block"
+    }
+   },
+   "effort": "high",
+   "coTieuDeBeta": true,
+   "soTinNhan": 5,
+   "khoiSuyNghiGuiLai": 2,
+   "khoiTaiLieu": 0,
+   "soCongCu": 29,
+   "coLoiNhacHeThong": true
+  },
+  {
+   "trangThai": 200,
+   "thinking": {
+    "type": "adaptive",
+    "block_binding": {
+     "prefix_mismatch_behavior": "drop_block"
+    }
+   },
+   "effort": "high",
+   "coTieuDeBeta": true,
+   "soTinNhan": 7,
+   "khoiSuyNghiGuiLai": 3,
+   "khoiTaiLieu": 0,
+   "soCongCu": 29,
+   "coLoiNhacHeThong": true
+  }
+ ],
+ "luotHoiTiep": [
+  {
+   "trangThai": 200,
+   "thinking": {
+    "type": "adaptive",
+    "block_binding": {
+     "prefix_mismatch_behavior": "drop_block"
+    }
+   },
+   "effort": "high",
+   "coTieuDeBeta": true,
+   "soTinNhan": 11,
+   "khoiSuyNghiGuiLai": 5,
+   "khoiTaiLieu": 0,
+   "soCongCu": 29,
+   "coLoiNhacHeThong": true
+  }
+ ]
+}

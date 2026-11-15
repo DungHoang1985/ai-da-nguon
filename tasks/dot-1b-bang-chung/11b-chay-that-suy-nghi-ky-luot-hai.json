@@ -4,11 +4,11 @@
  "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
  "cauHoi": "Còn nếu chỉ chậm 20 ngày thì khác gì? Trả lời ngắn, dẫn số điều.",
  "tepDinhKem": [],
- "giay": 5,
+ "giay": 6,
  "daHoi": [],
  "soBuocCongCu": 0,
  "cacBuoc": [],
- "token": "Token: vào 19.962 · ra 697 · đọc từ bộ nhớ đệm 16.307 · ghi vào bộ nhớ đệm 3.651",
+ "token": "Token: vào 20.438 · ra 818 · đọc từ bộ nhớ đệm 16.454 · ghi vào bộ nhớ đệm 3.980",
  "vanBanTruoc": {
   "soDoan": 85,
   "soSuaDoi": 2,
@@ -22,5 +22,5 @@
   "bamChu": 691592023
  },
  "vanBanKhongDoi": true,
- "traLoi": "Nếu chậm 20 ngày, Bên Cho Thuê vẫn có lãi chậm trả theo Điều 7.3 [¶41] (trong giới hạn Điều 7.4 [¶42]) và có quyền khấu trừ đặt cọc theo Điều 6.3(a) [¶35]. Quyền đơn phương chấm dứt theo Điều 11.2 [¶57] thì không chắc có. Điều 7.3 chỉ coi chậm quá 45 ngày là vi phạm nghiêm trọng, nên 20 ngày chưa đạt ngưỡng đó. Quyền phạt 8% và bồi thường theo Điều 11.4 [¶59] có thể vẫn áp dụng, vì điều này không yêu cầu vi phạm nghiêm trọng. Điểm này nên làm rõ.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
+ "traLoi": "Nếu chậm 20 ngày, Bên Cho Thuê vẫn có khấu trừ Tiền Đặt Cọc (Điều 6.3(a) [¶35]), lãi chậm trả 1% (0,05% × 20 ngày, Điều 7.3 [¶41]) và đòi phạt 8% cùng bồi thường thiệt hại (Điều 11.4 [¶59]). Khác biệt chính là không đủ điều kiện đơn phương chấm dứt hợp đồng theo Điều 11.2 [¶57], vì 20 ngày chưa vượt mốc 45 ngày của Điều 7.3.\nLưu ý: Điều 11.2 dẫn chiếu \"thời hạn nêu tại Điều 7.3\" mà Điều 7.3 không có thời hạn riêng ngoài mốc 45 ngày. Nếu hiểu theo hạn thanh toán ở Điều 7.1 [¶39] thì 20 ngày chậm có thể đã đủ điều kiện chấm dứt sau 15 ngày khắc phục. Cách hiểu này nên được làm rõ trong văn bản.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
 }

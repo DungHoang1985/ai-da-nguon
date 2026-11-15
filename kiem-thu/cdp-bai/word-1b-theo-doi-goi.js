@@ -8,6 +8,7 @@ if (window.__aidnXemGoi) {
     delete window.__aidnFetchGoc;
   }
   delete window.__aidnGoi;
+  delete window.__aidnXemGoi;
   return out;
 }
 if (!window.__aidnFetchGoc) {
@@ -33,7 +34,8 @@ if (!window.__aidnFetchGoc) {
         });
       }
     } catch (e) {
-      /* không ảnh hưởng yêu cầu thật */
+      // không ảnh hưởng yêu cầu thật
+      window.__aidnGoi.push({ loiTheoDoi: String((e && e.message) || e) });
     }
     return r;
   };

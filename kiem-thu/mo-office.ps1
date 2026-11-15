@@ -17,7 +17,8 @@ function Cho-Thoat($proc) {
 if (Get-Process winword -ErrorAction SilentlyContinue) {
   $w = [Runtime.InteropServices.Marshal]::GetActiveObject('Word.Application')
   $names = @($w.Documents | ForEach-Object { $_.Name })
-  $la = @($names | Where-Object { -not (La-Tep-Thu $_) })
+  # Tài liệu ẩn (không có cửa sổ, không tên) do công cụ so sánh phiên bản dựng từ tệp đính kèm: không phải tài liệu của người dùng
+  $la = @($w.Documents | Where-Object { $_.Windows.Count -gt 0 -and -not (La-Tep-Thu $_.Name) } | ForEach-Object { $_.Name })
   if ($la.Count -gt 0) { Write-Output "DUNG: Word dang mo tai lieu khong phai tep thu: $($la -join ', '). Khong dong."; exit 2 }
   foreach ($d in @($w.Documents)) { $d.Close(0) }   # 0 = không lưu
   if ($w.Documents.Count -ne 0) { Write-Output "DUNG: Word con tai lieu chua dong duoc."; exit 2 }
