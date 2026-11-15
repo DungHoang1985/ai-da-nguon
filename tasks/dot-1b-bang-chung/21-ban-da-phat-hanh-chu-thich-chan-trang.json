@@ -1,0 +1,29 @@
+{
+ "bai": "chuThich",
+ "phienBan": "v4.1",
+ "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cauHoi": "Điều 4.3 quy định gì về Phí Dịch Vụ, và có chú thích cuối trang nào kèm theo không? Chân trang và đầu trang của văn bản ghi gì?",
+ "tepDinhKem": [],
+ "giay": 6,
+ "daHoi": [],
+ "soBuocCongCu": 2,
+ "cacBuoc": [
+  "✅ Đọc 4.3",
+  "✅ Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản — 3 chú thích cuối trang, 1 chú thích cuối văn bản, 1 đầu và chân trang"
+ ],
+ "token": "Token: vào 29.397 · ra 585 · đọc từ bộ nhớ đệm 14.205 · ghi vào bộ nhớ đệm 15.186",
+ "vanBanTruoc": {
+  "soDoan": 85,
+  "soSuaDoi": 2,
+  "soNhanXet": 1,
+  "bamChu": 691592023
+ },
+ "vanBanSau": {
+  "soDoan": 85,
+  "soSuaDoi": 2,
+  "soNhanXet": 1,
+  "bamChu": 691592023
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "Điều 4.3 [¶26] quy định: Phí Dịch Vụ là 85.000 đồng cho mỗi mét vuông mỗi tháng, và được điều chỉnh theo thông báo của ban quản lý Tòa Nhà, nhưng mỗi lần tăng không quá 10%.\nChú thích liên quan: Có một chú thích cuối trang (chú thích số 2) gắn với Điều 4.3 [¶26], nội dung: \"Mức Phí Dịch Vụ năm 2027 do ban quản lý Tòa Nhà thông báo ngày 01/12/2026.\"\nĐầu trang và chân trang:\n• Đầu trang: \"Hợp đồng thuê văn phòng số 12/2026/HĐT-VP\"\n• Chân trang: \"Bản dự thảo lần 3 ngày 10/11/2026 — Lưu hành nội bộ — Trang [số trang tự động]\"\nLưu ý: chú thích 2 ghi mức phí năm 2027 nhưng điều khoản không nêu rõ thời điểm áp dụng, nên có thể cần làm rõ. Ngoài ra, chân trang ghi \"Bản dự thảo lần 3\", trong khi tiêu đề văn bản ghi \"bản thử\"; nên thống nhất trước khi ký.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
+}

@@ -6,6 +6,7 @@
 //                                                                    thường là kiem-thu/cdp-lib.js rồi tới tệp bài thử)
 //   node kiem-thu/cdp.mjs shot <cổng> <tệp .png>                     chụp khung add-in
 //   node kiem-thu/cdp.mjs file <cổng> <bộ chọn CSS> <tệp> [tệp…]     đặt tệp vào ô chọn tệp (đính kèm, nhập kỹ năng)
+//   node kiem-thu/cdp.mjs reload <cổng>                              tải lại khung add-in, bỏ qua bộ nhớ tạm (như Ctrl+F5)
 //   node kiem-thu/cdp.mjs serve <cổng> [thư mục dist]                nạp BẢN CỤC BỘ vào khung: chặn mọi yêu cầu tới địa chỉ add-in và trả tệp
 //                                                                    từ thư mục dist (sau npm run build), rồi tải lại khung. Chạy ở nền, giữ tới khi
 //                                                                    thử xong; tắt tiến trình rồi tải lại khung là về bản đã phát hành. Không đẩy gì lên mạng.
@@ -120,6 +121,19 @@ async function setFile(port, selector, filePaths) {
   }
 }
 
+/** Tải lại khung add-in, bỏ qua bộ nhớ tạm (như Ctrl+F5): để lấy bản vừa phát hành */
+async function reload(port) {
+  const c = await connect(port);
+  try {
+    await c.send("Network.enable");
+    await c.send("Network.setCacheDisabled", { cacheDisabled: true });
+    await c.send("Page.reload", { ignoreCache: true });
+    console.log("Đã tải lại khung, bỏ qua bộ nhớ tạm");
+  } finally {
+    c.close();
+  }
+}
+
 const MIME = { html: "text/html; charset=utf-8", js: "text/javascript; charset=utf-8", mjs: "text/javascript; charset=utf-8", css: "text/css; charset=utf-8", json: "application/json", map: "application/json", png: "image/png", svg: "image/svg+xml", ico: "image/x-icon", wasm: "application/wasm", woff2: "font/woff2", xml: "text/xml", txt: "text/plain; charset=utf-8" };
 
 /** Nạp bản cục bộ: trả tệp trong thư mục dist cho mọi yêu cầu tới địa chỉ add-in (cùng nguồn gốc nên kho lưu, key vẫn như cũ) */
@@ -166,6 +180,7 @@ async function serve(port, dir) {
 
 try {
   if (cmd === "make") await make(a1, a2);
+  else if (cmd === "reload") await reload(a1);
   else if (cmd === "serve") await serve(a1, a2);
   else if (cmd === "file") await setFile(a1, a2, process.argv.slice(5));
   else if (cmd === "eval") await evalFile(a1, files);

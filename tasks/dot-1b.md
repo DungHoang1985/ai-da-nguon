@@ -78,7 +78,9 @@ Ghi nhận thêm: `paragraph.text` chứa ký tự U+0002 tại mốc chú thíc
 
 ## Kết quả Đợt 1B — bản 4.1.0 (15/11/2026 đêm, phiên trên máy)
 
-**Trạng thái: mã xong, kiểm trên bản cục bộ xong, CHƯA phát hành** (chờ anh duyệt đẩy `main`). Mọi kết quả "Tự kiểm tra" và "Chạy thật" dưới đây là trên bản 4.1.0 đóng gói cục bộ nạp vào khung add-in bằng `node kiem-thu/cdp.mjs serve 9229 dist` (đầu khung hiện "v4.1"), Word / Excel / PowerPoint thật, model thật (Anthropic · Claude Haiku 5.5), và là của **lần chạy lại sau khi sửa theo soát mã độc lập**. Anh theo dõi bằng điện thoại nên không xin quyền điều khiển màn hình.
+**Đợt 1B đạt cả 7 tiêu chí (riêng PDF quét với Gemini chưa kiểm được vì tài khoản hết tiền). Đã phát hành 4.1.0** (anh duyệt 15/11/2026 đêm, kèm duyệt giữ cách so sánh phiên bản đã làm): commit `735bd6c` trên `main`, gh-pages có "Bản chạy thật v4.1.0 (main@735bd6c)", GitHub Pages phục vụ `taskpane.e8178f44.js` (trùng gói đã kiểm cục bộ). Kiểm lại trên bản đã phát hành (khung tải từ GitHub Pages, không nạp bản cục bộ): đầu khung v4.1, Tự kiểm tra Word 34/34, hai bài Chạy thật (chú thích và chân trang; so sánh đủ 10 chỗ, văn bản không đổi) — tệp 19–22.
+
+Mọi kết quả "Tự kiểm tra" và "Chạy thật" dưới đây là trên bản 4.1.0 đóng gói cục bộ nạp vào khung add-in bằng `node kiem-thu/cdp.mjs serve 9229 dist` (đầu khung hiện "v4.1"), Word / Excel / PowerPoint thật, model thật (Anthropic · Claude Haiku 5.5), và là của **lần chạy lại sau khi sửa theo soát mã độc lập**. Anh theo dõi bằng điện thoại nên không xin quyền điều khiển màn hình.
 
 ### Bảng nghiệm thu
 
@@ -137,12 +139,13 @@ Lỗi tự tìm khi chạy trong Word (đã sửa): khoản gõ tay nằm cách 
 - Bảng có ô gộp, bảng lồng; liên kết bấm theo số điều; soát hình thức bằng model sau khi sửa: chưa làm (như bản 4.0).
 - Khi thử PDF với Gemini, model đang nhớ của nguồn Gemini trên máy anh đã được chọn lại thành "Gemini 2.5 Flash" (không biết trước đó là model nào vì không đọc kho lưu của add-in).
 
-### Dọn dẹp sau khi kiểm (trước khi xin duyệt)
+### Dọn dẹp sau khi kiểm (trước khi xin duyệt, và lần nữa sau khi kiểm bản đã phát hành — tệp 18, 23)
 
 Đã tắt hai tùy chọn thử, xóa 16 hội thoại thử (lịch sử Word về 3 như trước), chọn lại nguồn OpenRouter, đóng Word, Excel, PowerPoint không lưu tệp thử, cổng gỡ lỗi đã đóng (tệp 18). Tệp thử nằm trong thư mục tạm của phiên, không vào kho. Thư mục bằng chứng đã soát: không có tên tài khoản Office, key hay email.
 
 ## Việc cần anh
 
-1. **Duyệt phát hành 4.1.0** (đẩy nhánh này lên `main`; GitHub Actions tự kiểm thử, đóng gói, đưa lên `gh-pages`). Sau khi phát hành tôi chạy lại Tự kiểm tra trên bản đã phát hành và dọn dẹp.
-2. Biết để quyết: cách so sánh phiên bản là **tự so bằng mã + mở redline của Word ở cửa sổ mới khi cần** (lý do ở mục thăm dò); tài khoản Gemini hết tiền nên chưa thử được PDF quét với Gemini.
-3. Bài đối chiếu với add-in Claude chính thức của Đợt 1A vẫn để khi anh ngồi trước máy.
+1. ~~Duyệt phát hành 4.1.0~~ — anh duyệt 15/11/2026 đêm, đã phát hành và kiểm lại. Trên máy anh: đặt con trỏ trong khung add-in rồi Ctrl+F5, đầu khung hiện v4.1.
+2. ~~Cách so sánh phiên bản~~ — anh chọn giữ cách đã làm (tự so bằng mã theo điều khoản, redline của Word mở ở cửa sổ mới khi cần).
+3. Khi tài khoản Gemini có tiền (hoặc anh muốn thử OpenRouter): báo để tôi chạy bài PDF quét và Suy nghĩ kỹ với các nguồn đó.
+4. Bài đối chiếu với add-in Claude chính thức của Đợt 1A vẫn để khi anh ngồi trước máy.

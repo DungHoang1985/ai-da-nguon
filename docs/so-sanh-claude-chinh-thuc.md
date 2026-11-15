@@ -4,7 +4,7 @@ Cập nhật 15/11/2026 (bước 9 Đợt 0A): sửa theo mục 7 của `tasks/k
 
 Cập nhật 15/11/2026 buổi tối (Đợt 1A, bản 4.0.0, đã phát hành cùng buổi và kiểm lại trên bản phát hành: Tự kiểm tra Word 30/30): sửa các dòng 5, 37, 40, 41, 43, 44, 45, 46, 57 theo kết quả kiểm trong Word thật bằng bản đóng gói cục bộ nạp vào khung add-in (`tasks/dot-1a.md`, bằng chứng `tasks/dot-1a-bang-chung/`). Bài đối chiếu trực tiếp với add-in Claude chính thức chưa chạy (cần anh ngồi trước máy).
 
-Cập nhật 15/11/2026 đêm (Đợt 1B, bản 4.1.0; tại thời điểm viết bản này đã kiểm xong trên bản đóng gói cục bộ nạp vào khung add-in và chờ duyệt phát hành): sửa các dòng 4, 10, 34, 47, 48, 58, 60 theo kết quả kiểm trong Word thật (`tasks/dot-1b.md`, bằng chứng `tasks/dot-1b-bang-chung/`): Tự kiểm tra Word 34/34, Chạy thật với Claude Haiku 5.5.
+Cập nhật 15/11/2026 đêm (Đợt 1B, bản 4.1.0, đã phát hành cùng đêm và kiểm lại trên bản phát hành: Tự kiểm tra Word 34/34): sửa các dòng 4, 10, 34, 47, 48, 58, 60 theo kết quả kiểm trong Word thật bằng bản đóng gói cục bộ nạp vào khung add-in rồi bằng bản đã phát hành (`tasks/dot-1b.md`, bằng chứng `tasks/dot-1b-bang-chung/`): Tự kiểm tra Word 34/34, Chạy thật với Claude Haiku 5.5.
 
 ## Cách đọc cột "Bằng chứng"
 

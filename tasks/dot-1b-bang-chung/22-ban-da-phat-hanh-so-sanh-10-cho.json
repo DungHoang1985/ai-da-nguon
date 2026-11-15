@@ -1,0 +1,30 @@
+{
+ "bai": "soSanh",
+ "phienBan": "v4.1",
+ "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cauHoi": "So văn bản đang mở với tệp đính kèm (phiên bản khác của hợp đồng). Liệt kê đầy đủ mọi chỗ khác nhau, mỗi chỗ một dòng kèm số điều; cuối cùng ghi tổng số chỗ khác. Không sửa gì trong văn bản.",
+ "tepDinhKem": [
+  "📄 aidn-thu-v2.docx"
+ ],
+ "giay": 14,
+ "daHoi": [],
+ "soBuocCongCu": 1,
+ "cacBuoc": [
+  "✅ So với phiên bản khác (aidn-thu-v2.docx) — 10 chỗ khác (8 sửa, 1 chỉ ở bản đang mở, 1 chỉ ở phiên bản khác); văn bản đang mở không đổi"
+ ],
+ "token": "Token: vào 38.651 · ra 2.966 · đọc từ bộ nhớ đệm 31.560 · ghi vào bộ nhớ đệm 7.085",
+ "vanBanTruoc": {
+  "soDoan": 85,
+  "soSuaDoi": 2,
+  "soNhanXet": 1,
+  "bamChu": 691592023
+ },
+ "vanBanSau": {
+  "soDoan": 85,
+  "soSuaDoi": 2,
+  "soNhanXet": 1,
+  "bamChu": 691592023
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "📎 aidn-thu-v2.docx\nTôi so sánh văn bản đang mở với `aidn-thu-v2.docx`. Có 10 chỗ khác nhau (không sửa gì trong văn bản đang mở):\n1. Điều 3.1 [¶20]: thời hạn thuê, đang mở là 05 (năm) năm; bản v2 là 07 (bảy) năm.\n2. Điều 4.1 [¶24]: Tiền Thuê, đang mở là 120.000.000 đồng (một trăm hai mươi triệu); bản v2 là 135.000.000 đồng (một trăm ba mươi lăm triệu).\n3. Điều 4.2 [¶25]: mức tăng từ năm thứ ba, đang mở là 5%; bản v2 là 7%.\n4. Điều 5.1 [¶28]: ngày bàn giao chậm nhất, đang mở là 01/02/2027; bản v2 là 01/03/2027.\n5. Điều 6.2 [¶33]: thời hạn hoàn trả Tiền Đặt Cọc, đang mở là 30 ngày; bản v2 là 45 ngày.\n6. Điều 7.3 [¶41]: lãi chậm trả, đang mở là 0,05%/ngày; bản v2 là 0,08%/ngày.\n7. Điều 8.2 [¶45]: bản v2 có thêm câu \"Chi phí thẩm tra hồ sơ cải tạo do Bên Thuê chịu.\"; bản đang mở không có câu này.\n8. Điều 9.4 [¶50] (chỉ có ở bản v2): \"Bên Cho Thuê mua bảo hiểm mọi rủi ro tài sản cho phần kết cấu của Tòa Nhà.\"\n9. Điều 11.3 [¶58] (chỉ có ở bản đang mở): \"Bên Thuê được chấm dứt hợp đồng trước hạn sau năm thứ hai, với điều kiện báo trước 06 tháng và trả khoản phí chấm dứt bằng 02 tháng Tiền Thuê.\" Vì vậy khoản sau được đánh số khác: 11.4 ở bản đang mở tương ứng 11.3 ở bản v2.\n10. Phụ lục 01, mục 2.1 [¶76]: số bộ đèn âm trần, đang mở là 96; bản v2 là 108.\nTổng số chỗ khác nhau: 10.\nLưu ý: ở bản v2, Tiền Thuê tăng lên 135.000.000 đồng nhưng Tiền Đặt Cọc tại Điều 6.1 vẫn là 360.000.000 đồng (3 tháng Tiền Thuê, tức 405.000.000 đồng). Cần thống nhất lại số tiền này nếu dùng bản v2.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
+}

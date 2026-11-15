@@ -1,6 +1,6 @@
 # AI Đa Nguồn — add-in AI cho Word, Excel, PowerPoint
 
-Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v4.0.0** (Đợt 1A: Word đọc đúng số điều, sửa đúng chỗ, có Hoàn tác; phát hành 15/11/2026). **Bản 4.1.0** (Đợt 1B: Word soát và tra — soát nhất quán bằng mã, đọc chú thích và đầu/chân trang, so sánh phiên bản, thể thức trang, PDF quét, Suy nghĩ kỹ) đã xong mã và kiểm trên bản cục bộ, **chờ anh duyệt phát hành** (xem `tasks/HANDOFF.md`). Kế hoạch v4 (bản 2) đã duyệt ngày 15/11/2026, đợt kế tiếp là 2.
+Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v4.1.0** (Đợt 1B: Word soát và tra — soát nhất quán bằng mã, đọc chú thích và đầu/chân trang, so sánh phiên bản, thể thức trang, PDF quét, Suy nghĩ kỹ; phát hành 15/11/2026; bản 4.0.0 của Đợt 1A: Word đọc đúng số điều, sửa đúng chỗ, có Hoàn tác). Kế hoạch v4 (bản 2) đã duyệt ngày 15/11/2026, đợt kế tiếp là 2.
 
 ## Đọc trước khi làm bất cứ việc gì
 
@@ -53,7 +53,7 @@ npm run build               # ra dist/, manifest tự đổi sang địa chỉ G
 
 Phát hành tự động: đẩy lên `main` là GitHub Actions (`.github/workflows/phat-hanh.yml`) kiểm thử, kiểm kiểu, đóng gói rồi đưa `dist/` lên `gh-pages`; trượt thì không phát hành. Nhánh `thu/**` chạy cùng quy trình nhưng không đẩy. Xem kết quả: https://github.com/DungHoang1985/ai-da-nguon/actions
 
-Xem bản mới trong Office: đặt con trỏ trong khung add-in rồi Ctrl+F5. Số phiên bản hiện ở đầu khung.
+Xem bản mới trong Office: đặt con trỏ trong khung add-in rồi Ctrl+F5 (bằng mã: `node kiem-thu/cdp.mjs reload 9229`). Số phiên bản hiện ở đầu khung.
 
 Kiểm trong Office bằng mã (không cần điều khiển màn hình, dùng được cả khi anh không ngồi trước máy): `kiem-thu/cdp.mjs`, cách dùng ở đầu tệp và ở mục Bài học của `tasks/HANDOFF.md`; các bài thử mẫu ở `kiem-thu/cdp-bai/`. Mở và đóng Office thử: `kiem-thu/mo-office.ps1` (tự dừng nếu Office đang mở tài liệu không phải tệp thử). **Thử mã mới trước khi phát hành**: `npm run build` rồi `node kiem-thu/cdp.mjs serve 9229 dist` (chạy nền) nạp bản cục bộ vào khung add-in, không đẩy gì lên `main`. Tệp Word thử: `kiem-thu/docx-thu.mjs` (thăm dò đánh số), `kiem-thu/hop-dong-thu.mjs` (hợp đồng 50 trang có sửa đổi và nhận xét của "Đối tác"), `kiem-thu/soat-thu.mjs` (hợp đồng sạch / cài sẵn 9 lỗi / phiên bản khác lệch 10 chỗ / công văn lề sai, có chú thích, đầu và chân trang, bookmark), `kiem-thu/pdf-quet-thu.mjs` (PDF quét 3 trang).
 
