@@ -11,7 +11,7 @@ Bằng chứng: `tasks/dot-0a-bang-chung/08`–`22`. Kiểm trên Word (Document
 | Đầu khung hiện v3.6; bố cục một dòng đầu; vùng hội thoại ≥ 70% chiều cao | **Đạt** — khung 595 điểm ảnh cao, vùng hội thoại khoảng 470 (79%); không còn hàng điều khiển phía trên; nhãn model luôn hiện cạnh ô nhập | Ảnh 09 |
 | Enter gửi, Shift+Enter xuống dòng | **Đạt** | Chạy thật trong Word (tin hai dòng gửi bằng Enter, AI trả lời) |
 | Gõ ba câu tiếng Việt có dấu bằng Unikey (Telex) không bị gửi giữa chừng | **Đạt** — "Tôi đang thử gõ / Hợp đồng này dài / Điều khoản bảo mật" còn nguyên trong ô nhập, Enter mới gửi | Ảnh 10 |
-| Như trên với bộ gõ Telex của Windows | **Chưa kiểm được** — máy chỉ cài bàn phím en-US, chưa có bộ gõ Vietnamese Telex của Windows; thêm bộ gõ là đổi cài đặt hệ thống nên không tự làm. Phần chặn khi đang ghép chữ (`isComposing`) mới có Kiểm thử máy | `Get-WinUserLanguageList` |
+| Như trên với bộ gõ Telex của Windows | **Không kiểm nữa** (anh quyết định 15/11/2026): anh dùng Unikey và đã tự dùng thử, gõ tiếng Việt rồi Enter vẫn ổn. Máy không cài bộ gõ Telex của Windows. Phần chặn khi đang ghép chữ (`isComposing`) vẫn có Kiểm thử máy | Lời anh trong phiên 15/11 buổi chiều; `Get-WinUserLanguageList` |
 | Đổi qua lại hai nguồn: mỗi nguồn về đúng model đã dùng | **Đạt** — Anthropic ↔ Groq: Anthropic về Claude Haiku 5.5, Groq về GPT OSS 20B (không phải mục đầu danh sách) | Ảnh 11, 12 |
 | Kiểm tra nhà cung cấp: OpenAI báo đúng nguyên nhân, không còn "Không kết nối được" | **Đạt** — "OpenAI trả về lỗi nhưng không cho add-in đọc chi tiết. Thường do: key sai hoặc hết hạn, tài khoản hết tiền, hoặc tài khoản chưa được dùng model gpt-5.5…". Từng nguồn: đạt 4/8 (Groq, Anthropic, Cerebras, Cohere); Gemini, DeepSeek hết tiền; OpenRouter trượt vì model đang nhớ | Tệp 08 |
 | Sao lưu → xóa dữ liệu thử → khôi phục gộp | **Đạt** — tệp có 8 key, 1 chỉ dẫn riêng, 6 hội thoại, 1 lệnh; xóa chỉ dẫn thử, lệnh thử, hội thoại thử rồi "Gộp vào dữ liệu hiện có": cả ba trở lại, 8 key còn nguyên. Kỹ năng nhập thêm: chưa kiểm (máy chưa có kỹ năng nào nhập thêm) | Ảnh 13, 14, 15 |
@@ -32,7 +32,7 @@ Bằng chứng: `tasks/dot-0a-bang-chung/08`–`22`. Kiểm trên Word (Document
 ### Còn lại, chuyển sang Đợt 0B
 
 1. ~~Phát hành hai sửa đổi ở trên rồi chạy lại Tự kiểm tra Word~~ — xong ở bản 3.6.1 (commit `b0fe2aa`).
-2. Kiểm Enter với bộ gõ Telex của Windows nếu anh có dùng (cần anh thêm bộ gõ trong Windows).
+2. ~~Kiểm Enter với bộ gõ Telex của Windows~~ — anh bỏ mục này 15/11/2026: anh dùng Unikey, đã tự thử, ổn.
 3. Chọn model mặc định: OpenAI `gpt-5.5` có thể cần xác minh tổ chức; OpenRouter tránh model bị giới hạn nơi dùng và báo đúng lý do khi gặp.
 4. Tệp sao lưu thử còn trong thư mục Tải xuống (chứa 8 key thật và ba mục dữ liệu thử): giữ làm bản sao lưu hoặc xóa, tùy anh.
 
