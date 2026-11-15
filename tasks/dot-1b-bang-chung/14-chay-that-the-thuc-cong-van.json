@@ -1,0 +1,28 @@
+{
+ "bai": "theThuc",
+ "phienBan": "v4.1",
+ "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cauHoi": "Kiểm thể thức trang của công văn này theo chuẩn văn bản hành chính: lề, khổ giấy, phông và cỡ chữ. Nêu rõ từng chỗ lệch chuẩn. Không sửa gì.",
+ "tepDinhKem": [],
+ "giay": 7,
+ "daHoi": [],
+ "soBuocCongCu": 1,
+ "cacBuoc": [
+  "✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — 3 điểm lệch chuẩn: lề trên 15 mm, lề trái 20 mm, phông chữ Arial (1 đoạn)"
+ ],
+ "token": "Token: vào 27.923 · ra 744 · đọc từ bộ nhớ đệm 13.668 · ghi vào bộ nhớ đệm 14.249",
+ "vanBanTruoc": {
+  "soDoan": 11,
+  "soSuaDoi": 0,
+  "soNhanXet": 0,
+  "bamChu": -1088554400
+ },
+ "vanBanSau": {
+  "soDoan": 11,
+  "soSuaDoi": 0,
+  "soNhanXet": 0,
+  "bamChu": -1088554400
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "Công văn này có 3 chỗ lệch chuẩn thể thức trang (chuẩn: lề trên 20–25 mm, lề trái 30–35 mm, phông Times New Roman, cỡ chữ nội dung 13–14):\n1. Lề trên: 15 mm. Chuẩn là 20–25 mm.\n2. Lề trái: 20 mm. Chuẩn là 30–35 mm.\n3. Phông chữ: Arial ở 1 đoạn [¶7]. Chuẩn là Times New Roman.\nCác thông số còn lại đạt chuẩn: khổ A4, hướng đứng, lề dưới 20 mm và lề phải 15 mm.\nNgoài ba điểm trên, phần chữ có nhiều cỡ khác nhau: cỡ 14 chiếm khoảng 62%, nhưng còn chữ cỡ 13, 12 và 11. Công cụ không đánh dấu đây là lỗi. Nếu muốn thống nhất, cỡ nội dung nên là 13–14 và đồng nhất trên toàn văn bản; tôi chưa xác định được đoạn nào dùng cỡ 11 hoặc 12.\nTôi chưa sửa gì trong văn bản.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Haiku 5.5"
+}
