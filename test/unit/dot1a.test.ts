@@ -15,7 +15,8 @@ import {
   planParagraphEdit,
   snapChange,
 } from "../../src/core/worddiff";
-import { isMarkdownNumberedList, packParagraphs, parseMarkdownLine } from "../../src/office/util";
+import { isMarkdownNumberedList, packParagraphs, parseMarkdownLine, searchRows } from "../../src/office/util";
+import { findRefs } from "../../src/core/refs";
 import { WORD_SPECS, WORD_SYSTEM_PROMPT } from "../../src/office/wordTools";
 import { BUILTIN_SKILLS } from "../../src/core/skillpack";
 
@@ -457,6 +458,29 @@ describe("Đợt 1A – công cụ và lời nhắc", () => {
       const all = [sk.body, ...Object.values(sk.files || {})].join("\n");
       for (const m of all.match(/word_[a-z_]+/g) || []) assert.ok(names.has(m), `Kỹ năng ${sk.name} nhắc công cụ không tồn tại: ${m}`);
     }
+  });
+  it("'giai đoạn 2', 'công đoạn 4' không thành liên kết tới đoạn; [¶12] và 'đoạn 5' vẫn là liên kết", () => {
+    const refs = (t: string) =>
+      findRefs(t, "Word")
+        .filter((p) => p.ref)
+        .map((p) => (p.ref as any).index);
+    assert.deepStrictEqual(refs("Dự án giai đoạn 2, công đoạn 4 và phân đoạn 7 đang triển khai"), []);
+    assert.deepStrictEqual(refs("Xem [¶12] và đoạn 5, đoạn số 7"), [12, 5, 7]);
+  });
+  it("tìm trong văn bản: bỏ qua đoạn đã xóa, đếm số lần, nguyên từ, không dấu", () => {
+    const rs = [
+      { i: 0, text: "Bên B thanh toán trong 30 ngày, chậm thanh toán thì chịu lãi." },
+      { i: 1, text: "", deleted: true },
+      { i: 2, text: "Điều khoản về Thanh Toán bổ sung." },
+      { i: 3, text: "Bên Bán giao hàng." },
+    ];
+    const r = searchRows(rs, "thanh toán");
+    assert.deepStrictEqual(r, { total: 3, hits: [{ i: 0, at: 6, len: 10, n: 2 }, { i: 2, at: 14, len: 10, n: 1 }] });
+    assert.strictEqual(searchRows(rs, "thanh toán", { matchCase: true }).total, 2);
+    assert.strictEqual(searchRows(rs, "Bên B", { wholeWord: true }).total, 1, "không khớp 'Bên Bán'");
+    assert.strictEqual(searchRows(rs, "Bên B").total, 2);
+    assert.strictEqual(searchRows(rs, "thanh toan").total, 0);
+    assert.strictEqual(searchRows(rs, "thanh toan", { ignoreAccents: true }).total, 3);
   });
   it("dòng '5. Thanh toán' đứng lẻ giữ nguyên số; hai dòng 1. 2. mới thành danh sách", () => {
     assert.strictEqual(isMarkdownNumberedList(["5. Thanh toán"]), false);

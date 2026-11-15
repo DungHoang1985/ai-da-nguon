@@ -188,8 +188,8 @@ const SelfTestCard: React.FC<Props> = ({ storage, host }) => {
     <div className={s.card}>
       <Text weight="semibold">Tự kiểm tra chức năng {host && host !== "Khác" ? `(${host})` : ""}</Text>
       <Text size={200} className={s.muted}>
-        Chạy thật từng thao tác (đọc, ghi, định dạng, tạo bảng/biểu đồ/slide, nhận xét…) trên tài liệu đang mở rồi tự dọn sạch. Không cần API key. Nên
-        chạy trên tài liệu trống.
+        Chạy thật từng thao tác (đọc, ghi, định dạng, tạo bảng/biểu đồ/slide, nhận xét…) trên tài liệu đang mở rồi tự dọn sạch. Không cần API key. Trong
+        Word, phần thử nằm trong một vùng riêng ở cuối văn bản và phần còn lại được kiểm là không đổi; Excel và PowerPoint nên chạy trên tài liệu trống.
       </Text>
       <div className={s.row}>
         <Button onClick={test} disabled={!tools || running}>

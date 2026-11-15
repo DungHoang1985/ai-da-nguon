@@ -9,7 +9,8 @@ export type RefPart = { text: string; ref?: RefTarget };
 
 const CELL =
   /(?:'[^'\n]{1,60}'|[A-Za-z0-9_À-ỹ.]{1,40})!\$?[A-Z]{1,3}\$?\d{1,7}(?::\$?[A-Z]{1,3}\$?\d{1,7})?|\b\$?[A-Z]{1,3}\$?\d{1,7}(?::\$?[A-Z]{1,3}\$?\d{1,7})?\b/g;
-const PARA = /\[¶\s?(\d{1,5})\]|¶\s?(\d{1,5})|(?<![A-Za-zÀ-ỹ])đoạn\s+(?:số\s+)?(\d{1,5})\b/gi;
+// "giai đoạn 2", "công đoạn 4", "phân đoạn 7" không phải số đoạn của văn bản
+const PARA = /\[¶\s?(\d{1,5})\]|¶\s?(\d{1,5})|(?<![A-Za-zÀ-ỹ])(?<!(?:giai|công|phân|cung|chặng)\s+)đoạn\s+(?:số\s+)?(\d{1,5})\b/gi;
 const SLIDE = /\bslide\s+(?:số\s+)?(\d{1,3})\b/gi;
 
 function split(text: string, re: RegExp, make: (m: RegExpExecArray) => RefTarget | null): RefPart[] {

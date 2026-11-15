@@ -967,7 +967,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
                 )}
                 {it.wrote && host === "Word" && !isLastBusy(i) && (
                   <Text size={200} className={s.muted}>
-                    Sửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối.
+                    Sửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.
                   </Text>
                 )}
               </div>

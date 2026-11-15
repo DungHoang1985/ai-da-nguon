@@ -283,6 +283,38 @@ export function searchRows(
   return { total, hits };
 }
 
+/** Tìm theo TỪNG TỪ khi không đoạn nào chứa nguyên cụm: xếp các đoạn theo số từ của câu hỏi có mặt (không phân biệt hoa thường và dấu).
+ *  Chỉ nhận đoạn có ít nhất nửa số từ. Mỗi đoạn trả câu chứa nhiều từ khớp nhất để làm trích dẫn. */
+export function searchRowsByWords(
+  rows: { i: number; text: string; deleted?: boolean }[],
+  query: string
+): { words: string[]; hits: { i: number; matched: number; sentence: string }[] } {
+  const fold = (s: string) => foldAccents(s.normalize("NFC")).toLowerCase();
+  const words = Array.from(new Set((fold(query).match(/[\p{L}\p{N}]+/gu) || []).filter((w) => w.length >= 2)));
+  const hits: { i: number; matched: number; sentence: string }[] = [];
+  if (words.length < 2) return { words, hits };
+  const has = (t: string, w: string) => new RegExp(`(?<![\\p{L}\\p{N}])${w}(?![\\p{L}\\p{N}])`, "u").test(t);
+  for (const r of rows) {
+    if (r.deleted || !r.text) continue;
+    const t = fold(r.text);
+    const matched = words.filter((w) => has(t, w)).length;
+    if (matched * 2 < words.length || matched < 2) continue;
+    let best = "";
+    let bestN = -1;
+    for (const sent of r.text.split(/(?<=[.;:!?])\s+/)) {
+      const fs = fold(sent);
+      const n = words.filter((w) => has(fs, w)).length;
+      if (n > bestN) {
+        bestN = n;
+        best = sent;
+      }
+    }
+    hits.push({ i: r.i, matched, sentence: best });
+  }
+  hits.sort((a, b) => b.matched - a.matched || a.i - b.i);
+  return { words, hits };
+}
+
 /** Số đoạn của nhận xét / sửa đổi: tìm theo định danh đoạn (uniqueLocalId, WordApi 1.6) — đúng cả khi có đoạn trùng nội dung;
  *  Word cũ không có định danh thì so chữ như trước. */
 export function paragraphIndex(anchorId: string | undefined, anchorText: string, ids: string[] | null, texts: string[]): number {

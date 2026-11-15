@@ -3,7 +3,7 @@
 // sửa đổi được theo dõi và nhận xét của một tác giả khác ("Đối tác").
 //
 //   node kiem-thu/docx-thu.mjs tham-do <tệp ra>      văn bản thăm dò Đợt 1A: 4 kiểu đánh số + đoạn có sửa đổi
-//   node kiem-thu/docx-thu.mjs hop-dong <tệp ra>     hợp đồng thử ~50 trang, 3 cấp, số tự động lẫn số gõ tay, 30 sửa đổi + 5 nhận xét
+//   node kiem-thu/hop-dong-thu.mjs <tệp ra>          hợp đồng thử ~50 trang, 3 cấp, số tự động lẫn số gõ tay, 30 sửa đổi + 5 nhận xét
 //
 // Tệp tạo ra chỉ chứa nội dung bịa để thử, không có thông tin thật.
 import fs from "node:fs";
@@ -59,11 +59,11 @@ const heading = (id, name, level, size, numId) =>
   `<w:style w:type="paragraph" w:styleId="${id}"><w:name w:val="${name}"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:qFormat/>` +
   `<w:pPr><w:keepNext/><w:spacing w:before="${level === 0 ? 240 : 120}" w:after="60"/>${
     numId ? `<w:numPr><w:ilvl w:val="${level}"/><w:numId w:val="${numId}"/></w:numPr>` : ""
-  }<w:outlineLvl w:val="${level}"/></w:pPr><w:rPr>${level < 2 ? "<w:b/>" : ""}<w:sz w:val="${size}"/></w:rPr></w:style>`;
+  }<w:outlineLvl w:val="${level}"/></w:pPr><w:rPr>${level < 1 ? "<w:b/>" : ""}<w:sz w:val="${size}"/></w:rPr></w:style>`;
 
 /** Kiểu thêm vào styles.xml. headingNumId: danh sách nhiều cấp gắn vào Heading 1–3 (0 = không gắn) */
 const extraStyles = (headingNumId) =>
-  heading("Heading1", "heading 1", 0, 28, headingNumId) +
+  heading("Heading1", "heading 1", 0, 26, headingNumId) +
   heading("Heading2", "heading 2", 1, 24, headingNumId) +
   heading("Heading3", "heading 3", 2, 24, headingNumId) +
   `<w:style w:type="paragraph" w:styleId="ListParagraph"><w:name w:val="List Paragraph"/><w:basedOn w:val="Normal"/><w:qFormat/><w:pPr><w:ind w:left="720"/><w:contextualSpacing/></w:pPr></w:style>` +
@@ -190,13 +190,12 @@ export function thamDo() {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [, , kind, out] = process.argv;
   if (!out) {
-    console.log("Cách dùng: node kiem-thu/docx-thu.mjs <tham-do|hop-dong> <tệp ra>");
+    console.log("Cách dùng: node kiem-thu/docx-thu.mjs tham-do <tệp ra>");
     process.exit(1);
   }
   let spec;
   if (kind === "tham-do") spec = thamDo();
-  else if (kind === "hop-dong") spec = (await import("./hop-dong-thu.mjs")).hopDong();
-  else throw new Error("Loại phải là tham-do hoặc hop-dong");
+  else throw new Error("Loại phải là tham-do (hợp đồng thử: node kiem-thu/hop-dong-thu.mjs <tệp ra>)");
   await buildDocx(out, spec);
   console.log(`Đã tạo ${out}`);
 }

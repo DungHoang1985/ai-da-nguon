@@ -1,0 +1,139 @@
+{
+ "tongKet": "10/10 câu nêu đúng số điều và nội dung; số bước công cụ nhiều nhất: 3",
+ "ketQua": [
+  {
+   "cauHoi": "Điều 4.2 của hợp đồng nói gì?",
+   "dieuDung": "4.2",
+   "soBuocCongCu": 1,
+   "cacBuoc": [
+    "✅ Đọc 4.2"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 7,
+   "traLoi": "Điều 4.2 [¶22] quy định: • Đơn giá thuê là 450.000 đồng/m²/tháng, chưa gồm thuế giá trị gia tăng, áp dụng cố định trong ba năm đầu. • Chi phí phát sinh do một bên không tuân thủ quy định về tiền thuê thì bên đó tự chịu, trừ khi hợp đồng có quy định khác. • Rà soát hằng năm: hai bên rà soát việc thực hiện nội dung tiền thuê và ghi nhận kết quả bằng biên bản. • Ràng buộc người kế thừa: quy định về tiền thuê tiếp tục ràng buộc người kế thừa quyền, nghĩa vụ hợp pháp của mỗi bên. • Giải thích và ngoại lệ: nội dung tiền thuê được giải thích theo ngữ cảnh chung và thông lệ ngành; việc chấp nhận ngoại lệ một lần không tạo tiền lệ. • Không từ bỏ quyền: không bên nào được coi việc bên kia chậm thực hi",
+   "token": "Token: vào 26.263 · ra 848 · đọc từ bộ nhớ đệm 12.614 · ghi vào bộ nhớ đệm 13.643"
+  },
+  {
+   "cauHoi": "Lãi chậm thanh toán được quy định ở điều nào và mức bao nhiêu?",
+   "dieuDung": "6.3",
+   "soBuocCongCu": 1,
+   "cacBuoc": [
+    "✅ Tìm \"lãi chậm thanh toán\" trong văn bản"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 5,
+   "traLoi": "Lãi chậm thanh toán được quy định tại Điều 6.3 [¶35]: nếu Bên Thuê chậm thanh toán, phải trả lãi chậm trả 0,05% mỗi ngày trên số tiền chậm trả, tính từ ngày đến hạn đến ngày trả đủ. Liên quan: Điều 6.4 [¶36] quy định chậm thanh toán quá 90 ngày được coi là vi phạm nghiêm trọng, Bên Cho Thuê có quyền chấm dứt hợp đồng theo Điều 22. Chèn vào chỗ con trỏ Sao chép Hỏi trước Anthropic · Claude Haiku 5.5",
+   "token": "Token: vào 26.556 · ra 303 · đọc từ bộ nhớ đệm 23.291 · ghi vào bộ nhớ đệm 3.259"
+  },
+  {
+   "cauHoi": "Tiền đặt cọc là bao nhiêu, quy định ở điều nào?",
+   "dieuDung": "5.1",
+   "soBuocCongCu": 3,
+   "cacBuoc": [
+    "✅ Đọc Điều 5",
+    "✅ Tìm \"đặt cọc\" trong văn bản",
+    "✅ Đọc Điều 4"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 11,
+   "traLoi": "Tiền đặt cọc bằng 03 tháng Tiền Thuê, Bên Thuê phải đặt cọc trong vòng 20 Ngày Làm Việc kể từ ngày ký hợp đồng (Điều 5.1 [¶26]). Hợp đồng không ghi số tiền cụ thể bằng đồng. Số tiền phụ thuộc vào Tiền Thuê, được tính theo diện tích sàn thực tế với đơn giá 450.000 đồng/m²/tháng, chưa gồm thuế GTGT (Điều 4.2 [¶22]). Để ra con số cụ thể, cần biết diện tích thuê, thông tin này chưa có trong các điều tôi đã đọc. Ngoài ra, tiền đặt cọc không tính lãi và được hoàn trả trong vòng 30 ngày kể từ khi Bên Thuê hoàn thành mọi nghĩa vụ khi chấm dứt hợp đồng (Điều 5.2 [¶27]). Điều 5.3 [¶28] cho phép Bên Cho Thuê khấu trừ tiền cọc trong các trường hợp như Bên Thuê chậm trả Tiền Thuê, gây hư hỏng Khu Nhà Xưở",
+   "token": "Token: vào 48.233 · ra 1.094 · đọc từ bộ nhớ đệm 39.350 · ghi vào bộ nhớ đệm 8.875"
+  },
+  {
+   "cauHoi": "Điều 12.4 nói gì?",
+   "dieuDung": "12.4",
+   "soBuocCongCu": 1,
+   "cacBuoc": [
+    "✅ Đọc 12.4"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 8,
+   "traLoi": "Điều 12.4 [¶62] là quy định về bảo hiểm cháy nổ, nội dung chính như sau: • Nghĩa vụ mua bảo hiểm: Bên Thuê mua bảo hiểm cháy nổ bắt buộc với mức trách nhiệm không thấp hơn 80 tỷ đồng và gửi bản sao giấy chứng nhận cho Bên Cho Thuê trước Ngày Bàn Giao. • Lưu giữ hồ sơ: Các tài liệu, biên bản lập trong quá trình thực hiện phải được lưu giữ đầy đủ và xuất trình khi bên kia yêu cầu hợp lý. • Hướng dẫn bổ sung: Nếu cần hướng dẫn chi tiết hơn, hai bên thống nhất bằng văn bản và văn bản đó là một phần của hợp đồng. • Không từ bỏ quyền: Việc một bên chậm thực hiện quyền về bảo hiểm không được coi là từ bỏ quyền. • Phổ biến và chi phí: Người đại diện mỗi bên phổ biến quy định cho bộ phận liên quan; c",
+   "token": "Token: vào 26.286 · ra 980 · đọc từ bộ nhớ đệm 23.271 · ghi vào bộ nhớ đệm 3.009"
+  },
+  {
+   "cauHoi": "Thời hạn thuê là bao lâu, ở điều nào?",
+   "dieuDung": "3.1",
+   "soBuocCongCu": 2,
+   "cacBuoc": [
+    "✅ Đọc Điều 3",
+    "✅ Đọc đoạn 16–20"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 8,
+   "traLoi": "Thời hạn thuê được quy định tại Điều 3 (đoạn 3.1 [¶17]): 10 năm kể từ Ngày Bàn Giao. Liên quan: • Điều 3.2 [¶18]: Bên Thuê được ưu tiên gia hạn thêm 05 năm nếu gửi đề nghị bằng văn bản chậm nhất 06 tháng trước ngày hết hạn. • Điều 3.3 [¶19]: hết thời hạn mà không gia hạn thì hợp đồng chấm dứt và Bên Thuê hoàn trả mặt bằng theo Điều 24. Lưu ý: đoạn 3.1 và 3.2 hiện có nhiều đoạn lặp nguyên văn các câu chung về thời hạn thuê (ví dụ về ngoại lệ, tiền lệ, tài liệu lưu giữ). Đây là dấu hiệu sao chép thừa, nên rà soát lại. Đoạn 3.2 cũng đang có sửa đổi chờ duyệt (changed=true). Chèn vào chỗ con trỏ Sao chép Hỏi trước Anthropic · Claude Haiku 5.5",
+   "token": "Token: vào 41.049 · ra 509 · đọc từ bộ nhớ đệm 36.134 · ghi vào bộ nhớ đệm 4.907"
+  },
+  {
+   "cauHoi": "Quy định về bất khả kháng nằm ở điều nào? Kéo dài bao lâu thì được chấm dứt hợp đồng?",
+   "dieuDung": "27",
+   "soBuocCongCu": 1,
+   "cacBuoc": [
+    "✅ Đọc Điều 27"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 7,
+   "traLoi": "Quy định về bất khả kháng nằm ở Điều 27 (Bất khả kháng). • Định nghĩa sự kiện bất khả kháng là Điều 27.1 [¶122]: sự kiện khách quan, không thể lường trước và không thể khắc phục, gồm thiên tai, hỏa hoạn không do lỗi của các bên, dịch bệnh, chiến tranh. • Nghĩa vụ thông báo là Điều 27.2 [¶123]: bên gặp sự kiện phải thông báo cho bên kia trong vòng 07 ngày kể từ khi sự kiện xảy ra, kèm tài liệu chứng minh. • Chấm dứt hợp đồng là Điều 27.3 [¶124]: nếu sự kiện bất khả kháng kéo dài quá 120 ngày, mỗi bên có quyền chấm dứt hợp đồng mà không phải bồi thường. Lưu ý: Điều 27.1, 27.2 và 27.3 có nhiều đoạn lặp lại gần như nguyên văn (về tiền lệ, người kế thừa, biên bản rà soát hằng năm…). Điều này khôn",
+   "token": "Token: vào 28.055 · ra 670 · đọc từ bộ nhớ đệm 23.307 · ghi vào bộ nhớ đệm 4.742"
+  },
+  {
+   "cauHoi": "Điều 18.2(b) nói gì?",
+   "dieuDung": "18.2(b)",
+   "soBuocCongCu": 1,
+   "cacBuoc": [
+    "✅ Đọc 18.2(b)"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 5,
+   "traLoi": "Điều 18.2(b) [¶87] nói: \"nguồn điện hoặc nước bị gián đoạn quá 72 giờ liên tục do lỗi của Bên Cho Thuê;\" Đây là một trong các trường hợp thuộc khoản 18.2 (Quyền của Bên Thuê), cho phép Bên Thuê được quyền nhất định khi nguồn điện hoặc nước bị gián đoạn kéo dài do lỗi của Bên Cho Thuê. Nếu cần biết hậu quả cụ thể (ví dụ được giảm tiền thuê hay được chấm dứt hợp đồng), tôi có thể đọc thêm phần đầu khoản 18.2 [¶83–86]. Chèn vào chỗ con trỏ Sao chép Hỏi trước Anthropic · Claude Haiku 5.5",
+   "token": "Token: vào 25.481 · ra 311 · đọc từ bộ nhớ đệm 23.273 · ghi vào bộ nhớ đệm 2.202"
+  },
+  {
+   "cauHoi": "Bên Thuê có được cho thuê lại không? Điều nào quy định?",
+   "dieuDung": "15.1",
+   "soBuocCongCu": 1,
+   "cacBuoc": [
+    "✅ Đọc Điều 15"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 6,
+   "traLoi": "Có, nhưng chỉ trong một trường hợp hẹp. Điều 15.1 [¶72] quy định: Bên Thuê không được cho thuê lại toàn bộ hoặc một phần Khu Nhà Xưởng, trừ khi cho công ty con mà Bên Thuê nắm trên 50% vốn điều lệ thuê lại và đã thông báo trước 30 ngày. Như vậy, việc cho thuê lại cho bên thứ ba khác ngoài công ty con đáp ứng điều kiện trên đều bị cấm. Ngoài ra, Điều 15.2 [¶73] nói riêng về chuyển nhượng quyền và nghĩa vụ: Bên Thuê không được chuyển nhượng nếu chưa có chấp thuận bằng văn bản… (lưu ý: văn bản chỉ ghi \"chấp thuận của Bên Cho Thuê\", chưa nêu hình thức bằng văn bản). Lưu ý: Điều 15.1 chưa nêu rõ \"trên 50% vốn điều lệ\" là tỷ lệ sở hữu của Bên Thuê đối với công ty con, hay ngược lại, và chưa quy đị",
+   "token": "Token: vào 28.342 · ra 588 · đọc từ bộ nhớ đệm 23.285 · ghi vào bộ nhớ đệm 5.051"
+  },
+  {
+   "cauHoi": "Tranh chấp được giải quyết ở đâu, theo điều nào?",
+   "dieuDung": "33.2",
+   "soBuocCongCu": 1,
+   "cacBuoc": [
+    "✅ Đọc Điều 33"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 6,
+   "traLoi": "Tranh chấp được giải quyết theo Điều 33 (Giải quyết tranh chấp): • Bước 1 – Thương lượng: Mọi tranh chấp trước hết được giải quyết bằng thương lượng trong vòng 30 ngày kể từ ngày một bên gửi thông báo tranh chấp [Điều 33.1, ¶143]. • Bước 2 – Trọng tài: Nếu thương lượng không thành, tranh chấp được giải quyết tại Trung tâm Trọng tài Thương mại Phương Nam, theo quy tắc tố tụng của trung tâm này, bởi hội đồng gồm ba trọng tài viên, tại Thành phố Hồ Chí Minh [Điều 33.2, ¶144]. • Ngôn ngữ và hiệu lực: Ngôn ngữ trọng tài là tiếng Việt; phán quyết trọng tài là chung thẩm [Điều 33.3, ¶145]. Lưu ý: Điều 33.1–33.3 có nhiều đoạn lặp lại cùng một nội dung (ví dụ về từ bỏ quyền, chi phí, rà soát hằng năm",
+   "token": "Token: vào 28.129 · ra 524 · đọc từ bộ nhớ đệm 23.284 · ghi vào bộ nhớ đệm 4.839"
+  },
+  {
+   "cauHoi": "Trong Phụ lục 01, mục 2.2 nói gì?",
+   "dieuDung": "2.2",
+   "soBuocCongCu": 2,
+   "cacBuoc": [
+    "✅ Tìm \"Phụ lục 01\" trong văn bản",
+    "✅ Đọc đoạn 149–165"
+   ],
+   "neuDungSoDieu": true,
+   "coCumCanCo": true,
+   "giay": 6,
+   "traLoi": "Mục 2.2 của Phụ lục 01 [¶156] quy định: \"Trước Ngày Bàn Giao 15 ngày: thanh toán 30% Tiền Thuê của năm thuê đầu tiên.\" Mục này thuộc nhóm \"Tiến độ thanh toán kỳ đầu\" cùng với 2.1 (đặt cọc trong 10 Ngày Làm Việc kể từ ngày ký) và 2.3 (phần còn lại của năm đầu thanh toán theo quý theo Điều 6). Chèn vào chỗ con trỏ Sao chép Hỏi trước Anthropic · Claude Haiku 5.5",
+   "token": "Token: vào 27.135 · ra 449 · đọc từ bộ nhớ đệm 23.282 · ghi vào bộ nhớ đệm 3.847"
+  }
+ ]
+}

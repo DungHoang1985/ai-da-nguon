@@ -15,6 +15,7 @@ import {
   parseMarkdownLine,
   replaceLimit,
   searchRows,
+  searchRowsByWords,
   takeWithinBudget,
   truncate,
 } from "./util";
@@ -57,7 +58,7 @@ export const WORD_SPECS: ToolSpec[] = [
   {
     name: "word_find",
     description:
-      "Search the current text of the document and get the paragraphs that contain the phrase, each with its clause number and an excerpt. Literal search (not semantic): try the key term, then synonyms. Case-insensitive; if nothing matches it retries ignoring Vietnamese accents. Text deleted with tracked changes is ignored.",
+      "Search the current text of the document and get the paragraphs that contain the phrase, each with its clause number and an excerpt. Case-insensitive; if nothing matches it retries ignoring Vietnamese accents, and then returns the paragraphs containing most of the words of the phrase (mode by_words), best match first — so one call with the key words is usually enough. Text deleted with tracked changes is ignored.",
     parameters: {
       type: "object",
       properties: {
@@ -791,6 +792,28 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             const excerpt = (s > 0 ? "…" : "") + t.slice(s, h.at) + "«" + t.slice(h.at, h.at + h.len) + "»" + truncate(t.slice(h.at + h.len), 110);
             return { i: h.i, clause: clauseName(clauseAt(outline, h.i)), ...(h.n > 1 ? { n: h.n } : {}), text: excerpt };
           });
+          if (!res.total) {
+            // Không đoạn nào chứa nguyên cụm: tìm theo từng từ, đoạn nào có nhiều từ của câu hỏi nhất thì đứng trước
+            const w = searchRowsByWords(rows, q);
+            if (w.hits.length) {
+              const list = w.hits.slice(0, Math.min(max, 12)).map((h) => ({
+                i: h.i,
+                clause: clauseName(clauseAt(outline, h.i)),
+                words: `${h.matched}/${w.words.length}`,
+                text: truncate(h.sentence, 260),
+              }));
+              const { picked: some } = takeWithinBudget(list, RESULT_JSON_BUDGET - 600);
+              return {
+                ok: true,
+                found: 0,
+                mode: "by_words",
+                note: `Không đoạn nào chứa nguyên cụm "${truncate(q, 60)}". Dưới đây là các đoạn chứa nhiều từ của cụm đó nhất (words = số từ có mặt), xếp từ khớp nhất.`,
+                paragraphs: w.hits.length,
+                shown: some.length,
+                hits: some,
+              };
+            }
+          }
           const { picked } = takeWithinBudget(hits.slice(0, max), RESULT_JSON_BUDGET - 600);
           return {
             ok: true,
@@ -1779,7 +1802,8 @@ export const WORD_SYSTEM_PROMPT = [
   "Bạn là trợ lý AI được tích hợp trong Microsoft Word, có thể thao tác trực tiếp trên văn bản đang mở bằng các công cụ (word_*).",
   "Nguyên tắc:",
   "- Khi người dùng muốn sửa, viết, chèn, định dạng, rà soát… hãy GỌI CÔNG CỤ để làm thật trong văn bản, không chỉ đưa gợi ý.",
-  "- ĐỌC ĐÚNG CHỖ: với hợp đồng và văn bản dài, xem mục lục điều khoản trước (word_get_outline), rồi đọc đúng điều cần bằng word_read_clause (theo số điều) hoặc tìm theo nội dung bằng word_find. Chỉ đọc tuần tự toàn văn (word_read_paragraphs) khi việc đòi hỏi rà soát toàn bộ; kết quả có next_start là chưa đọc hết.",
+  "- ĐỌC ĐÚNG CHỖ: với hợp đồng và văn bản dài, xem mục lục điều khoản trước (word_get_outline; phần headings của trạng thái văn bản đã là mục lục cấp cao nhất), rồi đọc đúng điều cần bằng word_read_clause (theo số điều) hoặc tìm theo nội dung bằng word_find. Chỉ đọc tuần tự toàn văn (word_read_paragraphs) khi việc đòi hỏi rà soát toàn bộ; kết quả có next_start là chưa đọc hết.",
+  "- CÂU HỎI TRA CỨU (điều nào nói gì, quy định về … nằm ở đâu): thường chỉ cần một hoặc hai lần gọi công cụ. Đã đọc được điều khoản trả lời đúng câu hỏi thì trả lời ngay, không đọc lan sang điều khác để kiểm thêm, trừ khi câu hỏi cần đối chiếu nhiều điều.",
   "- SỐ ĐIỀU: trường num là số điều khoản đầy đủ (ví dụ 'Điều 5', '5.3', '5.3(a)'), kể cả khi Word tự đánh số và số không nằm trong chữ của đoạn. Khi trả lời, dẫn theo số điều kèm số đoạn, ví dụ: Điều 5.3 [¶57]. Đoạn văn đánh số từ 0.",
   "- SỬA ĐÚNG ĐOẠN: chỉ số đoạn dời đi sau mỗi lần chèn hoặc xóa. Mọi công cụ sửa theo đoạn cần expect = khoảng 30 ký tự đầu của đoạn đúng như đã đọc; công cụ từ chối nếu không khớp. Không đoán chỉ số: đọc lại khi bị từ chối.",
   "- SỬA NHỎ: đổi một từ, cụm từ, con số trong một đoạn → word_replace_text kèm paragraph_index (và occurrence nếu cụm đó lặp lại). Viết lại câu → word_set_paragraph_text với toàn bộ câu mới của đoạn (không gõ số điều nếu Word tự đánh số); công cụ chỉ đổi đúng các từ khác đi và giữ định dạng. Thay một cụm ở mọi nơi → word_replace_text với all=true.",

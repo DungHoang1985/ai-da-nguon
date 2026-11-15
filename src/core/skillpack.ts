@@ -22,12 +22,12 @@ export const CORE_GUIDES: Record<string, string> = {
 - Định dạng có điều kiện: độ lớn → thang một màu nhạt đến đậm; có âm/dương hoặc so với mục tiêu → hai màu với điểm giữa trung tính; màu trạng thái luôn kèm chữ.
 - Khi trả lời về số liệu, dẫn địa chỉ ô (vd Sheet1!C12) để người dùng bấm kiểm tra.`,
   Word: `## Chuẩn làm việc với Word (luôn áp dụng)
-- Đọc đủ văn bản trước khi kết luận; các điều khoản tác động lẫn nhau.
-- Sửa tối thiểu, đúng chỗ: sửa cụm từ bằng word_replace_text, viết lại đoạn bằng word_set_paragraph_text; giữ nguyên kiểu chữ, đánh số, định dạng; nội dung mới theo kiểu đoạn/tiêu đề sẵn có của văn bản.
+- Xem mục lục điều khoản trước (word_get_outline); hỏi về một điều thì đọc đúng điều đó (word_read_clause) hoặc tìm theo nội dung (word_find). Việc rà soát toàn diện thì đọc đủ văn bản trước khi kết luận, vì các điều khoản tác động lẫn nhau.
+- Sửa tối thiểu, đúng chỗ: đổi một cụm từ bằng word_replace_text kèm paragraph_index; viết lại câu bằng word_set_paragraph_text (kèm expect, công cụ chỉ đổi đúng các từ khác đi); thêm điều khoản bằng word_insert_clause để nối đúng số và kiểu của điều bên cạnh. Giữ nguyên kiểu chữ, đánh số, định dạng.
 - Mọi sửa đổi ghi bằng Theo dõi thay đổi để người dùng duyệt; góp ý thì dùng nhận xét neo đúng cụm chữ.
 - Không tự bịa số hiệu, điều, khoản văn bản pháp luật; căn cứ nào không có trong tài liệu/tệp đính kèm thì ghi "cần đối chiếu văn bản gốc".
 - Kiểm tra nhất quán: thuật ngữ định nghĩa, tham chiếu chéo, đánh số, ngày tháng, số tiền bằng số và bằng chữ, tên các bên.
-- Khi nói tới một đoạn, dẫn dạng [¶số đoạn] để người dùng bấm tới.`,
+- Khi nói tới một điều khoản, dẫn số điều kèm số đoạn, ví dụ Điều 5.3 [¶57], để người dùng bấm tới.`,
   PowerPoint: `## Chuẩn làm việc với PowerPoint (luôn áp dụng)
 - Mỗi slide một thông điệp; bài dài theo cấu trúc kim tự tháp: kết luận chính → tóm tắt → các phần → kết luận/bước tiếp theo.
 - Dùng bố cục (layout) và màu, phông của mẫu đang mở; không tự thêm thanh màu trang trí, đường gạch dưới tiêu đề.
@@ -56,7 +56,7 @@ export const BUILTIN_SKILLS: BuiltinSkill[] = [
     body: `# Rà soát hợp đồng (phỏng theo plugin legal/review-contract)
 
 1. Xác định loại hợp đồng và **bên mình** (hỏi nếu chưa rõ): bên bán/mua, chủ đầu tư/nhà thầu, bên chuyển nhượng/nhận chuyển nhượng… Kết luận phụ thuộc vào bên mình.
-2. Đọc **toàn văn** trước khi kết luận (word_read_paragraphs đến hết; xem cả word_list_comments, word_list_revisions).
+2. Xem mục lục điều khoản (word_get_outline) rồi đọc **toàn văn** trước khi kết luận (word_read_paragraphs, gọi tiếp theo next_start đến hết; xem cả word_list_comments, word_list_revisions).
 3. Phân tích từng nhóm điều khoản: chủ thể và thẩm quyền ký; đối tượng, phạm vi; giá, thanh toán, điều kiện giải ngân; tiến độ, giao nhận, nghiệm thu; chất lượng, bảo hành; quyền và nghĩa vụ; phạt vi phạm, bồi thường thiệt hại, mức trần trách nhiệm; bảo đảm thực hiện; chấm dứt, đơn phương chấm dứt; bất khả kháng; bảo mật; giải quyết tranh chấp, luật áp dụng; hiệu lực, phụ lục, số bản.
 4. Phân loại mỗi điểm:
    - **Xanh – chấp nhận**: phù hợp hoặc có lợi hơn cho bên mình.
@@ -65,7 +65,7 @@ export const BUILTIN_SKILLS: BuiltinSkill[] = [
 5. Với mỗi điểm Vàng/Đỏ: word_add_comment neo đúng cụm chữ, theo mẫu "[Vàng/Đỏ] Vấn đề – Rủi ro – Đề xuất câu chữ – Mức ưu tiên (Bắt buộc/Nên có/Có thì tốt)".
 6. Chỉ sửa trực tiếp khi được yêu cầu: sửa bằng Track Changes, câu chữ cụ thể sẵn sàng dùng, giọng điệu cân bằng.
 7. Căn cứ pháp lý chỉ nêu khi có trong tài liệu hoặc tệp đính kèm; còn lại ghi "cần đối chiếu văn bản gốc".
-8. Kết thúc bằng bảng: Điều khoản [¶số đoạn] | Phân loại | Rủi ro | Đề xuất; kèm 3 việc nên làm tiếp.`,
+8. Kết thúc bằng bảng: Điều khoản (số điều, [¶số đoạn]) | Phân loại | Rủi ro | Đề xuất; kèm 3 việc nên làm tiếp.`,
   },
   {
     name: "sang-loc-nda",
@@ -122,10 +122,10 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 1. word_list_comments: lấy danh sách nhận xét chưa xử lý, đoạn chữ được neo, người viết, các trả lời.
 2. Với từng nhận xét (theo thứ tự trong văn bản):
    a. Hiểu yêu cầu; nếu mơ hồ hoặc mâu thuẫn với nhận xét khác thì không sửa, trả lời nhận xét nêu câu hỏi cần làm rõ.
-   b. Sửa đúng phần được neo (word_replace_text hoặc word_set_paragraph_text) — Track Changes.
+   b. Sửa đúng phần được neo: word_replace_text kèm paragraph_index của đoạn được neo (đổi một cụm), hoặc word_set_paragraph_text kèm expect (viết lại câu) — Track Changes. Văn bản có thể đang có sửa đổi của người khác: chỉ sửa đúng phần nhận xét yêu cầu.
    c. word_reply_comment: tóm tắt ngắn đã sửa gì ("Đã sửa: …").
    d. Chỉ đánh dấu đã xử lý (word_resolve_comment) khi người dùng yêu cầu.
-3. Kết thúc: bảng Nhận xét | Đoạn [¶] | Đã làm | Còn vướng.`,
+3. Kết thúc: bảng Nhận xét | Điều, đoạn [¶] | Đã làm | Còn vướng.`,
   },
   {
     name: "tom-tat-sua-doi-doi-tac",
@@ -137,10 +137,10 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
     triggers: ["doi tac sua", "ban sua cua doi tac", "redline", "track changes cua", "da sua gi", "sua doi duoc theo doi", "chap nhan sua doi", "tu choi sua doi"],
     body: `# Tóm tắt sửa đổi của đối tác
 
-1. word_list_revisions: lấy toàn bộ sửa đổi (thêm/xóa/định dạng, người sửa, ngày, đoạn [¶]).
+1. word_list_revisions: lấy TOÀN BỘ sửa đổi — kết quả có next_start thì gọi tiếp cho tới khi số đã đọc bằng total. Mỗi nhóm là một đoạn, có số điều (clause), câu trước khi sửa (before), câu sau khi sửa (after) và từng sửa đổi (thêm/xóa/định dạng, người sửa, ngày).
 2. Nhóm theo điều khoản; với mỗi nhóm nêu: nội dung cũ → mới, ý nghĩa pháp lý/thương mại với bên mình.
 3. Phân loại: **Chấp nhận** (câu chữ, không đổi bản chất) · **Đàm phán** (đổi nghĩa vụ, mức tiền, thời hạn) · **Từ chối** (rủi ro lớn, trái lập trường) — nêu lý do ngắn, có thể gửi đối tác.
-4. Báo bảng: Điều khoản [¶] | Đối tác sửa | Tác động | Đề xuất.
+4. Báo bảng: Điều khoản (số điều, [¶]) | Đối tác sửa | Tác động | Đề xuất; nêu tổng số sửa đổi đã đọc.
 5. Chỉ chấp nhận/từ chối thật (word_review_revision) khi người dùng ra lệnh; mặc định chỉ báo cáo. Có thể ghi nhận xét phản hồi cho điểm cần đàm phán.`,
   },
   {
@@ -290,7 +290,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 
 1. word_list_revisions: còn sửa đổi chưa chấp nhận hoặc từ chối → CÓ VẤN ĐỀ, vì bản ký phải là bản sạch. Không tự chấp nhận tất cả; hỏi người dùng.
 2. word_list_comments: còn nhận xét chưa xử lý → liệt kê.
-3. Đọc toàn văn (word_read_paragraphs) và kiểm:
+3. Xem mục lục điều khoản (word_get_outline) để soát đánh số, rồi đọc toàn văn (word_read_paragraphs, gọi tiếp theo next_start) và kiểm:
    - Tên pháp nhân, mã số doanh nghiệp, địa chỉ, người đại diện, chức danh giống nhau ở phần chủ thể, phần ký và mọi chỗ nhắc lại.
    - Người ký có thẩm quyền: là người đại diện theo pháp luật, hoặc có văn bản ủy quyền được dẫn chiếu (số, ngày).
    - Phụ lục, biểu mẫu, bản vẽ được nhắc tới đều có trong văn bản hoặc ghi rõ là kèm theo; số thứ tự phụ lục liên tục.
@@ -299,7 +299,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
    - Đánh số điều, khoản; tham chiếu chéo trỏ đúng; thuật ngữ định nghĩa dùng nhất quán.
    - Số bản, ngôn ngữ ưu tiên, hiệu lực; ký nháy từng trang nếu áp dụng.
    - Chữ mẫu còn sót: "…", "[ ]", "xxx", "[cần bổ sung]", chỗ tô vàng.
-4. Kết quả: "Kiểm tra trước ký: ĐẠT" hoặc "CÓ VẤN ĐỀ", kèm bảng Hạng mục | Kết quả | Vị trí [¶n] | Cần làm. Hỏi người dùng có muốn đặt nhận xét tại từng chỗ (word_add_comment) không.
+4. Kết quả: "Kiểm tra trước ký: ĐẠT" hoặc "CÓ VẤN ĐỀ", kèm bảng Hạng mục | Kết quả | Vị trí (số điều, [¶n]) | Cần làm. Hỏi người dùng có muốn đặt nhận xét tại từng chỗ (word_add_comment) không.
 5. Add-in không gửi văn bản đi ký điện tử; nhắc lưu bản đã ký vào hồ sơ.`,
   },
   {

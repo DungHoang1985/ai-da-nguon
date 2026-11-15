@@ -1,0 +1,24 @@
+{
+ "đoạn + nhãn số + mã danh sách, một lần sync": {
+  "soDoan": 165,
+  "kyTu": 168800,
+  "coSo": 142
+ },
+ "đoạn + nhãn số + mã danh sách, một lần sync (giây)": 0.17,
+ "getText() cho mọi đoạn": 165,
+ "getText() cho mọi đoạn (giây)": 0.286,
+ "sửa đổi và nhận xét": {
+  "suaDoi": 30,
+  "theoLoai": {
+   "Added": 16,
+   "Deleted": 14
+  },
+  "tacGiaSuaDoi": [
+   "Đối tác"
+  ],
+  "nhanXet": 5
+ },
+ "sửa đổi và nhận xét (giây)": 0.045,
+ "số trang (WordApiDesktop)": 54,
+ "số trang (WordApiDesktop) (giây)": 0.007
+}
