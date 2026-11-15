@@ -32,6 +32,12 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
   const expect = (cond: any, msg: string) => {
     if (!cond) throw new Error(msg);
   };
+  /** Lời cảnh báo rủi ro của một lần gọi công cụ (null = không rủi ro), đúng hàm mà vòng lặp tác tử dùng để quyết định có hỏi người dùng */
+  const riskOf = async (name: string, args: any): Promise<string | null> => {
+    const spec = tools.specs.find((sp) => sp.name === name);
+    if (!spec?.risky) throw new Error(`Công cụ ${name} chưa có kiểm tra rủi ro`);
+    return spec.risky(args);
+  };
 
   if (tools.host === "Excel") {
     const sheet = "AIDN_KT_" + Date.now().toString(36).slice(-4);
@@ -381,6 +387,18 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(r2.total === r.total - 1, `Còn ${r2.total} sửa đổi, trước đó ${r.total}`);
       return `${r.total} sửa đổi; đã chấp nhận 1 (${target.type}: "${String(target.text).slice(0, 30)}")`;
     });
+    await step("Cảnh báo rủi ro: ghi đè ô bảng có dữ liệu thì hỏi, điền hàng mới thì không", async () => {
+      const r = await run("word_read_tables", {});
+      const t0 = r.tables.find((t: any) => t.values?.[0]?.[0] === "Mục" && t.values?.[1]?.[0] === "A");
+      expect(t0, `Không thấy bảng thử trong ${r.count} bảng`);
+      const warn = await riskOf("word_fill_table", { table_index: t0.index, values: [["A", "10"]], start_row: 1 });
+      expect(warn && /Ghi đè 1 ô/.test(warn), `Ghi đè ô "1" bằng "10" mà lời cảnh báo là: ${warn}`);
+      const same = await riskOf("word_fill_table", { table_index: t0.index, values: [["A", "1"]], start_row: 1 });
+      expect(same === null, `Ghi lại đúng giá trị cũ mà vẫn cảnh báo: ${same}`);
+      const add = await riskOf("word_fill_table", { table_index: t0.index, values: [["C", "3"]], start_row: t0.rows });
+      expect(add === null, `Thêm hàng mới mà vẫn cảnh báo: ${add}`);
+      return `Có hỏi: “${warn}” · ghi trùng giá trị cũ và thêm hàng mới: không hỏi`;
+    });
     await step("Đọc và điền bảng có sẵn", async () => {
       const r = await run("word_read_tables", {});
       const t0 = r.tables.find((t: any) => t.values?.[0]?.[0] === "Mục" && t.values?.[1]?.[0] === "A");
@@ -450,6 +468,32 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(c, "Không thấy nhận xét thử");
       expect(c.paragraph === target, `Công cụ báo đoạn ${c.paragraph}, đúng phải là ${target}`);
       return `Nhận xét neo ở đoạn trùng thứ hai: báo đúng [¶${target}]`;
+    });
+    await step("Cảnh báo rủi ro: thay nhiều chỗ một lúc, thay vùng chọn lớn", async () => {
+      const longLine = `${marker} đoạn dài`;
+      const many = await riskOf("word_replace_text", { find: longLine, replace: "x" });
+      expect(many && /Thay \d+ chỗ/.test(many), `Thay hàng chục chỗ mà lời cảnh báo là: ${many}`);
+      const few = await riskOf("word_replace_text", { find: `${marker} đoạn trùng`, replace: "x" });
+      expect(few === null, `Thay 2 chỗ mà vẫn cảnh báo: ${few}`);
+      // Chọn 6 đoạn dài liền nhau rồi hỏi mức rủi ro của việc thay vùng chọn
+      await Word.run(async (ctx) => {
+        const hits = ctx.document.body.search(longLine, { matchCase: true });
+        hits.load("items");
+        await ctx.sync();
+        expect(hits.items.length > 5, `Chỉ thấy ${hits.items.length} đoạn dài`);
+        hits.items[0].paragraphs.getFirst().getRange("Whole").expandTo(hits.items[5].paragraphs.getFirst().getRange("Whole")).select();
+        await ctx.sync();
+      });
+      const big = await riskOf("word_replace_selection", { text: "x" });
+      expect(big && /vùng đang chọn/.test(big), `Thay vùng chọn 6 đoạn mà lời cảnh báo là: ${big}`);
+      // Con trỏ không chọn gì
+      await Word.run(async (ctx) => {
+        ctx.document.body.getRange("End").select();
+        await ctx.sync();
+      });
+      const none = await riskOf("word_replace_selection", { text: "x" });
+      expect(none === null, `Không chọn gì mà vẫn cảnh báo: ${none}`);
+      return `Có hỏi: “${many}” · “${big}” · thay 2 chỗ và chèn tại con trỏ: không hỏi`;
     });
     await step("Chuyển tới đoạn", async () => {
       if (markerPara < 0) throw new Skip("Không xác định được đoạn thử");

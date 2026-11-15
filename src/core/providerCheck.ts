@@ -73,6 +73,8 @@ export async function checkProvider(o: CheckTarget & { code: string; fetchFn?: t
       signal: o.signal,
       log: [],
       fetchFn: o.fetchFn,
+      // Nút kiểm tra phải báo đúng tình trạng lúc bấm: không tự thử lại
+      retryDelaysMs: [],
       onEvent: (ev) => {
         if (ev.type === "tool_start") called = true;
       },
@@ -109,6 +111,8 @@ export async function checkSwitch(o: {
       signal: o.signal,
       log: [],
       fetchFn: o.fetchFn,
+      // Nút kiểm tra phải báo đúng tình trạng lúc bấm: không tự thử lại
+      retryDelaysMs: [],
       onEvent: () => {},
     });
     const ms = Date.now() - t0;

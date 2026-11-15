@@ -23,14 +23,14 @@ describe("Đợt 0A – bước 3: số phiên bản một nguồn", () => {
       { role: "user", content: "Xin chào" },
     ], []);
     const body = JSON.parse(r.init.body as string);
-    assert.strictEqual(body.system, "S");
+    assert.strictEqual(body.system[0].text, "S");
     assert.strictEqual(body.messages.length, 1);
     assert.strictEqual((r.init.headers as any)["anthropic-dangerous-direct-browser-access"], "true");
   });
   it("Hết hạn mức 429 → báo lỗi tiếng Việt (thay kiểm thử của chat.ts)", async () => {
     const f = (async () => new Response("slow down", { status: 429 })) as any;
     await assert.rejects(
-      callModelStep({ provider: P("groq"), key: "K", model: "m", messages: [{ role: "user", content: "x" }], tools: [], onText: () => {}, fetchFn: f }),
+      callModelStep({ provider: P("groq"), key: "K", model: "m", messages: [{ role: "user", content: "x" }], tools: [], onText: () => {}, fetchFn: f, retryDelaysMs: [] }),
       /Hết hạn mức/
     );
   });

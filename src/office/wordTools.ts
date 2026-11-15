@@ -6,6 +6,7 @@ import {
   diffMiddle,
   escapeWordSearch,
   normalize2D,
+  planTableFill,
   overviewForPrompt,
   packParagraphs,
   paragraphIndex,
@@ -16,6 +17,11 @@ import {
 } from "./util";
 
 const MAX_READ_CHARS = 30000;
+/** Thay quá số chỗ này trong một lần gọi thì hỏi người dùng trước */
+export const MANY_REPLACEMENTS = 5;
+/** Vùng chọn từ mức này trở lên mà bị thay cả khối thì hỏi người dùng trước */
+export const BIG_SELECTION_CHARS = 1000;
+export const BIG_SELECTION_PARAS = 3;
 
 const STYLE_ENUM = ["Normal", "Heading1", "Heading2", "Heading3", "Title", "ListBullet", "ListNumber", "Quote"];
 
@@ -749,27 +755,10 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             await ctx.sync();
             const t = tables.items[Number(a.table_index)];
             if (!t) throw new Error(`Không có bảng số ${a.table_index} (có ${tables.items.length} bảng).`);
-            const vals = normalize2D(a.values).map((r) => r.map((v) => String(v)));
-            const r0 = a.start_row === undefined ? 1 : Number(a.start_row);
-            const c0 = Number(a.start_col) || 0;
-            const cols = t.values[0]?.length || 0;
-            let written = 0;
-            const extra: string[][] = [];
-            vals.forEach((row, i) => {
-              const r = r0 + i;
-              if (r < t.rowCount) {
-                row.forEach((v, j) => {
-                  if (c0 + j < cols) {
-                    t.getCell(r, c0 + j).value = v;
-                    written++;
-                  }
-                });
-              } else {
-                const full = Array(cols).fill("");
-                row.forEach((v, j) => c0 + j < cols && (full[c0 + j] = v));
-                extra.push(full);
-              }
-            });
+            const plan = planTableFill(t.values, a.values, a.start_row, a.start_col);
+            plan.writes.forEach((x) => (t.getCell(x.row, x.col).value = x.value));
+            const written = plan.writes.length;
+            const extra = plan.extraRows;
             if (extra.length) t.addRows("End", extra.length, extra);
             await ctx.sync();
             return { ok: true, message: `Đã điền ${written} ô${extra.length ? `, thêm ${extra.length} hàng` : ""} vào bảng ${a.table_index}` };
@@ -803,15 +792,65 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     });
   }
 
-  const RISK: Record<string, (a: any) => string | null> = {
-    word_delete_paragraphs: (a) => `Xóa đoạn ${a.start}${a.end !== undefined && a.end !== a.start ? `–${a.end}` : ""} (ghi bằng Track Changes nếu đang bật).`,
+  /** Cảnh báo rủi ro: trả về lý do (luôn hỏi người dùng) hoặc null (không rủi ro). */
+  const RISK: Record<string, (a: any) => string | null | Promise<string | null>> = {
+    word_delete_paragraphs: (a) => `Xóa đoạn ${a.start}${a.end !== undefined && a.end !== a.start ? `–${a.end}` : ""} (ghi bằng Theo dõi thay đổi).`,
     word_review_revision: (a) => (a.all ? `${a.action === "accept" ? "Chấp nhận" : "Từ chối"} TẤT CẢ sửa đổi đang theo dõi trong văn bản.` : null),
+    // Thay nhiều chỗ một lúc
+    word_replace_text: (a) => {
+      const find = String(a.find || "");
+      if (!find || find.length > 255) return null; // công cụ sẽ tự báo lỗi tham số
+      return Word.run(async (ctx) => {
+        const res = ctx.document.body.search(escapeWordSearch(find), { matchCase: !!a.match_case, matchWholeWord: !!a.whole_word });
+        res.load("items");
+        await ctx.sync();
+        const n = Math.min(res.items.length, replaceLimit(a.max_replacements));
+        return n > MANY_REPLACEMENTS
+          ? `Thay ${n} chỗ cùng lúc trong văn bản: “${truncate(find, 40)}” → “${truncate(String(a.replace ?? ""), 40)}”.`
+          : null;
+      });
+    },
+    // Thay vùng chọn lớn
+    word_replace_selection: () =>
+      Word.run(async (ctx) => {
+        const sel = ctx.document.getSelection();
+        sel.load("text");
+        const ps = sel.paragraphs;
+        ps.load("items");
+        await ctx.sync();
+        const chars = sel.text.length;
+        const n = ps.items.length;
+        return chars > BIG_SELECTION_CHARS || n >= BIG_SELECTION_PARAS
+          ? `Thay toàn bộ vùng đang chọn (${n} đoạn, ${chars} ký tự) bằng nội dung mới.`
+          : null;
+      }),
+    // Ghi đè ô bảng đang có dữ liệu
+    word_fill_table: (a) =>
+      Word.run(async (ctx) => {
+        const tables = ctx.document.body.tables;
+        tables.load("items/rowCount,items/values");
+        await ctx.sync();
+        const t = tables.items[Number(a.table_index)];
+        if (!t) return null; // công cụ sẽ tự báo không có bảng
+        const over = planTableFill(t.values, a.values, a.start_row, a.start_col).overwrites;
+        if (!over.length) return null;
+        const x = over[0];
+        return `Ghi đè ${over.length} ô đang có dữ liệu trong bảng ${a.table_index} (ví dụ hàng ${x.row}, cột ${x.col}: “${truncate(x.old, 30)}” → “${truncate(x.value, 30)}”).`;
+      }),
+  };
+  /** Không kiểm tra được mức rủi ro thì coi là rủi ro: hỏi người dùng thay vì lặng lẽ cho qua. */
+  const riskOf = async (name: string, a: any): Promise<string | null> => {
+    try {
+      return await RISK[name](a || {});
+    } catch (e: any) {
+      return `Không kiểm tra trước được mức rủi ro của thao tác này (${truncate(e?.message || String(e), 120)}).`;
+    }
   };
 
   return {
     host: "Word",
     snapshot,
-    specs: WORD_SPECS.map((sp) => (RISK[sp.name] ? { ...sp, risky: async (a: any) => RISK[sp.name](a) } : sp)),
+    specs: WORD_SPECS.map((sp) => (RISK[sp.name] ? { ...sp, risky: (a: any) => riskOf(sp.name, a) } : sp)),
     execute,
     overview,
     systemPrompt: () =>

@@ -56,7 +56,18 @@ export function filterModels(models: ModelInfo[], o: FilterOptions): ModelInfo[]
 
 /** Model nên chọn cho nguồn chưa từng dùng: theo thứ tự ưu tiên, bản mới nhất trước. Lối cuối: model gọi được công cụ. */
 const PREFER: Record<string, RegExp[]> = {
-  openrouter: [/^anthropic\/claude-sonnet/i, /^openai\/gpt-5/i, /^google\/gemini-[\d.]+-flash/i, /^google\/gemini-[\d.]+-pro/i],
+  // Bốn mẫu đầu là model trả tiền; các mẫu sau để khi bật "Miễn phí" vẫn rơi vào dòng model quen, gọi được công cụ,
+  // thay vì model miễn phí mới nhất bất kỳ (15/11/2026: rơi vào model chỉ cho dùng trong "agentic harnesses").
+  openrouter: [
+    /^anthropic\/claude-sonnet/i,
+    /^openai\/gpt-5/i,
+    /^google\/gemini-[\d.]+-flash/i,
+    /^google\/gemini-[\d.]+-pro/i,
+    /^openai\/gpt-oss-120b/i,
+    /^meta-llama\/llama-3\.3-70b/i,
+    /^qwen\/qwen3/i,
+    /^deepseek\/deepseek-(chat|v3)/i,
+  ],
   anthropic: [/claude-sonnet/i, /claude-opus/i, /claude-haiku/i],
   openai: [/^gpt-5(\.\d+)?$/i, /^gpt-5(\.\d+)?-mini$/i, /^gpt-4\.1$/i, /^gpt-4o$/i],
   gemini: [/^gemini-[\d.]+-flash$/i, /^gemini-[\d.]+-pro$/i, /^gemini-.*flash(?!.*(lite|image|tts|live))/i],

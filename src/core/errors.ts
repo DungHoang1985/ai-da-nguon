@@ -20,12 +20,16 @@ export function isRetryable(e: unknown): boolean {
 
 export function messageForStatus(status: number, detail = ""): string {
   const d = detail ? ` (${detail.slice(0, 200)})` : "";
-  if (status === 401) return `Key không đúng hoặc đã hết hạn${d}`;
-  // 403 không chỉ là sai key: nhà cung cấp còn dùng khi model bị giới hạn nơi dùng, vùng, hoặc tài khoản chưa được cấp model
-  if (status === 403)
-    return /(api[ _-]?key|token|credential|unauthori[sz]ed|authenticat)/i.test(detail)
-      ? `Key không đúng hoặc không có quyền${d}`
-      : `Nhà cung cấp từ chối yêu cầu (403): tài khoản hoặc key không được dùng model này, hoặc model bị giới hạn nơi dùng. Hãy chọn model khác${d}`;
+  if (status === 401 || status === 403) {
+    // Không phải lúc nào cũng là sai key: nhà cung cấp còn dùng 401/403 khi model bị giới hạn nơi dùng, vùng, hoặc tài khoản chưa được cấp model
+    // (đo 15/11/2026, OpenRouter: "… is only available on agentic harnesses").
+    const restricted = /(only available|not available|not allowed|not permitted|agentic|your region|country|verif)/i.test(detail);
+    const aboutKey = /(api[ _-]?key|token|credential|unauthori[sz]ed|authenticat)/i.test(detail);
+    if (restricted || (status === 403 && detail && !aboutKey)) {
+      return `Nhà cung cấp từ chối yêu cầu (${status}): tài khoản hoặc key không được dùng model này, hoặc model bị giới hạn nơi dùng. Hãy chọn model khác${d}`;
+    }
+    return status === 401 ? `Key không đúng hoặc đã hết hạn${d}` : `Key không đúng hoặc không có quyền${d}`;
+  }
   if (status === 402) return `Tài khoản hết tiền hoặc cần nạp thêm${d}`;
   if (status === 404) return `Không tìm thấy model hoặc địa chỉ API${d}`;
   if (status === 429) return `Hết hạn mức (gọi quá nhiều). Thử lại sau hoặc đổi model${d}`;

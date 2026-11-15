@@ -80,7 +80,9 @@ describe("Chuẩn hóa danh sách model", () => {
     assert.strictEqual(normalizeModels(P("cohere"), { models: [{ name: "command-a" }] })[0].id, "command-a");
   });
   it("Yêu cầu liệt kê model gắn key đúng chỗ", () => {
-    assert.ok(modelsRequest(P("gemini"), "K").url.includes("key=K"));
+    const g = modelsRequest(P("gemini"), "K");
+    assert.ok(!g.url.includes("K"), "key Gemini không nằm trong đường dẫn");
+    assert.strictEqual((g.init.headers as any)["x-goog-api-key"], "K");
     assert.strictEqual((modelsRequest(P("anthropic"), "K").init.headers as any)["x-api-key"], "K");
     assert.strictEqual((modelsRequest(P("groq"), "K").init.headers as any).Authorization, "Bearer K");
     assert.ok(modelsRequest(P("cohere"), "K").url.startsWith("https://api.cohere.com/v1/models"));

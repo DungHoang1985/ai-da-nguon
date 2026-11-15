@@ -106,6 +106,43 @@ export function replaceLimit(v: any, def = 50): number {
   return Number.isFinite(n) && n >= 1 ? n : def;
 }
 
+export interface TableFillPlan {
+  /** Ô có sẵn sẽ được ghi: hàng, cột, giá trị mới, giá trị cũ */
+  writes: { row: number; col: number; value: string; old: string }[];
+  /** Hàng mới thêm vào cuối bảng */
+  extraRows: string[][];
+  /** Các ô đang có dữ liệu khác với giá trị sắp ghi */
+  overwrites: { row: number; col: number; value: string; old: string }[];
+}
+
+/** Tính trước việc điền bảng Word: ô nào được ghi, hàng nào thêm mới, ô nào đang có dữ liệu sẽ bị ghi đè.
+ *  current = giá trị hiện tại của bảng; start_row mặc định 1 (bỏ hàng tiêu đề), start_col mặc định 0. */
+export function planTableFill(current: string[][], values: any, startRow?: any, startCol?: any): TableFillPlan {
+  const vals = normalize2D(values).map((r) => r.map((v) => String(v)));
+  const rowCount = current.length;
+  const cols = current[0]?.length || 0;
+  const r0 = startRow === undefined || startRow === null ? 1 : Math.max(0, Number(startRow) || 0);
+  const c0 = Math.max(0, Number(startCol) || 0);
+  const plan: TableFillPlan = { writes: [], extraRows: [], overwrites: [] };
+  vals.forEach((row, i) => {
+    const r = r0 + i;
+    if (r < rowCount) {
+      row.forEach((v, j) => {
+        if (c0 + j >= cols) return;
+        const old = String(current[r]?.[c0 + j] ?? "");
+        const w = { row: r, col: c0 + j, value: v, old };
+        plan.writes.push(w);
+        if (old.trim() && old.trim() !== v.trim()) plan.overwrites.push(w);
+      });
+    } else {
+      const full = Array(cols).fill("");
+      row.forEach((v, j) => c0 + j < cols && (full[c0 + j] = v));
+      plan.extraRows.push(full);
+    }
+  });
+  return plan;
+}
+
 export function escapeWordSearch(s: string): string {
   return s.replace(/\^/g, "^^");
 }

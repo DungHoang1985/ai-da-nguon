@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import { getProvider } from "../../src/core/providers";
 import { buildStepRequest, callModelStep, createStepAccumulator, isToolUnsupportedError, toGeminiSchema } from "../../src/core/agent/llm";
-import { compactHistory, runAgent } from "../../src/core/agent/loop";
+import { runAgent } from "../../src/core/agent/loop";
 import { AgentMessage, HostToolSet, ToolSpec } from "../../src/core/agent/types";
 import { ApiError } from "../../src/core/errors";
 import {
@@ -86,7 +86,7 @@ describe("Tác tử: dựng yêu cầu gọi công cụ", () => {
   it("Anthropic: tool_use + gom tool_result vào một lượt user, có input_schema", () => {
     const r = buildStepRequest(P("anthropic"), "K", "claude-sonnet-4-5", HISTORY, TOOLS);
     const b = JSON.parse(r.init.body as string);
-    assert.strictEqual(b.system, "SYS");
+    assert.strictEqual(b.system[0].text, "SYS");
     assert.strictEqual(b.tools[1].input_schema.required[0], "address");
     assert.deepStrictEqual(
       b.messages.map((m: any) => m.role),
@@ -97,7 +97,7 @@ describe("Tác tử: dựng yêu cầu gọi công cụ", () => {
       b.messages[2].content.map((c: any) => c.tool_use_id),
       ["abc123XYZ", "def456UVW"]
     );
-    assert.strictEqual(b.max_tokens, 8192);
+    assert.strictEqual(b.max_tokens, 16000);
   });
   it("Gemini: functionDeclarations, schema rút gọn, functionResponse chung một lượt, giữ nguyên parts gốc", () => {
     const hist: AgentMessage[] = [
@@ -112,7 +112,8 @@ describe("Tác tử: dựng yêu cầu gọi công cụ", () => {
     ];
     const r = buildStepRequest(P("gemini"), "K", "gemini-2.5-flash", hist, TOOLS);
     const b = JSON.parse(r.init.body as string);
-    assert.ok(r.url.includes(":streamGenerateContent?alt=sse&key=K"));
+    assert.ok(r.url.endsWith(":streamGenerateContent?alt=sse"));
+    assert.strictEqual((r.init.headers as any)["x-goog-api-key"], "K");
     const decls = b.tools[0].functionDeclarations;
     assert.strictEqual(decls[0].parameters, undefined, "công cụ không tham số thì bỏ parameters");
     assert.strictEqual(decls[1].parameters.additionalProperties, undefined);
@@ -355,10 +356,6 @@ describe("Tác tử: vòng lặp", () => {
       }),
       (e: any) => e.name === "AbortError"
     );
-  });
-  it("Thu gọn kết quả công cụ của lượt cũ", () => {
-    const h = compactHistory([{ role: "tool", toolCallId: "a", name: "n", content: "x".repeat(5000) }]);
-    assert.ok((h[0] as any).content.length < 1700);
   });
 });
 
