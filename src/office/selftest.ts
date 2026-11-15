@@ -279,6 +279,37 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(n > 0, "Không thấy sửa đổi được theo dõi");
       return `${n} sửa đổi đang chờ duyệt`;
     });
+    await step("Tắt Track Changes rồi AI sửa: vẫn ghi có theo dõi", async () => {
+      if (!Office.context.requirements.isSetSupported("WordApi", "1.6")) throw new Skip("Word chưa hỗ trợ đếm Track Changes");
+      const before = await Word.run(async (ctx) => {
+        ctx.document.load("changeTrackingMode");
+        await ctx.sync();
+        const prev = ctx.document.changeTrackingMode;
+        ctx.document.changeTrackingMode = Word.ChangeTrackingMode.off;
+        const tc = ctx.document.body.getTrackedChanges();
+        tc.load("items");
+        await ctx.sync();
+        return { prev, n: tc.items.length };
+      });
+      let after = { n: 0, mode: "" as string };
+      try {
+        await run("word_replace_text", { find: "Ý thứ nhất", replace: "Ý thứ nhất (đã sửa)" });
+      } finally {
+        after = await Word.run(async (ctx) => {
+          const tc = ctx.document.body.getTrackedChanges();
+          tc.load("items");
+          ctx.document.load("changeTrackingMode");
+          await ctx.sync();
+          const mode = String(ctx.document.changeTrackingMode);
+          ctx.document.changeTrackingMode = before.prev;
+          await ctx.sync();
+          return { n: tc.items.length, mode };
+        });
+      }
+      expect(after.n > before.n, `Sửa đổi được theo dõi: ${before.n} → ${after.n}`);
+      expect(after.mode === "Off", `Sau khi AI sửa, chế độ là ${after.mode} (phải trả lại Off như người dùng đặt)`);
+      return `Track Changes đang tắt: sửa đổi vẫn được ghi (${before.n} → ${after.n}), trả lại chế độ Off`;
+    });
     await step("Tìm và thay chữ", async () => {
       const r = await run("word_replace_text", { find: "01/2026 ký", replace: "02/2026 ký" });
       expect(r.replaced === 1, `Thay ${r.replaced} chỗ`);

@@ -1,14 +1,16 @@
 import * as React from "react";
-import { Tab, TabList, Text, makeStyles, tokens } from "@fluentui/react-components";
+import { makeStyles } from "@fluentui/react-components";
 import Chat from "./Chat";
 import Settings from "./Settings";
 import { Storage } from "../../core/storage";
 import { hostName } from "../../office/host";
-import { APP_VERSION } from "../../core/version";
 
+/** Bố cục "một dòng đầu" (anh chọn 15/11/2026): không còn thanh thẻ Chat / Cài đặt.
+ *  Khung chat có đầu khung một dòng; Cài đặt là trang riêng mở bằng nút bánh răng, có nút quay lại.
+ *  Khung chat vẫn được giữ nguyên trạng thái khi mở Cài đặt (ẩn bằng display: none). */
 const useStyles = makeStyles({
   root: {
-    padding: "10px",
+    padding: "6px 8px 8px",
     height: "100vh",
     width: "100%",
     boxSizing: "border-box",
@@ -16,9 +18,7 @@ const useStyles = makeStyles({
     flexDirection: "column",
     overflowX: "hidden",
   },
-  head: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "4px" },
-  body: { flex: 1, overflowY: "auto", overflowX: "hidden", paddingTop: "8px" },
-  muted: { color: tokens.colorNeutralForeground3 },
+  page: { flex: 1, minHeight: 0, display: "flex", flexDirection: "column" },
 });
 
 const storage = new Storage();
@@ -26,30 +26,19 @@ const storage = new Storage();
 const App: React.FC = () => {
   const s = useStyles();
   const host = hostName();
-  const hasKey = Object.keys(storage.getKeys()).length > 0;
-  const [tab, setTab] = React.useState<string>(hasKey ? "chat" : "settings");
+  const [view, setView] = React.useState<"chat" | "settings">("chat");
   const [version, setVersion] = React.useState(0);
 
   return (
     <div className={s.root}>
-      <div className={s.head}>
-        <Text weight="semibold" size={400}>
-          AI Đa Nguồn
-        </Text>
-        <Text size={200} className={s.muted}>
-          {host === "Khác" ? `v${APP_VERSION}` : `v${APP_VERSION} · ${host}`}
-        </Text>
+      <div className={s.page} style={{ display: view === "chat" ? "flex" : "none" }}>
+        <Chat storage={storage} host={host} version={version} onOpenSettings={() => setView("settings")} />
       </div>
-      <TabList selectedValue={tab} onTabSelect={(_, d) => setTab(String(d.value))} size="small">
-        <Tab value="chat">Chat</Tab>
-        <Tab value="settings">Cài đặt</Tab>
-      </TabList>
-      <div className={s.body}>
-        <div style={{ display: tab === "chat" ? "block" : "none", height: "100%" }}>
-          <Chat storage={storage} host={host} version={version} goSettings={() => setTab("settings")} />
+      {view === "settings" && (
+        <div className={s.page}>
+          <Settings storage={storage} host={host} onChanged={() => setVersion((v) => v + 1)} onBack={() => setView("chat")} />
         </div>
-        {tab === "settings" && <Settings storage={storage} host={host} onChanged={() => setVersion((v) => v + 1)} />}
-      </div>
+      )}
     </div>
   );
 };

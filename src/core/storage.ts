@@ -40,8 +40,6 @@ export interface AppSettings {
   agentMode: boolean;
   /** Hỏi trước mỗi thao tác sửa tài liệu */
   askBeforeWrite: boolean;
-  /** Word: ghi sửa đổi bằng Theo dõi thay đổi */
-  trackChanges: boolean;
   /** OpenRouter: chỉ hiện model gọi được công cụ */
   toolsOnly: boolean;
   /** Luôn hỏi trước thao tác rủi ro: ghi đè ô có dữ liệu, xóa vùng/đoạn/slide */
@@ -57,7 +55,6 @@ export interface AppSettings {
 export const DEFAULT_SETTINGS: AppSettings = {
   agentMode: true,
   askBeforeWrite: false,
-  trackChanges: true,
   toolsOnly: true,
   confirmRisky: true,
   shareContext: true,

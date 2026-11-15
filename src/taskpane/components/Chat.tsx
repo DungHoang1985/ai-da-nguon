@@ -1,16 +1,31 @@
 import * as React from "react";
 import {
   Button,
-  Checkbox,
-  Input,
-  Select,
+  Menu,
+  MenuDivider,
+  MenuItem,
+  MenuItemCheckbox,
+  MenuItemRadio,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
   Spinner,
-  Switch,
   Text,
   Textarea,
   makeStyles,
   tokens,
 } from "@fluentui/react-components";
+import {
+  AddRegular,
+  AttachRegular,
+  ChatAddRegular,
+  HistoryRegular,
+  SendRegular,
+  SettingsRegular,
+  ShieldCheckmarkRegular,
+  StopRegular,
+} from "@fluentui/react-icons";
+import ModelPicker from "./ModelPicker";
 import { getProvider } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { describeError, networkErrorMessage } from "../../core/errors";
@@ -31,12 +46,16 @@ import { HostName, INSERT_LABEL, insertAnswer, readSelection } from "../../offic
 import { QUICK_PROMPTS, describeCall, getHostTools } from "../../office/tools";
 import { createCommonTools } from "../../office/common";
 import { navigateTo } from "../../office/navigate";
-import { APP_VERSION_FULL } from "../../core/version";
+import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { inputKeyAction } from "../../core/keys";
 
 const useStyles = makeStyles({
-  wrap: { display: "flex", flexDirection: "column", gap: "8px", height: "100%", minWidth: 0 },
+  wrap: { display: "flex", flexDirection: "column", gap: "6px", height: "100%", minWidth: 0 },
   row: { display: "flex", gap: "6px", alignItems: "center", flexWrap: "wrap", minWidth: 0 },
+  /** Đầu khung một dòng: tên + phiên bản · Lịch sử · Hội thoại mới · Cài đặt */
+  header: { display: "flex", alignItems: "center", gap: "4px", flexShrink: 0, minWidth: 0, minHeight: "28px" },
+  title: { whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" },
+  /** Vùng hội thoại chiếm toàn bộ phần giữa */
   list: {
     flex: 1,
     overflowY: "auto",
@@ -44,8 +63,22 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     gap: "8px",
-    minHeight: "140px",
+    minHeight: "80px",
   },
+  fixed: { flexShrink: 0 },
+  composer: { display: "flex", gap: "6px", alignItems: "flex-end", flexShrink: 0, minWidth: 0 },
+  input: { flex: 1, minWidth: 0, "& textarea": { maxHeight: "132px", overflowY: "auto" } },
+  toolbar: { display: "flex", gap: "2px", alignItems: "center", flexShrink: 0, minWidth: 0, flexWrap: "wrap" },
+  modelSlot: { flex: 1, minWidth: 0, display: "flex", justifyContent: "flex-end" },
+  tag: {
+    fontSize: "12px",
+    padding: "1px 6px",
+    borderRadius: "10px",
+    background: tokens.colorNeutralBackground4,
+    color: tokens.colorNeutralForeground2,
+    whiteSpace: "nowrap",
+  },
+  welcome: { flex: 1, display: "flex", flexDirection: "column", gap: "10px", justifyContent: "center", padding: "8px" },
   user: {
     alignSelf: "flex-end",
     background: tokens.colorBrandBackground2,
@@ -153,7 +186,7 @@ interface Props {
   storage: Storage;
   host: HostName;
   version: number;
-  goSettings: () => void;
+  onOpenSettings: () => void;
 }
 
 const PLAIN_SYSTEM =
@@ -265,7 +298,7 @@ const plainHistory = (h: AgentMessage[]): AgentMessage[] =>
     .filter((m) => m.role === "user" || (m.role === "assistant" && m.content))
     .map((m) => (m.role === "assistant" ? { role: "assistant", content: m.content } : { role: "user", content: m.content })) as AgentMessage[];
 
-const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
+const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings }) => {
   const s = useStyles();
   const [settings, setSettingsState] = React.useState(storage.getSettings());
   const updateSettings = (patch: any) => {
@@ -298,6 +331,14 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
   const [slashClosedFor, setSlashClosedFor] = React.useState<string | null>(null);
   const busyRef = React.useRef(false);
   const prevBusy = React.useRef(false);
+
+  // Ô nhập tự giãn 1–6 dòng
+  React.useLayoutEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight + 2, 132)}px`;
+  }, [input]);
 
   const kv = React.useMemo(() => getKV(), []);
   const convStore = React.useMemo(() => new ConversationStore(kv), [kv]);
@@ -373,13 +414,35 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
     prevBusy.current = busy;
   }, [busy]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Màn chào: chỉ hiện khi chưa có key nào
   if (!available.length) {
     return (
       <div className={s.wrap}>
-        <Text>Chưa có API key nào.</Text>
-        <Button appearance="primary" onClick={goSettings}>
-          Mở Cài đặt để nhập key
-        </Button>
+        <div className={s.header}>
+          <Text weight="semibold" size={300}>
+            AI Đa Nguồn
+          </Text>
+          <Text size={100} className={s.muted}>
+            v{APP_VERSION}
+          </Text>
+          <div style={{ flex: 1 }} />
+          <Button appearance="subtle" size="small" icon={<SettingsRegular />} title="Cài đặt" aria-label="Cài đặt" onClick={onOpenSettings} />
+        </div>
+        <div className={s.welcome}>
+          <Text size={500} weight="semibold">
+            Chào anh 👋
+          </Text>
+          <Text>
+            AI Đa Nguồn làm việc ngay trong {host === "Khác" ? "Word, Excel, PowerPoint" : host}: đọc, sửa, tạo nội dung theo yêu cầu, bằng API
+            key của anh (OpenRouter, Anthropic, Gemini, Groq…).
+          </Text>
+          <Text size={200} className={s.muted}>
+            Key chỉ lưu trên máy này và chỉ gửi tới đúng nhà cung cấp. OpenRouter có nhiều model miễn phí.
+          </Text>
+          <Button appearance="primary" onClick={onOpenSettings} style={{ alignSelf: "flex-start" }}>
+            Nhập API key
+          </Button>
+        </div>
       </div>
     );
   }
@@ -703,81 +766,43 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
     else if (act === "menu-close") setSlashClosedFor(input);
   };
 
+  const selectionLabel = host === "Excel" ? "Gửi kèm vùng ô đang chọn" : "Gửi kèm nội dung đang chọn";
+  const plusChecked = [...(withSelection ? ["sel"] : []), ...(settings.webSearch && webCapable ? ["web"] : [])];
+
   return (
     <div className={s.wrap}>
-      <div className={s.row}>
-        <Select value={providerId} onChange={(_, d) => cat.selectProvider(d.value)} style={{ flex: 1, minWidth: 0 }}>
-          {available.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </Select>
-        <Button size="small" onClick={() => cat.reload()} title="Tải lại danh sách model">
-          Làm mới
-        </Button>
-      </div>
-      {cat.provider?.blockedReason && (
-        <Text size={200} className={s.err}>
-          ⚠️ {cat.provider.name}: {cat.provider.blockedReason}
+      <div className={s.header}>
+        <Text weight="semibold" size={300} className={s.title}>
+          AI Đa Nguồn
         </Text>
-      )}
-      <div className={s.row}>
-        <Input
-          placeholder="Tìm model…"
-          autoComplete="off"
-          name="aidn-model-search"
-          value={cat.search}
-          onChange={(_, d) => cat.setSearch(d.value)}
+        <Text size={100} className={s.muted} title={`Phiên bản ${APP_VERSION_FULL}`}>
+          v{APP_VERSION}
+        </Text>
+        <div style={{ flex: 1 }} />
+        <Button
+          appearance={showHistory ? "secondary" : "subtle"}
           size="small"
-          style={{ flex: 1, minWidth: 0 }}
+          icon={<HistoryRegular />}
+          title="Lịch sử hội thoại"
+          aria-label="Lịch sử hội thoại"
+          aria-pressed={showHistory}
+          disabled={busy}
+          onClick={() => {
+            refreshConvs();
+            setShowHistory((v) => !v);
+          }}
         />
-        {providerId === "openrouter" && (
-          <Switch label="Miễn phí" checked={cat.freeOnly} onChange={(_, d) => cat.setFreeOnly(d.checked)} />
-        )}
-        {providerId === "openrouter" && agentOn && (
-          <Switch
-            label="Chỉ model thao tác được"
-            checked={settings.toolsOnly}
-            onChange={(_, d) => updateSettings({ toolsOnly: d.checked })}
-          />
-        )}
-      </div>
-      <Select value={modelId} onChange={(_, d) => cat.selectModel(d.value)} disabled={cat.catalog.status !== "ready"}>
-        {cat.model && !shown.some((m) => m.id === modelId) && <option value={modelId}>{cat.model.name}</option>}
-        {shown.map((m) => (
-          <option key={m.id} value={m.id}>
-            {m.free ? "🆓 " : ""}
-            {m.tools ? "🛠 " : ""}
-            {m.name}
-          </option>
-        ))}
-      </Select>
-      <Text size={200} className={cat.catalog.status === "error" ? s.err : s.muted}>
-        {cat.catalog.status === "error" ? cat.blockReason : cat.note}{" "}
-        {cat.catalog.status === "ready" && shown.length !== models.length ? `· đang hiện ${shown.length}/${models.length}` : ""}
-      </Text>
-      <div className={s.row}>
-        <Switch
-          label={hostTools ? `AI tự thao tác trong ${host}` : "AI tự thao tác (chỉ trong Excel/Word/PowerPoint)"}
-          checked={agentOn}
-          disabled={!hostTools}
-          onChange={(_, d) => updateSettings({ agentMode: d.checked })}
+        <Button
+          appearance="subtle"
+          size="small"
+          icon={<ChatAddRegular />}
+          title="Hội thoại mới"
+          aria-label="Hội thoại mới"
+          disabled={busy || (!items.length && !convId)}
+          onClick={newChat}
         />
-        {webCapable && (
-          <Switch label="🌐 Tìm trên web" checked={settings.webSearch} onChange={(_, d) => updateSettings({ webSearch: d.checked })} />
-        )}
+        <Button appearance="subtle" size="small" icon={<SettingsRegular />} title="Cài đặt" aria-label="Cài đặt" onClick={onOpenSettings} />
       </div>
-      {agentOn && model?.tools === false && (
-        <Text size={200} className={s.err}>
-          Model này không gọi được công cụ → chỉ trò chuyện. Chọn model có biểu tượng 🛠 để AI tự thao tác.
-        </Text>
-      )}
-      {settings.webSearch && webCapable && provider?.kind === "gemini" && agentOn && (
-        <Text size={200} className={s.muted}>
-          Gemini chỉ tìm trên web khi tắt “AI tự thao tác”.
-        </Text>
-      )}
 
       {showHistory ? (
         <div className={s.list}>
@@ -813,16 +838,19 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
         </div>
       ) : (
         <div className={s.list} ref={listRef}>
-          {!items.length && agentOn && (
+          {!items.length && (
             <div className={s.row} style={{ flexDirection: "column", alignItems: "stretch" }}>
               <Text size={200} className={s.muted}>
-                Gợi ý (bấm để gửi) · gõ “/” để gọi kỹ năng:
+                {agentOn
+                  ? `AI làm việc trực tiếp trong ${host}. Gợi ý (bấm để gửi) · gõ “/” để gọi kỹ năng:`
+                  : "Chế độ chỉ trò chuyện. Bật “AI tự thao tác” trong Cài đặt để AI sửa trực tiếp trên tài liệu."}
               </Text>
-              {(QUICK_PROMPTS[host] || []).map((q) => (
-                <Button key={q} size="small" className={s.chip} onClick={() => send(q)} disabled={busy || !modelId}>
-                  {q}
-                </Button>
-              ))}
+              {agentOn &&
+                (QUICK_PROMPTS[host] || []).map((q) => (
+                  <Button key={q} size="small" className={s.chip} onClick={() => send(q)} disabled={busy || !!cat.blockReason}>
+                    {q}
+                  </Button>
+                ))}
             </div>
           )}
           {items.map((it, i) =>
@@ -907,7 +935,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
                     )}
                   </div>
                 )}
-                {it.wrote && host === "Word" && settings.trackChanges && !isLastBusy(i) && (
+                {it.wrote && host === "Word" && !isLastBusy(i) && (
                   <Text size={200} className={s.muted}>
                     Sửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối.
                   </Text>
@@ -919,17 +947,22 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
       )}
 
       {notice && (
-        <Text size={200} className={notice.err ? s.err : s.muted}>
+        <Text size={200} className={`${s.fixed} ${notice.err ? s.err : s.muted}`}>
           {notice.text}
         </Text>
       )}
-      <Checkbox
-        label={host === "Excel" ? "Gửi kèm vùng ô đang chọn" : "Gửi kèm nội dung đang chọn"}
-        checked={withSelection}
-        onChange={(_, d) => setWithSelection(!!d.checked)}
-      />
+      {agentOn && model?.tools === false && (
+        <Text size={200} className={`${s.fixed} ${s.err}`}>
+          Model này không gọi được công cụ → chỉ trò chuyện. Chọn model có biểu tượng 🛠 để AI tự thao tác.
+        </Text>
+      )}
+      {settings.webSearch && webCapable && provider?.kind === "gemini" && agentOn && (
+        <Text size={200} className={`${s.fixed} ${s.muted}`}>
+          Gemini chỉ tìm trên web khi tắt “AI tự thao tác”.
+        </Text>
+      )}
       {attachments.length > 0 && (
-        <div className={s.row} style={{ flexShrink: 0 }}>
+        <div className={`${s.row} ${s.fixed}`}>
           {attachments.map((a, i) => (
             <span key={i} className={s.fileChip} title={a.note || a.name}>
               {a.kind === "image" ? "🖼" : "📄"} {a.name}
@@ -968,22 +1001,133 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
           ))}
         </div>
       )}
-      <Textarea
-        ref={inputRef}
-        placeholder={
-          agentOn
-            ? `Yêu cầu AI làm gì trong ${host}… (gõ / để gọi kỹ năng · Enter gửi, Shift+Enter xuống dòng)`
-            : "Nhập câu hỏi… (Enter gửi, Shift+Enter xuống dòng)"
-        }
-        value={input}
-        onChange={(_, d) => {
-          setInput(d.value);
-          setSlashIdx(0);
-        }}
-        onKeyDown={onInputKey}
-        resize="vertical"
-        rows={3}
-      />
+
+      <div className={s.composer}>
+        <Textarea
+          ref={inputRef}
+          className={s.input}
+          resize="none"
+          rows={1}
+          placeholder={agentOn ? `Yêu cầu AI làm gì trong ${host}…` : "Nhập câu hỏi…"}
+          title="Enter gửi · Shift+Enter xuống dòng · gõ / để gọi kỹ năng"
+          value={input}
+          onChange={(_, d) => {
+            setInput(d.value);
+            setSlashIdx(0);
+          }}
+          onKeyDown={onInputKey}
+        />
+        {busy ? (
+          <Button appearance="primary" icon={<StopRegular />} title="Dừng (Esc)" aria-label="Dừng" onClick={stop} />
+        ) : (
+          <Button
+            appearance="primary"
+            icon={<SendRegular />}
+            title="Gửi (Enter)"
+            aria-label="Gửi"
+            onClick={() => send()}
+            disabled={!input.trim() || !!cat.blockReason || attachBusy}
+          />
+        )}
+      </div>
+
+      <div className={s.toolbar}>
+        <Menu
+          checkedValues={{ opts: plusChecked }}
+          onCheckedValueChange={(_, d) => {
+            const v = d.checkedItems;
+            setWithSelection(v.includes("sel"));
+            if (webCapable) updateSettings({ webSearch: v.includes("web") });
+          }}
+        >
+          <MenuTrigger disableButtonEnhancement>
+            <Button
+              size="small"
+              appearance="subtle"
+              icon={attachBusy ? <Spinner size="extra-tiny" /> : <AddRegular />}
+              title="Đính kèm tệp, kỹ năng, tìm trên web, gửi kèm nội dung đang chọn"
+              aria-label="Thêm: tệp, kỹ năng, tìm web, nội dung đang chọn"
+            />
+          </MenuTrigger>
+          <MenuPopover>
+            <MenuList>
+              <MenuItem icon={<AttachRegular />} disabled={busy || attachBusy} onClick={() => fileRef.current?.click()}>
+                Đính kèm tệp (PDF, DOCX, TXT, CSV, ảnh…)
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setInput("/");
+                  setSlashClosedFor(null);
+                  setTimeout(() => inputRef.current?.focus(), 0);
+                }}
+              >
+                / Kỹ năng và lệnh
+              </MenuItem>
+              <MenuDivider />
+              <MenuItemCheckbox name="opts" value="sel">
+                {selectionLabel}
+              </MenuItemCheckbox>
+              {webCapable && (
+                <MenuItemCheckbox name="opts" value="web">
+                  Tìm trên web
+                </MenuItemCheckbox>
+              )}
+            </MenuList>
+          </MenuPopover>
+        </Menu>
+        {agentOn ? (
+          <Menu
+            checkedValues={{ perm: [settings.askBeforeWrite ? "ask" : "auto"] }}
+            onCheckedValueChange={(_, d) => updateSettings({ askBeforeWrite: d.checkedItems[0] === "ask" })}
+          >
+            <MenuTrigger disableButtonEnhancement>
+              <Button
+                size="small"
+                appearance="subtle"
+                icon={<ShieldCheckmarkRegular />}
+                title="Mức quyền của AI khi sửa tài liệu"
+                aria-label={`Mức quyền: ${settings.askBeforeWrite ? "hỏi trước khi sửa" : "tự sửa, hỏi khi rủi ro"}`}
+              >
+                {settings.askBeforeWrite ? "Hỏi trước" : "Tự sửa"}
+              </Button>
+            </MenuTrigger>
+            <MenuPopover>
+              <MenuList>
+                <MenuItemRadio name="perm" value="ask">
+                  Hỏi trước mỗi thao tác sửa
+                </MenuItemRadio>
+                <MenuItemRadio name="perm" value="auto">
+                  Tự sửa, hỏi khi rủi ro
+                </MenuItemRadio>
+                <MenuDivider />
+                <MenuItem disabled>Ghi đè, xóa, duyệt tất cả: luôn hỏi kèm lý do</MenuItem>
+              </MenuList>
+            </MenuPopover>
+          </Menu>
+        ) : (
+          <Text size={200} className={s.tag} title="Bật “AI tự thao tác” trong Cài đặt để AI sửa trực tiếp trên tài liệu">
+            Chỉ trò chuyện
+          </Text>
+        )}
+        {withSelection && (
+          <Text size={100} className={s.tag} title={selectionLabel} onClick={() => setWithSelection(false)} style={{ cursor: "pointer" }}>
+            📄 Kèm vùng chọn ✕
+          </Text>
+        )}
+        {settings.webSearch && webCapable && (
+          <Text size={100} className={s.tag} title="Đang bật tìm trên web" onClick={() => updateSettings({ webSearch: false })} style={{ cursor: "pointer" }}>
+            🌐 Web ✕
+          </Text>
+        )}
+        <div className={s.modelSlot}>
+          <ModelPicker cat={cat} agentOn={agentOn} toolsOnly={settings.toolsOnly} onToolsOnly={(v) => updateSettings({ toolsOnly: v })} />
+        </div>
+      </div>
+      {!busy && cat.blockReason && (
+        <Text size={100} className={`${s.fixed} ${cat.catalog.status === "error" ? s.err : s.muted}`}>
+          {cat.blockReason}
+        </Text>
+      )}
       <input
         ref={fileRef}
         type="file"
@@ -992,35 +1136,6 @@ const Chat: React.FC<Props> = ({ storage, host, version, goSettings }) => {
         style={{ display: "none" }}
         onChange={(e) => onFiles(e.target.files)}
       />
-      <div className={s.row}>
-        {busy ? (
-          <Button onClick={stop}>Dừng</Button>
-        ) : (
-          <Button appearance="primary" onClick={() => send()} disabled={!input.trim() || !!cat.blockReason || attachBusy}>
-            Gửi
-          </Button>
-        )}
-        {!busy && cat.blockReason && cat.catalog.status !== "error" && (
-          <Text size={200} className={s.muted}>
-            {cat.blockReason}
-          </Text>
-        )}
-        <Button onClick={() => fileRef.current?.click()} disabled={busy || attachBusy} title="Đính kèm PDF, DOCX, TXT, CSV, ảnh…">
-          {attachBusy ? "Đang đọc…" : "📎 Tệp"}
-        </Button>
-        <Button onClick={newChat} disabled={busy || (!items.length && !convId)}>
-          Mới
-        </Button>
-        <Button
-          onClick={() => {
-            refreshConvs();
-            setShowHistory((v) => !v);
-          }}
-          disabled={busy}
-        >
-          Lịch sử{convList.length ? ` (${convList.length})` : ""}
-        </Button>
-      </div>
     </div>
   );
 };

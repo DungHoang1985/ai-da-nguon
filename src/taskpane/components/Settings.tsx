@@ -1,5 +1,7 @@
 import * as React from "react";
 import { Button, Input, Link, Select, Spinner, Switch, Text, Textarea, makeStyles, tokens } from "@fluentui/react-components";
+import { ArrowLeftRegular } from "@fluentui/react-icons";
+import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { HostName } from "../../office/host";
 import { getHostTools } from "../../office/tools";
 import { TestStep, runSelfTest } from "../../office/selftest";
@@ -22,6 +24,10 @@ const useStyles = makeStyles({
     gap: "6px",
   },
   row: { display: "flex", gap: "6px", alignItems: "center", minWidth: 0 },
+  page: { display: "flex", flexDirection: "column", height: "100%", minHeight: 0 },
+  header: { display: "flex", alignItems: "center", gap: "4px", flexShrink: 0, minHeight: "28px", paddingBottom: "4px" },
+  scroll: { flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", paddingRight: "2px" },
+  section: { fontSize: "13px", fontWeight: 600, margin: "10px 0 6px", color: tokens.colorNeutralForeground2 },
   ok: { color: tokens.colorPaletteGreenForeground1 },
   err: { color: tokens.colorPaletteRedForeground1 },
   muted: { color: tokens.colorNeutralForeground3 },
@@ -31,6 +37,8 @@ interface Props {
   storage: Storage;
   onChanged: () => void;
   host?: HostName;
+  /** Về khung chat (trang Cài đặt có nút quay lại) */
+  onBack?: () => void;
 }
 
 type Status = { kind: "ok" | "err" | "busy"; text: string } | undefined;
@@ -108,16 +116,60 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
   );
 };
 
-const AgentSettings: React.FC<Props> = ({ storage, onChanged, host }) => {
-  const s = useStyles();
+function useSettingsState(storage: Storage, onChanged: () => void) {
   const [st, setSt] = React.useState(storage.getSettings());
-  const [steps, setSteps] = React.useState<TestStep[] | null>(null);
-  const [running, setRunning] = React.useState(false);
   const set = (patch: any) => {
     storage.setSettings(patch);
     setSt(storage.getSettings());
     onChanged();
   };
+  return { st, set };
+}
+
+/** Quyền và an toàn. Word luôn ghi sửa đổi bằng Theo dõi thay đổi (không còn công tắc tắt — anh duyệt 15/11/2026). */
+const PermissionsCard: React.FC<Props> = ({ storage, onChanged }) => {
+  const s = useStyles();
+  const { st, set } = useSettingsState(storage, onChanged);
+  return (
+    <div className={s.card}>
+      <Switch label="AI tự thao tác: cho AI tự đọc, sửa, tạo nội dung trong Office" checked={st.agentMode} onChange={(_, d) => set({ agentMode: d.checked })} />
+      {!st.agentMode && (
+        <Text size={200} className={s.muted}>
+          Đang tắt: khung chat chỉ trò chuyện (có nhãn “Chỉ trò chuyện” cạnh ô nhập).
+        </Text>
+      )}
+      <Switch label="Hỏi tôi trước mỗi thao tác sửa tài liệu" checked={st.askBeforeWrite} onChange={(_, d) => set({ askBeforeWrite: d.checked })} />
+      <Switch
+        label="Luôn hỏi trước khi ghi đè dữ liệu có sẵn hoặc xóa (ô, đoạn, slide, sheet)"
+        checked={st.confirmRisky}
+        onChange={(_, d) => set({ confirmRisky: d.checked })}
+      />
+      <Text size={200} className={s.muted}>
+        Word: mọi sửa đổi của AI luôn ghi bằng Theo dõi thay đổi (Track Changes) để anh duyệt trong thẻ Review, kể cả khi đang tắt Theo dõi thay
+        đổi; xong việc add-in trả lại chế độ cũ.
+      </Text>
+    </div>
+  );
+};
+
+const CrossAppCard: React.FC<Props> = ({ storage, onChanged }) => {
+  const s = useStyles();
+  const { st, set } = useSettingsState(storage, onChanged);
+  return (
+    <div className={s.card}>
+      <Switch
+        label="Cho Excel, Word, PowerPoint đọc chéo nội dung đang mở của nhau"
+        checked={st.shareContext}
+        onChange={(_, d) => set({ shareContext: d.checked })}
+      />
+    </div>
+  );
+};
+
+const SelfTestCard: React.FC<Props> = ({ storage, host }) => {
+  const s = useStyles();
+  const [steps, setSteps] = React.useState<TestStep[] | null>(null);
+  const [running, setRunning] = React.useState(false);
   const tools = host ? getHostTools(host, () => storage.getSettings()) : null;
   const test = async () => {
     if (!tools) return;
@@ -133,25 +185,10 @@ const AgentSettings: React.FC<Props> = ({ storage, onChanged, host }) => {
   const failed = steps?.filter((x) => x.ok === false).length ?? 0;
   return (
     <div className={s.card}>
-      <Text weight="semibold">AI tự thao tác trên tài liệu</Text>
-      <Switch label="Cho AI tự đọc, sửa, tạo nội dung trong Office" checked={st.agentMode} onChange={(_, d) => set({ agentMode: d.checked })} />
-      <Switch label="Hỏi tôi trước mỗi thao tác sửa tài liệu" checked={st.askBeforeWrite} onChange={(_, d) => set({ askBeforeWrite: d.checked })} />
-      <Switch label="Word: ghi sửa đổi bằng Theo dõi thay đổi (Track Changes)" checked={st.trackChanges} onChange={(_, d) => set({ trackChanges: d.checked })} />
-      <Switch
-        label="Luôn hỏi trước khi ghi đè dữ liệu có sẵn hoặc xóa (ô, đoạn, slide, sheet)"
-        checked={st.confirmRisky}
-        onChange={(_, d) => set({ confirmRisky: d.checked })}
-      />
-      <Switch
-        label="Cho Excel, Word, PowerPoint đọc chéo nội dung đang mở của nhau"
-        checked={st.shareContext}
-        onChange={(_, d) => set({ shareContext: d.checked })}
-      />
-      <Text weight="semibold" style={{ marginTop: 6 }}>
-        Tự kiểm tra chức năng {host && host !== "Khác" ? `(${host})` : ""}
-      </Text>
+      <Text weight="semibold">Tự kiểm tra chức năng {host && host !== "Khác" ? `(${host})` : ""}</Text>
       <Text size={200} className={s.muted}>
-        Chạy thật từng thao tác (đọc, ghi, định dạng, tạo bảng/biểu đồ/slide, nhận xét…) trên tài liệu đang mở rồi tự dọn sạch. Không cần API key. Nên chạy trên tài liệu trống.
+        Chạy thật từng thao tác (đọc, ghi, định dạng, tạo bảng/biểu đồ/slide, nhận xét…) trên tài liệu đang mở rồi tự dọn sạch. Không cần API key. Nên
+        chạy trên tài liệu trống.
       </Text>
       <div className={s.row}>
         <Button onClick={test} disabled={!tools || running}>
@@ -413,23 +450,60 @@ const SkillsCard: React.FC<Props> = ({ onChanged }) => {
   );
 };
 
+/** Trang Cài đặt (mở bằng nút bánh răng ở đầu khung chat). Thứ tự theo kế hoạch v4 mục 3.2. */
 const Settings: React.FC<Props> = (props) => {
   const s = useStyles();
+  const keys = props.storage.getKeys();
+  const keyed = PROVIDERS.filter((p) => keys[p.id]);
+  const others = PROVIDERS.filter((p) => !keys[p.id]);
+  const [showOthers, setShowOthers] = React.useState(keyed.length === 0);
   return (
-    <div>
-      <AgentSettings {...props} />
-      <ProviderCheckCard storage={props.storage} />
-      <InstructionsCard {...props} />
-      <SkillsCard {...props} />
-      <Text size={200} className={s.muted} block style={{ marginBottom: 10 }}>
-        Key chỉ lưu trên máy này, trong add-in; chỉ gửi tới đúng nhà cung cấp khi gọi. Bấm “Lưu” để kiểm tra key và tải
-        danh sách model.
-      </Text>
-      {PROVIDERS.map((p) => (
-        <ProviderCard key={p.id} p={p} {...props} />
-      ))}
+    <div className={s.page}>
+      <div className={s.header}>
+        {props.onBack && (
+          <Button appearance="subtle" size="small" icon={<ArrowLeftRegular />} onClick={props.onBack} title="Quay lại khung chat">
+            Quay lại
+          </Button>
+        )}
+        <Text weight="semibold" size={300}>
+          Cài đặt
+        </Text>
+        <div style={{ flex: 1 }} />
+        <Text size={100} className={s.muted} title={`Phiên bản ${APP_VERSION_FULL}`}>
+          v{APP_VERSION}
+          {props.host && props.host !== "Khác" ? ` · ${props.host}` : ""}
+        </Text>
+      </div>
+      <div className={s.scroll}>
+        <div className={s.section}>Tài khoản và key</div>
+        <Text size={200} className={s.muted} block style={{ marginBottom: 8 }}>
+          Key chỉ lưu trên máy này, trong add-in; chỉ gửi tới đúng nhà cung cấp khi gọi. Bấm “Lưu” để kiểm tra key và tải danh sách model. Model đã chọn
+          được nhớ riêng cho từng nhà cung cấp (đổi ở nhãn model cạnh ô nhập).
+        </Text>
+        {keyed.map((p) => (
+          <ProviderCard key={p.id} p={p} {...props} />
+        ))}
+        {keyed.length > 0 && (
+          <Button size="small" appearance="subtle" onClick={() => setShowOthers((v) => !v)} style={{ marginBottom: 8 }}>
+            {showOthers ? "Ẩn nhà cung cấp chưa có key" : `Thêm key nhà cung cấp khác (${others.length})`}
+          </Button>
+        )}
+        {showOthers && others.map((p) => <ProviderCard key={p.id} p={p} {...props} />)}
+
+        <div className={s.section}>Quyền và an toàn</div>
+        <PermissionsCard {...props} />
+        <div className={s.section}>Chỉ dẫn và kỹ năng</div>
+        <InstructionsCard {...props} />
+        <SkillsCard {...props} />
+        <div className={s.section}>Đọc chéo ứng dụng</div>
+        <CrossAppCard {...props} />
+        <div className={s.section}>Kiểm tra</div>
+        <SelfTestCard {...props} />
+        <ProviderCheckCard storage={props.storage} />
+      </div>
     </div>
   );
 };
+
 
 export default Settings;

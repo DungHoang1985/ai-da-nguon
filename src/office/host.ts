@@ -105,10 +105,26 @@ export async function insertAnswer(answer: string): Promise<string> {
   }
   if (host === "Word") {
     return Word.run(async (ctx) => {
-      const sel = ctx.document.getSelection();
-      sel.insertText(stripMarkdown(answer), Word.InsertLocation.after);
-      await ctx.sync();
-      return "Đã chèn vào văn bản.";
+      // Nội dung AI chèn vào Word cũng ghi có theo dõi để duyệt được (trả lại chế độ cũ sau khi chèn)
+      const canTrack = Office.context.requirements.isSetSupported("WordApi", "1.4");
+      let prev: Word.ChangeTrackingMode | undefined;
+      if (canTrack) {
+        ctx.document.load("changeTrackingMode");
+        await ctx.sync();
+        prev = ctx.document.changeTrackingMode as Word.ChangeTrackingMode;
+        if (prev !== Word.ChangeTrackingMode.trackAll) ctx.document.changeTrackingMode = Word.ChangeTrackingMode.trackAll;
+      }
+      try {
+        const sel = ctx.document.getSelection();
+        sel.insertText(stripMarkdown(answer), Word.InsertLocation.after);
+        await ctx.sync();
+      } finally {
+        if (canTrack && prev && prev !== Word.ChangeTrackingMode.trackAll) {
+          ctx.document.changeTrackingMode = prev;
+          await ctx.sync();
+        }
+      }
+      return canTrack ? "Đã chèn vào văn bản (ghi bằng Theo dõi thay đổi)." : "Đã chèn vào văn bản.";
     });
   }
   await setSelectedTextAsync(stripMarkdown(answer));

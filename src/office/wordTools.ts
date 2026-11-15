@@ -206,9 +206,8 @@ export const WORD_SPECS: ToolSpec[] = [
   },
 ];
 
-export interface WordSettings {
-  trackChanges: boolean;
-}
+/** Từ 3.6 không còn công tắc tắt Track Changes: mọi sửa đổi của AI trong Word luôn ghi có theo dõi (anh duyệt 15/11/2026). */
+export type WordSettings = unknown;
 
 function supports(v: string): boolean {
   try {
@@ -249,9 +248,14 @@ async function paragraphAt(ctx: Word.RequestContext, index: number) {
 }
 
 export function createWordTools(getSettings: () => WordSettings): HostToolSet {
-  /** Bật Theo dõi thay đổi trong lúc AI sửa, xong trả lại chế độ cũ. */
+  void getSettings;
+  /** Luôn bật Theo dõi thay đổi trong lúc AI sửa, xong trả lại chế độ cũ. Word không có API theo dõi (dưới WordApi 1.4) → từ chối ghi. */
   async function tracked<T>(ctx: Word.RequestContext, fn: () => Promise<T>): Promise<T> {
-    if (!getSettings().trackChanges || !supports("1.4")) return fn();
+    if (!supports("1.4")) {
+      throw new Error(
+        "Word trên máy này chưa hỗ trợ ghi có theo dõi qua add-in (cần WordApi 1.4) nên AI không sửa trực tiếp, để mọi sửa đổi luôn duyệt được. Hãy cập nhật Office; tạm thời đề xuất nội dung để người dùng tự chèn."
+      );
+    }
     const doc = ctx.document;
     doc.load("changeTrackingMode");
     await ctx.sync();

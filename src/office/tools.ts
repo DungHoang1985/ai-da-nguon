@@ -5,7 +5,7 @@ import { createWordTools } from "./wordTools";
 import { pptTools } from "./pptTools";
 import { HostName } from "./host";
 
-export function getHostTools(host: HostName, settings: () => { trackChanges: boolean }): HostToolSet | null {
+export function getHostTools(host: HostName, settings: () => unknown): HostToolSet | null {
   if (host === "Excel") return excelTools;
   if (host === "Word") return createWordTools(settings);
   if (host === "PowerPoint") return pptTools;
