@@ -7,3 +7,6 @@ node_modules/
 
 # Ma bo khung ban 0 cu (tam giu, se xoa)
 _ban-0-cu/
+
+# Cấu hình chạy thử cục bộ của Claude Code
+.claude/launch.json

@@ -3,9 +3,11 @@
 const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { DefinePlugin } = require("webpack");
+const pkg = require("./package.json");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://dunghoang1985.github.io/ai-da-nguon/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = "https://dunghoang1985.github.io/ai-da-nguon/";
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -17,7 +19,6 @@ module.exports = async (env, options) => {
   const config = {
     devtool: "source-map",
     entry: {
-      polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
       react: ["react", "react-dom"],
       taskpane: {
         import: ["./src/taskpane/index.tsx", "./src/taskpane/taskpane.html"],
@@ -63,10 +64,12 @@ module.exports = async (env, options) => {
       ],
     },
     plugins: [
+      // Số phiên bản duy nhất: lấy từ package.json (src/core/version.ts)
+      new DefinePlugin({ __APP_VERSION__: JSON.stringify(pkg.version) }),
       new HtmlWebpackPlugin({
         filename: "taskpane.html",
         template: "./src/taskpane/taskpane.html",
-        chunks: ["polyfill", "taskpane", "react"],
+        chunks: ["taskpane", "react"],
       }),
       new CopyWebpackPlugin({
         patterns: [
@@ -94,7 +97,7 @@ module.exports = async (env, options) => {
       new HtmlWebpackPlugin({
         filename: "commands.html",
         template: "./src/commands/commands.html",
-        chunks: ["polyfill", "commands"],
+        chunks: ["commands"],
       }),
     ],
     devServer: {

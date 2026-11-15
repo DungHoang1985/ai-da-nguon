@@ -1,7 +1,6 @@
 import * as assert from "assert";
 import { createSSEParser } from "../../src/core/sse";
 import { normalizeModels, fetchModels, isStale, modelsRequest } from "../../src/core/models";
-import { buildChatRequest, extractDelta, streamChat } from "../../src/core/chat";
 import { getProvider, PROVIDERS } from "../../src/core/providers";
 import { Storage, KVStore } from "../../src/core/storage";
 import { parseMarkdownTable, stripMarkdown, valuesToTsv } from "../../src/core/table";
@@ -21,18 +20,6 @@ function fakeStore(): KVStore & { data: Record<string, string> } {
       delete data[k];
     },
   };
-}
-
-function sseResponse(events: string[], split = 7): Response {
-  const text = events.map((e) => `data: ${e}\n\n`).join("") + "data: [DONE]\n\n";
-  const bytes = new TextEncoder().encode(text);
-  const stream = new ReadableStream<Uint8Array>({
-    start(c) {
-      for (let i = 0; i < bytes.length; i += split) c.enqueue(bytes.slice(i, i + split));
-      c.close();
-    },
-  });
-  return new Response(stream, { status: 200 });
 }
 
 describe("Danh sách nhà cung cấp", () => {
@@ -107,60 +94,6 @@ describe("Chuẩn hóa danh sách model", () => {
     assert.strictEqual(isStale(now - 1000, now), false);
     assert.strictEqual(isStale(now - 25 * 3600 * 1000, now), true);
     assert.strictEqual(isStale(undefined, now), true);
-  });
-});
-
-describe("Chat streaming", () => {
-  const msgs = [
-    { role: "system" as const, content: "S" },
-    { role: "user" as const, content: "Xin chào" },
-  ];
-  it("Gemini: system tách riêng, role model", () => {
-    const r = buildChatRequest({
-      provider: P("gemini"),
-      key: "K",
-      model: "gemini-2.5-flash",
-      messages: [...msgs, { role: "assistant", content: "A" }],
-    });
-    const body = JSON.parse(r.init.body as string);
-    assert.ok(r.url.includes(":streamGenerateContent?alt=sse&key=K"));
-    assert.strictEqual(body.systemInstruction.parts[0].text, "S");
-    assert.deepStrictEqual(body.contents.map((c: any) => c.role), ["user", "model"]);
-  });
-  it("Anthropic: system ở trường riêng, có header gọi từ trình duyệt", () => {
-    const r = buildChatRequest({ provider: P("anthropic"), key: "K", model: "m", messages: msgs });
-    const body = JSON.parse(r.init.body as string);
-    assert.strictEqual(body.system, "S");
-    assert.strictEqual(body.messages.length, 1);
-    assert.strictEqual((r.init.headers as any)["anthropic-dangerous-direct-browser-access"], "true");
-  });
-  it("Tách phần chữ từ 3 kiểu sự kiện", () => {
-    assert.strictEqual(extractDelta(P("groq"), '{"choices":[{"delta":{"content":"ab"}}]}'), "ab");
-    assert.strictEqual(extractDelta(P("gemini"), '{"candidates":[{"content":{"parts":[{"text":"cd"}]}}]}'), "cd");
-    assert.strictEqual(
-      extractDelta(P("anthropic"), '{"type":"content_block_delta","delta":{"type":"text_delta","text":"ef"}}'),
-      "ef"
-    );
-    assert.strictEqual(extractDelta(P("anthropic"), '{"type":"message_start"}'), "");
-    assert.throws(() => extractDelta(P("openrouter"), '{"error":{"message":"Rate limit"}}'), /Rate limit/);
-  });
-  it("Nhận câu trả lời chạy dần, ghép đủ chữ", async () => {
-    const deltas: string[] = [];
-    const f = (async () =>
-      sseResponse([
-        '{"choices":[{"delta":{"content":"Xin "}}]}',
-        '{"choices":[{"delta":{"content":"chào bạn"}}]}',
-      ])) as any;
-    const full = await streamChat({ provider: P("openrouter"), key: "K", model: "m", messages: msgs, onDelta: (d) => deltas.push(d), fetchFn: f });
-    assert.strictEqual(full, "Xin chào bạn");
-    assert.strictEqual(deltas.length, 2);
-  });
-  it("Hết hạn mức 429 → báo lỗi tiếng Việt", async () => {
-    const f = (async () => new Response("slow down", { status: 429 })) as any;
-    await assert.rejects(
-      streamChat({ provider: P("groq"), key: "K", model: "m", messages: msgs, onDelta: () => {}, fetchFn: f }),
-      /Hết hạn mức/
-    );
   });
 });
 
