@@ -1,6 +1,6 @@
 # Bàn giao – Add-in AI đa nguồn cho Office
 
-**Cập nhật:** 15/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`) · **Phiên bản đang chạy: v3.6.1** (phát hành tự động 15/11/2026, commit `b0fe2aa`) (hiện ở đầu khung add-in)
+**Cập nhật:** 15/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`) · **Phiên bản đang chạy: v3.7.0** (phát hành 15/11/2026 buổi chiều; trước đó v3.6.1, commit `b0fe2aa`) (hiện ở đầu khung add-in)
 
 > Từ 15/11/2026, `D:\ADD IN` là bản làm việc của nhánh `main` (đã đồng bộ ở bước 1 Đợt 0A); `docs/`, `tasks/`, `kiem-thu/` đã có trong kho.
 
@@ -39,7 +39,13 @@
     - Kiểm tra nhà cung cấp chạy lại 12:10: đạt 4/8 (Groq, Anthropic, Cerebras, Cohere); Gemini, DeepSeek hết tiền; OpenAI lỗi bị giấu; OpenRouter trượt vì model đang nhớ bị giới hạn nơi dùng.
     - Bảng so sánh sửa theo mục 7: 67 dòng (Có 25 · Một phần 17 · Chưa 21 · Không làm được 1 · Không cần/hai bên đều không 3). Tài liệu chính thức và `shortcuts.json` tải lại từ máy cùng ngày.
     - **Bản 3.6.1** (commit `b0fe2aa`, anh duyệt phát hành 15/11): sửa bước Tự kiểm tra Word nói trên; `word_replace_text` hết lỗi khi model truyền `max_replacements` âm. `npm test` 120/120, tsc sạch. Kiểm lại trong Word lúc 13:02: đầu khung hiện v3.6.1, Tự kiểm tra 17/17, chạy thật thay chữ với `max_replacements: -1` thay đúng 1 chỗ (ảnh 21, 22).
-- **Đang làm:** Đợt 0A đã xong (còn một mục chưa kiểm được: bộ gõ Telex của Windows). Việc kế tiếp: Đợt 0B theo `tasks/dot-0b.md`.
+- **Đợt 0B (phiên 15/11/2026 buổi chiều, Claude Code trên máy) — mã xong, bản 3.7.0:**
+  - Anh quyết định: bỏ mục kiểm Enter với bộ gõ Telex của Windows (anh dùng Unikey, đã tự thử, ổn) → Đợt 0A đóng hẳn. Anh duyệt phát hành 3.7.0 và duyệt chuyển tệp sao lưu thử (chứa key thật) vào Thùng rác.
+  - Mã (nhánh `claude/dot-0b`, 4 commit từ `58555e1`): lịch sử chỉ thêm và lưu theo từng bước (`loop.ts`, `turn.ts`, `Chat.tsx`); bấm Dừng hay lỗi giữa chừng vẫn giữ phần đã làm, mọi lệnh gọi đều có kết quả, nút Hoàn tác vẫn hiện; tự thử lại 429/5xx/529 tối đa 3 lần (2, 6, 15 giây), hủy được bằng Dừng; lệnh công cụ bị cắt dở không chạy, hai lần liên tiếp thì dừng lượt; bộ nhớ đệm lời nhắc Anthropic (mốc ở lời nhắc hệ thống và ở khối cuối tin nhắn cuối), hiện số token mỗi lượt; trần đầu ra Anthropic theo Models API (tối đa 32.000); ngưỡng tóm tắt theo sức chứa model; lời nhắc hệ thống cố định, trạng thái tài liệu và kỹ năng nạp sẵn đi trong tin nhắn của lượt (`prompt.ts`); quy tắc an toàn kể rõ nguồn không tin cậy; cảnh báo rủi ro Word thêm ba loại (ghi đè ô bảng có dữ liệu, thay vùng chọn lớn, thay quá 5 chỗ); hạn chờ 120 giây cho mỗi bước công cụ; key Gemini chuyển vào tiêu đề `x-goog-api-key` (đã đo CORS 15/11); báo lỗi 401/403 phân biệt sai key với model bị giới hạn; model mặc định OpenRouter khi bật Miễn phí; bấm Gửi thì đóng bảng Lịch sử.
+  - Kiểm thử máy: `npm test` 150/150 (120 cũ − 1 + 31 mới), tsc sạch, đóng gói đạt. Chạy thử bản đóng gói trong trình duyệt với nhà cung cấp giả lập: hiện "đang thử lại lần 1/3", hiện dòng token (`tasks/dot-0b-bang-chung/01`).
+  - **Chưa có lần soát mã độc lập**: tác tử soát mã bị dừng vì hết hạn mức 5 giờ của model. Thư viện: `npm audit --omit=dev` 0 cảnh báo; chỉ còn các bản nâng lớn (pdfjs 6, pptxgenjs 4, React 19) cố ý chưa làm.
+  - Kết quả kiểm trong Office: xem bảng ở `tasks/dot-0b.md` (mục nào chưa có dòng kết quả là chưa kiểm).
+- **Đang làm:** Đợt 0B — kiểm trong Office bản 3.7.0 theo bảng tiêu chí ở `tasks/dot-0b.md`.
 - **Quyết định và lý do:**
   - AI sửa thẳng vào tài liệu + Hoàn tác; Word luôn ghi Track Changes; thao tác rủi ro luôn hỏi kèm lý do, "Cho phép hết lần này" không áp dụng cho thao tác rủi ro. Lý do: tự động tối đa nhưng an toàn như bản chính thức.
   - Kỹ năng chính thức được chuyển thể, không chép nguyên văn; không ghi số hiệu văn bản pháp luật trong kỹ năng (có kiểm thử chặn).
@@ -56,7 +62,7 @@
     3. Lỗi mất kết nối khi đổi nhà cung cấp: anh không nhớ rõ cặp nguồn → Claude tự thử mọi cặp nguồn anh có key trong Office.
     4. **Bỏ công tắc tắt Track Changes**: sửa đổi của AI trong Word luôn ghi có theo dõi.
 - **Vấn đề mở:**
-  - Tìm ra khi kiểm bản 3.6 (15/11), chưa sửa: (1) PowerPoint — lần chèn biểu đồ đầu tiên trên bài mới tinh làm mẫu thêm một bố cục (11 → 12), các lần sau dùng lại; (2) OpenRouter — model đang nhớ `thinkingmachines/inkling-2-small:free` chỉ chạy trong "agentic harnesses", add-in báo nhầm là "Key không đúng hoặc không có quyền"; (3) bấm Gửi khi bảng Lịch sử đang mở thì bảng vẫn che hội thoại; (4) Enter với bộ gõ Telex của Windows chưa kiểm (máy chưa cài bộ gõ này).
+  - Tìm ra khi kiểm bản 3.6 (15/11), chưa sửa: (1) PowerPoint — lần chèn biểu đồ đầu tiên trên bài mới tinh làm mẫu thêm một bố cục (11 → 12), các lần sau dùng lại; (2) OpenRouter — model đang nhớ `thinkingmachines/inkling-2-small:free` chỉ chạy trong "agentic harnesses", add-in báo nhầm là "Key không đúng hoặc không có quyền"; (3) bấm Gửi khi bảng Lịch sử đang mở thì bảng vẫn che hội thoại; (4) ~~Enter với bộ gõ Telex của Windows~~ anh bỏ mục này 15/11. Mục (2) và (3) đã sửa ở bản 3.7.0; mục (1) còn.
   - Tệp sao lưu thử `AI-Da-Nguon-sao-luu-20261115-1212-BI-MAT.json` còn trong thư mục Tải xuống của máy (chứa key thật): anh quyết giữ hay xóa.
   - Lỗi đổi nhà cung cấp: đã tái hiện và sửa ở bước 4 Đợt 0A (mục này của bản trước đã cũ).
   - Phải thử trong Office trước khi cam kết: bảng ở mục 8 của `ke-hoach-v4.md` (đọc số điều khoản tự đánh, tải tệp từ khung add-in, đăng nhập OpenRouter trong hộp thoại, ba ứng dụng dùng chung kho…).
