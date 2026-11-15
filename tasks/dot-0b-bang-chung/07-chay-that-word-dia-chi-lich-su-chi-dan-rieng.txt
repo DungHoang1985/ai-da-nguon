@@ -10,7 +10,7 @@ Bài 3: bấm địa chỉ đoạn [¶3] trong câu trả lời; mở lại hộ
  "moLai": {
   "soHoiThoai": 6,
   "hienLaiNoiDungCu": true,
-  "hoiTiep": "Không dùng công cụ. Ở câu trả lời trước, anh nói nhận xét neo ở đoạn số mấy và ai viết? Trả lời một câu. / Nhận xét neo ở đoạn [¶3] và do Hoàng Việt Dũng viết. / Token: vào 9.233 · ra 38 · đọc từ bộ nhớ đệm 8.205 · ghi vào bộ nhớ đệm 1.024 / Chèn vào chỗ con trỏ"
+  "hoiTiep": "Không dùng công cụ. Ở câu trả lời trước, anh nói nhận xét neo ở đoạn số mấy và ai viết? Trả lời một câu. / Nhận xét neo ở đoạn [¶3] và do [tên tài khoản Office] viết. / Token: vào 9.233 · ra 38 · đọc từ bộ nhớ đệm 8.205 · ghi vào bộ nhớ đệm 1.024 / Chèn vào chỗ con trỏ"
  },
  "xoa": {
   "truoc": 6,
