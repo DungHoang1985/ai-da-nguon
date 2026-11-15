@@ -96,6 +96,35 @@ export function networkErrorMessage(e: unknown, ctx: { provider?: Provider } = {
   return describeError(e, ctx).text;
 }
 
+/** Máy chủ trả lỗi nhưng trang lỗi thiếu tiêu đề CORS nên trình duyệt không cho đọc (đo 15/11/2026: OpenAI với key dạng
+ *  "sk-…" sai/hết hạn trả 401 không kèm Access-Control-Allow-Origin; Cerebras trả 401 không kèm tiêu đề). */
+export function hiddenErrorMessage(p: Provider, model?: string): string {
+  const m = model ? `model “${model}”` : "model này";
+  return (
+    `${p.name} trả về lỗi nhưng không cho add-in đọc chi tiết. Thường do: key sai hoặc hết hạn, tài khoản hết tiền, ` +
+    `hoặc tài khoản chưa được dùng ${m} (OpenAI yêu cầu xác minh tổ chức với một số model mới). Kiểm tra key và số dư trên trang ${p.name}, hoặc chọn model khác.`
+  );
+}
+
+/** fetch có chẩn đoán: lỗi fetch mà máy chủ vẫn tới được (gọi thử chế độ no-cors) → máy chủ trả lỗi giấu chi tiết, không phải mất mạng. */
+export async function fetchDiagnosed(p: Provider, url: string, init: RequestInit, fetchFn: typeof fetch = fetch, model?: string): Promise<Response> {
+  try {
+    return await fetchFn(url, init);
+  } catch (e: any) {
+    const aborted = (init.signal as AbortSignal | undefined)?.aborted || e?.name === "AbortError";
+    if (aborted || !(e instanceof TypeError) || !FETCH_FAILED.test(String(e.message).trim()) || p.blockedReason) throw e;
+    let reachable = false;
+    try {
+      await fetchFn(new URL(url).origin + "/", { method: "GET", mode: "no-cors", cache: "no-store" });
+      reachable = true;
+    } catch {
+      reachable = false;
+    }
+    if (reachable) throw new ApiError(hiddenErrorMessage(p, model));
+    throw e;
+  }
+}
+
 export async function ensureOk(res: Response): Promise<void> {
   if (res.ok) return;
   let detail = "";

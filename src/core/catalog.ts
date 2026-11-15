@@ -64,7 +64,7 @@ const PREFER: Record<string, RegExp[]> = {
   cerebras: [/gpt-oss-120b/i, /qwen-3/i, /llama-3\.3-70b/i],
   deepseek: [/^deepseek-chat$/i],
   mistral: [/^mistral-large-latest$/i, /^mistral-medium-latest$/i, /^mistral-small-latest$/i],
-  cohere: [/^command-a-(?!vision|reasoning)/i, /^command-a/i, /^command-r-plus/i],
+  cohere: [/^command-a-\d{2}-\d{4}$/i, /^command-a(?!.*(vision|translate|reasoning))/i, /^command-r-plus/i],
   sambanova: [/llama-3\.3-70b/i, /deepseek-v3/i],
   nvidia: [/llama-3\.3-70b/i, /nemotron/i],
 };
@@ -91,8 +91,9 @@ export function pickModel(
     const hit = pool.filter((m) => re.test(m.id)).sort(newestFirst);
     if (hit.length) return hit[0].id;
   }
-  const withTools = pool.filter((m) => m.tools === true);
-  return (withTools[0] || pool[0]).id;
+  // Không khớp mẫu nào: model gọi được công cụ, bản mới nhất trước (không lấy mục đầu theo chữ cái)
+  const withTools = pool.filter((m) => m.tools === true).sort(newestFirst);
+  return (withTools[0] || [...pool].sort(newestFirst)[0]).id;
 }
 
 /** Lý do chưa gửi được (hiện ngay cạnh nút Gửi); null = gửi được. */

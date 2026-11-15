@@ -1,0 +1,19 @@
+Đo 15/11/2026: trang lỗi (key sai) có kèm tiêu đề Access-Control-Allow-Origin không
+(thiếu → trình duyệt trong Office không đọc được lỗi, add-in cũ báo nhầm "Không kết nối được")
+
+POST chat/completions, Authorization: Bearer khong-that, Origin: https://dunghoang1985.github.io
+openrouter.ai   401  Access-Control-Allow-Origin: *
+api.groq.com    401  access-control-allow-origin: *
+api.openai.com  401  Access-Control-Allow-Origin: *
+api.mistral.ai  401  access-control-allow-origin: *
+api.cerebras.ai 401  (KHÔNG có)
+api.deepseek.com 401 access-control-allow-origin: https://dunghoang1985.github.io
+api.cohere.ai   401  access-control-allow-origin: *
+api.anthropic.com 401 access-control-allow-origin: *
+generativelanguage.googleapis.com 400 Access-Control-Allow-Origin: https://dunghoang1985.github.io
+
+POST api.openai.com/v1/chat/completions, Authorization: Bearer sk-khong-that (key dạng "sk-…")
+→ 401 Content-Type: text/plain, KHÔNG có Access-Control-Allow-Origin
+
+Kiểm tra nhà cung cấp trong Word (bản f7d941b, 15/11 10:33): OpenAI · gpt-5.5 báo "Không kết nối được"
+trong khi GET /models của cùng key chạy được → lỗi thật bị giấu. Sửa: fetchDiagnosed (errors.ts).

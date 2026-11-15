@@ -377,3 +377,45 @@ describe("Nút Kiểm tra nhà cung cấp", () => {
     assert.ok(ids.every((id: string) => /^[a-zA-Z0-9]{9}$/.test(id)), "Mistral nhận mã 9 ký tự");
   });
 });
+
+import { fetchDiagnosed } from "../../src/core/errors";
+import { callModelStep } from "../../src/core/agent/llm";
+
+describe("Đổi nguồn: máy chủ trả lỗi nhưng giấu chi tiết (thiếu CORS trên trang lỗi — OpenAI key sk-…, Cerebras; đo 15/11)", () => {
+  it("fetch lỗi nhưng máy chủ vẫn tới được → báo 'trả về lỗi nhưng không cho add-in đọc chi tiết', không báo mất mạng", async () => {
+    const calls: any[] = [];
+    const f = (async (url: string, init: any) => {
+      calls.push({ url, mode: init?.mode });
+      if (init?.mode === "no-cors") return new Response(null, { status: 200 });
+      throw new TypeError("Failed to fetch");
+    }) as any;
+    await assert.rejects(
+      callModelStep({ provider: P("openai"), key: "sk-x", model: "gpt-5.5", messages: [{ role: "user", content: "x" }], tools: [], onText: () => {}, fetchFn: f }),
+      (e: any) => {
+        assert.match(e.message, /không cho add-in đọc chi tiết/);
+        assert.match(e.message, /gpt-5\.5/);
+        assert.strictEqual(describeError(e).kind, "api");
+        return true;
+      }
+    );
+    assert.strictEqual(calls[1].mode, "no-cors");
+    assert.strictEqual(calls[1].url, "https://api.openai.com/");
+  });
+  it("Không tới được máy chủ (mất mạng) → vẫn là lỗi kết nối", async () => {
+    const f = (async () => {
+      throw new TypeError("Failed to fetch");
+    }) as any;
+    await assert.rejects(fetchDiagnosed(P("cerebras"), "https://api.cerebras.ai/v1/models", {}, f), (e: any) => describeError(e).kind === "network");
+  });
+  it("Nguồn đã biết bị chặn (SambaNova) → không thử lại, báo lý do bị chặn", async () => {
+    let n = 0;
+    const f = (async () => {
+      n++;
+      throw new TypeError("Failed to fetch");
+    }) as any;
+    await assert.rejects(fetchDiagnosed(P("sambanova"), "https://api.sambanova.ai/v1/models", {}, f), (e: any) =>
+      /chặn/.test(describeError(e, { provider: P("sambanova") }).text)
+    );
+    assert.strictEqual(n, 1);
+  });
+});

@@ -1,6 +1,6 @@
 /** Liệt kê model của từng nhà cung cấp và chuẩn hóa về một định dạng. */
 import { Provider } from "./providers";
-import { ensureOk } from "./errors";
+import { ensureOk, fetchDiagnosed } from "./errors";
 
 export interface ModelInfo {
   id: string;
@@ -114,7 +114,7 @@ export function anthropicHeaders(key: string): Record<string, string> {
 
 export async function fetchModels(provider: Provider, key: string, fetchFn: typeof fetch = fetch): Promise<ModelInfo[]> {
   const { url, init } = modelsRequest(provider, key);
-  const res = await fetchFn(url, init);
+  const res = await fetchDiagnosed(provider, url, init, fetchFn);
   await ensureOk(res);
   const json = await res.json();
   const models = normalizeModels(provider, json);

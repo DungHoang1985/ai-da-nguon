@@ -1,7 +1,7 @@
 /** Gọi model một bước, có khai báo công cụ, nhận chữ chạy dần + các lệnh gọi công cụ. 3 kiểu API: OpenAI-compatible, Anthropic, Gemini. */
 import { Provider } from "../providers";
 import { anthropicHeaders } from "../models";
-import { ApiError, ensureOk } from "../errors";
+import { ApiError, ensureOk, fetchDiagnosed } from "../errors";
 import { createSSEParser } from "../sse";
 import { AgentMessage, StepResult, ToolCall, ToolSpec } from "./types";
 import { prepareHistory } from "./history";
@@ -349,7 +349,7 @@ export async function callModelStep(opts: {
     vision: opts.vision,
   });
   const fetchFn = opts.fetchFn || fetch;
-  const res = await fetchFn(url, { ...init, signal: opts.signal });
+  const res = await fetchDiagnosed(opts.provider, url, { ...init, signal: opts.signal }, fetchFn, opts.model);
   await ensureOk(res);
   const acc = createStepAccumulator(opts.provider.kind, opts.onText);
   const parser = createSSEParser((d) => acc.push(d));
