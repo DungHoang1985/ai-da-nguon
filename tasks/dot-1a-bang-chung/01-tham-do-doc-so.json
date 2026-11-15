@@ -1,0 +1,545 @@
+{
+ "sets": {
+  "WordApi 1.3": true,
+  "WordApi 1.4": true,
+  "WordApi 1.5": true,
+  "WordApi 1.6": true,
+  "WordApi 1.7": true,
+  "WordApi 1.8": true,
+  "WordApi 1.9": true,
+  "WordApiDesktop 1.1": true,
+  "WordApiDesktop 1.2": true,
+  "WordApiDesktop 1.3": true,
+  "WordApiDesktop 1.4": true,
+  "WordApiDesktop 1.5": true
+ },
+ "doan": [
+  {
+   "i": 0,
+   "text": "VĂN BẢN THĂM DÒ ĐÁNH SỐ (AIDN)",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 1,
+   "text": "[A] Danh sách thường",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 2,
+   "text": "Mục thường thứ nhất",
+   "style": "List Paragraph",
+   "builtIn": "ListParagraph",
+   "isListItem": true,
+   "outline": 10,
+   "tbl": 0,
+   "d1": "\"1.\" lvl0 sib0",
+   "d2": "\"1.\" lvl1 val1 ListOutlineNumbering"
+  },
+  {
+   "i": 3,
+   "text": "Mục thường thứ hai",
+   "style": "List Paragraph",
+   "builtIn": "ListParagraph",
+   "isListItem": true,
+   "outline": 10,
+   "tbl": 0,
+   "d1": "\"2.\" lvl0 sib1",
+   "d2": "\"2.\" lvl1 val2 ListOutlineNumbering"
+  },
+  {
+   "i": 4,
+   "text": "Mục thường thứ ba",
+   "style": "List Paragraph",
+   "builtIn": "ListParagraph",
+   "isListItem": true,
+   "outline": 10,
+   "tbl": 0,
+   "d1": "\"3.\" lvl0 sib2",
+   "d2": "\"3.\" lvl1 val3 ListOutlineNumbering"
+  },
+  {
+   "i": 5,
+   "text": "[B] Nhiều cấp gắn kiểu tiêu đề",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 6,
+   "text": "Phạm vi hợp đồng",
+   "style": "Heading 1",
+   "builtIn": "Heading1",
+   "isListItem": true,
+   "outline": 1,
+   "tbl": 0,
+   "d1": "\"Điều 1.\" lvl0 sib0",
+   "d2": "\"Điều 1.\" lvl1 val1 ListOutlineNumbering"
+  },
+  {
+   "i": 7,
+   "text": "Bên A giao cho Bên B thực hiện công việc nêu tại Phụ lục 01.",
+   "style": "Heading 2",
+   "builtIn": "Heading2",
+   "isListItem": true,
+   "outline": 2,
+   "tbl": 0,
+   "d1": "\"1.1.\" lvl1 sib0",
+   "d2": "\"1.1.\" lvl2 val1 ListOutlineNumbering"
+  },
+  {
+   "i": 8,
+   "text": "Bên B cam kết hoàn thành đúng tiến độ.",
+   "style": "Heading 2",
+   "builtIn": "Heading2",
+   "isListItem": true,
+   "outline": 2,
+   "tbl": 0,
+   "d1": "\"1.2.\" lvl1 sib1",
+   "d2": "\"1.2.\" lvl2 val2 ListOutlineNumbering"
+  },
+  {
+   "i": 9,
+   "text": "tiến độ tổng thể theo Phụ lục 02;",
+   "style": "Heading 3",
+   "builtIn": "Heading3",
+   "isListItem": true,
+   "outline": 3,
+   "tbl": 0,
+   "d1": "\"a)\" lvl2 sib0",
+   "d2": "\"a)\" lvl3 val1 ListOutlineNumbering"
+  },
+  {
+   "i": 10,
+   "text": "tiến độ chi tiết do hai bên thống nhất.",
+   "style": "Heading 3",
+   "builtIn": "Heading3",
+   "isListItem": true,
+   "outline": 3,
+   "tbl": 0,
+   "d1": "\"b)\" lvl2 sib1",
+   "d2": "\"b)\" lvl3 val2 ListOutlineNumbering"
+  },
+  {
+   "i": 11,
+   "text": "Giá và thanh toán",
+   "style": "Heading 1",
+   "builtIn": "Heading1",
+   "isListItem": true,
+   "outline": 1,
+   "tbl": 0,
+   "d1": "\"Điều 2.\" lvl0 sib1",
+   "d2": "\"Điều 2.\" lvl1 val2 ListOutlineNumbering"
+  },
+  {
+   "i": 12,
+   "text": "Giá trị hợp đồng là 5.000.000.000 đồng.",
+   "style": "Heading 2",
+   "builtIn": "Heading2",
+   "isListItem": true,
+   "outline": 2,
+   "tbl": 0,
+   "d1": "\"2.1.\" lvl1 sib0",
+   "d2": "\"2.1.\" lvl2 val1 ListOutlineNumbering"
+  },
+  {
+   "i": 13,
+   "text": "Thanh toán làm ba đợt.",
+   "style": "Heading 2",
+   "builtIn": "Heading2",
+   "isListItem": true,
+   "outline": 2,
+   "tbl": 0,
+   "d1": "\"2.2.\" lvl1 sib1",
+   "d2": "\"2.2.\" lvl2 val2 ListOutlineNumbering"
+  },
+  {
+   "i": 14,
+   "text": "[B2] Nhiều cấp không gắn kiểu",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 15,
+   "text": "Quyền của Bên A",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": true,
+   "outline": 10,
+   "tbl": 0,
+   "d1": "\"1.\" lvl0 sib0",
+   "d2": "\"1.\" lvl1 val1 ListOutlineNumbering"
+  },
+  {
+   "i": 16,
+   "text": "Được kiểm tra tiến độ.",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": true,
+   "outline": 10,
+   "tbl": 0,
+   "d1": "\"1.1\" lvl1 sib0",
+   "d2": "\"1.1\" lvl2 val1 ListOutlineNumbering"
+  },
+  {
+   "i": 17,
+   "text": "Được yêu cầu sửa chữa sai sót.",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": true,
+   "outline": 10,
+   "tbl": 0,
+   "d1": "\"1.2\" lvl1 sib1",
+   "d2": "\"1.2\" lvl2 val2 ListOutlineNumbering"
+  },
+  {
+   "i": 18,
+   "text": "bằng văn bản;",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": true,
+   "outline": 10,
+   "tbl": 0,
+   "d1": "\"(a)\" lvl2 sib0",
+   "d2": "\"(a)\" lvl3 val1 ListOutlineNumbering"
+  },
+  {
+   "i": 19,
+   "text": "Nghĩa vụ của Bên A",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": true,
+   "outline": 10,
+   "tbl": 0,
+   "d1": "\"2.\" lvl0 sib1",
+   "d2": "\"2.\" lvl1 val2 ListOutlineNumbering"
+  },
+  {
+   "i": 20,
+   "text": "[C] Số gõ tay",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 21,
+   "text": "Điều 7. Thời hạn",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 22,
+   "text": "7.1 Thời hạn thuê là 24 tháng.",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 23,
+   "text": "7.2. Gia hạn theo thỏa thuận.",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 24,
+   "text": "a) bằng phụ lục hợp đồng;",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 25,
+   "text": "[D] Trường đánh số",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 26,
+   "text": "Điều 9. Bảo mật",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 27,
+   "text": "Điều 10. Bất khả kháng",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 28,
+   "text": " Khoản dùng trường LISTNUM",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": "\"1)\" lvl1 val0 ListListNumOnly"
+  },
+  {
+   "i": 29,
+   "text": " Khoản dùng trường AUTONUM",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 30,
+   "text": "[E] Đoạn có sửa đổi của đối tác",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 31,
+   "text": "Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 32,
+   "text": "Đoạn này đối tác đã xóa toàn bộ.",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 33,
+   "text": "Đoạn này đối tác thêm mới.",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 34,
+   "text": "Bên B thanh toán trong 30 ngày; chậm quá 30 ngày thì chịu ph",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 35,
+   "text": "[F] Bảng",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 36,
+   "text": "Hạng mục",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 1,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 37,
+   "text": "Số tiền",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 1,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 38,
+   "text": "Đợt 1",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 1,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 39,
+   "text": "1.500.000.000",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 1,
+   "d1": null,
+   "d2": null
+  },
+  {
+   "i": 40,
+   "text": "HẾT",
+   "style": "Normal",
+   "builtIn": "Normal",
+   "isListItem": false,
+   "outline": 10,
+   "tbl": 0,
+   "d1": null,
+   "d2": null
+  }
+ ],
+ "duong": {
+  "0. nền (text, style, outlineLevel…)": "41 đoạn",
+  "1. listItemOrNullObject": "xong",
+  "1b. nạp gộp items/listItemOrNullObject": "16 đoạn có số",
+  "2. Range.listFormat": "xong",
+  "3. Document.listParagraphs": {
+   "LOI": "GeneralException",
+   "o": "ParagraphCollection._OnAccess"
+  },
+  "4. getCrossReferenceItems(NumberedItem)": null,
+  "4. getCrossReferenceItems(Heading)": null,
+  "trường (Body.fields)": [
+   "Seq: SEQ Dieu \\* ARABIC → \"9\"",
+   "Seq: SEQ Dieu \\* ARABIC → \"10\"",
+   "ListNum: LISTNUM NumberDefault \\l 1 → \"\"",
+   "Others: AUTONUM → \"\""
+  ],
+  "đọc khi có sửa đổi": {
+   "mode": "Off",
+   "tongSuaDoi": 4,
+   "doan": [
+    {
+     "i": 31,
+     ".text": "Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.",
+     "getText()": "Thời hạn thuê là 12 tháng kể từ ngày ký.\r",
+     "getText(+đã xóa)": "Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.\r",
+     "getReviewedText(Current)": "Thời hạn thuê là 12 tháng kể từ ngày ký.\r",
+     "getReviewedText(Original)": "Thời hạn thuê là 24 tháng kể từ ngày ký.\r",
+     "suaDoi": [
+      "Deleted \"24 tháng\" bởi Đối tác lúc 2026-11-10T02:00:00.000Z",
+      "Added \"12 tháng\" bởi Đối tác lúc 2026-11-10T02:00:00.000Z"
+     ]
+    },
+    {
+     "i": 32,
+     ".text": "Đoạn này đối tác đã xóa toàn bộ.",
+     "getText()": "",
+     "getText(+đã xóa)": "Đoạn này đối tác đã xóa toàn bộ.\r",
+     "getReviewedText(Current)": "",
+     "getReviewedText(Original)": "Đoạn này đối tác đã xóa toàn bộ.\r",
+     "suaDoi": []
+    },
+    {
+     "i": 33,
+     ".text": "Đoạn này đối tác thêm mới.",
+     "getText()": "Đoạn này đối tác thêm mới.\r",
+     "getText(+đã xóa)": "Đoạn này đối tác thêm mới.\r",
+     "getReviewedText(Current)": "Đoạn này đối tác thêm mới.\r",
+     "getReviewedText(Original)": "",
+     "suaDoi": [
+      "Added \"Đoạn này đối tác thêm mới.\r\" bởi Đối tác lúc 2026-11-10T02:00:00.000Z"
+     ]
+    },
+    {
+     "i": 34,
+     ".text": "Bên B thanh toán trong 30 ngày; chậm quá 30 ngày thì chịu phạt 30 triệu đồng và lãi 0,05% mỗi ngày trên số tiền chậm trả.",
+     "getText()": "Bên B thanh toán trong 30 ngày; chậm quá 30 ngày thì chịu phạt 30 triệu đồng và lãi 0,05% mỗi ngày trên số tiền chậm trả.\r",
+     "getText(+đã xóa)": "Bên B thanh toán trong 30 ngày; chậm quá 30 ngày thì chịu phạt 30 triệu đồng và lãi 0,05% mỗi ngày trên số tiền chậm trả.\r",
+     "getReviewedText(Current)": "Bên B thanh toán trong 30 ngày; chậm quá 30 ngày thì chịu phạt 30 triệu đồng và lãi 0,05% mỗi ngày trên số tiền chậm trả.\r",
+     "getReviewedText(Original)": "Bên B thanh toán trong 30 ngày; chậm quá 30 ngày thì chịu phạt 30 triệu đồng và lãi 0,05% mỗi ngày trên số tiền chậm trả.\r",
+     "suaDoi": []
+    }
+   ]
+  }
+ },
+ "giay": {
+  "0. nền (text, style, outlineLevel…)": 0.016,
+  "1. listItemOrNullObject": 0.036,
+  "1b. nạp gộp items/listItemOrNullObject": 0.004,
+  "2. Range.listFormat": 0.038,
+  "3. Document.listParagraphs": 0.005,
+  "4. getCrossReferenceItems(NumberedItem)": 0.003,
+  "4. getCrossReferenceItems(Heading)": 0.001,
+  "trường (Body.fields)": 0.005,
+  "đọc khi có sửa đổi": 0.027
+ }
+}

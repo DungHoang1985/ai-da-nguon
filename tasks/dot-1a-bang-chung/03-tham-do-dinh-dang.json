@@ -1,0 +1,49 @@
+{
+ "a. chữ đậm sau khi đổi '30' thứ hai thành '45'": {
+  "dam": {
+   "45": [
+    true
+   ],
+   "ngày thì": [
+    null
+   ],
+   "trong": [
+    false
+   ],
+   "phạt": [
+    false
+   ]
+  },
+  "suaDoi": [
+   "Added \"45\"",
+   "Deleted \"30\""
+  ]
+ },
+ "b. thay cả đoạn trên đoạn đang có sửa đổi của đối tác (TrackAll)": {
+  "banHienTai": "Thời hạn thuê là 36 tháng kể từ ngày bàn giao mặt bằng.\r",
+  "banGoc": "Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.\r",
+  ".text": "Thời hạn thuê là 36 tháng kể từ ngày bàn giao mặt bằng.Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.",
+  "suaDoi": [
+   "Added \"Thời hạn thuê là 36 tháng kể từ ngày bàn giao mặt bằng.\" · (tài khoản Office đang dùng)",
+   "Deleted \"Thời hạn thuê là 24 tháng12 tháng kể từ ngày ký.\" · (tài khoản Office đang dùng)",
+   "Added \"12 tháng\" · Đối tác"
+  ]
+ },
+ "c. getText() cho mọi đoạn trong một lần sync": {
+  "soDoan": 41,
+  "giay": 0.04,
+  "doanKhacText": [
+   31,
+   32,
+   34,
+   36,
+   37,
+   38,
+   39
+  ]
+ },
+ "d. Document.undo sau một lần sửa bằng add-in": {
+  "undoTraVe": true,
+  "sauUndo": "HẾT"
+ }
+}

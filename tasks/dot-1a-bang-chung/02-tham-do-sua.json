@@ -1,0 +1,135 @@
+{
+ "a. sửa 4 chỗ trong một đoạn (TrackAll)": {
+  "doan": 34,
+  "soLanTim": {
+   "30": 3,
+   "0,05%": 1,
+   "xoa": 1,
+   "neo": 1
+  },
+  "sauKhiSua": "Bên B thanh toán đủ trong 30 ngày; chậm quá 45 ngày thì chịu phạt 30 triệu đồng và lãi 0,03% mỗi ngày.\r",
+  "suaDoiTrongDoan": [
+   "Added \" đủ\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Added \"45\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"30\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Added \"0,03%\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"0,05%\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \" trên số tiền chậm trả\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z"
+  ],
+  "45 ngày còn đậm": [],
+  "30 ngày đầu vẫn thường": [
+   false
+  ]
+ },
+ "b. tìm trên đoạn có chữ đã xóa": {
+  "soLanTim": {
+   "24 tháng": 1,
+   "là 12 tháng": 0,
+   "12 tháng kể": 1,
+   "là 24 tháng": 1,
+   "tháng12": 1,
+   "tháng": 2
+  },
+  "getTextRanges": [
+   "Thời ",
+   "hạn ",
+   "thuê ",
+   "là ",
+   "24 ",
+   "tháng12 ",
+   "tháng ",
+   "kể ",
+   "từ ",
+   "ngày ",
+   "ký.\r"
+  ],
+  "Range.start/end của đoạn": [
+   894,
+   942
+  ]
+ },
+ "b2. sửa trên đoạn đang có sửa đổi của đối tác": {
+  "soLanTim": [
+   1,
+   1
+  ],
+  "banHienTai": "Thời hạn thuê là 18 tháng kể từ ngày bàn giao.\r",
+  "banGoc": "Thời hạn thuê là 24 tháng kể từ ngày ký.\r",
+  ".text": "Thời hạn thuê là 24 tháng1812 tháng kể từ ngày bàn giaoký.",
+  "suaDoi": [
+   "Deleted \"24 tháng\" · Đối tác · 2026-11-10T02:00:00.000Z",
+   "Added \"18\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"12\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Added \"12 tháng\" · Đối tác · 2026-11-10T02:00:00.000Z",
+   "Added \"bàn giao\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"ký\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z"
+  ]
+ },
+ "c. uniqueLocalId sau khi chèn phía trên và sửa trong đoạn": {
+  "chiSoTruoc": 12,
+  "chiSoSau": 14,
+  "idGiuNguyen": true,
+  "timTheoId": "Giá trị hợp đồng là 5.000.000.000 đồng.",
+  "sauKhiSuaChu": "Giá trị hợp đồng là 6.000.000.000 đồng.",
+  "idSauSua": true
+ },
+ "d1. chèn sau khoản gắn kiểu tiêu đề": {
+  "neo": 9,
+  "truocDo": 44,
+  "sauDo": 44,
+  "quanhChoChen": [
+   "Điều 1. [Heading 1] Phạm vi hợp đồng",
+   "1.1. [Heading 2] Bên A giao cho Bên B thực hiện côn",
+   "1.2. [Heading 2] Khoản mới chèn thử.",
+   "1.3. [Heading 2] Bên B cam kết hoàn thành đúng tiến",
+   "a) [Heading 3] tiến độ tổng thể theo Phụ lục 02;"
+  ]
+ },
+ "d2. chèn sau khoản đánh số trên đoạn": {
+  "neo": 19,
+  "truocDo": 45,
+  "sauDo": 45,
+  "quanhChoChen": [
+   "1. [Normal] Quyền của Bên A",
+   "1.1 [Normal] Được kiểm tra tiến độ.",
+   "1.2 [Normal] Khoản mới chèn thử.",
+   "1.3 [Normal] Được yêu cầu sửa chữa sai sót.",
+   "(a) [Normal] bằng văn bản;"
+  ]
+ },
+ "d3. đổi cấp bằng listItem.level": {
+  "đoạn 10 [Heading 3]": "1.2. lvl1 → a) lvl2 [Heading 3]",
+  "đoạn 20 [Normal]": "1.2 lvl1 → (a) lvl2 [Normal]"
+ },
+ "e. hoàn tác bằng từ chối sửa đổi của add-in": {
+  "gioMay": "2026-11-15T12:03:29.903Z",
+  "truoc": 16,
+  "tatCa": [
+   "Added \"\\rKhoản mới chèn thử.\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Added \"\\rKhoản mới chèn thử.\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"24 tháng\" · Đối tác · 2026-11-10T02:00:00.000Z",
+   "Added \"18\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"12\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Added \"12 tháng\" · Đối tác · 2026-11-10T02:00:00.000Z",
+   "Added \"bàn giao\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"ký\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"Đoạn này đối tác đã xóa toàn bộ.\\r\" · Đối tác · 2026-11-10T02:00:00.000Z",
+   "Added \"Đoạn này đối tác thêm mới.\\r\" · Đối tác · 2026-11-10T02:00:00.000Z",
+   "Added \" đủ\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Added \"45\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"30\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Added \"0,03%\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \"0,05%\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z",
+   "Deleted \" trên số tiền chậm trả\" · (tài khoản Office đang dùng) · 2026-11-15T12:03:00.000Z"
+  ],
+  "cuaAddIn": 12,
+  "conLai": [
+   "Deleted \"24 tháng\" · Đối tác",
+   "Added \"12 tháng\" · Đối tác",
+   "Deleted \"Đoạn này đối tác đã xóa toàn bộ.\\r\" · Đối tác",
+   "Added \"Đoạn này đối tác thêm mới.\\r\" · Đối tác"
+  ],
+  "doanDoiTacSauKhiTuChoi": "Thời hạn thuê là 12 tháng kể từ ngày ký.\r",
+  "doanThanhToanSauKhiTuChoi": "Bên B thanh toán trong 30 ngày; chậm quá 30 ngày thì chịu phạt 30 triệu đồng và lãi 0,05% mỗi ngày trên số tiền chậm trả.\r"
+ }
+}

@@ -48,7 +48,20 @@
   - **Phát hành 3.7.0 xong** (commit `0c570a7`, gh-pages "Bản chạy thật v3.7.0 (main@0c570a7)", Pages phục vụ `taskpane.1414ffa9.js`). Tệp sao lưu thử đã vào Thùng rác.
   - **Kiểm trong Office bản 3.7.0: đạt hết tiêu chí Đợt 0B** (bảng đầy đủ ở `tasks/dot-0b.md`, bằng chứng `tasks/dot-0b-bang-chung/02`–`14`): Tự kiểm tra Word 19/19, Excel 22/22, PowerPoint 13/14 rồi 14/14 (lỗi bố cục cũ); Chạy thật trong Word với Claude Haiku 5.5: bấm Dừng giữa chuỗi sửa rồi AI kể đúng, lượt hai đọc 7.827 token từ bộ nhớ đệm, AI không làm theo câu ra lệnh trong nhận xét, ghi đè ô bảng có hỏi kèm lý do; 7 mục cũ (tìm web, mở lại và xóa hội thoại, tự tóm tắt, bấm địa chỉ ô/đoạn/slide, nhập kỹ năng, đính kèm ảnh, Chỉ dẫn riêng) đều đạt.
   - Cách kiểm: anh dùng điện thoại nên không xin được quyền điều khiển màn hình; thay bằng `kiem-thu/cdp.mjs` (mở Office bằng lệnh kèm cổng gỡ lỗi WebView2, điều khiển khung add-in bằng mã). Các bài thử nằm ở `kiem-thu/cdp-bai/`.
-- **Đang làm:** không còn việc dở. Đợt 0B xong; việc kế tiếp là Đợt 1A.
+- **Đợt 1A (phiên 15/11/2026 buổi tối, Claude Code trên máy, nhánh `claude/dot-1a-9f0fea`) — việc và tiêu chí ở `tasks/dot-1a.md`:**
+  - **Bảng kết quả thăm dò** (Word 16.0.20527, chạy Office.js trong khung add-in qua `kiem-thu/cdp.mjs`; văn bản thử dựng bằng `kiem-thu/docx-thu.mjs tham-do`; bằng chứng `tasks/dot-1a-bang-chung/01`–`03`):
+
+    | Kiểu đánh số | `Paragraph.listItemOrNullObject` | `Range.listFormat` | `Document.listParagraphs` | `Document.getCrossReferenceItems` |
+    |---|---|---|---|---|
+    | Danh sách thường "1." | Đọc được | Đọc được | Lỗi GeneralException | Trả null |
+    | Nhiều cấp gắn kiểu tiêu đề "Điều 1." / "1.1." / "a)" | **Đọc được đúng** | Đọc được | Lỗi | Trả null |
+    | Nhiều cấp đặt trên đoạn "1." / "1.1" / "(a)" | Đọc được đúng | Đọc được | Lỗi | Trả null |
+    | Số gõ tay | Không (số nằm sẵn trong chữ, nhận bằng mẫu) | Không | — | — |
+    | Trường SEQ | Không cần (kết quả trường nằm sẵn trong chữ) | — | — | — |
+    | Trường LISTNUM / AUTONUM | Không | LISTNUM đọc được, AUTONUM không | — | — |
+
+  - Kết luận thăm dò: **không cần phương án dự phòng tự tính số từ cấu trúc tệp**; dùng `listItemOrNullObject` nạp gộp một lần `sync`. `paragraph.text` **có lẫn chữ đã xóa có theo dõi** → đọc bản hiện tại bằng `getText()`, bản gốc bằng `getReviewedText("Original")`. `search()` nhìn cả chữ đã xóa. Sửa 4 chỗ trong một đoạn khi đang theo dõi: Word ghi đúng từng cặp xóa/thêm, chữ đậm giữ nguyên. Thay cả đoạn trên đoạn đang có sửa đổi của đối tác làm hỏng dấu vết → chỉ sửa mức từ. Chèn đoạn bằng `insertParagraph(…, "After")` tự kế thừa kiểu và số (1.2 mới, cũ thành 1.3). Ngày của sửa đổi chỉ chính xác tới phút → Hoàn tác phải so danh sách sửa đổi trước/sau từng công cụ, không lọc theo thời gian.
+- **Đang làm:** Đợt 1A (xem dòng trên và `tasks/dot-1a.md`).
 - **Quyết định và lý do:**
   - AI sửa thẳng vào tài liệu + Hoàn tác; Word luôn ghi Track Changes; thao tác rủi ro luôn hỏi kèm lý do, "Cho phép hết lần này" không áp dụng cho thao tác rủi ro. Lý do: tự động tối đa nhưng an toàn như bản chính thức.
   - Kỹ năng chính thức được chuyển thể, không chép nguyên văn; không ghi số hiệu văn bản pháp luật trong kỹ năng (có kiểm thử chặn).
