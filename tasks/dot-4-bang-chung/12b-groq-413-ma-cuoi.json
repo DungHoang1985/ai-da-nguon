@@ -1,0 +1,11 @@
+{
+ "modelTruoc": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Nano Omni (free). Bấm để đổi OpenRouter · NVIDIA: Nemotron 3 Nano Omni (f",
+ "modelThu": "Model đang dùng: Groq GPT OSS 20B. Bấm để đổi Groq · GPT OSS 20B",
+ "phienBan": "v4.4",
+ "giay": 2,
+ "nhanXetTruoc": 1,
+ "nhanXetSau": 1,
+ "soMaToChucTrenKhung": 0,
+ "coNutDoiNguon": true,
+ "khung": "AI Đa Nguồn\nv4.4\nExcel ✓ · PowerPoint ✓\nVăn bản này nói về việc gì? Trả lời một câu.\nGroq: yêu cầu lớn hơn hạn mức token mỗi phút của gói đang dùng (yêu cầu này cần khoảng 8.530 token, gói chỉ cho 8.000 token mỗi phút). Mỗi yêu cầu của add-in gửi kèm mô tả các công cụ nên không thu nhỏ được; gửi lại cũng không qua. Hội thoại vẫn còn nguyên: đổi sang nguồn khác ở nhãn model cạnh ô nhập rồi gửi lại, hoặc nâng gói ở trang của Groq.\nĐổi nguồn\nMở Cài đặt\nChép chi tiết lỗi\nHỏi trước\nGroq · GPT OSS 20B"
+}
