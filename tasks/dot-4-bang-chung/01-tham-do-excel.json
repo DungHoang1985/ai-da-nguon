@@ -1,0 +1,350 @@
+{
+ "boApi": {
+  "1.9": true,
+  "1.10": true,
+  "1.11": true,
+  "1.12": true,
+  "1.13": true,
+  "1.14": true,
+  "1.15": true,
+  "1.16": true,
+  "1.17": true,
+  "1.18": true,
+  "1.19": true,
+  "1.20": true
+ },
+ "bieuDo_doiKieu_tieuDe_nguon": {
+  "ok": true,
+  "kq": {
+   "ten": "Chart 1",
+   "truoc": "ColumnClustered",
+   "sau": "Line",
+   "tieuDe": "Mới",
+   "chuoi": [
+    {
+     "ten": "Doanh thu",
+     "values": "AIDN_TD4!$C$2:$C$5",
+     "categories": null
+    },
+    {
+     "ten": "Chi phí",
+     "values": "AIDN_TD4!$D$2:$D$5",
+     "categories": null
+    }
+   ]
+  },
+  "ms": 690
+ },
+ "bieuDo_lietKe": {
+  "ok": true,
+  "kq": [
+   {
+    "ten": "Chart 1",
+    "kieu": "Line",
+    "tieuDe": "Mới"
+   }
+  ],
+  "ms": 39
+ },
+ "pivot_tao": {
+  "ok": true,
+  "kq": "xong",
+  "ms": 90
+ },
+ "pivot_them_bot_truong_ham_loc_lamMoi": {
+  "ok": true,
+  "kq": {
+   "sauThem": {
+    "hang": [
+     "Nhóm"
+    ],
+    "cot": [
+     "Quý",
+     "Values"
+    ],
+    "giaTri": [
+     "Sum of Doanh thu|Sum",
+     "Average of Chi phí|Average"
+    ],
+    "tatCa": [
+     "Nhóm",
+     "Quý",
+     "Doanh thu",
+     "Chi phí"
+    ]
+   },
+   "loc": "[[\"\",\"Column Labels\",\"\",\"\",\"\",\"\",\"\"],[\"\",\"Q1\",\"\",\"Q2\",\"\",\"Total Sum of Doanh thu\",\"Total Average of Chi phí\"],[\"Row Labels\",\"Sum of Doanh thu\",\"Average of Chi phí\",\"Sum of Doanh thu\",\"Average of Chi phí\",\"\",\"\"],[\"A\",100,60,150,80,250,70],[\"Grand Total\",100,60,150,80,250,70]]",
+   "truocLamMoi": "[[\"Row Labels\",\"Sum of Doanh thu\"],[\"A\",250],[\"B\",450],[\"Grand Total\",700]]",
+   "sauLamMoi": "[[\"Row Labels\",\"Sum of Doanh thu\"],[\"A\",1150],[\"B\",450],[\"Grand Total\",1600]]",
+   "vung": "AIDN_TD4_P!A3:B6",
+   "cotCon": 1,
+   "giaTriCon": [
+    "Sum of Doanh thu"
+   ]
+  },
+  "ms": 327
+ },
+ "pivot_lietKe_caSo": {
+  "ok": true,
+  "kq": [
+   {
+    "ten": "PivotTD4",
+    "sheet": "AIDN_TD4_P",
+    "nguon": "AIDN_TD4!A1:D5"
+   }
+  ],
+  "ms": 38
+ },
+ "in_dat_va_doc_lai": {
+  "ok": true,
+  "kq": {
+   "truoc": {
+    "huong": "Portrait",
+    "kho": null,
+    "zoom": {
+     "@odata.type": "Microsoft.ExcelServices.PageLayoutZoomOptions",
+     "horizontalFitToPages": null,
+     "scale": 100,
+     "verticalFitToPages": null
+    },
+    "tren": 54,
+    "trai": 50.4
+   },
+   "sau": {
+    "huong": "Landscape",
+    "kho": "A4",
+    "zoom": {
+     "@odata.type": "Microsoft.ExcelServices.PageLayoutZoomOptions",
+     "horizontalFitToPages": 1,
+     "scale": null,
+     "verticalFitToPages": null
+    },
+    "tren": 42.5196850393701,
+    "trai": 28.3464566929134,
+    "giua": true
+   },
+   "vungIn": "AIDN_TD4!A1:D5",
+   "tieuDeLap": "AIDN_TD4!1:1",
+   "dau": "Bảng tiến độ",
+   "chan": "Trang &P / &N"
+  },
+  "ms": 204
+ },
+ "in_zoom_ve_null_va_bo_vung_in": {
+  "ok": true,
+  "kq": {
+   "zoom": {
+    "@odata.type": "Microsoft.ExcelServices.PageLayoutZoomOptions",
+    "horizontalFitToPages": null,
+    "scale": 100,
+    "verticalFitToPages": null
+   },
+   "bo": "setPrintArea('') được",
+   "vungInCon": null
+  },
+  "ms": 116
+ },
+ "tenVung": {
+  "ok": true,
+  "kq": {
+   "F1": 2000,
+   "ds": [
+    {
+     "ten": "Lãi_suất_TD4",
+     "ct": "=AIDN_TD4!$C$2",
+     "gt": "AIDN_TD4!$C$2",
+     "hien": true
+    }
+   ],
+   "coSan": true,
+   "F1sauXoaTen": "#NAME?"
+  },
+  "ms": 161
+ },
+ "r1c1_va_hangSo": {
+  "ok": true,
+  "kq": {
+   "r1c1": [
+    [
+     "Năm 1",
+     "Năm 2",
+     "Năm 3",
+     "Năm 4"
+    ],
+    [
+     100,
+     "=RC[-1]*1.1",
+     "=RC[-1]*1.1",
+     "=RC[-1]*1.1"
+    ],
+    [
+     50,
+     "=RC[-1]*1.05",
+     57,
+     "=RC[-1]*1.05"
+    ],
+    [
+     "=R[-2]C-R[-1]C",
+     "=R[-2]C-R[-1]C",
+     "=R[-2]C-RC",
+     "=R[-2]C-R[-1]C"
+    ]
+   ],
+   "kieu": [
+    [
+     "String",
+     "String",
+     "String",
+     "String"
+    ],
+    [
+     "Double",
+     "Double",
+     "Double",
+     "Double"
+    ],
+    [
+     "Double",
+     "Double",
+     "Double",
+     "Double"
+    ],
+    [
+     "Double",
+     "Double",
+     "Double",
+     "Double"
+    ]
+   ]
+  },
+  "ms": 20
+ },
+ "giaiNguoc_ghi_roi_doc_cung_sync": {
+  "ok": true,
+  "kq": {
+   "cheDoTinh": "Automatic",
+   "ket": [
+    [
+     100,
+     73.2500000000001
+    ],
+    [
+     120,
+     99.87
+    ],
+    [
+     140,
+     126.49
+    ]
+   ],
+   "msMoiVong": 38
+  },
+  "ms": 141
+ },
+ "giaiNguoc_khi_tinh_tay": {
+  "ok": true,
+  "kq": {
+   "khongTinh": 73.2500000000001,
+   "sauCalculate": 206.35
+  },
+  "ms": 109
+ },
+ "lamSach_xoaTrung_thayHangLoat_tuDien": {
+  "ok": true,
+  "kq": {
+   "xoa": 2,
+   "con": 3,
+   "thay": 2,
+   "text": [
+    [
+     "Mã",
+     "Tình trạng",
+     "",
+     "12/01/2026",
+     "12/01/2026"
+    ],
+    [
+     "HS01",
+     "Đang xử lý",
+     "",
+     "12/02/2026",
+     "13/01/2026"
+    ],
+    [
+     "HS02",
+     "Đang xử lý",
+     "",
+     "12/03/2026",
+     "14/01/2026"
+    ],
+    [
+     "HS03",
+     "Xong",
+     "",
+     "12/04/2026",
+     "15/01/2026"
+    ],
+    [
+     "",
+     "",
+     "",
+     "12/05/2026",
+     "16/01/2026"
+    ],
+    [
+     "",
+     "",
+     "",
+     "12/06/2026",
+     "19/01/2026"
+    ]
+   ],
+   "fillDays": "FillWeekdays được"
+  },
+  "ms": 206
+ },
+ "nhom_hang_cot": {
+  "ok": true,
+  "kq": {
+   "anKhiThuGon": true
+  },
+  "ms": 157
+ },
+ "baoVe_khoa_o_cong_thuc": {
+  "ok": true,
+  "kq": {
+   "truoc": {
+    "khoa": true,
+    "baoVe": false
+   },
+   "oCongThuc": 9,
+   "diaChi": "AIDN_TD4!J2,AIDN_TD4!I2:I3,AIDN_TD4!K2:K3,AIDN_TD4!H4:K4",
+   "ghiCongThuc": "bị chặn: AccessDenied",
+   "ghiNhap": "ghi được"
+  },
+  "ms": 168
+ },
+ "baoVe_bo": {
+  "ok": true,
+  "kq": {
+   "baoVe": false,
+   "khoaHonHop": null
+  },
+  "ms": 36
+ },
+ "lienKetNgoai_api": {
+  "ok": true,
+  "kq": {
+   "so": 0
+  },
+  "ms": 44
+ },
+ "toMau_va_doc_lai_fill": {
+  "ok": true,
+  "kq": {
+   "truoc": "",
+   "sauClear": ""
+  },
+  "ms": 91
+ }
+}
