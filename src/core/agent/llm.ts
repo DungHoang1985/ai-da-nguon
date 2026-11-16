@@ -44,6 +44,12 @@ export function toGeminiSchema(schema: any): any {
     if (schema[k] !== undefined) out[k] = schema[k];
   }
   if (Array.isArray(out.type)) out.type = out.type.find((t: string) => t !== "null") || "string";
+  // Gemini chỉ nhận enum là chuỗi trên trường kiểu string: enum số (ví dụ cỡ chữ [13, 14]) làm cả yêu cầu bị từ chối 400
+  // (đo 16/11/2026 với mọi model Gemini trong Word) → bỏ enum, ghi các giá trị cho phép vào mô tả.
+  if (Array.isArray(out.enum) && (out.type !== "string" || out.enum.some((v: unknown) => typeof v !== "string"))) {
+    out.description = `${out.description ? out.description + " " : ""}Allowed values: ${out.enum.join(", ")}.`;
+    delete out.enum;
+  }
   if (schema.properties) {
     out.properties = {};
     for (const [k, v] of Object.entries(schema.properties)) out.properties[k] = toGeminiSchema(v);
@@ -519,6 +525,9 @@ export const RETRY_DELAYS_MS = [2000, 6000, 15000];
 /** Nhà cung cấp bảo chờ lâu hơn mức này (giây) thì không tự chờ, báo người dùng luôn. */
 export const MAX_RETRY_AFTER_S = 60;
 
+/** Không có byte nào từ nhà cung cấp trong ngần này mili giây thì coi là treo và hủy yêu cầu. */
+export const STALL_MS = 150000;
+
 /** Chờ có thể hủy bằng nút Dừng. */
 export function sleepAbortable(ms: number, signal?: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -570,6 +579,8 @@ export interface CallModelOptions {
   /** Thay bảng khoảng chờ (kiểm thử); mảng rỗng = không thử lại */
   retryDelaysMs?: number[];
   sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
+  /** Thay hạn chờ im lặng STALL_MS (kiểm thử) */
+  stallMs?: number;
 }
 
 /** Gọi model một bước; tự thử lại khi nhà cung cấp quá tải hoặc hết hạn mức tạm thời (429, 5xx, 529),
@@ -617,20 +628,50 @@ async function callModelOnce(opts: CallModelOptions): Promise<StepResult> {
     plain: opts.state?.plain,
   });
   const fetchFn = opts.fetchFn || fetch;
-  const res = await fetchDiagnosed(opts.provider, url, { ...init, signal: opts.signal }, fetchFn, opts.model);
-  await ensureOk(res, opts.provider);
+  // Chó canh: nhà cung cấp nhận yêu cầu rồi im lặng (đo 16/11/2026 với Gemini lúc quá tải: khung treo vô hạn) thì hủy yêu cầu
+  // sau STALL_MS không có byte nào, báo lỗi 504 để vòng thử lại hoặc người dùng xử lý. Nút Dừng vẫn hủy ngay như cũ.
+  const ctl = new AbortController();
+  const onUserAbort = () => ctl.abort();
+  if (opts.signal?.aborted) ctl.abort();
+  opts.signal?.addEventListener("abort", onUserAbort, { once: true });
+  let stalled = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const stallMs = opts.stallMs ?? STALL_MS;
+  const kick = () => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      stalled = true;
+      ctl.abort();
+    }, stallMs);
+  };
   const acc = createStepAccumulator(opts.provider.kind, opts.onText, opts.onThinking, opts.provider);
   const parser = createSSEParser((d) => acc.push(d));
-  if (res.body) {
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      parser.push(decoder.decode(value, { stream: true }));
+  try {
+    kick();
+    const res = await fetchDiagnosed(opts.provider, url, { ...init, signal: ctl.signal }, fetchFn, opts.model);
+    await ensureOk(res, opts.provider);
+    if (res.body) {
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      for (;;) {
+        kick();
+        const { done, value } = await reader.read();
+        if (done) break;
+        parser.push(decoder.decode(value, { stream: true }));
+      }
+    } else {
+      parser.push(await res.text());
     }
-  } else {
-    parser.push(await res.text());
+  } catch (e: any) {
+    if (stalled && !opts.signal?.aborted) {
+      const err: any = new Error(`${opts.provider.name}: không nhận được phản hồi trong ${Math.round(stallMs / 1000)} giây (máy chủ nhà cung cấp im lặng). Thử lại, hoặc đổi model / đổi nguồn.`);
+      err.status = 504;
+      throw err;
+    }
+    throw e;
+  } finally {
+    if (timer) clearTimeout(timer);
+    opts.signal?.removeEventListener("abort", onUserAbort);
   }
   parser.end();
   return acc.result();

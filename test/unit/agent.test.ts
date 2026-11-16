@@ -130,6 +130,21 @@ describe("Tác tử: dựng yêu cầu gọi công cụ", () => {
       properties: { a: { type: "array", items: { type: "string" } } },
     });
   });
+
+  it("toGeminiSchema: enum số bị bỏ và ghi vào mô tả (Gemini từ chối 400 nếu để nguyên); enum chuỗi giữ nguyên", () => {
+    const out = toGeminiSchema({
+      type: "object",
+      properties: {
+        font_size: { type: "number", enum: [13, 14], description: "Body size (default 14)." },
+        style: { type: "string", enum: ["Normal", "Heading 1"] },
+        parts: { type: "array", items: { type: "string", enum: ["a", "b"] } },
+      },
+    });
+    assert.strictEqual(out.properties.font_size.enum, undefined);
+    assert.strictEqual(out.properties.font_size.description, "Body size (default 14). Allowed values: 13, 14.");
+    assert.deepStrictEqual(out.properties.style.enum, ["Normal", "Heading 1"]);
+    assert.deepStrictEqual(out.properties.parts.items.enum, ["a", "b"]);
+  });
 });
 
 describe("Tác tử: đọc luồng trả về", () => {
