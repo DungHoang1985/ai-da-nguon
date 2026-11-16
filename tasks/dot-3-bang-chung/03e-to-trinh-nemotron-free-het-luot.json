@@ -1,0 +1,59 @@
+{
+ "model": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "yeuCau": "Soạn một tờ trình của Ban Pháp chế, Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng trình Hội đồng quản trị về việc phê duyệt phương án điều chỉnh tiến độ dự án Khu nhà ở Sông Hồng: lùi mốc hoàn thành hạ tầng kỹ thuật từ quý IV/2026 sang quý II/2027, chi phí phát sinh dự kiến 4,2 tỷ đồng. Người ký: Trưởng ban Pháp chế Trần Thị Hoa. Địa danh: Hà Nội.",
+ "giay": 2,
+ "daHoi": [],
+ "kyNangTuNap": "Kỹ năng áp dụng: soan-thao-van-ban-hanh-chinh",
+ "canhBaoNoiDaSua": false,
+ "buocCongCu": [],
+ "truoc": {
+  "soDoanCoChu": 0,
+  "trang": {
+   "tren": 25.4,
+   "duoi": 25.4,
+   "trai": 25.4,
+   "phai": 25.4,
+   "rong": 215.9,
+   "cao": 279.4,
+   "soTrangDauTrang": "",
+   "anTrangDau": false
+  }
+ },
+ "sau": {
+  "soDoanCoChu": 0,
+  "bang": 0,
+  "suaDoiDuocTheoDoi": 0,
+  "trang": {
+   "tren": 25.4,
+   "duoi": 25.4,
+   "trai": 25.4,
+   "phai": 25.4,
+   "rong": 215.9,
+   "cao": 279.4,
+   "soTrangDauTrang": "",
+   "anTrangDau": false
+  }
+ },
+ "doiChieu": [
+  "KHÔNG · Quốc hiệu in hoa, đậm, cỡ 12–13, canh giữa — không thấy",
+  "KHÔNG · Tiêu ngữ đậm, cỡ 13–14, lớn hơn quốc hiệu 1 cỡ — không thấy",
+  "KHÔNG · Tên cơ quan ban hành in hoa, đậm, cỡ 12–13",
+  "KHÔNG · Số và ký hiệu, cỡ 13 — không thấy",
+  "KHÔNG · Địa danh, ngày tháng: nghiêng, cỡ 13–14 — không thấy",
+  "KHÔNG · Tên loại in hoa, đậm, canh giữa, cỡ 13–14 — không thấy",
+  "KHÔNG · Trích yếu đậm, canh giữa, ngay dưới tên loại — không thấy",
+  "KHÔNG · Kính gửi, cỡ 13–14 — không thấy",
+  "KHÔNG · Nội dung: cỡ 13–14, canh đều, thụt đầu dòng 10–12,7 mm, cách đoạn ≥ 6 pt — 0/0 đoạn dài đúng",
+  "KHÔNG · Kết thúc nội dung bằng “./.”",
+  "KHÔNG · “Nơi nhận:” cỡ 12, nghiêng, đậm",
+  "KHÔNG · Dòng “- Lưu: …” cỡ 11, kết bằng dấu chấm — không thấy",
+  "KHÔNG · Phần ký: chức vụ in hoa đậm, họ tên đậm",
+  "Đạt · Phông Times New Roman, chữ đen ở mọi đoạn",
+  "KHÔNG · Đường kẻ dưới tên cơ quan, dưới tiêu ngữ, dưới trích yếu — 0 đường kẻ",
+  "KHÔNG · Giấy A4, lề trên 20–25, dưới 20–25, trái 30–35, phải 15–20 mm — 215.9×279.4 mm; lề 25.4/25.4/25.4/25.4",
+  "KHÔNG · Số trang ở đầu trang, ẩn trang đầu — đầu trang: “”"
+ ],
+ "dat": "1/17",
+ "vanBan": [],
+ "cuoiKhung": "AI Đa Nguồn\nv4.2\nSoạn một tờ trình của Ban Pháp chế, Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng trình Hội đồng quản trị về việc phê duyệt phương án điều chỉnh tiến độ dự án Khu nhà ở Sông Hồng: lùi mốc hoàn thành hạ tầng kỹ thuật từ quý IV/2026 sang quý II/2027, chi phí phát sinh dự kiến 4,2 tỷ đồng. Người ký: Trưởng ban Pháp chế Trần Thị Hoa. Địa danh: Hà Nội.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\nOpenRouter: đã hết lượt dùng model miễn phí của hôm nay (50 lượt mỗi ngày; 1.000 lượt nếu tài khoản đã từng nạp từ 10 credit). Có lại lúc 7 giờ sáng giờ Việt Nam. Chọn model trả tiền hoặc đổi sang nguồn khác ở nhãn model cạnh ô nhập rồi gửi lại. Hội thoại vẫn còn nguyên. (Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit)\nĐổi nguồn\nMở Cài đặt\nChép chi tiết lỗi\nHỏi trước\nOpenRouter · NVIDIA: Nemotron 3 Ultra (free)\n⚠️ OpenRouter: còn 1/50 lượt model miễn phí hôm nay."
+}

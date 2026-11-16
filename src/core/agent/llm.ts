@@ -506,7 +506,7 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void,
 /** Lỗi do model không hỗ trợ gọi công cụ. Chỉ khớp câu báo "không hỗ trợ", không khớp lỗi về mã lời gọi hay tham số công cụ
  *  (trước đây mọi lỗi có chữ "tool" đều bị báo nhầm là "model không gọi được công cụ"). */
 const NO_TOOL_SUPPORT =
-  /(does ?n[o']t support (tools|tool[ _-]?(use|calling)|function[ _-]?calling)|tools? (is|are) not supported|(tool[ _-]?(use|calling)|function[ _-]?calling) (is )?not (supported|enabled|available)|not support(ed)? (for )?(tool[ _-]?(use|calling)|function[ _-]?calling)|No endpoints found that support tool|tool_choice[^.]*(not supported|unsupported))/i;
+  /(does ?n[o']t support (tools|tool[ _-]?(use|calling)|function[ _-]?calling)|tools? (is|are) not supported|(tool[ _-]?(use|calling)|function[ _-]?calling)[`'"]? (is )?not (supported|enabled|available)|not support(ed)? (for )?(tool[ _-]?(use|calling)|function[ _-]?calling)|No endpoints found that support tool|tool_choice[^.]*(not supported|unsupported))/i;
 
 export function isToolUnsupportedError(e: any): boolean {
   const msg = String(e?.message || "");

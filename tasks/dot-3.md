@@ -6,9 +6,11 @@ Viết ngày 16/11/2026, nhánh `claude/dot-3-b3b8f4` (gốc `origin/main` = `0b
 
 ## Trạng thái (cập nhật sau mỗi chặng)
 
-- [ ] 0. Tệp này được commit trước khi viết mã
-- [ ] A1 kỹ năng soạn văn bản hành chính · [ ] A2 cảnh báo "nói đã sửa mà không ghi" · [ ] A3 model miễn phí (đề xuất + hỏi anh)
-- [ ] Kiểm phần A trong Word; hỏi anh phát hành 4.2.1 hay gộp 4.3.0
+- [x] 0. Tệp này được commit trước khi viết mã (`66d7d16`)
+- [x] A1 kỹ năng soạn văn bản hành chính · [x] A2 cảnh báo "nói đã sửa mà không ghi" · [ ] A3 model miễn phí: mới có một phần (hết lượt miễn phí trong ngày của OpenRouter, xem "Kết quả phần A")
+- [x] Kiểm phần A trong Word (bản cục bộ) · [ ] hỏi anh phát hành 4.2.1 hay gộp 4.3.0
+
+**Trạng thái của khung trước khi thử (để trả lại khi xong):** nguồn đang chọn Anthropic · Claude Opus 5.5; model nhớ của OpenRouter: ERNIE 5.5 Flash free (theo ghi chú bàn giao Đợt 2); Groq: GPT OSS 20B; Cerebras: gpt-oss-120b. Bài thử đã chọn Haiku 5.5 (Anthropic), Nemotron 3 Ultra free (OpenRouter), GPT OSS 120B (Groq).
 - [ ] B1 thăm dò kho chung và kênh lệnh (bảng kết quả ở dưới) · [ ] B1 mã ghi chéo · [ ] B2 chỉ báo và công tắc
 - [ ] B3 PowerPoint phần chắc · [ ] B4 PowerPoint phần phải thử (bảng thăm dò ở dưới) · [ ] B5 hai việc tồn
 - [ ] Soát mã độc lập, sửa, chạy lại · [ ] Bảng nghiệm thu, HANDOFF, CLAUDE.md, bảng so sánh · [ ] Hỏi anh phát hành, kiểm bản phát hành, dọn dẹp
@@ -102,6 +104,50 @@ Nếu kênh lệnh không dùng được: **dừng, hỏi anh** trước khi chu
 ## Điểm dừng để hỏi anh (ô tích chọn)
 
 Trước mỗi lần đẩy lên `main` · trước khi đổi model mặc định · trước khi chuyển sang phương án dự phòng của B1 hoặc một cách làm lệch kế hoạch · trước khi đóng Office đang có tài liệu không phải tệp thử.
+
+## Kết quả phần A (16/11/2026, bản cục bộ nạp vào khung bằng `cdp.mjs serve`)
+
+### Thăm dò Word cho việc dựng văn bản hành chính (Word 16.0, WordApi 1.9, WordApiDesktop 1.5)
+
+Bài: `kiem-thu/cdp-bai/tham-do-3-vbhc.js` và ba bài thăm dò nhỏ chạy trực tiếp trong khung. Đã đo, không làm trái:
+
+| Điều thử | Kết quả |
+|---|---|
+| Ghi `section.pageSetup` (khổ A4, bốn lề, `differentFirstPageHeaderFooter`) | Được; không phải sửa đổi được theo dõi → công cụ tự ghi cách hoàn tác |
+| Số trang: `insertField("Start", "Page")` trong đầu trang | Được (đầu trang đọc lại ra "1") |
+| Bảng hai cột không viền (`getBorder("All").type = "None"`), đặt bề rộng cột | Được |
+| Thêm đoạn thứ hai vào một ô bằng `insertParagraph(…, "After")` trên đoạn cuối của ô | **Rơi sang ô kế.** Phải chèn `"Before"` đoạn sẵn có của ô |
+| Đường kẻ = viền dưới của một đoạn rỗng: `paragraph.borders.items[2]` (0 trên, 1 trái, 2 dưới, 3 phải; `getByLocation` không có) | Được; thu ngắn bằng thụt lề trái / phải |
+| Viền dưới đặt trên đoạn duy nhất (hoặc đoạn cuối) của một ô | **Dính sang ô cùng hàng** (xóa viền ô trái làm mất đường kẻ ô phải) → đường kẻ không bao giờ là đoạn cuối ô |
+| Chèn bảng ngay SAU một đoạn rỗng | **Bảng nuốt đoạn rỗng đó, thứ tự bị đảo**, định danh của đoạn rỗng trỏ sang ô đầu của bảng → không chèn bảng sau đoạn rỗng (đoạn neo rỗng thì chèn trước nó) |
+| Từ chối phần chèn có bảng (Hoàn tác kiểu cũ) | Để lại một đoạn rỗng cạnh bảng → Hoàn tác của công cụ này gỡ thẳng bảng và đoạn theo định danh, theo thứ tự từ cuối lên |
+| Định dạng (phông, cỡ, canh lề) khi đang theo dõi | Mỗi đoạn sinh một sửa đổi "Formatted" (51 sửa đổi cho một tờ trình, lề phải rất rối) → chèn có theo dõi, định dạng phần mới chèn khi đã tắt theo dõi: còn 3 sửa đổi |
+| `firstLineIndent`, `spaceAfter`, `lineSpacing` (12 = một dòng) | Được |
+
+### Mã
+
+- `src/core/adminDoc.ts`: bản vẽ văn bản hành chính (hàm thuần): phần đầu, tên loại và trích yếu, Kính gửi, nội dung, phần ký, nơi nhận; danh sách chỗ còn trống; không bịa số, ngày, người ký.
+- `src/office/wordAdmin.ts`: hai công cụ Word mới — `word_create_admin_document` (dựng trọn văn bản đúng thể thức trong một lần gọi; văn bản trống thì đặt A4, lề 20/20/30/20 mm, số trang ở đầu trang ẩn trang 1) và `word_set_page_format` (đặt khổ giấy, lề). `word_format_text` thêm thụt đầu dòng, cách đoạn, giãn dòng. Word nay 29 công cụ.
+- Kỹ năng dựng sẵn thứ 18 `soan-thao-van-ban-hanh-chinh` (chỉ Word; tự nạp theo từ khóa; gọi bằng "/"); câu gợi ý trên màn chào; lời nhắc hệ thống và hướng dẫn nền của Word nhắc công cụ mới.
+- `src/core/claims.ts` + `Chat.tsx`: cảnh báo "AI nói đã thay đổi tài liệu nhưng lượt này không có thao tác ghi nào", nút "Yêu cầu làm lại bằng công cụ" và "Đổi model". Cảnh báo chỉ là phần hiển thị (lưu cùng hội thoại), không vào lịch sử gửi model.
+- `llm.ts`: nhận thêm câu lỗi "`tool calling` is not supported" của Groq là "model không gọi được công cụ".
+
+### Bảng nghiệm thu phần A
+
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| A-a | Soạn công văn và tờ trình, model trả tiền và model miễn phí: đủ thành phần, đúng lề và cỡ chữ | **Đạt 3/4 trên mã cuối, 1/4 mới đạt trên bản dựng trước** — Chạy thật: công văn · Haiku 5.5 16/16 điểm đối chiếu (17 giây); tờ trình · Haiku 5.5 17/17; công văn · Nemotron 3 Ultra free 16/16 (63 giây). Tờ trình · Nemotron free: trên bản dựng trước đủ thành phần, đúng lề (15/17 theo bài đối chiếu cũ; hai điểm trượt là do bài đối chiếu và do model gõ lẫn một ký tự lạ làm lệch phông); chạy lại trên mã cuối thì **OpenRouter hết 50 lượt miễn phí trong ngày** → chưa chạy lại được. Cả bốn lần AI tự gọi `word_check_page_format`, kết quả "đúng chuẩn". Đối chiếu độc lập bằng mã đọc lại văn bản (cỡ chữ, kiểu chữ, canh lề, thụt đầu dòng, đường kẻ, lề, khổ giấy, số trang) và xem bản in PDF của tờ trình | `03a`, `03b`, `03c`; `03d` (bản dựng trước), `03e` (hết lượt) |
+| A-b | Kỹ năng tự nạp theo yêu cầu, gọi được bằng "/", có gợi ý ở màn chào | **Đạt** — Kiểm thử máy (7 câu yêu cầu tự nạp, 2 câu không nạp nhầm, "/"); Chạy thật: cả bốn lần khung hiện "Kỹ năng áp dụng: soan-thao-van-ban-hanh-chinh" | `test/unit/dot3.test.ts`; `03a`–`03d` |
+| A-c | Nói "đã sửa" mà không ghi: có cảnh báo; có ghi thật: không cảnh báo; có Kiểm thử máy | **Đạt** — Kiểm thử máy 7 nhóm ca (11 câu khẳng định, 14 câu dễ báo nhầm, kể lại sửa đổi của đối tác…). Chạy thật (Cerebras · gpt-oss-120b, ca dựng có chủ ý: bảo model chỉ trả lời "Đã sửa…" mà không gọi công cụ): khung hiện cảnh báo, văn bản không đổi; bấm "Yêu cầu làm lại bằng công cụ" → sửa thật 150% → 120% có theo dõi, lượt đó không cảnh báo; câu hỏi chỉ đọc không cảnh báo. Với Haiku 5.5 cùng yêu cầu: model trả lời "Chưa sửa gì…" → không cảnh báo (đúng). Bốn lần soạn văn bản (có ghi thật): không cảnh báo. **Chưa kiểm được:** ca tự nhiên với ERNIE 5.5 Flash free (hết lượt miễn phí hôm nay) | `04-canh-bao-noi-da-sua.json`, `04-canh-bao-khung.png` |
+| A-d | Kiểm thử chặn số hiệu văn bản pháp luật và tên công cụ trong kỹ năng | **Đạt** — `npm test` 383/383 | Kiểm thử máy |
+| A-e | Bảng Chạy thật so các model miễn phí; đổi mặc định sau khi anh chọn | **Chưa kiểm được đủ** — mới có: Nemotron 3 Ultra free gọi công cụ đúng 3/3 lần (Đợt 2) + 3 lần hôm nay; ERNIE 5.5 Flash free 1 lần nói "Đã sửa" mà không gọi công cụ (Đợt 2). Khảo sát các model miễn phí khác phải chờ lượt miễn phí có lại (7 giờ sáng) | `tasks/dot-2-bang-chung/09a`, `09b`; `03c` |
+| — | Tự kiểm tra Word (thêm 2 bước: dựng công văn và tờ trình rồi hoàn tác; đặt lề rồi hoàn tác, định dạng đoạn) | **Đạt 36/36** trong phiên Word mới | `02-tu-kiem-tra-word-phan-A.json` |
+
+### Phát hiện phụ khi làm phần A
+
+- **Manh mối cho vấn đề mở "Word từ chối chèn nhận xét"**: hôm nay trạng thái `AccessDenied (Range.insertComment)` (kèm `GeneralException` ở `insertContentControl`) xuất hiện hai lần, đều ngay sau khi chạy bài thăm dò có chèn bảng lúc đang theo dõi rồi xóa bảng / đoạn theo định danh với theo dõi tắt; trước đó trong cùng phiên Word, Tự kiểm tra có nhận xét vẫn đạt. Mở lại Word thì hết. Chưa tách được thao tác nào gây ra (việc B5).
+- Groq (gói miễn phí): giới hạn 8.000 token mỗi phút nhỏ hơn một yêu cầu Word của add-in (khoảng 8.300 token với 29 công cụ) → mọi model Groq trả lỗi 413 trong Word. Câu lỗi còn nguyên tiếng Anh và có mã tổ chức của tài khoản; chưa sửa.
+- Model miễn phí (Nemotron) có lần tự ghi số hiệu một đạo luật vào dòng căn cứ dù kỹ năng dặn không bịa: thể thức đúng nhưng nội dung vẫn phải soát.
 
 ## Bảng thăm dò B1 — kho chung và kênh lệnh
 

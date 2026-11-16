@@ -267,3 +267,13 @@ describe("Đợt 3 · A2 · Cảnh báo 'nói đã sửa mà không ghi'", () =>
     assert.ok(REDO_WITH_TOOLS.includes("GỌI CÔNG CỤ"));
   });
 });
+
+import { isToolUnsupportedError } from "../../src/core/agent/llm";
+
+describe("Đợt 3 · A3 · Model không gọi được công cụ", () => {
+  it("Câu lỗi của Groq (16/11/2026) được nhận là model không gọi được công cụ", () => {
+    assert.ok(isToolUnsupportedError({ status: 400, message: "Lỗi 400 (`tool calling` is not supported with this model)" }));
+    assert.ok(isToolUnsupportedError({ status: 400, message: "This model does not support tools" }));
+    assert.ok(!isToolUnsupportedError({ status: 400, message: "Invalid request: messages is empty" }));
+  });
+});
