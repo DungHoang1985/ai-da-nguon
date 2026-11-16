@@ -4,9 +4,10 @@ import { excelTools } from "./excelTools";
 import { createWordTools } from "./wordTools";
 import { pptTools } from "./pptTools";
 import { HostName } from "./host";
+import { withAuditTrail } from "./excelTrail";
 
 export function getHostTools(host: HostName, settings: () => unknown): HostToolSet | null {
-  if (host === "Excel") return excelTools;
+  if (host === "Excel") return withAuditTrail(excelTools, { settings: () => settings() as any, describe: describeCall });
   if (host === "Word") return createWordTools(settings);
   if (host === "PowerPoint") return pptTools;
   return null;
@@ -119,6 +120,7 @@ export function describeCall(call: ToolCall): string {
     case "excel_insert_delete": {
       const del = String(a.action).startsWith("delete");
       const rows = String(a.action).includes("rows");
+      if (/group_/.test(String(a.action))) return `${String(a.action).startsWith("un") ? "Bỏ nhóm" : "Nhóm"} ${a.count || 1} ${rows ? "hàng" : "cột"} từ ${a.at}${a.sheet ? ` (${a.sheet})` : ""}`;
       return `${del ? "Xóa" : "Chèn"} ${a.count || 1} ${rows ? "hàng" : "cột"} tại ${a.at}${a.sheet ? ` (${a.sheet})` : ""}`;
     }
     case "excel_sheet":
@@ -133,6 +135,25 @@ export function describeCall(call: ToolCall): string {
               : a.action === "delete"
                 ? `Xóa sheet "${a.sheet || "đang mở"}"`
                 : `Mở sheet "${a.sheet}"`;
+    // Excel Đợt 4
+    case "excel_list_objects":
+      return `Xem biểu đồ, PivotTable, tên vùng, thiết lập in đang có${a.sheet ? ` ở sheet ${a.sheet}` : ""}`;
+    case "excel_edit_chart":
+      return a.delete ? `Xóa biểu đồ ${a.chart || ""}` : `Sửa biểu đồ ${a.chart || "có sẵn"}${a.chart_type ? `: kiểu ${CHART_VI[a.chart_type] || a.chart_type}` : ""}${a.title ? `, tiêu đề “${String(a.title).slice(0, 40)}”` : ""}`;
+    case "excel_edit_pivot":
+      return `Sửa PivotTable ${a.pivot || "có sẵn"}${a.refresh ? " (làm mới)" : ""}`;
+    case "excel_page_setup":
+      return `Thiết lập in${a.sheet ? ` sheet ${a.sheet}` : ""}${a.print_area ? `: vùng in ${a.print_area}` : ""}${a.orientation ? `, giấy ${/^land/i.test(a.orientation) ? "ngang" : "dọc"}` : ""}`;
+    case "excel_named_range":
+      return a.action === "delete" ? `Xóa tên vùng ${a.name}` : `Đặt tên vùng ${a.name} cho ${a.address || ""}`;
+    case "excel_audit_model":
+      return `Kiểm toán mô hình${a.address ? ` ${where(a)}` : a.sheet ? ` sheet ${a.sheet}` : ""}: số gõ cứng, công thức lệch, liên kết ngoài`;
+    case "excel_what_if":
+      return a.mode === "sensitivity" ? `Bảng nhạy cảm của ${a.output_cell || ""} theo ${a.input_cell}${a.input_cell_2 ? ` và ${a.input_cell_2}` : ""}` : `Giải ngược: tìm ${a.input_cell} để ${a.target_cell || ""} = ${a.target_value ?? ""}`;
+    case "excel_clean_data":
+      return a.action === "remove_duplicates" ? `Xóa dòng trùng ở ${where(a)}` : a.action === "replace_all" ? `Thay “${String(a.find || "").slice(0, 30)}” → “${String(a.replace || "").slice(0, 30)}” ở ${where(a)}` : `Tự điền ${a.fill_to || where(a)}`;
+    case "excel_protect":
+      return a.action === "unprotect" ? `Bỏ bảo vệ sheet ${a.sheet || "đang mở"}` : `Khóa ô công thức, bảo vệ sheet ${a.sheet || "đang mở"}`;
     // Word nâng cao
     case "word_list_comments":
       return "Đọc các nhận xét";
@@ -208,6 +229,8 @@ export const QUICK_PROMPTS: Record<string, string[]> = {
     "Tạo PivotTable tổng hợp theo nhóm rồi vẽ biểu đồ",
     "Tô màu các giá trị vượt ngưỡng bằng định dạng có điều kiện",
     "Chuẩn hóa bảng: tiêu đề, định dạng số, cố định dòng tiêu đề",
+    "Kiểm toán mô hình: tìm số gõ cứng và công thức lệch hàng",
+    "Chuẩn bị in sheet này: A4 ngang, vừa một trang ngang, lặp dòng tiêu đề",
   ],
   Word: [
     "Rà soát hợp đồng này cho bên mình và ghi nhận xét vào các điều khoản rủi ro",

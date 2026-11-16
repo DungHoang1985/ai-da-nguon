@@ -56,6 +56,10 @@ export interface AppSettings {
   deepThink: boolean;
   /** Word: soát lập luận của mỗi lệnh ghi chữ vào điều khoản bằng một lượt model riêng trước khi ghi */
   reviewEdits: boolean;
+  /** Excel: ghi mỗi thao tác ghi của AI vào sheet "Nhật ký AI" (mặc định tắt; sheet đi theo tệp khi gửi cho người khác) */
+  excelLog: boolean;
+  /** Excel: tô nền các ô AI vừa ghi (mặc định tắt) */
+  excelHighlight: boolean;
   /** Hướng dẫn riêng theo từng ứng dụng */
   instructions: Record<string, string>;
 }
@@ -71,6 +75,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   webSearch: false,
   deepThink: false,
   reviewEdits: false,
+  excelLog: false,
+  excelHighlight: false,
   instructions: {},
 };
 

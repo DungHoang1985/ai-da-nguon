@@ -64,6 +64,8 @@ export interface RunAgentOptions {
   onHistory?: (messages: AgentMessage[]) => void;
   /** Hỏi người dùng; trả về false nếu không cho phép. reason = cảnh báo rủi ro (nếu có) */
   approve?: (call: ToolCall, reason?: string) => Promise<boolean>;
+  /** Lời người dùng của lượt này (chưa ghép phần add-in tự thêm) — chỉ để công cụ ghi nhật ký soát lại, không gửi model */
+  request?: string;
   /** Hỏi trước mọi thao tác ghi */
   askBeforeWrite?: boolean;
   /** Luôn hỏi trước thao tác rủi ro (ghi đè dữ liệu, xóa) */
@@ -235,7 +237,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         // Hạn chờ chỉ tính lúc công cụ chạy, không tính lúc chờ người dùng duyệt
         const run = extraNames.has(call.name)
           ? o.extra!.execute(call.name, call.args || {})
-          : o.tools.execute(call.name, call.args || {}, { log: o.log });
+          : o.tools.execute(call.name, call.args || {}, { log: o.log, said: res.text, request: o.request });
         result = await withTimeout(Promise.resolve(run), spec.timeoutMs ?? o.toolTimeoutMs ?? TOOL_TIMEOUT_MS, call.name);
       } catch (e: any) {
         error = e?.message || String(e);

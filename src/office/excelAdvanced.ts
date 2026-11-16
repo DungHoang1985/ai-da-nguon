@@ -2,7 +2,8 @@
 /** Công cụ Excel nâng cao: tìm kiếm, quét lỗi, lần công thức, lọc, PivotTable, định dạng có điều kiện, danh sách chọn, nhận xét ô, chèn/xóa hàng cột, thao tác sheet. */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { getRange, restoreFrom, snapshot } from "./excelCore";
-import { lettersToCol, sanitizeSheetName, splitAddress, truncate } from "./util";
+import { cellAddress, lettersToCol, sanitizeSheetName, splitAddress, topLeft, truncate } from "./util";
+import { formulaRiskMessage } from "../core/formularisk";
 
 const addressProp = { type: "string", description: "A1-style range, optionally with sheet, e.g. 'Sheet1!A1:D20'." };
 const sheetProp = { type: "string", description: "Sheet name (optional; defaults to the active sheet)." };
@@ -148,11 +149,11 @@ export const EXCEL_ADV_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_insert_delete",
-    description: "Insert or delete whole rows or columns.",
+    description: "Insert or delete whole rows or columns, or group / ungroup them (outline that the user can collapse).",
     parameters: {
       type: "object",
       properties: {
-        action: { type: "string", enum: ["insert_rows", "delete_rows", "insert_columns", "delete_columns"] },
+        action: { type: "string", enum: ["insert_rows", "delete_rows", "insert_columns", "delete_columns", "group_rows", "ungroup_rows", "group_columns", "ungroup_columns"] },
         sheet: sheetProp,
         at: { type: "string", description: "Row number (e.g. '5') or column letter (e.g. 'C') where the action starts." },
         count: { type: "number", description: "Default 1." },
@@ -204,7 +205,10 @@ function colPlus(letters: string, n: number): string {
 /** Cảnh báo cho thao tác rủi ro (hiện hộp xác nhận) */
 export async function excelRisk(name: string, a: any): Promise<string | null> {
   if (name === "excel_write_range") {
-    return Excel.run(async (ctx) => {
+    // Công thức gọi ra mạng, chạy mã ngoài, tham chiếu gián tiếp, liên kết tệp khác: hỏi trước khi ghi (kể cả vào ô trống)
+    const tl = topLeft(String(a.address || "A1"));
+    const formulaRisk = formulaRiskMessage(a.values, (r, c) => cellAddress(tl.col + c, tl.row + r));
+    const overwrite = await Excel.run(async (ctx) => {
       const rows = Array.isArray(a.values) ? a.values.length : 1;
       const cols = Array.isArray(a.values) && Array.isArray(a.values[0]) ? Math.max(...a.values.map((r: any[]) => (Array.isArray(r) ? r.length : 1))) : 1;
       const { range } = getRange(ctx, a.address, a.sheet);
@@ -214,6 +218,7 @@ export async function excelRisk(name: string, a: any): Promise<string | null> {
       const filled = target.formulas.flat().filter((v) => v !== "" && v !== null).length;
       return filled ? `Ghi đè ${filled} ô đang có dữ liệu tại ${target.address} (có thể Hoàn tác).` : null;
     }).catch(() => null);
+    return [overwrite, formulaRisk].filter(Boolean).join(" ") || null;
   }
   if (name === "excel_clear_range") return `Xóa ${a.what === "all" ? "nội dung và định dạng" : a.what === "formats" ? "định dạng" : "nội dung"} vùng ${a.sheet ? a.sheet + "!" : ""}${a.address} (có thể Hoàn tác).`;
   if (name === "excel_insert_delete" && String(a.action).startsWith("delete"))
@@ -566,6 +571,24 @@ export async function executeExcelAdvanced(name: string, a: any, log: UndoEntry[
         const addr = at.kind === "row" ? `${at.n}:${at.n + n - 1}` : `${at.letters}:${colPlus(at.letters, n - 1)}`;
         await ctx.sync();
         const wsName = ws.name;
+        if (/^(un)?group_/.test(String(a.action))) {
+          const un = String(a.action).startsWith("un");
+          const by = (isRows ? "ByRows" : "ByColumns") as any;
+          if (un) ws.getRange(addr).ungroup(by);
+          else ws.getRange(addr).group(by);
+          await ctx.sync();
+          log.push({
+            label: `${un ? "Bỏ nhóm" : "Nhóm"} ${addr}`,
+            undo: () =>
+              Excel.run(async (c) => {
+                const r = c.workbook.worksheets.getItem(wsName).getRange(addr);
+                if (un) r.group(by);
+                else r.ungroup(by);
+                await c.sync();
+              }),
+          });
+          return { ok: true, message: `Đã ${un ? "bỏ nhóm" : "nhóm"} ${n} ${isRows ? "hàng" : "cột"} từ ${a.at} (${addr})` };
+        }
         if (String(a.action).startsWith("insert")) {
           ws.getRange(addr).insert((isRows ? "Down" : "Right") as any);
           await ctx.sync();

@@ -4,6 +4,9 @@ import { HostToolSet, UndoEntry } from "../core/agent/types";
 import { runWordSelfTest } from "./selftestWord";
 import { APPS, AppName, CMD_PREFIX, beat, buildPayload, reply, sendCommand, takeCommand } from "../core/crossapp";
 import { cellAsText, executeIncoming } from "./crossExec";
+import { excelTools } from "./excelTools";
+import { withAuditTrail } from "./excelTrail";
+import { runExcelModelSelfTest } from "./selftestExcel";
 
 export interface TestStep {
   name: string;
@@ -17,7 +20,9 @@ export class Skip extends Error {}
 export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestStep[]) => void): Promise<TestStep[]> {
   const steps: TestStep[] = [];
   const log: UndoEntry[] = [];
-  const run = (name: string, args: any = {}) => tools.execute(name, args, { log });
+  // Excel: chạy trên bộ công cụ gốc với nhật ký và tô sáng TẮT, để bài thử không ghi vào sheet "Nhật ký AI" thật của người dùng
+  const target = tools.host === "Excel" ? withAuditTrail(excelTools, { settings: () => ({}), describe: (c) => c.name }) : tools;
+  const run = (name: string, args: any = {}) => target.execute(name, args, { log });
   const step = async (name: string, fn: () => Promise<string | void>) => {
     try {
       const d = await fn();
@@ -235,6 +240,7 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(gone, "Sheet thử chưa được xóa");
       return `Hoàn tác ${log.length} thao tác (cả nội dung lẫn định dạng), sổ tính trở lại như cũ`;
     });
+    await runExcelModelSelfTest({ base: excelTools, step, expect, riskOf });
     // Bảo đảm không để lại sheet thử dù bước nào lỗi
     for (const name of [pivotSheet, sheet].filter(Boolean)) {
       await Excel.run(async (ctx) => {

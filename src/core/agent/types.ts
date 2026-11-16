@@ -85,7 +85,8 @@ export interface UndoEntry {
 export interface HostToolSet {
   host: string;
   specs: ToolSpec[];
-  execute(name: string, args: any, ctx: { log: UndoEntry[] }): Promise<any>;
+  /** said = lời model nói ở bước đó, request = yêu cầu của người dùng ở lượt đó (cho nhật ký soát lại của Excel; công cụ không đưa hai thứ này trở lại model) */
+  execute(name: string, args: any, ctx: { log: UndoEntry[]; said?: string; request?: string }): Promise<any>;
   overview(): Promise<any>;
   /** Lời nhắc hệ thống CỐ ĐỊNH của ứng dụng (không chứa trạng thái tài liệu) — để bộ nhớ đệm lời nhắc có tác dụng */
   systemPrompt(): string;

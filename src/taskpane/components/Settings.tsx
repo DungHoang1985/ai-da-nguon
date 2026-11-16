@@ -10,6 +10,7 @@ import { Storage } from "../../core/storage";
 import { fetchModels } from "../../core/models";
 import { cleanKey, describeError, keyProblem, networkErrorMessage } from "../../core/errors";
 import ProviderCheckCard from "./ProviderCheck";
+import { clearHighlights } from "../../office/excelTrail";
 import SignInCard from "./SignInCard";
 import BackupCard from "./BackupCard";
 import { getKV } from "../../core/db";
@@ -204,6 +205,48 @@ const CrossAppCard: React.FC<Props> = ({ storage, onChanged, host }) => {
           </Text>
         </>
       )}
+    </div>
+  );
+};
+
+/** Excel: dấu vết soát lại (Đợt 4). Cả hai công tắc mặc định tắt. */
+const ExcelTrailCard: React.FC<Props> = ({ storage, onChanged }) => {
+  const s = useStyles();
+  const { st, set } = useSettingsState(storage, onChanged);
+  const [msg, setMsg] = React.useState("");
+  return (
+    <div className={s.card}>
+      <Switch
+        label="Ghi nhật ký vào sheet “Nhật ký AI”: mỗi thao tác ghi của AI một dòng (giờ, ô, giá trị cũ, giá trị mới, lý do, yêu cầu)"
+        checked={!!st.excelLog}
+        onChange={(_, d) => set({ excelLog: d.checked })}
+      />
+      {st.excelLog && (
+        <Text size={200} className={s.err}>
+          Lưu ý: sheet “Nhật ký AI” nằm trong tệp và đi theo tệp khi anh gửi cho người khác (có cả câu anh đã yêu cầu AI). Trước khi gửi tệp ra
+          ngoài, xóa sheet này nếu không muốn người nhận thấy.
+        </Text>
+      )}
+      <Switch
+        label="Tô nền vàng nhạt các ô AI vừa ghi (Hoàn tác thì trả lại màu cũ)"
+        checked={!!st.excelHighlight}
+        onChange={(_, d) => set({ excelHighlight: d.checked })}
+      />
+      <div className={s.row}>
+        <Button
+          size="small"
+          onClick={async () => {
+            const n = await clearHighlights().catch(() => -1);
+            setMsg(n < 0 ? "Không bỏ được tô sáng." : n ? `Đã trả lại màu cũ cho ${n} vùng.` : "Không có ô nào đang được tô trong phiên này.");
+          }}
+        >
+          Bỏ tô sáng các ô AI đã tô trong phiên này
+        </Button>
+        {msg && <Text size={200}>{msg}</Text>}
+      </div>
+      <Text size={200} className={s.muted}>
+        Nhật ký do add-in tự ghi, AI không sửa được sheet này. Bấm Hoàn tác thì nhật ký ghi thêm một dòng “Hoàn tác”.
+      </Text>
     </div>
   );
 };
@@ -544,6 +587,12 @@ const Settings: React.FC<Props> = (props) => {
         <div className={s.section}>Chỉ dẫn và kỹ năng</div>
         <InstructionsCard {...props} />
         <SkillsCard {...props} />
+        {props.host === "Excel" && (
+          <>
+            <div className={s.section}>Dấu vết soát lại (Excel)</div>
+            <ExcelTrailCard {...props} />
+          </>
+        )}
         <div className={s.section}>Đọc chéo ứng dụng</div>
         <CrossAppCard {...props} />
         <div className={s.section}>Sao lưu</div>

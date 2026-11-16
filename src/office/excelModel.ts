@@ -398,10 +398,17 @@ export async function excelModelRisk(name: string, a: any): Promise<string | nul
   if (name === "excel_clean_data" && a.action === "replace_all") {
     return Excel.run(async (ctx) => {
       const { range } = getRange(ctx, a.address, a.sheet);
-      const hits = range.findAllOrNullObject(String(a.find ?? ""), { completeMatch: !!a.whole_cell, matchCase: !!a.match_case });
-      hits.load("cellCount");
+      const used = range.getUsedRangeOrNullObject(true);
+      used.load("formulas");
       await ctx.sync();
-      const n = hits.isNullObject ? 0 : hits.cellCount;
+      const find = a.match_case ? String(a.find ?? "") : String(a.find ?? "").toLowerCase();
+      const n =
+        used.isNullObject || !find
+          ? 0
+          : used.formulas.flat().filter((v) => {
+              const t = a.match_case ? String(v) : String(v).toLowerCase();
+              return a.whole_cell ? t === find : t.includes(find);
+            }).length;
       return n > 20 ? `Thay "${truncate(a.find, 40)}" → "${truncate(a.replace, 40)}" ở ${n} ô trong ${a.address} (có thể Hoàn tác).` : null;
     }).catch(() => null);
   }
@@ -599,11 +606,11 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
           for (const raw of names) {
             const n = known(raw);
             if (used().includes(n)) throw new Error(`Trường "${n}" đã nằm trong PivotTable (hàng, cột hoặc bộ lọc). Muốn chuyển chỗ thì đưa nó vào remove trong cùng lệnh.`);
-            const col = kind === "rows" ? pt.rowHierarchies : kind === "columns" ? pt.columnHierarchies : pt.filterHierarchies;
+            const col: any = kind === "rows" ? pt.rowHierarchies : kind === "columns" ? pt.columnHierarchies : pt.filterHierarchies;
             col.add(pt.hierarchies.getItem(n));
             f[kind].push(n);
             undo.push((p) => {
-              const c2 = kind === "rows" ? p.rowHierarchies : kind === "columns" ? p.columnHierarchies : p.filterHierarchies;
+              const c2: any = kind === "rows" ? p.rowHierarchies : kind === "columns" ? p.columnHierarchies : p.filterHierarchies;
               c2.remove(c2.getItem(n));
             });
             done.push(`thêm ${n} vào ${kind === "rows" ? "hàng" : kind === "columns" ? "cột" : "bộ lọc"}`);

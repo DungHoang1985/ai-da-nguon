@@ -747,6 +747,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         host,
         history: historyRef.current,
         text: content,
+        request: typed,
         images: images.length ? images : undefined,
         files: pdfs.length ? pdfs : undefined,
         think: !!settings.deepThink,

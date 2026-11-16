@@ -4,6 +4,7 @@ import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, topLeft, truncate } from "./util";
 import { getRange, restoreFrom, snapshot } from "./excelCore";
 import { EXCEL_ADV_SPECS, excelRisk, executeExcelAdvanced } from "./excelAdvanced";
+import { EXCEL_MODEL_SPECS, excelModelRisk, executeExcelModel } from "./excelModel";
 
 export { getRange, restoreFrom, settableProps, snapshot } from "./excelCore";
 export type { Snapshot } from "./excelCore";
@@ -58,7 +59,8 @@ export const EXCEL_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_format_range",
-    description: "Format a range: font, fill colour, number format, alignment, wrap, borders, column width / autofit.",
+    description:
+      "Format a range: font, fill colour, number format, alignment, wrap, borders, column width / autofit. address may list several ranges separated by commas ('C2:D13,F2:F13') to format them in one call.",
     parameters: {
       type: "object",
       properties: {
@@ -110,7 +112,8 @@ export const EXCEL_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_create_chart",
-    description: "Create a chart from a data range (first row/column used as labels). The chart is placed to the right of the data.",
+    description:
+      "Create a chart from a data range (first row/column used as labels). When the label column and the numbers are not adjacent, pass both: 'A1:A13,C1:D13'. The chart is placed to the right of the data.",
     parameters: {
       type: "object",
       properties: {
@@ -273,6 +276,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         const undo = restoreFrom(snap, `Ghi ${target.address}`);
         if (undo) log.push(undo);
         const tl = topLeft(target.address);
+        const where = splitAddress(target.address);
         const errors: string[] = [];
         target.values.forEach((row, i) =>
           row.forEach((v, j) => {
@@ -286,10 +290,28 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           result_preview: target.values.slice(0, 12).map((row) => row.slice(0, 10)),
           ...(errors.length ? { formula_errors: errors.slice(0, 20) } : {}),
           ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }),
+          // Cho lớp dấu vết soát lại (excelTrail): nội dung trước và sau; bị gỡ khỏi kết quả trước khi trả cho model
+          __trail: { sheet: where.sheet || "", address: where.address, before: snap ? snap.formulas : null, after: vals, undoable: !!snap },
         };
       });
 
-    case "excel_format_range":
+    case "excel_format_range": {
+      // Nhiều vùng rời ("C2:D13,F2:F13"): định dạng lần lượt từng vùng trong cùng một lệnh
+      const parts = String(a.address || "")
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
+      if (parts.length > 1) {
+        let sheet = a.sheet;
+        const done: string[] = [];
+        for (const p of parts.slice(0, 20)) {
+          const sp = splitAddress(p, sheet);
+          sheet = sp.sheet || sheet;
+          const r = await execute("excel_format_range", { ...a, address: sp.address, sheet }, { log });
+          done.push(String(r.message).replace(/^Đã định dạng /, ""));
+        }
+        return { ok: true, message: `Đã định dạng ${done.join(", ")}` };
+      }
       return Excel.run(async (ctx) => {
         const { range } = getRange(ctx, a.address, a.sheet);
         range.load("address,rowCount,columnCount");
@@ -335,6 +357,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         if (undo) log.push(undo);
         return { ok: true, message: `Đã định dạng ${range.address}` };
       });
+    }
 
     case "excel_add_sheet":
       return Excel.run(async (ctx) => {
@@ -392,15 +415,37 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           doughnut: "Doughnut",
         };
         const by: Record<string, string> = { auto: "Auto", rows: "Rows", columns: "Columns" };
-        const { ws, range } = getRange(ctx, a.source_address, a.sheet);
-        range.load("address,rowIndex,columnIndex,columnCount");
+        // Nguồn gồm cột nhãn + khối số nằm rời nhau ("A1:A13,C1:D13"): vẽ từ khối số, lấy nhãn trục từ cột nhãn
+        const srcParts = String(a.source_address || "")
+          .split(",")
+          .map((x) => x.trim())
+          .filter(Boolean);
+        if (srcParts.length > 2) throw new Error("Nguồn biểu đồ chỉ nhận một vùng liền, hoặc hai vùng: cột nhãn rồi khối số (ví dụ 'A1:A13,C1:D13').");
+        const first = splitAddress(srcParts[0], a.sheet);
+        const dataPart = srcParts.length === 2 ? splitAddress(srcParts[1], first.sheet) : first;
+        const { ws, range } = getRange(ctx, dataPart.address, dataPart.sheet || first.sheet);
+        range.load("address,rowIndex,columnIndex,columnCount,rowCount");
         ws.load("name");
+        let labels: Excel.Range | null = null;
+        if (srcParts.length === 2) {
+          labels = ws.getRange(first.address);
+          labels.load("rowCount,columnCount,rowIndex");
+        }
         await ctx.sync();
         const chart = ws.charts.add(
           (types[a.chart_type] || "ColumnClustered") as any,
           range,
-          (by[a.series_by] || "Auto") as any
+          (labels ? "Columns" : by[a.series_by] || "Auto") as any
         );
+        if (labels) {
+          if (labels.columnCount !== 1) throw new Error("Vùng nhãn (vùng thứ nhất) phải là MỘT cột.");
+          // Bỏ ô tiêu đề của cột nhãn khi nó thẳng hàng với dòng tiêu đề của khối số
+          const skip = labels.rowIndex === range.rowIndex && labels.rowCount === range.rowCount ? 1 : 0;
+          const cats = skip ? labels.getCell(1, 0).getResizedRange(labels.rowCount - 2, 0) : labels;
+          chart.series.load("items");
+          await ctx.sync();
+          for (const s of chart.series.items) s.setXAxisValues(cats);
+        }
         if (a.title) chart.title.text = a.title;
         chart.setPosition(ws.getCell(range.rowIndex, range.columnIndex + range.columnCount + 1));
         chart.load("name");
@@ -415,7 +460,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
               await c.sync();
             }),
         });
-        return { ok: true, message: `Đã vẽ biểu đồ ${a.chart_type} từ ${range.address}`, chart: chartName };
+        return { ok: true, message: `Đã vẽ biểu đồ ${a.chart_type} từ ${labels ? a.source_address : range.address}`, chart: chartName };
       });
 
     case "excel_sort_range":
@@ -462,6 +507,8 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
 }
 
 const RISKY_NAMES = new Set(["excel_write_range", "excel_clear_range", "excel_insert_delete", "excel_sheet"]);
+const MODEL_RISKY = new Set(["excel_edit_chart", "excel_named_range", "excel_clean_data", "excel_protect"]);
+const MODEL_NAMES = new Set(EXCEL_MODEL_SPECS.map((sp) => sp.name));
 
 /** Ảnh chụp nội dung để ứng dụng khác (Word, PowerPoint) đọc chéo. */
 async function shareSnapshot() {
@@ -482,10 +529,15 @@ async function shareSnapshot() {
 
 export const excelTools: HostToolSet = {
   host: "Excel",
-  specs: [...EXCEL_SPECS, ...EXCEL_ADV_SPECS].map((sp) =>
-    RISKY_NAMES.has(sp.name) ? { ...sp, risky: (args: any) => excelRisk(sp.name, args) } : sp
+  specs: [...EXCEL_SPECS, ...EXCEL_ADV_SPECS, ...EXCEL_MODEL_SPECS].map((sp) =>
+    RISKY_NAMES.has(sp.name)
+      ? { ...sp, risky: (args: any) => excelRisk(sp.name, args) }
+      : MODEL_RISKY.has(sp.name)
+        ? { ...sp, risky: (args: any) => excelModelRisk(sp.name, args) }
+        : sp
   ),
   execute: async (name, a, ctx) => {
+    if (MODEL_NAMES.has(name)) return executeExcelModel(name, a || {}, ctx.log);
     const adv = EXCEL_ADV_SPECS.some((sp) => sp.name === name);
     return adv ? executeExcelAdvanced(name, a || {}, ctx.log) : execute(name, a || {}, ctx);
   },
@@ -501,8 +553,14 @@ export const excelTools: HostToolSet = {
       "- Không ghi đè hay xóa dữ liệu có sẵn nếu người dùng không yêu cầu; cần chỗ mới thì dùng vùng trống hoặc sheet mới.",
       "- Kiểm tra formula_errors trong kết quả ghi; có lỗi thì sửa lại.",
       "- Công cụ nâng cao: excel_find (tìm), excel_find_errors (quét lỗi công thức), excel_trace (lần ô phụ thuộc/được tham chiếu), excel_filter, excel_create_pivot, excel_conditional_format, excel_data_validation (danh sách chọn), excel_add_comment, excel_insert_delete (chèn/xóa hàng cột), excel_sheet (đổi tên, cố định dòng/cột, xóa sheet).",
+      "- Sửa cái CÓ SẴN: excel_list_objects (xem biểu đồ, PivotTable, tên vùng, thiết lập in đang có) rồi excel_edit_chart, excel_edit_pivot. Không tạo biểu đồ hay PivotTable mới khi người dùng nhờ sửa cái đang có.",
+      "- Chuẩn bị in: excel_page_setup, một lệnh cho đủ vùng in, dòng tiêu đề lặp, hướng giấy, khổ giấy, co vừa trang, lề.",
+      "- Mô hình tài chính: excel_audit_model (soát bằng mã: số gõ cứng giữa dãy công thức, công thức lệch hàng, tỷ lệ gõ trong công thức, liên kết tệp ngoài — đọc ô được chỉ rồi mới kết luận), excel_named_range (đặt tên ô giả định), excel_what_if (giải ngược tìm đầu vào đạt mục tiêu, bảng nhạy cảm 1–2 biến; sổ tính không đổi, muốn ghi kết quả thì hỏi người dùng rồi dùng excel_write_range).",
+      "- Bảng theo dõi: excel_clean_data (xóa dòng trùng, thay hàng loạt, tự điền chuỗi ngày), nhóm hàng/cột bằng excel_insert_delete (group_rows…), excel_protect (khóa ô công thức, chừa ô nhập; không đặt mật khẩu).",
+      "- Định dạng nhiều vùng rời trong một lệnh: address nhận danh sách cách nhau dấu phẩy ('C2:D13,F2:F13'). Biểu đồ từ cột nhãn và khối số nằm rời: source_address 'A1:A13,C1:D13'.",
+      "- Sheet “Nhật ký AI” (nếu có) do add-in tự ghi: không đọc để làm việc, không sửa.",
       "- Khi nhắc tới ô hay vùng, ghi rõ dạng Sheet!A1 hoặc Sheet!A1:B5 để người dùng bấm vào xem.",
-      "- Xong việc: dùng excel_select_range để chỉ cho người dùng thấy kết quả, rồi trả lời ngắn gọn bằng tiếng Việt: đã làm gì, ở sheet/ô nào.",
+      "- Xong việc: trả lời ngắn gọn bằng tiếng Việt: đã làm gì, ở sheet/ô nào. Chỉ gọi excel_select_range khi kết quả nằm ở chỗ người dùng không đang xem, và gọi cùng lượt với lệnh ghi cuối.",
     ].join("\n"),
   stateText: (ov) => `Trạng thái hiện tại của sổ tính (JSON):\n${JSON.stringify(ov).slice(0, 6000)}`,
 };

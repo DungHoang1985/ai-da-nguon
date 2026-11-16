@@ -59,6 +59,8 @@ export interface TurnOptions {
   history: AgentMessage[];
   /** Lời người dùng, đã ghép vùng chọn và chữ của tệp đính kèm */
   text: string;
+  /** Đúng câu người dùng gõ (không kèm vùng chọn, tệp) — cho nhật ký soát lại; thiếu thì dùng text */
+  request?: string;
   images?: { mime: string; data: string }[];
   /** Tệp gửi nguyên vẹn cho model tự đọc (PDF quét) */
   files?: FilePart[];
@@ -227,6 +229,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
         messages: start,
         signal: o.signal,
         log: a.log,
+        request: o.request ?? o.text,
         approve: a.approve,
         askBeforeWrite: a.askBeforeWrite,
         confirmRisky: a.confirmRisky,
