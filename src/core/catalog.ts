@@ -80,6 +80,22 @@ const PREFER: Record<string, RegExp[]> = {
   nvidia: [/llama-3\.3-70b/i, /nemotron/i],
 };
 
+/** OpenRouter, khi bật "Miễn phí": dòng model miễn phí đã Chạy thật gọi công cụ đúng trong Word, xếp trước mọi mẫu khác
+ *  (anh duyệt 16/11/2026: Nemotron 3 Ultra free đúng 6/6 lần thử ở Đợt 2 và Đợt 3). */
+const PREFER_FREE: RegExp[] = [/^nvidia\/nemotron-3-ultra/i];
+
+/** Model đã thấy trả lời "đã sửa" mà KHÔNG gọi công cụ khi Chạy thật trong Word (danh mục vẫn ghi là gọi được công cụ).
+ *  Chỉ thêm vào đây khi có bằng chứng Chạy thật; ghi ngày và nơi lưu bằng chứng. */
+export const UNRELIABLE_TOOL_MODELS: { re: RegExp; note: string }[] = [
+  { re: /^baidu\/ernie-5\.5-flash/i, note: "Đã thấy model này trả lời “Đã sửa” mà không gọi công cụ, tài liệu không đổi (thử 16/11/2026)." },
+];
+
+/** Lời cảnh báo cho một model đã thấy không gọi công cụ đáng tin; null = chưa thấy vấn đề */
+export function toolReliabilityNote(providerId: string, modelId: string): string | null {
+  if (providerId !== "openrouter") return null;
+  return UNRELIABLE_TOOL_MODELS.find((x) => x.re.test(modelId))?.note || null;
+}
+
 function newestFirst(a: ModelInfo, b: ModelInfo): number {
   if ((b.created || 0) !== (a.created || 0)) return (b.created || 0) - (a.created || 0);
   return b.id.localeCompare(a.id);
@@ -98,7 +114,13 @@ export function pickModel(
     if (usable.length) pool = usable;
   }
   if (!pool.length) pool = models;
-  for (const re of PREFER[o.providerId] || []) {
+  if (o.agentOn && o.providerId === "openrouter") {
+    // Đang cần AI thao tác: tránh model đã thấy không gọi công cụ, trừ khi không còn model nào khác
+    const reliable = pool.filter((m) => !toolReliabilityNote(o.providerId, m.id));
+    if (reliable.length) pool = reliable;
+  }
+  const prefer = [...(o.providerId === "openrouter" && o.freeOnly ? PREFER_FREE : []), ...(PREFER[o.providerId] || [])];
+  for (const re of prefer) {
     const hit = pool.filter((m) => re.test(m.id)).sort(newestFirst);
     if (hit.length) return hit[0].id;
   }

@@ -16,6 +16,7 @@ import {
 import { ArrowClockwiseRegular, ChevronDownRegular } from "@fluentui/react-icons";
 import type { ModelInfo } from "../../core/models";
 import { useCatalog } from "./useCatalog";
+import { toolReliabilityNote } from "../../core/catalog";
 
 type Catalog = ReturnType<typeof useCatalog>;
 
@@ -72,6 +73,8 @@ const ModelPicker: React.FC<{
   const label =
     status === "loading" ? "Đang tải model…" : status === "error" ? "Chưa dùng được" : shortModelName(cat.model, "Chọn model");
   const provShort = (cat.provider?.name || "").replace(/\s*\(.*\)$/, "");
+  /** Model đang chọn đã thấy không gọi công cụ đáng tin (có bằng chứng Chạy thật) */
+  const weak = toolReliabilityNote(cat.providerId, cat.modelId);
 
   return (
     <Popover open={open} onOpenChange={(_, d) => setOpen(d.open)} positioning="above-start" trapFocus>
@@ -82,12 +85,15 @@ const ModelPicker: React.FC<{
           icon={<ChevronDownRegular />}
           iconPosition="after"
           className={s.trigger}
-          title={`${cat.provider?.name || ""} · ${cat.modelId || "chưa chọn model"} — bấm để đổi`}
+          title={`${cat.provider?.name || ""} · ${cat.modelId || "chưa chọn model"} — bấm để đổi${weak ? `. ⚠ ${weak}` : ""}`}
           aria-label={`Model đang dùng: ${cat.provider?.name || ""} ${label}. Bấm để đổi`}
         >
           <span className={s.label}>
             <span className={s.prov}>{provShort} · </span>
-            <span className={status === "error" ? s.err : undefined}>{label}</span>
+            <span className={status === "error" ? s.err : undefined}>
+              {weak ? "⚠ " : ""}
+              {label}
+            </span>
           </span>
         </Button>
       </PopoverTrigger>
@@ -145,6 +151,7 @@ const ModelPicker: React.FC<{
               aria-selected={m.id === cat.modelId}
               tabIndex={0}
               title={m.id}
+              data-unreliable={toolReliabilityNote(cat.providerId, m.id) || undefined}
               className={`${s.item} ${m.id === cat.modelId ? s.sel : ""}`}
               onClick={() => {
                 cat.selectModel(m.id);
@@ -160,9 +167,15 @@ const ModelPicker: React.FC<{
             >
               {m.free ? "🆓 " : ""}
               {m.tools ? "🛠 " : ""}
+              {toolReliabilityNote(cat.providerId, m.id) ? "⚠ " : ""}
               {m.name}
             </div>
           ))}
+          {weak && (
+            <Text size={100} className={s.item} style={{ cursor: "default" }} data-weak-note="1">
+              ⚠ Model đang chọn: {weak} Nên chọn model khác khi cần AI sửa tài liệu.
+            </Text>
+          )}
           {status === "ready" && !cat.shown.length && (
             <Text size={200} className={`${s.item} ${s.muted}`}>
               Không có model khớp bộ lọc.

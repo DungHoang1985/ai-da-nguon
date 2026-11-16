@@ -277,3 +277,34 @@ describe("Đợt 3 · A3 · Model không gọi được công cụ", () => {
     assert.ok(!isToolUnsupportedError({ status: 400, message: "Invalid request: messages is empty" }));
   });
 });
+
+import { pickModel, toolReliabilityNote } from "../../src/core/catalog";
+
+describe("Đợt 3 · A3 · Model miễn phí của OpenRouter", () => {
+  const m = (id: string, created = 1) => ({ id, name: id, free: id.endsWith(":free"), tools: true, created });
+  const models = [
+    m("baidu/ernie-5.5-flash-preview:free", 9),
+    m("nvidia/nemotron-3-ultra-550b-a55b:free", 5),
+    m("nvidia/nemotron-3.5-lightning:free", 8),
+    m("openai/gpt-oss-120b:free", 3),
+    m("anthropic/claude-sonnet-5", 7),
+  ];
+  it("Bật Miễn phí ở nguồn chưa từng chọn model: chọn Nemotron 3 Ultra free trước", () => {
+    assert.strictEqual(pickModel(models, { providerId: "openrouter", agentOn: true, freeOnly: true }), "nvidia/nemotron-3-ultra-550b-a55b:free");
+    // Không bật Miễn phí: vẫn theo thứ tự cũ (model trả tiền)
+    assert.strictEqual(pickModel(models, { providerId: "openrouter", agentOn: true, freeOnly: false }), "anthropic/claude-sonnet-5");
+    // Model người dùng đã chọn thì giữ nguyên, kể cả ERNIE
+    assert.strictEqual(pickModel(models, { providerId: "openrouter", remembered: "baidu/ernie-5.5-flash-preview:free", agentOn: true, freeOnly: true }), "baidu/ernie-5.5-flash-preview:free");
+  });
+  it("Không có Nemotron 3 Ultra: không tự rơi vào model đã thấy không gọi công cụ, dù nó mới nhất", () => {
+    const rest = models.filter((x) => !/nemotron-3-ultra|gpt-oss/.test(x.id) && x.free);
+    assert.strictEqual(pickModel(rest, { providerId: "openrouter", agentOn: true, freeOnly: true }), "nvidia/nemotron-3.5-lightning:free");
+    // Chỉ còn mỗi ERNIE thì vẫn phải chọn được
+    assert.strictEqual(pickModel([models[0]], { providerId: "openrouter", agentOn: true, freeOnly: true }), "baidu/ernie-5.5-flash-preview:free");
+  });
+  it("Dấu cảnh báo chỉ gắn cho model có bằng chứng, chỉ ở OpenRouter", () => {
+    assert.ok(toolReliabilityNote("openrouter", "baidu/ernie-5.5-flash-preview:free"));
+    assert.strictEqual(toolReliabilityNote("openrouter", "nvidia/nemotron-3-ultra-550b-a55b:free"), null);
+    assert.strictEqual(toolReliabilityNote("anthropic", "baidu/ernie-5.5-flash-preview:free"), null);
+  });
+});
