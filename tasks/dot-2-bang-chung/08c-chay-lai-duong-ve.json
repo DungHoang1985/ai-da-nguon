@@ -1,0 +1,15 @@
+{
+ "trangThai": [
+  "OpenRouter không nhận mã này: mã sai, đã dùng rồi, hoặc không phải mã lấy từ lần mở trang vừa rồi của khung này. Bấm đăng nhập lại để lấy mã mới (Invalid code)."
+ ],
+ "conDangNhap": true,
+ "coTheHanMuc": true,
+ "nut": [
+  "Làm mới",
+  "Đăng xuất",
+  "Ẩn đăng nhập lại",
+  "Đăng nhập lại",
+  "Mở trang lấy mã trong trình duyệt",
+  "Xác nhận mã"
+ ]
+}

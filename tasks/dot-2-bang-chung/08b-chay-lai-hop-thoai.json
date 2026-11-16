@@ -1,0 +1,29 @@
+{
+ "tenMien": "openrouter.ai",
+ "duongDan": "/sign-up",
+ "thamSo": [
+  "redirect_url=<258 ký tự>"
+ ],
+ "tieuDe": "Sign Up | OpenRouter",
+ "diaChiGoc": {
+  "tenMien": "openrouter.ai",
+  "duongDan": "/auth",
+  "thamSo": [
+   "callback_url=https://dunghoang1985.github.io/ai-da-nguon/dang-nhap.html",
+   "code_challenge=<43 ký tự>",
+   "code_challenge_method=S256",
+   "key_label=AI Da Nguon (Office)",
+   "state=<22 ký tự>"
+  ]
+ },
+ "maThachThucDungDang": true,
+ "chuTrenTrang": "Skip to content Sign Up Sign Up or First name Optional Last name Optional Email address Password I agree to the Terms of Service, Privacy Policy, and Model Terms. Continue Already have an account? Sign in",
+ "coOnhapEmail": true,
+ "nutDangNhap": [
+  "Sign in",
+  "Sign up",
+  "Sign Up",
+  "Continue",
+  "Sign in"
+ ]
+}

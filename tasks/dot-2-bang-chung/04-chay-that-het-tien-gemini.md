@@ -26,4 +26,6 @@ Mức bằng chứng: **Chạy thật** trong Word (tệp thử `aidn-thu-dot2.d
 | Hội thoại còn nguyên | Có: ba lượt đều còn trong khung; sau lượt lỗi, đổi nguồn rồi hỏi lại thì model trả đúng mã của lượt 1; lượt 4 đọc lại 14.193 token từ bộ nhớ đệm (phần đầu lịch sử không bị đổi) |
 | Gợi ý đổi nguồn | Có: trong câu thông báo và nút `Đổi nguồn` mở bảng chọn |
 
+Chạy lại sau khi sửa theo lần soát mã độc lập (commit `e352118`): kết quả như trên — 1 lần gọi, 402, 2 giây, cùng câu thông báo, nút Đổi nguồn mở bảng chọn, model trả đúng "SEN-4207" (đọc 14.193 token từ bộ nhớ đệm). Tệp `08e-chay-lai-het-tien-gemini.json`.
+
 Ghi nhận: Gemini nay trả mã **402** cho ca này (kế hoạch và phiên trước ghi 429). Mã nào thì add-in cũng nhận ra qua câu "prepayment credits are depleted" và không thử lại (có kiểm thử máy cho cả hai mã).

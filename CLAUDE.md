@@ -1,12 +1,12 @@
 # AI Đa Nguồn — add-in AI cho Word, Excel, PowerPoint
 
-Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v4.1.0** (Đợt 1B: Word soát và tra — soát nhất quán bằng mã, đọc chú thích và đầu/chân trang, so sánh phiên bản, thể thức trang, PDF quét, Suy nghĩ kỹ; phát hành 15/11/2026; bản 4.0.0 của Đợt 1A: Word đọc đúng số điều, sửa đúng chỗ, có Hoàn tác). Kế hoạch v4 (bản 2) đã duyệt ngày 15/11/2026, đợt kế tiếp là 2.
+Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v4.1.0** (Đợt 1B: Word soát và tra — soát nhất quán bằng mã, đọc chú thích và đầu/chân trang, so sánh phiên bản, thể thức trang, PDF quét, Suy nghĩ kỹ; phát hành 15/11/2026; bản 4.0.0 của Đợt 1A: Word đọc đúng số điều, sửa đúng chỗ, có Hoàn tác). **Bản 4.2.0 (Đợt 2: đăng nhập OpenRouter một lần bấm, thẻ hạn mức, thông báo key sai / hết hạn / hết tiền) đã xong mã ngày 16/11/2026 trên nhánh `claude/dot-2-4268ba`, chưa phát hành: chờ anh duyệt; bốn tiêu chí cần anh ngồi trước máy còn "Chưa kiểm được"** (xem `tasks/dot-2.md`). Kế hoạch v4 (bản 2) đã duyệt ngày 15/11/2026, đợt kế tiếp là 3.
 
 ## Đọc trước khi làm bất cứ việc gì
 
 1. `tasks/HANDOFF.md` — trạng thái, quyết định, vấn đề mở, bài học.
 2. `tasks/ke-hoach-v4.md` — hiện trạng đã kiểm, phương án đăng nhập, kế hoạch theo đợt (0A, 0B, 1A, 1B, 2, 3, 4) và tiêu chí nghiệm thu. Bằng chứng rà soát: `tasks/ra-soat-2026-11-15/DOC-TRUOC.md`.
-3. `tasks/dot-1b.md` — việc, bảng thăm dò Word và kết quả của Đợt 1B; `tasks/dot-1a.md` — Đợt 1A (Đợt 0A: `tasks/dot-0.md`, Đợt 0B: `tasks/dot-0b.md`, đã xong). Đợt kế tiếp là 2: viết `tasks/dot-2.md` trước khi làm.
+3. `tasks/dot-2.md` — Đợt 2 (đăng nhập và chi phí): bảng đối chiếu tài liệu chính thức, bảng nghiệm thu, và mục "Việc buộc phải có anh ở máy" ghi từng cú bấm; `tasks/dot-1b.md` — việc, bảng thăm dò Word và kết quả của Đợt 1B; `tasks/dot-1a.md` — Đợt 1A (Đợt 0A: `tasks/dot-0.md`, Đợt 0B: `tasks/dot-0b.md`, đã xong). Đợt kế tiếp là 3: viết `tasks/dot-3.md` trước khi làm.
 4. `docs/so-sanh-claude-chinh-thuc.md` — bảng so sánh 67 khả năng với bản chính thức.
 
 ## Nguồn mã
@@ -27,7 +27,10 @@ src/core/            lõi không phụ thuộc Office, kiểm thử được b�
   agent/thinking.ts  công tắc "Suy nghĩ kỹ": tham số suy nghĩ theo từng nguồn và đời model; nguồn nào đọc được PDF quét
   agent/prompt.ts    lời nhắc hệ thống cố định + quy tắc an toàn; trạng thái tài liệu đi trong tin nhắn của lượt
   agent/compaction.ts  tự tóm tắt hội thoại dài, ngưỡng theo sức chứa model
-  providers.ts models.ts storage.ts   nhà cung cấp, danh mục model, key lưu cục bộ
+  providers.ts models.ts storage.ts   nhà cung cấp (kèm cấu hình đăng nhập `oauth`), danh mục model, key lưu cục bộ
+  oauth.ts                            đăng nhập để nhận key (OAuth PKCE), khối dùng chung: mã kiểm / thách thức, địa chỉ, đọc mã dán, đổi mã lấy key
+  credits.ts                          hạn mức của key OpenRouter (GET /key, /credits): dòng hiển thị và mức cảnh báo
+  errors.ts                           lỗi → câu tiếng Việt; phân loại lỗi key và tiền theo nhà cung cấp; maskSecrets che key trong mọi thông báo
   skills.ts skillpack.ts              kỹ năng (SKILL.md), 17 kỹ năng dựng sẵn
   outline.ts                          mục lục điều khoản: số do Word tự đánh + số gõ tay, tìm điều theo cách gọi ("khoản 2 Điều 5")
   worddiff.ts                         so khác mức từ, kế hoạch sửa một đoạn Word, chống sửa nhầm đoạn, Hoàn tác Word
@@ -37,8 +40,10 @@ src/core/            lõi không phụ thuộc Office, kiểm thử được b�
   conversations.ts db.ts share.ts attachments.ts refs.ts
 src/office/          công cụ Office.js: excel*, word*, ppt*, common, selftest (nút Tự kiểm tra; Word ở selftestWord.ts, chạy trong vùng cô lập)
   wordReview.ts      4 công cụ Word chỉ đọc của Đợt 1B: soát nhất quán, đọc phần ngoài thân văn bản, thể thức trang, so sánh phiên bản
-src/taskpane/components/   App.tsx, Chat.tsx (điều phối + giao diện), Settings.tsx
-test/unit/           mocha, 291 kiểm thử (dữ liệu mẫu ở test/fixtures/)
+  dialog.ts          hộp thoại của Office (displayDialogAsync) và mở trình duyệt ngoài, dùng cho đăng nhập
+src/dialog/          dang-nhap.html + dang-nhap.ts: trang mở trong hộp thoại của Office khi đăng nhập (đóng gói thành dist/dang-nhap.html)
+src/taskpane/components/   App.tsx, Chat.tsx (điều phối + giao diện), Settings.tsx, SignInCard.tsx + useCredits.ts (thẻ OpenRouter: đăng nhập, dán mã, hạn mức, đăng xuất)
+test/unit/           mocha, 363 kiểm thử (dữ liệu mẫu ở test/fixtures/)
 cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry WEF\Developer)
 ```
 
@@ -46,7 +51,7 @@ cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry W
 
 ```
 npm ci                      # .npmrc phải trỏ registry.npmjs.org
-npm test                    # 291/291 phải đạt
+npm test                    # 363/363 phải đạt
 npx tsc --noEmit -p .       # không lỗi kiểu
 npm run build               # ra dist/, manifest tự đổi sang địa chỉ GitHub Pages
 ```
@@ -55,7 +60,7 @@ Phát hành tự động: đẩy lên `main` là GitHub Actions (`.github/workfl
 
 Xem bản mới trong Office: đặt con trỏ trong khung add-in rồi Ctrl+F5 (bằng mã: `node kiem-thu/cdp.mjs reload 9229`). Số phiên bản hiện ở đầu khung.
 
-Kiểm trong Office bằng mã (không cần điều khiển màn hình, dùng được cả khi anh không ngồi trước máy): `kiem-thu/cdp.mjs`, cách dùng ở đầu tệp và ở mục Bài học của `tasks/HANDOFF.md`; các bài thử mẫu ở `kiem-thu/cdp-bai/`. Mở và đóng Office thử: `kiem-thu/mo-office.ps1` (tự dừng nếu Office đang mở tài liệu không phải tệp thử). **Thử mã mới trước khi phát hành**: `npm run build` rồi `node kiem-thu/cdp.mjs serve 9229 dist` (chạy nền) nạp bản cục bộ vào khung add-in, không đẩy gì lên `main`. Tệp Word thử: `kiem-thu/docx-thu.mjs` (thăm dò đánh số), `kiem-thu/hop-dong-thu.mjs` (hợp đồng 50 trang có sửa đổi và nhận xét của "Đối tác"), `kiem-thu/soat-thu.mjs` (hợp đồng sạch / cài sẵn 9 lỗi / phiên bản khác lệch 10 chỗ / công văn lề sai, có chú thích, đầu và chân trang, bookmark), `kiem-thu/pdf-quet-thu.mjs` (PDF quét 3 trang).
+Kiểm trong Office bằng mã (không cần điều khiển màn hình, dùng được cả khi anh không ngồi trước máy): `kiem-thu/cdp.mjs`, cách dùng ở đầu tệp và ở mục Bài học của `tasks/HANDOFF.md`; các bài thử mẫu ở `kiem-thu/cdp-bai/`. Mở và đóng Office thử: `kiem-thu/mo-office.ps1` (tự dừng nếu Office đang mở tài liệu không phải tệp thử). **Thử mã mới trước khi phát hành**: `npm run build` rồi `node kiem-thu/cdp.mjs serve 9229 dist` (chạy nền) nạp bản cục bộ vào khung add-in, không đẩy gì lên `main`. Tệp Word thử: `kiem-thu/docx-thu.mjs` (thăm dò đánh số), `kiem-thu/hop-dong-thu.mjs` (hợp đồng 50 trang có sửa đổi và nhận xét của "Đối tác"), `kiem-thu/soat-thu.mjs` (hợp đồng sạch / cài sẵn 9 lỗi / phiên bản khác lệch 10 chỗ / công văn lề sai, có chú thích, đầu và chân trang, bookmark), `kiem-thu/pdf-quet-thu.mjs` (PDF quét 3 trang). Hộp thoại đăng nhập là một trang riêng trên cùng cổng: `node kiem-thu/cdp.mjs list 9229` liệt kê các trang (giá trị tham số nhạy cảm chỉ in độ dài), `9229#openrouter.ai` hoặc `9229#dang-nhap` chọn trang đó cho `eval`, `shot`, `nav`; `serve` tự gắn vào hộp thoại để nó cũng nhận bản cục bộ. Bài thử Đợt 2: `kiem-thu/cdp-bai/dot-2-*.js`.
 
 ## Quy tắc làm việc với anh Dũng
 
@@ -80,5 +85,7 @@ Kiểm trong Office bằng mã (không cần điều khiển màn hình, dùng �
 - Tài liệu của nhà cung cấp và của Office.js thay đổi nhanh: đối chiếu tài liệu chính thức hiện hành trước khi viết mã gọi API, không viết theo trí nhớ.
 - Không thêm máy chủ riêng, không đổi khung giao diện, không viết lại từ đầu (đã cân nhắc và loại ở mục A của kế hoạch).
 - Kho GitHub là **công khai**: không đưa key, token, thông tin riêng tư vào bất kỳ tệp nào.
+- Đăng nhập và khóa (Đợt 2), không làm trái: mã kiểm của luồng đăng nhập (`code_verifier`) chỉ nằm trong bộ nhớ của khung, không ghi kho lưu, không vào địa chỉ trang; trang hộp thoại `dang-nhap.html` phải cùng tên miền với khung và chỉ chuyển tới tên miền khai trong cấu hình `oauth` (không nhận địa chỉ đích từ tham số); khung chỉ nhận mã khi `state` khớp lần đăng nhập đang mở; mọi câu lỗi của nhà cung cấp đưa ra ngoài (hiện, chép, lưu cùng hội thoại) phải qua `maskSecrets`; key OpenRouter kiểm bằng `GET /key` trước khi lưu (`/models` trả 200 cả khi key sai); lỗi đã rõ lý do về key hoặc tiền (`ApiError.reason`) không tự thử lại. Bài thử không đọc kho lưu của khung, không bấm nút mở trình duyệt ngoài khi chưa báo anh, và che số trong thẻ hạn mức trước khi ghi bằng chứng.
+- Tài khoản của anh: phiên không đăng nhập thay anh, không tạo hay thu hồi key, không nhận tín dụng, không bấm đồng ý điều khoản, không xóa key thật đang lưu khi chưa hỏi. Việc đó gom vào mục "Việc buộc phải có anh ở máy" của tệp đợt, ghi rõ từng cú bấm.
 - Các bài học Office.js đã trả giá nằm ở cuối `tasks/HANDOFF.md`; đọc trước khi đụng tới Word, PowerPoint hoặc WebView2.
 - Dữ liệu add-in (key, lịch sử, kỹ năng) nằm trong thư mục `Wef` của Office, tách theo tài khoản Office: không xóa thư mục này trong bất kỳ tệp cài, gỡ hay bước dọn nào.

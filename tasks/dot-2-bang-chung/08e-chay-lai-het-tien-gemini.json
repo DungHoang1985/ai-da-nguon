@@ -1,0 +1,28 @@
+{
+ "nguonCu": "openrouter",
+ "b1_chon": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5"
+ },
+ "b1_traLoi": "AI Đa Nguồn | v4.2 | Không dùng công cụ. Ghi nhớ mã thử của phiên này: SEN-4207. Trả lời đúng hai chữ: đã nhớ. | đã nhớ | Token: vào 14.197 · ra 67 · ghi vào bộ nhớ đệm 14.193 | Chèn vào chỗ con trỏ | Sao chép | Hỏi trước | Anthropic · Claude Haiku 5.5",
+ "b2_chon": {
+  "daChon": "Model đang dùng: Google Gemini Gemini 2.5 Flash. Bấm để đổi Google Gemini · Gemini 2.5 Flash"
+ },
+ "b2_giay": 2,
+ "b2_cacLanGoiGemini": [
+  "generativelanguage.googleapis.com/v1beta/models/<model>:streamGenerateContent -> 402"
+ ],
+ "b2_thongBao": "Google Gemini: tài khoản đã hết tiền (hết tín dụng) nên yêu cầu bị từ chối. Hội thoại vẫn còn nguyên: đổi sang nguồn khác ở nhãn model cạnh ô nhập rồi gửi lại, hoặc nạp thêm ở trang của Google Gemini. (Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.google.dev/gemini-api/docs/billing#prepay. )",
+ "b2_nutCanhLoi": [
+  "Đổi nguồn",
+  "Mở Cài đặt",
+  "Chép chi tiết lỗi"
+ ],
+ "b2_cauHoiConHien": true,
+ "b3_bangChonMo": true,
+ "b3_chonLai": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5"
+ },
+ "b4_traLoi": "s/billing#prepay. ) | Chép chi tiết lỗi | Không dùng công cụ. Mã thử tôi nhờ ghi nhớ ở đầu hội thoại này là gì? Chỉ ghi đúng mã đó. | SEN-4207 | Token: vào 15.540 · ra 8 · đọc từ bộ nhớ đệm 14.193 · ghi vào bộ nhớ đệm 1.343 | Chèn vào chỗ con trỏ | Sao chép | Hỏi trước | Anthropic · Claude Haiku 5.5",
+ "b4_nhoDungMa": true,
+ "b4_soLuotTrongKhung": 3
+}

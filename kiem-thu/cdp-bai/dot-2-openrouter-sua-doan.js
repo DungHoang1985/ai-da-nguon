@@ -25,6 +25,25 @@ await toChat();
 window.__aidnTieuDeThem = [...(window.__aidnTieuDeThem || []), "^Ở câu về chậm hoàn trả"];
 btn(/^Hội thoại mới/)?.click();
 await sleep(600);
+// Muốn thử model OpenRouter khác model đang chọn: đặt window.__aidnModelOr = "<mã model>" ở một tệp ghép phía trước.
+// Model cũ được nhớ ở window.__aidnModelOrCu (bài dot-2-openrouter-ds-model.js) và được chọn lại ở cuối bài.
+const want = window.__aidnModelOr;
+delete window.__aidnModelOr;
+if (want) {
+  const esc = want.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pk = await pick("openrouter", new RegExp("^" + esc + "$"));
+  document.body.click();
+  await sleep(300);
+  if (pk.loi) return { loi: "Không chọn được model " + want, chiTiet: pk };
+}
+const restore = async () => {
+  if (!want || !window.__aidnModelOrCu) return null;
+  const esc = window.__aidnModelOrCu.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pk = await pick("openrouter", new RegExp("^" + esc + "$"));
+  document.body.click();
+  await sleep(300);
+  return pk.daChon || pk.loi;
+};
 const model = label(btn(/^Model đang dùng/)).slice(0, 110);
 if (!/OpenRouter/.test(model)) return { loi: "Nguồn đang chọn không phải OpenRouter", model };
 btn(/^Model đang dùng/).click();
@@ -38,8 +57,10 @@ const r = await send(q, { timeout: 300000 });
 const all = document.body.innerText;
 const ans = all.slice(all.lastIndexOf(q) + q.length);
 const sau = await doc();
+const traLaiModel = await restore();
 return {
   model,
+  traLaiModel,
   soModelDangHien: soModel,
   yeuCau: q,
   giay: r.giay,

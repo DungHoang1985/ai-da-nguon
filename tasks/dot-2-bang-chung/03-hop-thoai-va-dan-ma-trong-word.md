@@ -73,6 +73,10 @@ Nút `Mở trang lấy mã trong trình duyệt`: lần chạy đầu của bài
 
 Lỗi tìm ra nhờ bài này và đã sửa: sau khi bấm `Mở trang lấy mã…`, nút `Xác nhận mã` bị tắt (dòng hướng dẫn dùng nhầm trạng thái "đang bận"). Các dòng ở bảng trên là của lần chạy lại trên bản đã sửa.
 
+## Chạy lại sau khi sửa theo lần soát mã độc lập (16/11/2026, commit `e352118`)
+
+Cùng các bài, trên bản đóng gói mới: `08a-chay-lai-trang-thai.json` (thẻ hạn mức, số được che), `08b-chay-lai-hop-thoai.json` (hộp thoại tới `openrouter.ai/auth` qua trang đăng nhập, đúng tham số), `08c-chay-lai-duong-ve.json` (state đúng + mã giả → "OpenRouter không nhận mã này…", khóa đang lưu không đổi), `08d-chay-lai-dan-ma.json` (thêm ca dán nhầm chuỗi có dạng API key của nhà cung cấp khác: bị từ chối tại chỗ "Chuỗi vừa dán là API key, không phải mã đăng nhập OpenRouter…", **0 lần gọi mạng**). Kết quả không đổi so với các bảng trên.
+
 ## Chưa kiểm được ở bài này (cần anh ngồi trước máy)
 
 Đăng nhập thật trong hộp thoại, bấm Authorize, nhận khóa, danh sách model hiện, sửa một đoạn Word (tiêu chí 1); chép mã thật từ trang rồi dán (tiêu chí 2); Đăng xuất với khóa thật (tiêu chí 3).
