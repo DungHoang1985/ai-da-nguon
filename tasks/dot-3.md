@@ -255,4 +255,22 @@ Anh nêu: "giao AI một việc mà số lần gọi AI nhảy lên mấy chục
 
 ## Bảng nghiệm thu
 
-(điền khi có bằng chứng; bằng chứng ở `tasks/dot-3-bang-chung/`)
+Bảng tổng hợp (điền 16/11/2026 ở Đợt 4; chi tiết và lời giải thích từng dòng nằm ở "Bảng nghiệm thu phần A" và "Bảng nghiệm thu phần B" phía trên; bằng chứng ở `tasks/dot-3-bang-chung/`).
+
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| A-a | Soạn công văn và tờ trình đúng thể thức, model trả tiền và model miễn phí | Đạt 3/4 trên mã cuối; tờ trình · Nemotron free trên mã cuối: **Chưa kiểm được** (OpenRouter hết lượt miễn phí ngày 16/11, thử lại ở Đợt 4 vẫn hết — `tasks/dot-4-bang-chung/13`) | `03a`–`03e` |
+| A-b | Kỹ năng tự nạp, gọi bằng "/", gợi ý ở màn chào | Đạt | `test/unit/dot3.test.ts`, `03a`–`03d` |
+| A-c | Cảnh báo "nói đã sửa mà không ghi" | Đạt; ca tự nhiên với ERNIE free: **Chưa kiểm được** (cùng lý do) | `04` |
+| A-d | Kiểm thử chặn số hiệu văn bản pháp luật và tên công cụ trong kỹ năng | Đạt | Kiểm thử máy |
+| A-e | Bảng Chạy thật so các model miễn phí | **Chưa kiểm được đủ** (mới có Nemotron 6 lần đạt, ERNIE 1 lần không gọi công cụ) | `tasks/dot-2-bang-chung/09a`, `09b`; `03c` |
+| B-1 | PowerPoint lấy bảng Excel → 3 slide + 1 biểu đồ | Đạt | `20`, `20b` |
+| B-2 | Excel ghi tóm tắt sang Word, có hỏi, hoàn tác ở Word | Đạt | `16`, `27` |
+| B-3 | Đóng khung đích: báo rõ, không treo; chỉ báo đúng | Đạt | `17`, `12` |
+| B-4 | Slide chữ tràn: AI tự nhìn ảnh và sửa | Đạt | `18`, `18a`, `18b` |
+| B-5 | Kiểm bài 10 slide tìm đủ 5 lỗi cài | Đạt | `15`, `21`, `19` |
+| B-6 | Slide mới đúng màu và bố cục của mẫu | Đạt | `15`, `21` |
+| C-1 | `npm test`, tsc, đóng gói | Đạt (420 ở 4.3.0, 423 ở 4.3.1) | Kiểm thử máy |
+| C-2 | Tự kiểm tra ba ứng dụng | Đạt: Word 37/37, Excel 23/23, PowerPoint 21/21 | `13`–`15`, `21`, `24b`–`26`, `33`–`35` |
+| C-3 | Soát mã độc lập | Đạt (phần A sửa 15 để lại 1; phần B sửa 11 để lại 6) | `soat-ma-doc-lap-phan-A.md`, `-B.md` |
+| C-4 | Bằng chứng không lộ thông tin riêng | Đạt | lệnh soát trước mỗi commit |

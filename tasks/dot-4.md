@@ -109,7 +109,25 @@ Ba mức bằng chứng: **Tự kiểm tra** (nút trong add-in, chạy trong Of
 
 ## Bảng thăm dò Excel
 
-(điền ở bước 1)
+Chạy 16/11/2026 trong Excel 16.0 (ExcelApi 1.9–1.20 đều có), bài `kiem-thu/cdp-bai/tham-do-4-excel.js` chạy Office.js thẳng trong khung add-in, chỉ đụng hai sheet thử rồi xóa; bằng chứng `tasks/dot-4-bang-chung/01-tham-do-excel.json`. Chữ ký API đối chiếu với `@types/office-js` của kho. Đã đo, không làm trái:
+
+| Điều thử | Kết quả | Dùng cho |
+|---|---|---|
+| Biểu đồ có sẵn: đổi `chartType`, `title.text`, `setData`, tiêu đề trục, vị trí chú giải | **Được.** Nguồn của từng chuỗi đọc được bằng `series.getDimensionDataSourceString("Values")`; nhãn trục (`"Categories"`) trả null | `excel_edit_chart`, `excel_list_objects` |
+| Pivot có sẵn: thêm trường cột, thêm giá trị và đổi hàm (`summarizeBy`), bớt trường, lọc theo mục (`applyFilter({ manualFilter })`), `clearAllFilters`, `refresh` | **Được.** Thêm giá trị thứ hai thì trục cột có thêm mục giả "Values" (phải lọc khi liệt kê); tên trường giá trị là "Sum of …" (bớt theo tên đó); sửa dữ liệu nguồn thì Pivot KHÔNG tự đổi cho tới khi `refresh` | `excel_edit_pivot` |
+| `pivotTable.getDataSourceString()` | **Được** (trả vùng nguồn) | `excel_list_objects` |
+| `worksheet.pageLayout`: hướng giấy, `paperSize = "A4"`, `zoom = { horizontalFitToPages: 1 }`, `setPrintArea`, `setPrintTitleRows`, `setPrintMargins("Centimeters", …)`, căn giữa, đầu / chân trang | **Được, đọc lại đúng** (`getPrintAreaOrNullObject`, `getPrintTitleRowsOrNullObject`). `paperSize` ban đầu đọc ra null; bỏ vùng in bằng `setPrintArea("")` được; bỏ co vừa trang bằng `zoom = { scale: 100 }` | `excel_page_setup` |
+| Tên vùng: `names.add(tên có dấu tiếng Việt, range, ghi chú)`, dùng trong công thức, liệt kê, xóa | **Được.** Xóa tên thì công thức đang dùng ra `#NAME?` → xóa tên là thao tác phải hỏi | `excel_named_range` |
+| `range.formulasR1C1`: cùng một công thức kéo sang ô khác cho chuỗi giống hệt; hằng số trả về kiểu số | **Đúng** → so chuỗi R1C1 là đủ để tìm ô lệch và số gõ cứng | `excel_audit_model` |
+| Ghi ô đầu vào rồi đọc ô phụ thuộc trong CÙNG một lần `sync` | **Ra số đã tính lại**, khoảng 38 ms mỗi vòng | `excel_what_if` |
+| Chế độ tính tay (`calculationMode = "Manual"`) | Ô phụ thuộc KHÔNG đổi cho tới khi gọi `calculate` → công cụ tự gọi `application.calculate("Full")` khi sổ ở chế độ tính tay | `excel_what_if` |
+| `removeDuplicates(cột, cóTiêuĐề)`, `replaceAll`, `autoFill` (`FillDefault`, `FillWeekdays`) | **Được**, trả số dòng đã xóa / số chỗ đã thay. `Range` không có `findAll` (chỉ `Worksheet` có) | `excel_clean_data` |
+| `range.group("ByRows" / "ByColumns")`, `ungroup`, `hideGroupDetails` | **Được** | nhóm trong `excel_insert_delete` |
+| Khóa ô công thức: bỏ khóa cả vùng dùng, khóa `getSpecialCells("Formulas")`, `protection.protect({…})` không mật khẩu | **Được.** Ghi vào ô khóa bị `AccessDenied`, ghi ô nhập vẫn được; sau khi bỏ bảo vệ, `locked` của vùng đọc ra null (lẫn lộn) | `excel_protect`; câu lỗi gợi ý "sheet đang bảo vệ" |
+| `workbook.linkedWorkbooks` | Có (0 liên kết ở tệp thử); công cụ kiểm toán dò liên kết ngoài bằng mẫu trong công thức | `excel_audit_model` |
+| Màu nền: ô không tô đọc ra `""`; `fill.clear()` trả về không tô | **Đúng** → phân biệt được "không màu" khi trả màu cũ | tô sáng, `clearHighlights` |
+
+Kết luận: mọi việc của Đợt 4 làm được bằng API có sẵn, không cần phương án dự phòng. Giải ngược và bảng nhạy cảm làm bằng cách add-in tự thử từng giá trị rồi trả ô về nội dung gốc (Goal Seek và Data Table gốc của Excel không mở cho add-in).
 
 ## Bảng nghiệm thu
 
