@@ -1,0 +1,211 @@
+== Lượt 1: gửi từ Word; Excel và PowerPoint nghe (PowerPoint mở sau cùng, đang ở trước) ==
+{ "host": "Excel", "dangNghe": true, "coBroadcastChannel": true, "an": false, "tieuDiem": false}
+{ "host": "PowerPoint", "dangNghe": true, "coBroadcastChannel": true, "an": false, "tieuDiem": false}
+{
+ "host": "Word",
+ "id": "de18aq",
+ "an": false,
+ "tieuDiem": false,
+ "traLoi": [
+  {
+   "khung": "PowerPoint/storage",
+   "ketQua": "aidn-thu-kenh de18aq qua storage",
+   "treLenhMs": 2,
+   "treGhiMs": 8,
+   "treVeMs": 0,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  },
+  {
+   "khung": "Excel/storage",
+   "ketQua": "ghi theo lệnh de18aq qua storage",
+   "treLenhMs": 2,
+   "treGhiMs": 43,
+   "treVeMs": 0,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  },
+  {
+   "khung": "PowerPoint/broadcast",
+   "ketQua": "aidn-thu-kenh de18aqb qua broadcast",
+   "treLenhMs": 1,
+   "treGhiMs": 4,
+   "treVeMs": 0,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  },
+  {
+   "khung": "Excel/broadcast",
+   "ketQua": "ghi theo lệnh de18aqb qua broadcast",
+   "treLenhMs": 1,
+   "treGhiMs": 48,
+   "treVeMs": 0,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  }
+ ],
+ "traLoiQuaBroadcast": [
+  "PowerPoint/storage",
+  "Excel/storage"
+ ],
+ "khoaThuConTrongKho": 3
+}
+== Lượt 2: gửi từ PowerPoint; Word nghe thêm ==
+{ "host": "Word", "dangNghe": true, "coBroadcastChannel": true, "an": false, "tieuDiem": false}
+{
+ "host": "PowerPoint",
+ "id": "aeoz1r",
+ "an": false,
+ "tieuDiem": false,
+ "traLoi": [
+  {
+   "khung": "Word/storage",
+   "ketQua": "aidn-thu-kenh ghi theo lệnh aeoz1r qua storage",
+   "treLenhMs": 0,
+   "treGhiMs": 31,
+   "treVeMs": 0,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  },
+  {
+   "khung": "Excel/storage",
+   "ketQua": "ghi theo lệnh aeoz1r qua storage",
+   "treLenhMs": 0,
+   "treGhiMs": 47,
+   "treVeMs": 0,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  },
+  {
+   "khung": "Word/broadcast",
+   "ketQua": "aidn-thu-kenh ghi theo lệnh aeoz1rb qua broadcast",
+   "treLenhMs": 1,
+   "treGhiMs": 32,
+   "treVeMs": 0,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  },
+  {
+   "khung": "Excel/broadcast",
+   "ketQua": "ghi theo lệnh aeoz1rb qua broadcast",
+   "treLenhMs": 1,
+   "treGhiMs": 32,
+   "treVeMs": 1,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  }
+ ],
+ "traLoiQuaBroadcast": [
+  "Word/storage",
+  "Excel/storage"
+ ],
+ "khoaThuConTrongKho": 6
+}
+== Lượt 3: thu nhỏ cửa sổ Excel và Word (COM), chờ 20 giây, gửi từ PowerPoint ==
+Excel WindowState=-4140 ; Word WindowState=2
+{
+ "host": "PowerPoint",
+ "id": "tc7lh3",
+ "an": false,
+ "tieuDiem": false,
+ "traLoi": [
+  {
+   "khung": "Word/storage",
+   "ketQua": "aidn-thu-kenh ghi theo lệnh tc7lh3 qua storage",
+   "treLenhMs": 0,
+   "treGhiMs": 36,
+   "treVeMs": 1,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  },
+  {
+   "khung": "Excel/storage",
+   "ketQua": "ghi theo lệnh tc7lh3 qua storage",
+   "treLenhMs": 0,
+   "treGhiMs": 82,
+   "treVeMs": 1,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  },
+  {
+   "khung": "Excel/broadcast",
+   "ketQua": "ghi theo lệnh tc7lh3b qua broadcast",
+   "treLenhMs": 0,
+   "treGhiMs": 33,
+   "treVeMs": 0,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  },
+  {
+   "khung": "Word/broadcast",
+   "ketQua": "aidn-thu-kenh ghi theo lệnh tc7lh3b qua broadcast",
+   "treLenhMs": 0,
+   "treGhiMs": 36,
+   "treVeMs": 2,
+   "khungNhanAn": false,
+   "khungNhanCoTieuDiem": false
+  }
+ ],
+ "traLoiQuaBroadcast": [
+  "Word/storage",
+  "Excel/storage"
+ ],
+ "khoaThuConTrongKho": 9
+}
+== Dọn: gỡ bộ nghe, xóa khóa thử, xóa thứ đã ghi thử; nhịp hẹn giờ của từng khung ==
+{
+ "host": "Excel",
+ "nhipHenGio": {
+  "soNhip": 56,
+  "lonNhatMs": 1016,
+  "trungBinhMs": 1000
+ },
+ "suKienStorage": 3,
+ "tinBroadcast": 3,
+ "viecDaLam": [
+  "storage: ghi theo lệnh de18aq qua storage (43 ms; ẩn=false; tiêu điểm=false)",
+  "broadcast: ghi theo lệnh de18aqb qua broadcast (48 ms; ẩn=false; tiêu điểm=false)",
+  "storage: ghi theo lệnh aeoz1r qua storage (47 ms; ẩn=false; tiêu điểm=false)",
+  "broadcast: ghi theo lệnh aeoz1rb qua broadcast (32 ms; ẩn=false; tiêu điểm=false)",
+  "storage: ghi theo lệnh tc7lh3 qua storage (82 ms; ẩn=false; tiêu điểm=false)",
+  "broadcast: ghi theo lệnh tc7lh3b qua broadcast (33 ms; ẩn=false; tiêu điểm=false)"
+ ],
+ "daXoaKhoaThu": 9,
+ "daDonTaiLieu": true
+}
+{
+ "host": "Word",
+ "nhipHenGio": {
+  "soNhip": 48,
+  "lonNhatMs": 1013,
+  "trungBinhMs": 1000
+ },
+ "suKienStorage": 5,
+ "tinBroadcast": 2,
+ "viecDaLam": [
+  "storage: aidn-thu-kenh ghi theo lệnh aeoz1r qua storage (31 ms; ẩn=false; tiêu điểm=false)",
+  "broadcast: aidn-thu-kenh ghi theo lệnh aeoz1rb qua broadcast (32 ms; ẩn=false; tiêu điểm=false)",
+  "storage: aidn-thu-kenh ghi theo lệnh tc7lh3 qua storage (36 ms; ẩn=false; tiêu điểm=false)",
+  "broadcast: aidn-thu-kenh ghi theo lệnh tc7lh3b qua broadcast (36 ms; ẩn=false; tiêu điểm=false)"
+ ],
+ "daXoaKhoaThu": 0,
+ "daDonTaiLieu": true
+}
+{
+ "host": "PowerPoint",
+ "nhipHenGio": {
+  "soNhip": 56,
+  "lonNhatMs": 1015,
+  "trungBinhMs": 1000
+ },
+ "suKienStorage": 4,
+ "tinBroadcast": 3,
+ "viecDaLam": [
+  "storage: aidn-thu-kenh de18aq qua storage (8 ms; ẩn=false; tiêu điểm=false)",
+  "broadcast: aidn-thu-kenh de18aqb qua broadcast (4 ms; ẩn=false; tiêu điểm=false)",
+  "broadcast: aidn-thu-kenh aeoz1rb qua broadcast (5 ms; ẩn=false; tiêu điểm=false)",
+  "broadcast: aidn-thu-kenh tc7lh3b qua broadcast (4 ms; ẩn=false; tiêu điểm=false)"
+ ],
+ "daXoaKhoaThu": 0,
+ "daDonTaiLieu": true
+}

@@ -151,7 +151,19 @@ Bài: `kiem-thu/cdp-bai/tham-do-3-vbhc.js` và ba bài thăm dò nhỏ chạy tr
 
 ## Bảng thăm dò B1 — kho chung và kênh lệnh
 
-(chưa chạy)
+Chạy 16/11/2026 với Word, Excel, PowerPoint cùng mở (cùng tài khoản Office, bản cục bộ 4.2.1), bài `kiem-thu/cdp-bai/tham-do-3-kenh-lenh.js`; chỉ ghi / đọc khóa thử `aidn.thu.dot3.*` rồi xóa. Bằng chứng: `tasks/dot-3-bang-chung/08-tham-do-kenh-lenh.txt`.
+
+| Điều thử | Kết quả |
+|---|---|
+| Ba ứng dụng dùng chung một kho `localStorage` | **Có.** Khóa ghi ở khung Word tới khung Excel và PowerPoint ngay; chiều ngược lại cũng vậy |
+| Sự kiện `storage` tới khung ở ứng dụng khác | **Có**, trễ 0–2 ms, cả ba chiều đã thử (Word → Excel, Word → PowerPoint, PowerPoint → Word, PowerPoint → Excel) |
+| `BroadcastChannel` giữa các khung | **Có**, trễ 0–1 ms |
+| Khung ở ứng dụng nền (không có tiêu điểm) chạy `Excel.run` / `Word.run` / `PowerPoint.run` để GHI | **Được**: Excel ghi một ô ở sheet mới trong 32–82 ms, Word thêm một đoạn trong 31–36 ms, PowerPoint thêm một hộp chữ trong 4–8 ms |
+| Cửa sổ đích bị thu nhỏ (Excel, Word thu nhỏ bằng COM, chờ 20 giây rồi gửi) | **Vẫn nhận và ghi được**, độ trễ như trên; `document.hidden` của khung vẫn là `false` |
+| Hẹn giờ của khung nền có bị bóp không | **Không**: nhịp 1 giây đều (trung bình 1.000 ms, lớn nhất 1.016 ms trong khoảng 50 nhịp ở cả ba khung) |
+| Trả lời về khung gửi | Qua khóa trả lời trong kho + sự kiện `storage`: 0–2 ms |
+
+**Kết luận: kênh lệnh cục bộ dùng được, không cần phương án dự phòng.** Thiết kế chốt: "hộp thư" là các khóa trong `localStorage` (bền, khung nào mở sau vẫn đọc được trạng thái), báo tin bằng sự kiện `storage`, có thăm dò định kỳ làm lối dự phòng khi sự kiện bị lỡ; nhịp sống của từng khung cũng là một khóa. Không dùng `BroadcastChannel` làm kênh chính (không bền, không cho biết khung kia có mở không).
 
 ## Bảng thăm dò B4 — PowerPoint
 
