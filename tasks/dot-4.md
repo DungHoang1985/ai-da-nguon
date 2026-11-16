@@ -155,6 +155,12 @@ Kiểm 16/11/2026 trên **bản cục bộ 4.4.0** nạp vào khung add-in bằn
 | C-4 | Không lộ thông tin riêng | **Đạt** — soát bằng mã trước mỗi commit (mẫu key, mã tổ chức, email, tên trong hồ sơ Office): không có | lệnh soát trong nhật ký phiên |
 | C-5 | Lịch sử chỉ thêm, lời nhắc cố định; nhật ký không vào lịch sử gửi model | **Đạt** — kiểm thử chặn `dot0b` vẫn đạt; lời nhắc Excel cố định (kiểm thử); tác tử soát mã xác nhận `said` / `request` chỉ đi vào ngữ cảnh của công cụ | Kiểm thử máy; `soat-ma-doc-lap.md` |
 
+## Quyết định của anh (16/11/2026, ô tích chọn)
+
+1. **Phát hành 4.4.0.**
+2. Tô sáng ô vừa ghi: **mặc định tắt** (như nhật ký).
+3. Câu hỏi trước khi ghi công thức có hàm rủi ro: **tắt theo công tắc chung** "Luôn hỏi trước khi ghi đè hoặc xóa" (không gắn cờ luôn hỏi).
+
 ## Mã của đợt
 
 - **Lõi thuần:** `src/core/auditlog.ts` (dòng nhật ký, chữ ghi vào nhật ký luôn là chữ, nhận diện sheet nhật ký), `formularisk.ts` (công thức cần hỏi), `modelaudit.ts` (kiểm toán mô hình trên lưới R1C1), `goalseek.ts` (giải ngược: kẹp nghiệm rồi dây cung có chặn).
