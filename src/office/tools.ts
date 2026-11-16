@@ -156,6 +156,8 @@ export function describeCall(call: ToolCall): string {
       return "Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản";
     case "word_check_page_format":
       return "Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ";
+    case "write_other_app":
+      return `Ghi sang ${a.app || "ứng dụng khác"}${a.title ? `: slide “${String(a.title).slice(0, 40)}”` : a.sheet_name ? `: sheet “${String(a.sheet_name).slice(0, 30)}”` : ""}`;
     case "word_create_admin_document":
       return `Dựng văn bản hành chính đúng thể thức${a.subject ? `: ${String(a.subject).slice(0, 50)}` : ""}`;
     case "word_set_page_format":

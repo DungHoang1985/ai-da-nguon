@@ -46,6 +46,10 @@ export interface AppSettings {
   confirmRisky: boolean;
   /** Chia sẻ nội dung tài liệu đang mở cho các ứng dụng Office khác */
   shareContext: boolean;
+  /** Khung này nhận lệnh ghi do khung ở ứng dụng Office khác gửi sang (người dùng luôn được hỏi ở khung gửi) */
+  crossWrite: boolean;
+  /** Kết nối với từng ứng dụng khác (đọc chéo và ghi chéo); thiếu khóa = bật */
+  crossApps: Record<string, boolean>;
   /** Bật tìm kiếm web (theo nhà cung cấp) */
   webSearch: boolean;
   /** Suy nghĩ kỹ: cho model suy nghĩ nhiều hơn trước khi trả lời (chậm và tốn hơn; tùy nhà cung cấp và model) */
@@ -62,6 +66,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   toolsOnly: true,
   confirmRisky: true,
   shareContext: true,
+  crossWrite: true,
+  crossApps: {},
   webSearch: false,
   deepThink: false,
   reviewEdits: false,

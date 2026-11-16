@@ -224,7 +224,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         if (call.args?.__invalid_json) throw new Error("Tham số gửi lên không phải JSON hợp lệ, hãy gọi lại.");
         if (blocked) throw new Error(blocked);
         let reason: string | null = null;
-        if (o.confirmRisky && spec.risky) reason = await spec.risky(call.args || {});
+        if ((o.confirmRisky || spec.alwaysAsk) && spec.risky) reason = await spec.risky(call.args || {});
         if (reason || (spec.write && o.askBeforeWrite)) {
           if (!o.approve || !(await o.approve(call, reason || undefined))) {
             throw new Error("Người dùng không cho phép thao tác này. Đừng thử lại; hỏi người dùng muốn làm gì khác.");

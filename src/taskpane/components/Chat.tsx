@@ -45,6 +45,8 @@ import { clearAttachedFiles, registerAttachedFile } from "../../core/attachedFil
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
 import { REDO_WITH_TOOLS, unverifiedWriteClaim } from "../../core/claims";
+import { APPS, AppName, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, clearBeat, connectionLine, connections, describePayload, normalizeApp, reply, sweep, takeCommand } from "../../core/crossapp";
+import { executeIncoming } from "../../office/crossExec";
 import { RefTarget, findRefs } from "../../core/refs";
 import { parseMarkdownTable } from "../../core/table";
 import { HostName, INSERT_LABEL, insertAnswer, readSelection } from "../../office/host";
@@ -203,6 +205,8 @@ interface Item {
   skills?: string[];
   /** Số token của lượt (cộng mọi bước) */
   usage?: Usage;
+  /** Mục do khung ở ứng dụng khác nhờ ghi (không phải câu trả lời của model; không vào lịch sử gửi model) */
+  incoming?: string;
   /** AI nói đã thay đổi tài liệu nhưng lượt này không có thao tác ghi nào thành công (chỉ để hiện; không gửi cho model) */
   claimWarning?: string;
 }
@@ -426,6 +430,89 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     return () => clearInterval(t);
   }, [share, settings.shareContext]);
 
+  // ----- Ghi chéo ứng dụng: nhịp sống, chỉ báo kết nối, nhận lệnh ghi hộ (core/crossapp.ts) -----
+  const selfApp = normalizeApp(host);
+  /** Các ứng dụng khác đang bật kết nối trong Cài đặt của khung này */
+  const linkedApps = React.useMemo(
+    () => (settings.shareContext ? APPS.filter((a) => a !== selfApp && (settings.crossApps || {})[a] !== false) : []),
+    [settings.shareContext, settings.crossApps, selfApp]
+  );
+  const [links, setLinks] = React.useState<Connection[]>([]);
+  const seenCmds = React.useRef(new Set<string>());
+  const acceptRef = React.useRef(false);
+  acceptRef.current = !!settings.shareContext && settings.crossWrite !== false && !!hostTools;
+  const linkedRef = React.useRef<string[]>([]);
+  linkedRef.current = linkedApps;
+
+  React.useEffect(() => {
+    if (!selfApp || !settings.shareContext) {
+      setLinks([]);
+      return undefined;
+    }
+    let ls: Storage;
+    try {
+      ls = window.localStorage;
+    } catch {
+      return undefined;
+    }
+    const title = (() => {
+      try {
+        const url = String((globalThis as any).Office?.context?.document?.url || "");
+        return decodeURIComponent(url.split(/[\\/]/).pop() || "").slice(0, 80) || undefined;
+      } catch {
+        return undefined;
+      }
+    })();
+    const tick = () => {
+      beat(ls, { host: selfApp, title, accept: acceptRef.current });
+      const cs = connections(ls, selfApp).filter((c) => linkedRef.current.includes(c.app));
+      setLinks((prev) => (JSON.stringify(prev) === JSON.stringify(cs) ? prev : cs));
+    };
+    /** Nhận một lệnh ghi hộ (nếu có): chạy bằng công cụ ghi của ứng dụng này, trả kết quả, hiện một mục có nút Hoàn tác */
+    let working = false;
+    const receive = async () => {
+      if (working || !hostTools) return;
+      const cmd = takeCommand(ls, selfApp, { accept: acceptRef.current && !busyRef.current, seen: seenCmds.current });
+      if (!cmd) return;
+      if (!linkedRef.current.includes(cmd.from)) {
+        reply(ls, cmd.id, { ok: false, error: `Khung AI Đa Nguồn ở ${selfApp} đang tắt kết nối với ${cmd.from}.` });
+        return;
+      }
+      working = true;
+      const log: UndoEntry[] = [];
+      const what = describePayload(cmd.payload);
+      try {
+        const message = await executeIncoming(hostTools, cmd.payload, log);
+        reply(ls, cmd.id, { ok: true, message });
+        setItems((prev) => [...prev, { role: "assistant", text: "", incoming: `Vừa ghi theo yêu cầu từ khung AI Đa Nguồn ở ${cmd.from}: ${what}.`, wrote: true, undo: log.length ? log : undefined }]);
+      } catch (e: any) {
+        // Ghi dở thì gỡ phần đã làm rồi mới báo lỗi, để khung gửi không tưởng là đã ghi
+        for (const u of log.slice().reverse()) await u.undo().catch(() => undefined);
+        reply(ls, cmd.id, { ok: false, error: `${selfApp} không ghi được: ${networkErrorMessage(e)}` });
+      } finally {
+        working = false;
+      }
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === CMD_PREFIX + selfApp && e.newValue) receive();
+    };
+    tick();
+    sweep(ls as any);
+    window.addEventListener("storage", onStorage);
+    const t1 = setInterval(tick, HEARTBEAT_MS);
+    // Lối dự phòng khi lỡ sự kiện storage
+    const t2 = setInterval(receive, 1000);
+    const bye = () => clearBeat(ls, selfApp);
+    window.addEventListener("pagehide", bye);
+    return () => {
+      clearInterval(t1);
+      clearInterval(t2);
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("pagehide", bye);
+      bye();
+    };
+  }, [selfApp, settings.shareContext, hostTools]);
+
   /** Lưu hội thoại xuống máy. Gọi sau mỗi bước của AI (để Office có đổ giữa chừng vẫn còn phần đã làm) và khi lượt kết thúc. */
   const saveConversation = React.useCallback((): Promise<void> => {
     const its = itemsRef.current;
@@ -623,6 +710,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     const key = storage.getKey(p.id);
     const instr = (settings.instructions || {})[host]?.trim();
     const log: UndoEntry[] = [];
+    const extraTools = createCommonTools({ host, skills, shareContext: settings.shareContext, apps: linkedApps, signal: ac.signal });
     /** Công cụ đã gọi trong lượt và số lệnh ghi không thành công — để nhận ra ca "nói đã sửa mà không ghi" */
     const called: string[] = [];
     let failedWrites = 0;
@@ -653,7 +741,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
           useAgent && hostTools
             ? {
                 tools: hostTools,
-                extra: createCommonTools({ host, skills, shareContext: settings.shareContext }),
+                extra: extraTools,
                 guide: CORE_GUIDES[host],
                 skillCatalog: skillCatalog(skills),
                 autoSkills: auto.map((k) => ({ name: k.name, body: k.body })),
@@ -688,7 +776,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
               segments: [...(it.segments || []), { type: "step", id: ev.call.id, label: describeCall(ev.call), status: "running" }],
             }));
           } else if (ev.type === "tool_end") {
-            const isWrite = !!hostTools?.specs.some((t) => t.name === ev.call.name && t.write);
+            const isWrite = [...(hostTools?.specs || []), ...extraTools.specs].some((t) => t.name === ev.call.name && t.write);
             called.push(ev.call.name);
             if (isWrite && ev.error) failedWrites++;
             patchLast((it) => ({
@@ -894,6 +982,20 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         <Text size={100} className={s.muted} title={`Phiên bản ${APP_VERSION_FULL}`}>
           v{APP_VERSION}
         </Text>
+        {links.length > 0 && (
+          <Text
+            size={100}
+            className={s.muted}
+            data-links="1"
+            style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginLeft: 4 }}
+            title={
+              "Kết nối với khung AI Đa Nguồn ở ứng dụng khác (✓ đang mở, — chưa mở):\n" +
+              links.map((c) => `${c.app}: ${c.open ? `đang mở${c.title ? ` “${c.title}”` : ""}${c.accept ? "" : " (không nhận ghi)"}` : "chưa mở"}`).join("\n")
+            }
+          >
+            {connectionLine(links)}
+          </Text>
+        )}
         <div style={{ flex: 1 }} />
         <Button
           appearance={showHistory ? "secondary" : "subtle"}
@@ -1026,6 +1128,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                     {formatUsage(it.usage)}
                   </Text>
                 ) : null}
+                {it.incoming && (
+                  <Text size={200} data-incoming="1">
+                    📥 {it.incoming}
+                  </Text>
+                )}
                 {it.error && <Text className={s.err}>{it.error}</Text>}
                 {it.claimWarning && (
                   <div className={s.warnBox} role="alert" data-claim-warning="1">

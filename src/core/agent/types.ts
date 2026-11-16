@@ -47,6 +47,8 @@ export interface ToolSpec {
   write?: boolean;
   /** Trả về lời cảnh báo nếu lần gọi này rủi ro (ghi đè dữ liệu, xóa…) → luôn hỏi người dùng */
   risky?: (args: any) => Promise<string | null>;
+  /** Cảnh báo của `risky` LUÔN được hỏi, kể cả khi người dùng tắt "hỏi trước thao tác rủi ro" (ghi sang ứng dụng khác) */
+  alwaysAsk?: boolean;
   /** Hạn chờ riêng cho công cụ này (mili giây); không ghi = hạn chờ chung của vòng lặp */
   timeoutMs?: number;
   /** Công cụ ghi chữ vào điều khoản: khi bật "Soát lập luận trước khi sửa", lần gọi được một lượt model riêng soát trước khi chạy */

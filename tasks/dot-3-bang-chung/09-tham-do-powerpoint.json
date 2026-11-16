@@ -1,0 +1,196 @@
+{
+ "sets": {
+  "1.3": true,
+  "1.4": true,
+  "1.5": true,
+  "1.6": true,
+  "1.7": true,
+  "1.8": true,
+  "1.9": true,
+  "1.10": true
+ },
+ "kq": {
+  "0. dựng slide thử: tiêu đề, hộp chữ 3 đoạn, bảng 3×3": {
+   "ms": 33,
+   "slides": 2,
+   "shapes": [
+    "Title 1:Placeholder",
+    "Subtitle 2:Placeholder",
+    "aidn-thu-hop:TextBox",
+    "aidn-thu-bang:Table"
+   ]
+  },
+  "1. ảnh slide (getImageAsBase64, rộng 800)": {
+   "ms": 40,
+   "kyTu": 23400,
+   "dau": "iVBORw0KGgoA",
+   "laPng": true,
+   "laJpeg": false
+  },
+  "2. màu chủ đề (themeColorScheme.getThemeColor)": {
+   "ms": 3,
+   "Dark1": "#000000",
+   "Light1": "#FFFFFF",
+   "Dark2": "#44546A",
+   "Light2": "#E7E6E6",
+   "Accent1": "#5B9BD5",
+   "Accent2": "#ED7D31",
+   "Accent3": "#A5A5A5",
+   "Accent4": "#FFC000",
+   "Accent5": "#4472C4",
+   "Accent6": "#70AD47",
+   "Hyperlink": "#0563C1",
+   "FollowedHyperlink": "#954F72"
+  },
+  "3. bố cục của mẫu và ô giữ chỗ": {
+   "ms": 18,
+   "masters": [
+    "Office Theme"
+   ],
+   "layouts": [
+    "Title Slide (Title)",
+    "Content with Caption (LargeObject)",
+    "Section Header (SectionHeader)",
+    "Blank (Blank)",
+    "Title and Content (Object)",
+    "Title Only (TitleOnly)",
+    "Vertical Title and Text (VerticalTitleAndText)",
+    "Comparison (Comparison)",
+    "Title and Vertical Text (VerticalText)",
+    "Two Content (TwoObjects)",
+    "Picture with Caption (PictureWithCaption)",
+    "Title Only (TitleOnly)"
+   ],
+   "oGiuCho": [
+    "Title Slide: CenterTitle, Subtitle, Date, Footer, SlideNumber",
+    "Content with Caption: Title, Content, Body, Date, Footer, SlideNumber",
+    "Section Header: Title, Body, Date, Footer, SlideNumber",
+    "Blank: Date, Footer, SlideNumber"
+   ]
+  },
+  "4. định dạng chữ theo từng đoạn và từng cụm (getSubstring, paragraphFormat)": {
+   "ms": 12,
+   "xuongDong": "[\"\\n\",\"\\n\"]",
+   "cum": {
+    "bold": true,
+    "color": "#C00000",
+    "size": 20
+   },
+   "doan2": {
+    "canh": 1,
+    "bullet": true
+   },
+   "doan1": {
+    "bold": false,
+    "size": 18,
+    "name": "Calibri"
+   }
+  },
+  "5. bảng có sẵn: đọc, sửa một ô, thêm hàng": {
+   "ms": 18,
+   "loai": "Table",
+   "truoc": [
+    [
+     "Hạng mục",
+     "Kế hoạch",
+     "Thực tế"
+    ],
+    [
+     "Móng",
+     "100",
+     "90"
+    ],
+    [
+     "Thân",
+     "200",
+     "150"
+    ]
+   ],
+   "sau": [
+    [
+     "Hạng mục",
+     "Kế hoạch",
+     "Thực tế"
+    ],
+    [
+     "Móng",
+     "100",
+     "95"
+    ],
+    [
+     "Thân",
+     "200",
+     "150"
+    ],
+    [
+     "",
+     "",
+     ""
+    ]
+   ],
+   "soHang": 4,
+   "themHang": "được"
+  },
+  "6. vùng chọn: hình và đoạn chữ đang chọn": {
+   "ms": 4,
+   "hinh": [],
+   "chu": null,
+   "slide": 1
+  },
+  "6b. chọn hình bằng mã rồi đọc lại (setSelectedShapes)": {
+   "ms": 54,
+   "hinh": [
+    "aidn-thu-hop"
+   ]
+  },
+  "7. đổi bố cục slide (applyLayout)": {
+   "ms": 50,
+   "truoc": "Title Slide",
+   "muon": "Title Only",
+   "sau": "Title Only",
+   "hinh": [
+    "Title 1:Placeholder",
+    "aidn-thu-hop:TextBox",
+    "aidn-thu-bang:Table"
+   ]
+  },
+  "8. chèn ảnh: hình chữ nhật tô bằng ảnh (fill.setImage)": {
+   "ms": 51,
+   "fill": "PictureAndTexture"
+  },
+  "9. ghi chú diễn giả, phông chủ đề: có API không": {
+   "ms": 0,
+   "thuocTinhSlideCoNotes": [],
+   "coThemeFont": [
+    "themeColorScheme"
+   ],
+   "biểuĐồ": []
+  },
+  "10. xuất slide (exportAsBase64) để đọc phông chủ đề, ghi chú, biểu đồ từ gói tệp": {
+   "ms": 32,
+   "kyTu": 46272,
+   "dau": "UEsDBBQA"
+  },
+  "11. chữ tràn khung: đọc autoSize, kích thước hình và chữ": {
+   "ms": 31,
+   "hinh": {
+    "w": 200,
+    "h": 40
+   },
+   "khung": {
+    "autoSize": "AutoSizeNone",
+    "wrap": true,
+    "le": [
+     7.2,
+     3.6
+    ]
+   },
+   "co": 18,
+   "phong": "Calibri"
+  },
+  "99. xóa slide thử": {
+   "ms": 24,
+   "slides": 1
+  }
+ }
+}
