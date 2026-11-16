@@ -11,7 +11,7 @@ Viết ngày 16/11/2026, nhánh `claude/dot-4-a4b5e7` (gốc `origin/main` = `15
 - [x] 4. Việc tồn: câu lỗi "mở lại cửa sổ Word", lỗi 413 của Groq, bảng nghiệm thu cuối `dot-3.md`; phần model miễn phí: chưa kiểm được (OpenRouter hết lượt)
 - [x] 5. Tự kiểm tra ba ứng dụng trên bản cục bộ · [x] Chạy thật các tiêu chí · [x] đo lại số lần gọi AI (6 → 3–4)
 - [x] 6. Soát mã độc lập (3 cao, 17 trung bình, 16 thấp), đã sửa 24, để lại 12 có lý do, đã chạy lại
-- [x] 7a. Bảng nghiệm thu, HANDOFF, CLAUDE.md, bảng so sánh · [ ] 7b. hỏi anh phát hành · [ ] kiểm bản đã phát hành · [ ] dọn dẹp
+- [x] 7. Bảng nghiệm thu, HANDOFF, CLAUDE.md, bảng so sánh · [x] anh duyệt, **đã phát hành 4.4.0** · [x] kiểm bản đã phát hành · [x] dọn dẹp
 
 **Trạng thái của khung trước khi thử (để trả lại khi xong):** đọc bằng mã lúc mở Excel: nguồn đang chọn Anthropic · Claude Opus 5.5; Groq: GPT OSS 20B; OpenRouter: ERNIE 5.5 Flash free (theo ghi chú dọn dẹp của bản 4.3.1); hai công tắc nhật ký và tô sáng: tắt. Bài thử đã chọn Haiku 5.5 (Anthropic) và **đã làm model nhớ của OpenRouter đổi sang "Nemotron 3 Nano Omni (free)"** — phải trả về ERNIE 5.5 Flash free khi dọn.
 
@@ -160,6 +160,12 @@ Kiểm 16/11/2026 trên **bản cục bộ 4.4.0** nạp vào khung add-in bằn
 1. **Phát hành 4.4.0.**
 2. Tô sáng ô vừa ghi: **mặc định tắt** (như nhật ký).
 3. Câu hỏi trước khi ghi công thức có hàm rủi ro: **tắt theo công tắc chung** "Luôn hỏi trước khi ghi đè hoặc xóa" (không gắn cờ luôn hỏi).
+
+## Phát hành 4.4.0 (16/11/2026, anh duyệt bằng ô tích chọn)
+
+- Đẩy tiến thẳng `150e4ca..dcc372b` lên `main`; GitHub Actions đạt; `gh-pages` "Bản chạy thật v4.4.0 (main@dcc372b)"; Pages phục vụ `taskpane.2e7b9026.js` (trùng gói đóng cục bộ đã kiểm).
+- Kiểm trên bản đã phát hành (ba khung tải từ GitHub Pages, đã dừng nạp bản cục bộ): đầu khung v4.4; Tự kiểm tra **Excel 38/38** (`17`), **Word 37/37** (`18`), **PowerPoint 21/21** (`19`); Chạy thật trong Excel (Haiku 5.5, `20`): bật hai công tắc bằng cú bấm (có câu cảnh báo), AI sửa 5 ô trong 3 lần gọi → 5 dòng nhật ký, ô tô `#FFF2CC`; bấm Hoàn tác → ô về giá trị cũ, hết màu, nhật ký thành 10 dòng; tắt lại hai công tắc.
+- Dọn dẹp: xóa hội thoại thử (Excel còn 1, Word còn 4, PowerPoint còn 2 — bằng số trước đợt); model nhớ của OpenRouter trả về ERNIE 5.5 Flash free, Groq GPT OSS 20B, nguồn đang chọn Anthropic · Claude Opus 5.5; hai công tắc nhật ký và tô sáng tắt; Word, Excel, PowerPoint thử đã đóng (không lưu), cổng 9229 đã đóng.
 
 ## Mã của đợt
 

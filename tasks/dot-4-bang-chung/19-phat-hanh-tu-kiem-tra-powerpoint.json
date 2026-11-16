@@ -1,0 +1,28 @@
+{
+ "phienBan": "v4.4",
+ "giay": 6,
+ "tongKet": "Tất cả đạt · 21/21 bước đạt",
+ "buoc": [
+  "✅ Xem tổng quan bài trình chiếu — 1 slide, 12 bố cục",
+  "✅ Thêm slide có tiêu đề + nội dung — Đã thêm slide 2 (bố cục \"Title and Content\")",
+  "✅ Sửa chữ trong hình — Đã đổi tiêu đề",
+  "✅ Thêm ô chữ — Đã thêm ô chữ ở slide 2",
+  "✅ Thêm hình — Đã thêm hình rounded_rectangle ở slide 2",
+  "✅ Thêm bảng — Đã thêm bảng 2×2 ở slide 2",
+  "✅ Biểu đồ gốc (sửa được dữ liệu) — Đã chèn biểu đồ gốc (sửa được dữ liệu) ở slide 3, bố cục \"Title Only\" của mẫu (1 biểu đồ, 1 bảng dữ liệu nhúng; slide dùng bố cục có sẵn \"Title Only\", mẫu không bị thêm bố cục)",
+  "✅ Sơ đồ quy trình tự dàn trang — Đã vẽ sơ đồ chevron 4 bước ở slide 2 (đã nhóm)",
+  "✅ Sửa vị trí, màu, chữ của hình — Dời 60 → 90 điểm, đổi màu nền, cỡ chữ 12",
+  "✅ Nhân bản và di chuyển slide — Bản sao ở slide 3 → chuyển xuống cuối (slide 4)",
+  "✅ Xóa hình (hỏi trước, có hoàn tác) — Cảnh báo: \"Xóa hình \"TextBox 3\" trên slide 2 (có thể Hoàn tác).\" → đã xóa",
+  "✅ Xóa slide (hỏi trước, có hoàn tác) — Đã xóa slide 4",
+  "✅ Chuyển tới slide — Đã chuyển tới slide 2",
+  "✅ Hoàn tác toàn bộ — Hoàn tác 12 thao tác, bài trình chiếu trở lại như cũ",
+  "✅ Đọc mẫu: màu chủ đề, phông, bố cục và ô giữ chỗ — mẫu “Office Theme”: 12 bố cục, phông Calibri Light / Calibri; Accent1 #5B9BD5; slide 960×540",
+  "✅ Slide mới dùng đúng bố cục và màu của mẫu — Slide 2: bố cục “Content with Caption”, khối màu #5B9BD5 = Accent1 của mẫu",
+  "✅ Kiểm bài theo mẫu: cài 5 lỗi (2 phông lạ, 1 slide thiếu tiêu đề, 2 chỗ chữ dưới 12 pt) → tìm đủ 5, không báo nhầm — Tìm đủ 5/5: 5 điểm cần xem: 2 phông lệch mẫu, 2 chữ quá nhỏ, 1 slide thiếu tiêu đề; phông mẫu Calibri Light, Calibri",
+  "✅ Định dạng chữ theo đoạn (có Hoàn tác); sửa bảng có sẵn; đổi bố cục; đọc vùng chọn — Đoạn 2 đậm cỡ 22 rồi hoàn tác; bảng: ô (1,1) = 120, thêm hàng “Thân”; Slide 6: bố cục \"Content with Caption\" → \"Title Slide\"; vùng chọn: slide 6",
+  "✅ Ảnh slide cho AI tự nhìn; chữ cố ý tràn khung được đo ra, sửa xong thì hết — Ảnh PNG 61 KB; đo ra tràn khung → giảm cỡ chữ và nới khung → hết tràn",
+  "✅ Dọn các slide thử của Đợt 3 — Bài trở lại 1 slide",
+  "✅ Ghi chéo ứng dụng: khung đích chưa mở → báo rõ, không treo; nhận lệnh ghi hộ → ghi đúng, có Hoàn tác; lệnh sai bị bỏ — Excel chưa mở → “Chưa ghi được sang Excel: khung AI Đa Nguồn ở Excel chưa mở …”; hết hạn → rút lệnh; nhận lệnh → Đã thêm slide 2 (bố cục \"Title and Content\"); hoàn tác sạch"
+ ]
+}
