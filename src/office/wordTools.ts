@@ -918,7 +918,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
   async function run(name: string, a: any, u: Undo): Promise<any> {
     const extra = u.extra;
     if (review.has(name)) return review.run(name, a);
-    if (admin.has(name)) return admin.run(name, a, extra);
+    if (admin.has(name)) return admin.run(name, a, u);
     switch (name) {
       case "word_get_overview":
         return overview();

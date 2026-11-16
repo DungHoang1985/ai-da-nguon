@@ -259,6 +259,7 @@ export function createWordAdminTools(d: Deps) {
   async function build(ctx: Word.RequestContext, plan: AdminDocPlan, anchor: Word.Paragraph, where: "Before" | "After", textWidthMm: number) {
     const rules: { p: Word.Paragraph }[] = [];
     const plain: Word.Paragraph[] = [];
+    const tables: Word.Table[] = [];
     let prev: Word.Paragraph | Word.Table | null = null;
     for (const b of plan.blocks) {
       if (b.kind === "table") {
@@ -277,6 +278,7 @@ export function createWordAdminTools(d: Deps) {
           })
         );
         prev = t;
+        tables.push(t);
         await ctx.sync();
       } else {
         const p: Word.Paragraph = prev ? prev.insertParagraph(b.text, "After") : anchor.insertParagraph(b.text, where);
@@ -307,10 +309,44 @@ export function createWordAdminTools(d: Deps) {
       }
       await ctx.sync();
     }
-    return { rules: rules.length };
+    // Định danh của thứ đã chèn — cho cách hoàn tác thay thế khi Word gộp phần chèn vào một sửa đổi có từ trước
+    const made: { id: string; head: string; table: boolean }[] = [];
+    if (d.supports("1.6")) {
+      const marks: { p: Word.Paragraph; table: boolean }[] = [];
+      let k = 0;
+      for (const b of plan.blocks) {
+        if (b.kind === "table") marks.push({ p: tables[k++].getCell(0, 0).body.paragraphs.getFirst(), table: true });
+      }
+      plain.forEach((p) => marks.push({ p, table: false }));
+      marks.forEach((m) => m.p.load("uniqueLocalId,text"));
+      await ctx.sync();
+      marks.forEach((m) => made.push({ id: m.p.uniqueLocalId, head: m.p.text.slice(0, 20), table: m.table }));
+    }
+    return { rules: rules.length, made };
   }
 
-  async function createDocument(a: any, extra: UndoStep[]) {
+  /** Gỡ hẳn các bảng và đoạn công cụ đã chèn (tìm theo định danh, đối chiếu chữ đầu); thứ không còn thì bỏ qua */
+  const removeMade = (made: { id: string; head: string; table: boolean }[]): UndoStep => async () => {
+    for (const m of made.slice().reverse()) {
+      await Word.run(async (ctx) =>
+        untracked(ctx, async () => {
+          try {
+            const p = ctx.document.getParagraphByUniqueLocalId(m.id);
+            p.load("text");
+            await ctx.sync();
+            if (m.head && !p.text.includes(m.head)) return;
+            if (m.table) p.parentTable.delete();
+            else p.delete();
+            await ctx.sync();
+          } catch {
+            /* đã không còn (sửa đổi đã bị từ chối) */
+          }
+        })
+      );
+    }
+  };
+
+  async function createDocument(a: any, extra: UndoStep[], inverse: UndoStep[], touched: string[]) {
     const plan = planAdminDocument({ ...a, year: new Date().getFullYear() });
     return Word.run(async (ctx) => {
       const state = await isEmptyDoc(ctx);
@@ -339,6 +375,10 @@ export function createWordAdminTools(d: Deps) {
         } else anchor = ctx.document.body.paragraphs.getLast();
         return build(ctx, plan, anchor, where, width);
       });
+      if (res.made.length) {
+        inverse.push(removeMade(res.made));
+        res.made.forEach((m) => touched.push(m.id));
+      }
       const narrow = width < 150 ? ` Lưu ý: vùng trình bày của trang chỉ rộng ${width} mm (chuẩn 160 mm), các bảng thể thức có thể tràn lề — đặt lại lề bằng word_set_page_format.` : "";
       return {
         ok: true,
@@ -361,7 +401,8 @@ export function createWordAdminTools(d: Deps) {
 
   return {
     has: (name: string) => names.has(name),
-    run: (name: string, a: any, extra: UndoStep[]) => (name === "word_set_page_format" ? setPage(a, extra) : createDocument(a || {}, extra)),
+    run: (name: string, a: any, u: { extra: UndoStep[]; inverse: UndoStep[]; touched: string[] }) =>
+      name === "word_set_page_format" ? setPage(a, u.extra) : createDocument(a || {}, u.extra, u.inverse, u.touched),
     /** Cảnh báo rủi ro: đổi thể thức trang của một văn bản đang có nội dung khi dựng văn bản mới vào đó */
     risk: {
       word_create_admin_document: (a: any) =>

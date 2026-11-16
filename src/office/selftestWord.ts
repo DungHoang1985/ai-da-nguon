@@ -919,6 +919,32 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       .join(", ")}`;
   });
 
+  /** Đoạn neo riêng của hai bước thể thức (chữ thường, kiểu Normal), đặt ngay sau mốc đầu vùng thử; gỡ khi xong */
+  const NEO = `Đoạn neo thể thức ${code} của bước kiểm tra`;
+  const addNeo = async () => {
+    const s = await need(START);
+    await untracked(async (ctx) => {
+      const ps = ctx.document.body.paragraphs;
+      ps.load("items");
+      await ctx.sync();
+      const np = ps.items[s].insertParagraph(NEO, "After");
+      np.styleBuiltIn = "Normal" as any;
+      await ctx.sync();
+    });
+    return need(NEO);
+  };
+  const dropNeo = async () => {
+    const i = await at(NEO);
+    if (i < 0) return;
+    await untracked(async (ctx) => {
+      const ps = ctx.document.body.paragraphs;
+      ps.load("items");
+      await ctx.sync();
+      ps.items[i].delete();
+      await ctx.sync();
+    });
+  };
+
   await step("Văn bản hành chính: dựng công văn đúng thể thức trong vùng thử, đọc lại cỡ chữ, kiểu chữ, đường kẻ; hoàn tác thì hết", async () => {
     const zone = async () => {
       const s = await need(START);
@@ -932,10 +958,10 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
         return { tables: ts.items.length, paras: ps.items.slice(s, e + 1).map((p) => ({ text: p.text, align: String(p.alignment), indent: p.firstLineIndent, font: p.font.name, size: p.font.size, bold: p.font.bold, italic: p.font.italic, inTable: p.tableNestingLevel > 0 })) };
       });
     };
+    const anchor = await addNeo();
     const before = await zone();
     const c0 = await countAll();
     const mark = log.length;
-    const anchor = await need(T.plain);
     const body = [`Công ty nhận được văn bản đề nghị cung cấp hồ sơ ${code} của Quý Sở.`, "## 1. Nội dung báo cáo", `Tiến độ thực hiện ${code} đạt 60% khối lượng.`, "Trân trọng."].join("\n");
     const r = await run("word_create_admin_document", {
       doc_type: "cong_van",
@@ -950,7 +976,7 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       page_setup: false,
       position: "after_paragraph",
       paragraph_index: anchor,
-      expect: T.plain.slice(0, 30),
+      expect: NEO.slice(0, 30),
     });
     expect(r.ok && Array.isArray(r.blanks), "Công cụ không trả danh sách chỗ trống");
     expect(r.blanks.some((b: string) => b.includes("số văn bản")) && r.blanks.some((b: string) => b.includes("họ tên người ký")), `Thiếu chỗ trống phải báo: ${r.blanks.join("; ")}`);
@@ -1004,6 +1030,7 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     expect(after.tables === before.tables, `Sau hoàn tác còn ${after.tables - before.tables} bảng thừa`);
     expect(after.paras.map((p) => p.text).join("\n") === before.paras.map((p) => p.text).join("\n"), "Chữ của vùng thử sau hoàn tác khác trước");
     expect(c2.changes === c0.changes, `Sửa đổi chờ duyệt: trước ${c0.changes}, sau hoàn tác ${c2.changes}`);
+    await dropNeo();
     return `Công văn: 2 bảng không viền, ${mid.paras.length - before.paras.length} đoạn, ${rules < 0 ? "không đo được đường kẻ" : rules + " đường kẻ"}, báo ${r.blanks.length} chỗ trống; hoàn tác sạch`;
   });
 
@@ -1037,9 +1064,9 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     const a = await read();
     expect(Math.abs(a.top - b.top) < 0.3 && Math.abs(a.left - b.left) < 0.3 && Math.abs(a.right - b.right) < 0.3 && Math.abs(a.bottom - b.bottom) < 0.3, `Hoàn tác không trả đúng lề cũ: ${JSON.stringify(a)} so với ${JSON.stringify(b)}`);
     // Định dạng đoạn theo chuẩn văn bản hành chính
-    const i = await need(T.plain);
+    const i = await addNeo();
     const mark2 = log.length;
-    await run("word_format_text", { paragraph_index: i, expect: T.plain.slice(0, 30), first_line_indent_mm: 10, space_after_pt: 6, line_spacing: 1.5 });
+    await run("word_format_text", { paragraph_index: i, expect: NEO.slice(0, 30), first_line_indent_mm: 10, space_after_pt: 6, line_spacing: 1.5 });
     const f = await Word.run(async (ctx) => {
       const ps = ctx.document.body.paragraphs;
       ps.load("items/firstLineIndent,items/spaceAfter,items/lineSpacing");
@@ -1050,6 +1077,7 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     expect(Math.abs(f.indent - 28.35) < 0.5 && Math.abs(f.after - 6) < 0.1 && Math.abs(f.line - 18) < 0.1, `Định dạng đoạn đọc lại: ${JSON.stringify(f)}`);
     for (const u of log.slice(mark2).reverse()) await u.undo();
     log.length = mark2;
+    await dropNeo();
     return `${msg}, hoàn tác về ${mm(a.left)} mm; thụt đầu dòng 10 mm, cách đoạn 6 pt, giãn dòng 1,5`;
   });
 
