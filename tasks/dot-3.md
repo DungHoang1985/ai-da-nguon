@@ -237,6 +237,7 @@ Anh nêu: "giao AI một việc mà số lần gọi AI nhảy lên mấy chục
 | Word: soạn một công văn đúng thể thức | 3 lần gọi | 3 lần gọi, 16/16 điểm đối chiếu | `32` |
 
 - `npm test` **423/423**, tsc sạch, đóng gói đạt. Tự kiểm tra trên bản cục bộ 4.3.1: Word **37/37** (`31`), Excel **23/23** (`30`), PowerPoint **21/21** (`29`).
+- **Phát hành 4.3.1 xong (16/11/2026, anh duyệt bằng ô tích chọn):** đẩy tiến thẳng `b28214f..29c7821` lên `main`; `gh-pages` "Bản chạy thật v4.3.1 (main@29c7821)"; Pages phục vụ `taskpane.9d752fd9.js`. Kiểm trên bản đã phát hành (`33`–`35`): đầu khung v4.3.1 ở cả ba khung; Tự kiểm tra Word **37/37**, Excel **23/23**, PowerPoint **21/21**; Chạy thật "lấy bảng Excel → 3 slide + 1 biểu đồ": **6 lần gọi AI**, 22 giây, khung hiện "1 nhiệm vụ · 6 lần gọi AI". Đã dọn: hội thoại thử, nguồn về Anthropic · Claude Opus 5.5, Office thử đã đóng, cổng 9229 đã đóng.
 - Chưa làm ở bản này (để phiên sau, đã ghi HANDOFF): đo và giảm bước cho các việc Excel nhiều thao tác; trần số bước theo loại việc; công cụ gộp "thêm nhiều slide trong một lệnh"; đo với model miễn phí (model yếu có thể không gộp lệnh).
 
 ### Việc B5
