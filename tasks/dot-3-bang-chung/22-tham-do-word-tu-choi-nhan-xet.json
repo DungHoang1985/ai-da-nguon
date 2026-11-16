@@ -1,0 +1,15 @@
+{
+ "thaoTacDauTienGayLoi": "không thao tác nào trong danh sách gây lỗi",
+ "nhatKy": [
+  "0. Trạng thái ban đầu (thêm một đoạn chữ làm chỗ neo) → chèn nhận xét: được",
+  "1. Bật theo dõi, chèn một đoạn, tắt theo dõi → chèn nhận xét: được",
+  "2. Chèn bảng 1×2 lúc đang theo dõi (After đoạn cuối) → chèn nhận xét: được",
+  "3. Xóa bảng đó khi đã tắt theo dõi (table.delete) → chèn nhận xét: được",
+  "4. Chèn bảng lúc đang theo dõi rồi xóa bằng parentTable của đoạn lấy theo định danh, theo dõi tắt → chèn nhận xét: được",
+  "5. Chèn đoạn có theo dõi rồi xóa đoạn đó theo định danh khi tắt theo dõi → chèn nhận xét: được",
+  "6. Chèn bảng TRƯỚC đoạn đầu lúc đang theo dõi (ô nhiều đoạn chèn Before), để nguyên → chèn nhận xét: được",
+  "7. body.clear() khi tắt theo dõi (văn bản đang có sửa đổi chờ duyệt và bảng), rồi thêm lại đoạn neo → chèn nhận xét: được",
+  "8. Chèn bảng sau một ĐOẠN RỖNG lúc đang theo dõi (ca bảng nuốt đoạn rỗng) → chèn nhận xét: được",
+  "9. Từ chối mọi sửa đổi chờ duyệt (rejectAll) → chèn nhận xét: được"
+ ]
+}
