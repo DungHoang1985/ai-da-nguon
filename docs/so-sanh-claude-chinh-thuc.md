@@ -1,10 +1,12 @@
-# So sánh AI Đa Nguồn (v4.1.0) với add-in Claude chính thức
+# So sánh AI Đa Nguồn (v4.2.0) với add-in Claude chính thức
 
 Cập nhật 15/11/2026 (bước 9 Đợt 0A): sửa theo mục 7 của `tasks/ke-hoach-v4.md` sau khi đối chiếu lại 13 trang tài liệu chính thức (bản `.md`) và tệp `pivot.claude.ai/shortcuts.json` tải từ máy cùng ngày. Số dòng 1–55 giữ nguyên như bản 14/11; dòng 56–67 là khả năng mới của bản chính thức. Cập nhật 15/11/2026 buổi chiều (Đợt 0B, bản 3.7.0): sửa dòng 5, 9, 61, 66 và cột Bằng chứng của dòng 7, 8, 10, 13, 15, 22 sau khi kiểm bản 3.7.0 trong Office (bằng chứng: `tasks/dot-0b-bang-chung/`).
 
 Cập nhật 15/11/2026 buổi tối (Đợt 1A, bản 4.0.0, đã phát hành cùng buổi và kiểm lại trên bản phát hành: Tự kiểm tra Word 30/30): sửa các dòng 5, 37, 40, 41, 43, 44, 45, 46, 57 theo kết quả kiểm trong Word thật bằng bản đóng gói cục bộ nạp vào khung add-in (`tasks/dot-1a.md`, bằng chứng `tasks/dot-1a-bang-chung/`). Bài đối chiếu trực tiếp với add-in Claude chính thức chưa chạy (cần anh ngồi trước máy).
 
 Cập nhật 15/11/2026 đêm (Đợt 1B, bản 4.1.0, đã phát hành cùng đêm và kiểm lại trên bản phát hành: Tự kiểm tra Word 34/34): sửa các dòng 4, 10, 34, 47, 48, 58, 60 theo kết quả kiểm trong Word thật bằng bản đóng gói cục bộ nạp vào khung add-in rồi bằng bản đã phát hành (`tasks/dot-1b.md`, bằng chứng `tasks/dot-1b-bang-chung/`): Tự kiểm tra Word 34/34, Chạy thật với Claude Haiku 5.5.
+
+Cập nhật 16/11/2026 (Đợt 2, bản 4.2.0 — đăng nhập và chi phí): sửa dòng 1 và 2 (`tasks/dot-2.md`, bằng chứng `tasks/dot-2-bang-chung/`). Đã kiểm trong Word thật bằng bản đóng gói cục bộ: hộp thoại đăng nhập của Office mở đúng trang OpenRouter với đúng tham số, đường về gửi mã về khung, lối dán mã nhận và từ chối đúng, thẻ hạn mức đọc được, thông báo hết tiền (Chạy thật với tài khoản Gemini hết tiền). Bước đăng nhập thật, dán mã thật và đăng xuất với khóa thật cần anh ngồi trước máy: chưa kiểm được ở thời điểm viết.
 
 ## Cách đọc cột "Bằng chứng"
 
@@ -23,8 +25,8 @@ Nguồn (viết tắt ở cột 2): [X] Excel · [W] Word · [P] PowerPoint · [
 | # | Khả năng | Bản chính thức | AI Đa Nguồn | Bằng chứng | Mức quan trọng (pháp lý – BĐS) |
 |---|---|---|---|---|---|
 | | **CHUNG** | | | | |
-| 1 | Đăng nhập bằng tài khoản Claude, dùng hạn mức của gói | Có [X][W][P] | **Không làm được** (chỉ ứng dụng của Anthropic được dùng đăng nhập này; xem kế hoạch, phần đăng nhập) | — | Cao |
-| 2 | Kết nối bằng token/key, không cần tài khoản Claude | Có, qua "Cloud provider or gateway" [3P] | **Có** — nhập key của 11 nhà cung cấp | Chạy thật: Kiểm tra nhà cung cấp 15/11 đạt 4 nguồn (Groq, Anthropic, Cerebras, Cohere) | Cao |
+| 1 | Đăng nhập bằng tài khoản Claude, dùng hạn mức của gói | Có [X][W][P] | **Không làm được** (chỉ ứng dụng của Anthropic được dùng đăng nhập này; xem kế hoạch, phần đăng nhập). Thay thế: tín dụng API kèm gói Max / Ultra / Team (đối chiếu tài liệu 15/11/2026: Max 100 USD mỗi tháng) dùng qua key Anthropic dán vào add-in; từ bản 4.2 add-in nhận ra thông báo hết tín dụng và gợi ý đổi nguồn | Hết tín dụng: Kiểm thử máy (câu lỗi trong tài liệu chính thức). Nhận tín dụng và xem số dư giảm: chưa kiểm được (cần anh ở máy) | Cao |
+| 2 | Kết nối bằng token/key, không cần tài khoản Claude | Có, qua "Cloud provider or gateway" [3P] | **Có** — nhập key của 11 nhà cung cấp. Từ bản 4.2, riêng OpenRouter: **đăng nhập một lần bấm** trong hộp thoại của Office (không phải chép key), lối dự phòng chép mã từ trang rồi dán, **thẻ hạn mức** (số dư, trần của key, mức đã dùng, số lượt miễn phí còn trong ngày, cảnh báo khi thấp), nút Đăng xuất; lỗi key sai / hết hạn / hết tiền của mọi nguồn báo bằng tiếng Việt kèm nút Đổi nguồn, hội thoại giữ nguyên | Chạy thật: Kiểm tra nhà cung cấp 15/11 đạt 4 nguồn (Groq, Anthropic, Cerebras, Cohere). Bản 4.2 (16/11, trong Word): hộp thoại mở đúng trang và tham số, đường về và lối dán mã thử bằng mã giả; thẻ hạn mức đọc bằng key thật; hết tiền: Chạy thật với Gemini. Đăng nhập thật, dán mã thật, đăng xuất với khóa thật: chưa kiểm được (cần anh ở máy) | Cao |
 | 3 | Chọn model | Có, danh sách Claude chọn lọc [X] | **Có**, rộng hơn (cả model miễn phí); nhớ model theo từng nguồn | Chạy thật (Anthropic, Groq): đổi qua lại hai nguồn, mỗi nguồn về đúng model đã dùng | Cao |
 | 4 | AI tự đọc và sửa tài liệu qua nhiều bước | Có | **Có** (58 công cụ) | Tự kiểm tra + Chạy thật | Cao |
 | 5 | Hỏi xác nhận trước thao tác rủi ro; cảnh báo trước khi ghi đè | Có [X][W] | **Có** từ bản 3.7 — Excel, PowerPoint: có. Word: hỏi khi xóa đoạn (từ bản 4.0 hộp xác nhận hiện trích nội dung từng đoạn sắp xóa), chấp nhận/từ chối tất cả sửa đổi, ghi đè ô bảng đang có dữ liệu, thay vùng chọn lớn (từ 3 đoạn hoặc 1.000 ký tự), thay quá 5 chỗ một lúc; bản 4.0 thêm: xóa hết chữ một đoạn, xóa một cụm ở nhiều chỗ | Tự kiểm tra (Excel, PowerPoint). Word: Tự kiểm tra bản 4.0 (bốn bước cảnh báo đạt, trong đó hộp xóa đoạn hiện đúng trích nội dung) + Chạy thật 15/11 (ghi đè ô bảng) | Cao |

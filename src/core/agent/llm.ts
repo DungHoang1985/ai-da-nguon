@@ -1,7 +1,7 @@
 /** Gọi model một bước, có khai báo công cụ, nhận chữ chạy dần + các lệnh gọi công cụ. 3 kiểu API: OpenAI-compatible, Anthropic, Gemini. */
 import { Provider } from "../providers";
 import { anthropicHeaders } from "../models";
-import { ApiError, ensureOk, explainApiError, fetchDiagnosed, isRetryable } from "../errors";
+import { ApiError, ensureOk, explainApiError, fetchDiagnosed, isRetryable, maskSecrets } from "../errors";
 import { createSSEParser } from "../sse";
 import { AgentMessage, RawAssistant, StepResult, ToolCall, ToolSpec, Usage } from "./types";
 import { prepareHistory } from "./history";
@@ -372,7 +372,7 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void,
         // Lỗi về key hoặc tiền báo giữa luồng (OpenRouter: hết credit sau khi đã trả 200): dùng câu của lý do, không thử lại
         const x = explainApiError(status, String(msg), { provider, body: j });
         if (x.reason) throw new ApiError(x.text, status, undefined, x.reason);
-        const err = new ApiError(`Nhà cung cấp báo lỗi: ${msg}`, status);
+        const err = new ApiError(`Nhà cung cấp báo lỗi: ${maskSecrets(String(msg))}`, status);
         if (x.transient) err.transient = true;
         throw err;
       }

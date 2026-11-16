@@ -488,7 +488,16 @@ describe("Đợt 2 — phân loại lỗi key và tiền", () => {
     err.transient = x.transient;
     assert.ok(isRetryable(err));
     assert.strictEqual(classifyError(403, "Budget exceeded", mk("openrouter_workspace_budget")).reason, "key_limit");
-    assert.strictEqual(classifyError(402, "This request requires more credits, or fewer max_tokens. You requested up to 4096 tokens, but can only afford 120.").reason, "no_credit");
+  });
+
+  it("OpenRouter 402 “requires more credits, or fewer max_tokens… can only afford N”: còn tiền nhưng thiếu cho yêu cầu này, không báo là hết tiền", () => {
+    const d = "This request requires more credits, or fewer max_tokens. You requested up to 4096 tokens, but can only afford 120.";
+    assert.strictEqual(classifyError(402, d).reason, "low_credit");
+    // Kể cả khi OpenRouter gắn nguồn giới hạn là credit
+    assert.strictEqual(classifyError(402, d, { error: { code: 402, message: d, metadata: { limit_source: "openrouter_credits" } } }).reason, "low_credit");
+    const x = explainApiError(402, d, { provider: OR });
+    assert.match(x.text, /số dư còn ít.*chưa hết tiền/);
+    assert.ok(!/đã hết tiền/.test(x.text));
   });
 
   it("OpenRouter: hết lượt miễn phí trong ngày (429) — không phải hết tiền, không thử lại; hết lượt theo phút vẫn thử lại", () => {

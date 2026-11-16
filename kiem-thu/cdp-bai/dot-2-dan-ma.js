@@ -43,6 +43,23 @@ await sleep(300);
 confirm().click();
 await sleep(600);
 out.b2_diaChiKhongCoMa = status();
+// Dán nhầm một chuỗi có dạng API key của nhà cung cấp khác (chuỗi giả): phải bị từ chối tại chỗ, không gửi đi đâu
+let goiMang = 0;
+const realFetch = window.fetch;
+window.fetch = (...a) => {
+  goiMang++;
+  return realFetch(...a);
+};
+try {
+  setNative(box, "AIza" + "x".repeat(35));
+  await sleep(300);
+  confirm().click();
+  await sleep(700);
+} finally {
+  window.fetch = realFetch;
+}
+out.b2_danNhamKeyNguonKhac = status();
+out.b2_soLanGoiMangKhiDanNhamKey = goiMang;
 setNative(box, "ma-gia-0123456789abcdef");
 await sleep(300);
 confirm().click();

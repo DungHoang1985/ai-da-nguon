@@ -75,13 +75,14 @@ export async function fetchKeyInfo(
   p: Provider,
   key: string,
   o: { fetchFn?: typeof fetch; tryBalance?: boolean; now?: number; signal?: AbortSignal } = {}
-): Promise<{ info: KeyInfo; balanceAllowed: boolean }> {
+): Promise<{ info: KeyInfo; balanceAllowed: boolean | undefined }> {
   const fetchFn = o.fetchFn || fetch;
   const a = keyInfoRequest(p, key);
   const res = await fetchDiagnosed(p, a.url, { ...a.init, signal: o.signal }, fetchFn);
   await ensureOk(res, p);
   const info = parseKeyInfo(await res.json(), o.now ?? Date.now());
-  let balanceAllowed = false;
+  // true = xem được; false = máy chủ nói rõ key này không được xem (401/403); undefined = chưa biết (không hỏi, mất mạng, máy chủ lỗi)
+  let balanceAllowed: boolean | undefined;
   if (o.tryBalance) {
     try {
       const b = creditsRequest(p, key);
@@ -92,9 +93,9 @@ export async function fetchKeyInfo(
           info.balance = bal;
           balanceAllowed = true;
         }
-      }
+      } else if (r.status === 401 || r.status === 403) balanceAllowed = false;
     } catch {
-      /* không xem được số dư: thẻ vẫn hiện phần còn lại */
+      /* không xem được số dư lần này: thẻ vẫn hiện phần còn lại, lần sau thử lại */
     }
   }
   return { info, balanceAllowed };
@@ -143,7 +144,10 @@ export function describeKeyInfo(info: KeyInfo, o: { balanceAllowed?: boolean } =
     lines.push("Số dư tài khoản: key này không được xem (OpenRouter chỉ cho khóa quản lý xem). Bấm “Xem số dư” để mở trang của OpenRouter.");
   }
 
-  if (info.limit !== null) {
+  if (info.limit !== null && info.limitRemaining === null) {
+    // Có trần mà máy chủ không báo còn lại bao nhiêu: không đoán là đã hết
+    lines.push(`Trần của key: ${usd(info.limit)}`);
+  } else if (info.limit !== null) {
     const left = info.limitRemaining ?? 0;
     lines.push(`Trần của key: còn ${usd(left)} trên ${usd(info.limit)}`);
     if (left <= 0) {
@@ -183,7 +187,8 @@ export function describeKeyInfo(info: KeyInfo, o: { balanceAllowed?: boolean } =
 export function chatCreditWarning(info: KeyInfo | undefined, o: { freeModel?: boolean; balanceAllowed?: boolean } = {}): { text: string; level: CreditLevel } | undefined {
   if (!info) return undefined;
   if (info.balance !== undefined && info.balance < 0) return { level: "out", text: "OpenRouter: số dư tài khoản đang âm, mọi yêu cầu sẽ bị từ chối cho tới khi nạp thêm." };
-  if (info.limit !== null && (info.limitRemaining ?? 0) <= 0) return { level: "out", text: "OpenRouter: key đã chạm trần chi tiêu. Nâng trần hoặc đăng nhập lại trong Cài đặt." };
+  const capLeft = info.limit !== null && info.limitRemaining !== null ? info.limitRemaining : undefined;
+  if (capLeft !== undefined && capLeft <= 0) return { level: "out", text: "OpenRouter: key đã chạm trần chi tiêu. Nâng trần hoặc đăng nhập lại trong Cài đặt." };
   const f = info.free;
   if (o.freeModel && f && f.limit !== undefined) {
     const left = f.remaining ?? Math.max(0, f.limit - (f.used ?? 0));
@@ -191,7 +196,7 @@ export function chatCreditWarning(info: KeyInfo | undefined, o: { freeModel?: bo
     if (left <= LOW_FREE_REQUESTS) return { level: "warn", text: `OpenRouter: còn ${left}/${f.limit} lượt model miễn phí hôm nay.` };
   }
   if (!o.freeModel) {
-    if (info.limit !== null && (info.limitRemaining ?? 0) < LOW_USD) return { level: "warn", text: `OpenRouter: trần của key còn ${usd(info.limitRemaining ?? 0)}.` };
+    if (capLeft !== undefined && capLeft < LOW_USD) return { level: "warn", text: `OpenRouter: trần của key còn ${usd(capLeft)}.` };
     if (info.balance !== undefined && info.balance < LOW_USD) return { level: "warn", text: `OpenRouter: số dư tài khoản còn ${usd(info.balance)}.` };
   }
   return undefined;

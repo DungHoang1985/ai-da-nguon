@@ -44,6 +44,14 @@ Thẻ OpenRouter sau khi đổi mã (số model thay bằng "n"):
 - Thẻ: "Đã xóa khóa OpenRouter khỏi máy này. Khóa vẫn còn hiệu lực ở phía OpenRouter cho tới khi anh xóa nó ở trang quản lý key." kèm đường dẫn "Mở trang quản lý key của OpenRouter" và lại hiện nút `Đăng nhập OpenRouter`.
 - Kho lưu sau đó: `aidn.keys` = `{}`, `aidn.models` = `{}`; không mục nào còn chứa key giả. Khung chat quay về màn chào.
 
+## G. Nút "Mở trang lấy mã trong trình duyệt" (chạy lại sau khi sửa lỗi nút Xác nhận mã bị khóa)
+
+Thay tạm `window.open` bằng hàm ghi lại địa chỉ (ngoài Office add-in dùng `window.open`; trong Office dùng `Office.context.ui.openBrowserWindow`).
+
+- Địa chỉ được mở: `openrouter.ai/auth` với `code_challenge=<43 ký tự>`, `code_challenge_method=S256`, `key_label=AI Da Nguon (Office)`; **không có** `callback_url`, **không có** `state` (đúng lối "nhà cung cấp hiện mã để chép").
+- Thẻ: "Đã mở trang OpenRouter trong trình duyệt. Bấm Authorize, chép mã trên trang rồi dán vào ô bên dưới (mã dùng trong 10 phút)."
+- Sau đó gõ vào ô dán mã: nút `Xác nhận mã` **bật**; bấm với `ma co dau cach` → "Mã không hợp lệ…".
+
 ## Dọn dẹp
 
 Đã xóa mọi mục `aidn.*` của kho thử `127.0.0.1:8765` sau bài. Kho `localhost:8765` (dữ liệu của các đợt trước) không đụng tới, không đọc giá trị.

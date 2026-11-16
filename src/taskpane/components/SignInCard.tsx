@@ -51,6 +51,8 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
   const [ready, setReady] = React.useState(false);
   const dialogRef = React.useRef<DialogHandle | null>(null);
   const aliveRef = React.useRef(true);
+  /** Tăng khi Đăng xuất: lượt đổi mã hay kiểm key đang chờ máy chủ từ trước đó không được lưu khóa nữa */
+  const epochRef = React.useRef(0);
 
   const renew = React.useCallback(async () => {
     sessionRef.current = null;
@@ -76,6 +78,7 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
 
   /** Lưu key vừa nhận rồi tải danh sách model */
   const adopt = async (rawKey: string, how: string) => {
+    const epoch = epochRef.current;
     const k = cleanKey(rawKey);
     const problem = keyProblem(k);
     if (!k || problem) {
@@ -96,6 +99,8 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
         }
       }
     }
+    // Người dùng đã bấm Đăng xuất trong lúc chờ: không lưu khóa này
+    if (epoch !== epochRef.current) return false;
     storage.setKey(p.id, k);
     invalidateKeyInfo(p.id);
     setStatus({ kind: "busy", text: "Đã nhận khóa, đang tải danh sách model…" });
@@ -117,12 +122,16 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
       setStatus({ kind: "err", text: "Lần đăng nhập này đã kết thúc. Bấm đăng nhập lại." });
       return;
     }
+    // Mã đã về (qua hộp thoại hoặc dán tay): cửa sổ đăng nhập còn mở thì đóng, nó gắn với cặp mã sắp bị thay
+    dialogRef.current?.close();
+    dialogRef.current = null;
+    const epoch = epochRef.current;
     setStatus({ kind: "busy", text: `Đang đổi mã lấy khóa ${p.name}…` });
     try {
       const key = await exchangeCode(p, code, session.verifier);
-      await adopt(key, "Đã đăng nhập");
+      if (epoch === epochRef.current) await adopt(key, "Đã đăng nhập");
     } catch (e: any) {
-      setStatus({ kind: "err", text: String(e?.message || "Không đổi được mã đăng nhập.") });
+      if (epoch === epochRef.current) setStatus({ kind: "err", text: String(e?.message || "Không đổi được mã đăng nhập.") });
     } finally {
       await renew();
     }
@@ -159,7 +168,12 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
   const openCodePage = () => {
     const session = sessionRef.current;
     if (!session || !p.oauth) return;
-    const ok = openInBrowser(buildAuthUrl(p.oauth, { challenge: session.challenge }));
+    let ok = false;
+    try {
+      ok = openInBrowser(buildAuthUrl(p.oauth, { challenge: session.challenge }));
+    } catch {
+      ok = false;
+    }
     setStatus(
       ok
         ? { kind: "info", text: `Đã mở trang ${p.name} trong trình duyệt. Bấm Authorize, chép mã trên trang rồi dán vào ô bên dưới (mã dùng trong 10 phút).` }
@@ -196,14 +210,20 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
 
   /** Đăng xuất: xóa khóa và danh mục model của nguồn này khỏi kho của add-in */
   const signOut = () => {
+    epochRef.current++;
     dialogRef.current?.close();
     dialogRef.current = null;
     storage.removeKey(p.id);
     invalidateKeyInfo(p.id);
-    setStatus({
-      kind: "ok",
-      text: `Đã xóa khóa ${p.name} khỏi máy này. Khóa vẫn còn hiệu lực ở phía ${p.name} cho tới khi anh xóa nó ở trang quản lý key.`,
-    });
+    // Đọc lại kho: chỉ báo "đã xóa" khi khóa thật sự không còn (ghi kho có thể thất bại mà không báo lỗi)
+    if (storage.getKey(p.id)) {
+      setStatus({ kind: "err", text: `Chưa xóa được khóa ${p.name} trên máy này (kho lưu của Office không ghi được). Đóng rồi mở lại khung add-in và thử lại.` });
+    } else {
+      setStatus({
+        kind: "ok",
+        text: `Đã xóa khóa ${p.name} khỏi máy này. Khóa vẫn còn hiệu lực ở phía ${p.name} cho tới khi anh xóa nó ở trang quản lý key.`,
+      });
+    }
     onChanged();
   };
 
@@ -223,7 +243,7 @@ export const LoginControls: React.FC<{ p: Provider; signIn: SignIn; primaryLabel
   return (
     <div className={s.box}>
       <div className={s.row}>
-        <Button appearance="primary" onClick={signIn.signInWithDialog} disabled={!signIn.ready}>
+        <Button appearance="primary" onClick={signIn.signInWithDialog} disabled={!signIn.ready || busy}>
           {primaryLabel || `Đăng nhập ${p.name}`}
         </Button>
         {!signIn.ready && <Spinner size="tiny" />}
@@ -235,7 +255,7 @@ export const LoginControls: React.FC<{ p: Provider; signIn: SignIn; primaryLabel
         Cửa sổ không mở hoặc không đăng nhập được? Dùng lối dán mã:
       </Text>
       <div className={s.row}>
-        <Button size="small" onClick={signIn.openCodePage} disabled={!signIn.ready}>
+        <Button size="small" onClick={signIn.openCodePage} disabled={!signIn.ready || busy}>
           Mở trang lấy mã trong trình duyệt
         </Button>
       </div>
@@ -390,7 +410,23 @@ const SignInCard: React.FC<Props> = ({ p, storage, onChanged }) => {
               </Button>
             </div>
           )}
-          {relogin && <LoginControls p={p} signIn={signIn} primaryLabel="Đăng nhập lại" />}
+          {relogin && (
+            <>
+              <Text size={200} className={s.muted}>
+                Mỗi lần đăng nhập, {p.name} cấp một khóa mới và add-in dùng khóa đó thay khóa đang lưu. Khóa cũ vẫn còn hiệu lực ở phía {p.name} cho tới khi
+                anh xóa nó ở trang quản lý key.
+                {p.manageKeysUrl && (
+                  <>
+                    {" "}
+                    <Link href={p.manageKeysUrl} target="_blank">
+                      Mở trang quản lý key
+                    </Link>
+                  </>
+                )}
+              </Text>
+              <LoginControls p={p} signIn={signIn} primaryLabel="Đăng nhập lại" />
+            </>
+          )}
         </>
       ) : (
         <>

@@ -10,6 +10,7 @@
  *  Quy tắc an toàn: mã kiểm chỉ nằm trong bộ nhớ của khung (không ghi kho lưu, không vào địa chỉ trang); thông báo lỗi
  *  không bao giờ chứa mã đăng nhập, mã kiểm hay key; trang hộp thoại chỉ chuyển tới đúng tên miền khai trong cấu hình. */
 import type { OAuthConfig, Provider } from "./providers";
+import { maskSecrets } from "./errors";
 
 export const CHALLENGE_METHOD = "S256";
 /** Mã đăng nhập của nhà cung cấp hết hạn sau 10 phút (tài liệu OpenRouter) */
@@ -148,14 +149,20 @@ export function extractCode(pasted: string, p?: Provider): PastedCode {
     return { kind: "invalid", reason: "Địa chỉ vừa dán không chứa mã. Chép riêng mã hiện trên trang rồi dán lại." };
   } else code = cleanCode(raw);
   if (!code) return { kind: "invalid", reason: "Mã không hợp lệ (có dấu cách, xuống dòng hoặc ký tự lạ). Chép lại mã trên trang rồi dán lại." };
-  if (looksLikeApiKey(code, p)) return { kind: "key", key: code };
+  // Dán nhầm API key vào ô mã: không bao giờ gửi nó đi làm "mã" (soát mã độc lập 16/11/2026, T2)
+  if (looksLikeApiKey(code)) {
+    if (p?.id === "openrouter" && /^sk-or-/i.test(code)) return { kind: "key", key: code };
+    return {
+      kind: "invalid",
+      reason: `Chuỗi vừa dán là API key${p ? `, không phải mã đăng nhập ${p.name}` : ""}. Key của nhà cung cấp nào thì dán vào ô “Dán API key” của nhà cung cấp đó trong Cài đặt.`,
+    };
+  }
   return { kind: "code", code };
 }
 
-/** Người dùng dán API key vào ô mã (key OpenRouter bắt đầu bằng sk-or-) */
-export function looksLikeApiKey(s: string, p?: Provider): boolean {
-  if (/^sk-or-/i.test(s)) return true;
-  return !p && /^sk-[A-Za-z0-9_-]{20,}$/.test(s);
+/** Chuỗi có dạng API key của một nhà cung cấp đã biết (OpenRouter, OpenAI, Anthropic, DeepSeek: sk-…; Gemini: AIza…; Groq: gsk_…; …) */
+export function looksLikeApiKey(s: string): boolean {
+  return /^(sk-|AIza|gsk_|xai-|csk-|nvapi-|pplx-|r8_|hf_)/.test(s);
 }
 
 /** Lỗi của luồng đăng nhập. `message` là câu tiếng Việt cho người dùng, không bao giờ chứa mã, mã kiểm hay key. */
@@ -175,8 +182,8 @@ export class OAuthError extends Error {
 export function redact(text: string, secrets: (string | undefined)[]): string {
   let out = String(text ?? "");
   for (const s of secrets) if (s && s.length >= 4) out = out.split(s).join("…");
-  // Phòng khi máy chủ nhắc lại một key
-  return out.replace(/sk-[A-Za-z0-9_-]{8,}/g, "sk-…");
+  // Phòng khi máy chủ nhắc lại một key (mọi dạng key đã biết)
+  return maskSecrets(out);
 }
 
 export function exchangeRequest(cfg: OAuthConfig, code: string, verifier: string): { url: string; init: RequestInit } {

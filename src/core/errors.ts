@@ -11,6 +11,8 @@ export type ErrorReason =
   | "key_expired"
   /** Chạm trần chi tiêu đặt cho key, workspace hoặc tổ chức */
   | "key_limit"
+  /** OpenRouter: còn tiền nhưng không đủ cho độ dài trả lời tối đa của yêu cầu này */
+  | "low_credit"
   /** OpenRouter: hết lượt dùng model miễn phí trong ngày */
   | "free_limit"
   /** Anthropic: key chưa gắn workspace */
@@ -43,12 +45,32 @@ export function isRetryable(e: unknown): boolean {
   return typeof s === "number" && (s === 429 || s >= 500);
 }
 
-const NO_CREDIT =
-  /(credit balance is too low|prepayment credits are depleted|credits? (are|is|have been|has been) (depleted|exhausted|used up)|insufficient[ _-]?(balance|credits?|funds|quota)|out of credits?|not enough credits?|requires more credits|can only afford|negative (credit )?balance|payment required|billing[ _](hard[ _])?limit|purchase (more )?credits|add more credits|exceeded your current quota)/i;
-const FREE_DAILY = /(free[- ]models?[- ]per[- ]day|free model (requests? )?(daily|per day)|daily limit[^.]*free)/i;
+/** Che mọi thứ trông như API key trong một câu trước khi hiện, chép hay lưu (soát mã độc lập 16/11/2026, T1):
+ *  câu lỗi của nhà cung cấp có thể nhắc lại key, mà thông báo lỗi được hiện trên khung, vào nút "Chép chi tiết lỗi"
+ *  và được lưu cùng hội thoại. Che cả dạng nhà cung cấp đã che dở (sk-proj-****abcd). */
+export function maskSecrets(text: string): string {
+  return String(text ?? "")
+    .replace(/\bsk-[A-Za-z0-9_*.\-]{6,}/g, "sk-…")
+    .replace(/\bAIza[A-Za-z0-9_\-]{16,}/g, "AIza…")
+    .replace(/\b(gsk|xai|csk|nvapi|pplx|r8|hf)[_-][A-Za-z0-9_\-]{8,}/g, "$1_…")
+    .replace(/\b(Bearer)\s+[A-Za-z0-9._~+/\-]{12,}=*/gi, "$1 …")
+    .replace(/\b(api[ _-]?key|x-api-key|x-goog-api-key|access[ _-]?token|token)(['"]?\s*[:=]\s*['"]?)[A-Za-z0-9._~+/\-]{16,}/gi, "$1$2…");
+}
+
+/** Dấu hiệu chắc chắn của hết tiền: nhận ở mọi mã trạng thái */
+const NO_CREDIT_HARD =
+  /(credit balance is too low|prepayment credits are depleted|credits? (are|is|have been|has been) (depleted|exhausted|used up)|insufficient[ _-]?(balance|credits?|funds)|out of credits?|not enough credits?|negative (credit )?balance)/i;
+/** Dấu hiệu mềm: chỉ nhận khi mã trạng thái không phải 429 (câu báo hết hạn mức hay kèm lời mời "purchase credits") */
+const NO_CREDIT_SOFT = /(payment required|billing[ _](hard[ _])?limit|purchase (more )?credits|add more credits)/i;
+/** OpenRouter: còn tiền nhưng không đủ cho độ dài trả lời tối đa của yêu cầu này */
+const LOW_CREDIT = /(requires more credits|can only afford|fewer max_tokens)/i;
+const FREE_DAILY = /free[- ]models?[- ]per[- ]day/i;
+/** 401: mọi chữ này đều nghĩa là key không còn dùng được */
 const KEY_GONE = /(expired|revoked|disabled|deactivated|inactive|been deleted|was deleted|archived|reported as leaked|has been blocked)/i;
+/** 400 / 403: chỉ nhận khi chữ đó nói về chính key (đứng ngay sau "key" hoặc "token" trong cùng câu) */
+const KEY_GONE_OF_KEY = /\b(api[ _-]?key|key|token)\b[^.]{0,40}\b(expired|revoked|disabled|deactivated|inactive|deleted|archived|leaked|blocked)\b/i;
 const KEY_BAD =
-  /(invalid (x-)?api[ _-]?key|incorrect api key|api key not valid|api[ _-]?key[^.]{0,40}(invalid|not found|malformed)|invalid (authentication|credentials|bearer|token)|no auth credentials|user not found|authentication (failed|error)|unauthori[sz]ed|invalid_api_key|api_key_invalid)/i;
+  /(invalid (x-)?api[ _-]?key|incorrect api key|api key not valid|api[ _-]?key[^.]{0,40}(invalid|not found|malformed)|invalid (authentication|credentials|bearer|token)|no auth credentials|user not found|authentication (failed|error)|invalid_api_key|api_key_invalid)/i;
 const SPEND_LIMIT = /(specified (api |workspace )?usage limits?|spend(ing)? limit|key limit (exceeded|reached)|budget (limit|exceeded|exhausted)|usage cap)/i;
 const RESTRICTED = /(only available|not available|not allowed|not permitted|agentic|your region|country|verif)/i;
 
@@ -59,12 +81,13 @@ export function classifyError(status: number | undefined, detail = "", body?: an
   const err = body && typeof body === "object" ? (body.error && typeof body.error === "object" ? body.error : body) : {};
   const type = String(err.type || "");
   const code = String(err.code ?? "");
-  const gStatus = String(err.status || "");
   const src = String(err.metadata?.limit_source || "");
   const reasons: string[] = Array.isArray(err.details) ? err.details.map((x: any) => String(x?.reason || "")) : [];
 
   // OpenRouter: nguồn của giới hạn nói rõ nhất
   if (src === "openrouter_in_flight_budget") return { transient: true };
+  // "requires more credits, or fewer max_tokens … can only afford N": còn tiền nhưng thiếu cho yêu cầu này, không phải hết tiền
+  if (LOW_CREDIT.test(detail)) return { reason: "low_credit" };
   if (src === "openrouter_credits") return { reason: "no_credit" };
   if (src === "openrouter_key_limit" || src === "openrouter_guardrail_budget" || src === "openrouter_workspace_budget") return { reason: "key_limit" };
 
@@ -73,16 +96,19 @@ export function classifyError(status: number | undefined, detail = "", body?: an
   if (/not scoped to a workspace/i.test(detail)) return { reason: "workspace" };
 
   if (FREE_DAILY.test(detail)) return { reason: "free_limit" };
-  // "exceeded your current quota": với OpenAI là hết tiền (mã insufficient_quota); với Gemini là hết hạn mức theo phút hoặc theo ngày
-  const geminiQuota = gStatus === "RESOURCE_EXHAUSTED" && /exceeded your current quota/i.test(detail) && !/depleted/i.test(detail);
+  // "exceeded your current quota": với OpenAI là hết tiền và có mã insufficient_quota (nhận ở dòng dưới); với Gemini là hết hạn mức
+  // theo phút hoặc theo ngày, tự thử lại được — nên câu này không nằm trong các mẫu hết tiền.
   if (type === "billing_error" || code === "insufficient_quota" || type === "insufficient_quota") return { reason: "no_credit" };
-  if (NO_CREDIT.test(detail) && !geminiQuota) return { reason: "no_credit" };
+  if (NO_CREDIT_HARD.test(detail)) return { reason: "no_credit" };
+  if (status !== 429 && NO_CREDIT_SOFT.test(detail)) return { reason: "no_credit" };
   if (status === 402) return { reason: "no_credit" };
   if (SPEND_LIMIT.test(detail)) return { reason: "key_limit" };
 
-  const aboutKey = KEY_BAD.test(detail) || KEY_BAD.test(code) || reasons.some((r) => /API_KEY/.test(r)) || /api[ _-]?key/i.test(detail);
-  if ((status === 400 || status === 401 || status === 403) && aboutKey && KEY_GONE.test(detail)) return { reason: "key_expired" };
-  if (reasons.includes("API_KEY_INVALID") || (status === 400 && KEY_BAD.test(detail) && /key/i.test(detail))) return { reason: "key_invalid" };
+  // 400 / 403: chỉ coi là lỗi về key khi câu nói rõ về key (có chữ "api key" ở đâu đó trong câu là chưa đủ — soát mã 16/11/2026, Th3)
+  const keyGone = KEY_GONE_OF_KEY.test(detail);
+  const apiKeyReason = reasons.some((r) => /API_KEY/.test(r));
+  if ((status === 400 || status === 403) && keyGone) return { reason: "key_expired" };
+  if (apiKeyReason || (status === 400 && KEY_BAD.test(detail) && /key/i.test(detail)) || KEY_BAD.test(code)) return { reason: "key_invalid" };
   if (status === 401) {
     // 401 còn được dùng khi model bị giới hạn nơi dùng (đo 15/11/2026, OpenRouter): để messageForStatus xử lý
     if (RESTRICTED.test(detail)) return {};
@@ -104,6 +130,11 @@ export function messageForReason(reason: ErrorReason, p?: Provider, detail = "")
         `${name}: tài khoản đã hết tiền (hết tín dụng) nên yêu cầu bị từ chối. ${keep}: ${swap}, hoặc nạp thêm ở trang của ${name}.` +
         (p?.kind === "anthropic" ? " Nếu anh đang dùng tín dụng API kèm gói Claude thì tín dụng kỳ này đã hết, kỳ sau có lại." : "") +
         d
+      );
+    case "low_credit":
+      return (
+        `${name}: số dư còn ít, không đủ cho độ dài trả lời tối đa của yêu cầu này (tài khoản chưa hết tiền). ` +
+        `Nạp thêm ở trang của ${name}, chọn model rẻ hơn, hoặc ${swap}. ${keep}.${d}`
       );
     case "key_invalid":
       return `Key không đúng: ${name} không nhận key này. Vào Cài đặt, dán lại key${relogin}.${d}`;
@@ -136,6 +167,8 @@ export function explainApiError(
   o: { provider?: Provider; body?: any } = {}
 ): { text: string; reason?: ErrorReason; transient?: boolean } {
   const c = classifyError(status, detail, o.body);
+  // Phân loại trên câu gốc, nhưng mọi câu đưa ra ngoài đều đã che key
+  detail = maskSecrets(detail);
   if (c.reason) return { text: messageForReason(c.reason, o.provider, detail), reason: c.reason };
   if (c.transient) {
     const d = detail ? ` (${detail.slice(0, 200)})` : "";
@@ -207,7 +240,8 @@ const HEADER_FAILED = /(ByteString|is an invalid header value|Invalid value|Head
 export function describeError(e: unknown, ctx: { provider?: Provider } = {}): ErrorInfo {
   const err = e as any;
   const name = ctx.provider?.name || "nhà cung cấp";
-  const raw = err?.message ? String(err.message) : String(e);
+  // Lớp chặn cuối: câu nào ra tới đây cũng được che key trước khi hiện, chép hoặc lưu cùng hội thoại
+  const raw = maskSecrets(err?.message ? String(err.message) : String(e));
   const detail = [
     `${err?.name || typeof e}: ${raw}`,
     err?.status ? `HTTP ${err.status}` : "",
@@ -217,7 +251,7 @@ export function describeError(e: unknown, ctx: { provider?: Provider } = {}): Er
     .filter(Boolean)
     .join("\n");
 
-  if (e instanceof ApiError) return { kind: "api", text: e.message, detail, status: e.status, reason: e.reason };
+  if (e instanceof ApiError) return { kind: "api", text: raw, detail, status: e.status, reason: e.reason };
   if (err?.name === "AbortError") return { kind: "aborted", text: "Đã dừng.", detail };
   if (e instanceof TypeError && HEADER_FAILED.test(raw)) {
     return {
