@@ -1,0 +1,14 @@
+== Đóng Word (tệp thử, không lưu), chờ 14 giây, rồi từ Excel yêu cầu ghi sang Word ==
+Da dong Word (tep thu, khong luu)
+{
+ "model": " Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "ketNoiTruoc": "Word — · PowerPoint ✓",
+ "ketNoiSau": "Word — · PowerPoint ✓",
+ "giay": 10,
+ "daHoi": [
+  "AI muốn: Ghi sang Word | Cho phép | Cho phép hết lần này | Bỏ qua → allow"
+ ],
+ "hoiGhiCheo": 1,
+ "canhBaoNoiDaSua": false,
+ "cuoiKhung": "AI Đa Nguồn\nv4.3\nWord — · PowerPoint ✓\nĐọc bảng ở sheet Tiến độ rồi ghi một đoạn tóm tắt tiến độ (3–4 câu, có số liệu kế hoạch và thực tế của từng hạng mục chậm) sang văn bản Word đang mở.\n✅ Đọc Tiến độ!A1:D6\n⚠️ Ghi sang Word — Chưa ghi được sang Word: khung AI Đa Nguồn ở Word chưa mở (hoặc Word chưa mở tệp). Nhờ người dùng mở Word cùng tệp cần ghi, bấm nút AI Đa Nguồn trên thẻ Home ở đó, rồi thử lại.\nTôi đã đọc bảng ở sheet Tiến độ (Tiến độ!A1:D6), nhưng chưa ghi được sang Word. Khung AI Đa Nguồn bên Word chưa mở hoặc chưa mở đúng tệp. Bạn mở tệp Word, bấm nút AI Đa Nguồn trên thẻ Home rồi nhờ tôi ghi lại, hoặc sao chép đoạn dưới đây:\n \n> Tóm tắt tiến độ\n> Hạng mục San nền đã hoàn thành 100% theo kế hoạch, trong khi bốn hạng mục khác đang chậm so với kế hoạch. Hạ tầng kỹ thuật đạt 62% so với kế hoạch 80% (chậm 18 điểm phần trăm do mưa), Thân khối A đạt 20% so với 35% (chậm 15 điểm do thiếu nhân công). Cảnh quan chưa khởi công, đạt 0% so với kế hoạch 10%, còn Móng khối A đạt 55% so với 60% (chậm 5 điểm). Cần bổ sung nhân công cho Thân khối A và đẩy nhanh Hạ tầng kỹ thuật để sớm đưa tiến độ về đúng kế hoạch.\n \nNguồn số liệu: Tiến độ!B2:C6 (kế hoạch và thực tế) và Tiến độ!D3:D5 (ghi chú nguyên nhân).\n \nLưu ý: đoạn trên có đề xuất \"bổ sung nhân công\" và \"đẩy nhanh\" là ý kiến của tôi, không có trong bảng. Bạn có muốn bỏ phần này không?\nToken: vào 33.461 · ra 1.745 · đọc từ bộ nhớ đệm 31.501 · ghi vào bộ nhớ đệm 1.952\nGhi vào ô đang chọn\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}
