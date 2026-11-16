@@ -44,7 +44,7 @@ import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, filesBase64Chars, readAttac
 import { clearAttachedFiles, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
-import { REDO_WITH_TOOLS, unverifiedWriteClaim } from "../../core/claims";
+import { REDO_WITH_TOOLS, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
 import { RefTarget, findRefs } from "../../core/refs";
 import { parseMarkdownTable } from "../../core/table";
 import { HostName, INSERT_LABEL, insertAnswer, readSelection } from "../../office/host";
@@ -690,10 +690,12 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
           } else if (ev.type === "tool_end") {
             const isWrite = !!hostTools?.specs.some((t) => t.name === ev.call.name && t.write);
             called.push(ev.call.name);
-            if (isWrite && ev.error) failedWrites++;
+            // Công cụ ghi báo lỗi, trả ok=false hoặc "thay 0 chỗ" thì tài liệu chưa đổi
+            const done = isWrite && writeSucceeded(ev.result, ev.error);
+            if (isWrite && !done) failedWrites++;
             patchLast((it) => ({
               ...it,
-              wrote: it.wrote || (isWrite && !ev.error),
+              wrote: it.wrote || done,
               segments: (it.segments || []).map((sg) =>
                 sg.type === "step" && sg.id === ev.call.id
                   ? { ...sg, status: ev.error ? "error" : "ok", detail: ev.error || ev.result?.message, brief: !ev.error && typeof ev.result?.brief === "string" ? ev.result.brief : undefined }

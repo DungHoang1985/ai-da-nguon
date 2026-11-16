@@ -1,0 +1,26 @@
+# Soát mã độc lập — phần A của Đợt 3 (bản 4.2.1)
+
+Ngày 16/11/2026. Một tác tử khác (không viết mã này) soát `git diff 0ba6322..d3a6478 -- src test`, tự viết và chạy thật khoảng 290 ca thử ngoài kho (172 ca cho phần nhận diện "nói đã sửa", 80 ca đầu vào xấu cho bản vẽ văn bản hành chính, 39 câu yêu cầu cho việc tự nạp kỹ năng). Phần Office.js chỉ suy từ đọc mã (tác tử không mở Office).
+
+Kết quả: **2 mức cao, 8 trung bình, 6 thấp. Đã sửa 15, để lại 1 (ghi rõ lý do).** Sau khi sửa: `npm test` 395/395, Tự kiểm tra Word 36/36, chạy lại các bài Chạy thật (tệp 02, 03a, 03b, 04).
+
+| # | Mức | Phát hiện | Xử lý |
+|---|---|---|---|
+| 1 | Cao | Cảnh báo "nói đã sửa" báo nhầm khi người dùng nhắc "chuyển nhượng", "căn hộ", "đặt cọc", "ghi chú" (bị coi là nhờ sửa) và AI kể lịch sử văn bản: "Hợp đồng đã được sửa đổi, bổ sung năm 2024 bởi Phụ lục 02" | Đã sửa: ý nhờ sửa chỉ tính động từ rõ nghĩa (từ đa nghĩa phải đi kèm đối tượng); câu kể lịch sử ("bởi", "theo phụ lục / luật", "năm …", "nhiều lần", "trước đây") và câu dẫn vào phần trình bày trong khung ("như sau", "dưới đây") không tính; câu hỏi "có cần sửa không", "đã sửa chưa" không phải lời nhờ sửa. Có kiểm thử chặn |
+| 2 | Cao | "Tôi đã …" báo nhầm ở lượt chỉ đọc: "Tôi đã ghi nhận 5 rủi ro", "Tôi đã căn cứ vào Điều 3", "Tôi đã bỏ qua phụ lục", "Tôi đã tạo bảng tóm tắt bên dưới", "ai đã sửa", "chúng tôi đã sửa" | Đã sửa: động từ đa nghĩa có điều kiện ("ghi" không phải ghi nhận / ghi chú, "bỏ" không phải bỏ qua, "căn" chỉ căn lề…, "chuyển" phải kèm đối tượng tài liệu); bỏ "ai", "trợ lý" khỏi chủ ngữ; chặn "chúng tôi". Có kiểm thử chặn (10 câu) |
+| 3 | Trung bình | Công cụ ghi trả `ok:false` hoặc "thay 0 chỗ" vẫn được tính là đã ghi → không cảnh báo | Đã sửa: `writeSucceeded` (lỗi, `ok:false`, `replaced:0` đều không tính), dùng trong khung chat |
+| 4 | Trung bình | Bỏ sót: "Sau khi kiểm tra, tôi đã sửa Điều 5", "Vì cần gấp nên tôi đã sửa…", "Tôi đã đề xuất và đã sửa…", "Đã in đậm tiêu đề", "Điều 5 đã bị xóa", "Điều 5: đã sửa" | Đã sửa: phủ định / điều kiện chỉ xét trong vế câu đứng ngay trước lời khẳng định; thêm dạng "… và / nhưng đã sửa", "đã bị", "<mục>: đã sửa", động từ in đậm, nhập…. Có kiểm thử chặn (11 câu) |
+| 5 | Trung bình | Câu bị động báo nhầm khi AI kể lại sửa đổi của đối tác sau một công cụ đọc thường | Đã sửa cùng mục 1 (câu có "bởi …", "ở bản ngày …" không tính) |
+| 6 | Trung bình | Đầu trang chỉ có ảnh / logo bị coi là trống → chèn số trang, bật "trang đầu khác" làm mất logo, Hoàn tác xóa luôn logo; văn bản chỉ có ảnh, ô điền mẫu bị coi là "văn bản trống" | Đã sửa: đếm cả ảnh và hình trong đầu trang (có thì không chèn số trang); "trống" phải không có bảng, ảnh, ô điền mẫu, hình |
+| 7 | Trung bình | Lỗi giữa chừng khi dựng văn bản để lại phần chèn dở không hoàn tác được | Đã sửa: bảng và đoạn được ghi vào danh sách ngay khi chèn; lỗi thì gỡ hết phần đã chèn rồi mới báo lỗi |
+| 8 | Trung bình | `page_setup: "true"` (chuỗi) đổi lề cả văn bản mà không hỏi | Đã sửa: `asBool` dùng chung cho công cụ và phần hỏi rủi ro |
+| 9 | Trung bình | `word_set_page_format` không hỏi dù đổi lề, khổ giấy cả văn bản | Đã sửa một phần theo đề xuất: hỏi kèm lý do khi văn bản có nhiều phần (section) hoặc có trang ngang sẽ bị xoay. Văn bản một phần, trang dọc: không hỏi (đổi lề là đúng việc người dùng nhờ, có Hoàn tác); kỹ năng dặn nêu số đo trước khi đổi |
+| 10 | Trung bình | Từ khóa tự nạp kỹ năng quá rộng ("nơi nhận", "kính gửi", "văn bản gửi", "biên bản làm việc" khớp yêu cầu về hợp đồng); mục B.3 của kỹ năng bảo tự sửa lề | Đã sửa: bỏ các từ khóa đó, thêm dạng có động từ soạn / viết / lập; B.3: chỉ nhờ kiểm thì không sửa, đổi lề phải nêu số đo trước, không áp chuẩn này cho hợp đồng. Có kiểm thử chặn (8 câu) |
+| 11 | Thấp | Tham số số học của `word_format_text` nhận chuỗi rỗng thành 0 | Đã sửa: chỉ nhận số thật trong khoảng, báo tham số bị bỏ |
+| 12 | Thấp | `doc_type: "Tờ trình"` (có dấu) bị coi là loại khác, câu lỗi sai hướng | Đã sửa: bỏ dấu trước khi so; câu lỗi nêu danh sách loại |
+| 13 | Thấp | Danh sách nơi nhận cắt dấu chấm của chữ viết tắt ("UBND TP."), ngày dạng 2026-01-05, số "Số 12", dòng "Lưu VT" sinh hai dòng Lưu, họ "Ông" bị cắt | Đã sửa cả; có kiểm thử chặn |
+| 14 | Thấp | Dấu "./." gắn sai chỗ khi đoạn cuối là đề mục hoặc kết bằng dấu hai chấm; body là mảng | Đã sửa; có kiểm thử chặn |
+| 15 | Thấp | Nhánh miễn phí có thể chọn bản Nemotron trả tiền khi không có model miễn phí | Đã sửa; có kiểm thử chặn |
+| 16 | Thấp | Chỉ xử lý 30 phần (section) đầu; số trang chỉ ở phần đầu; Word dưới WordApi 1.6 không có nhật ký Hoàn tác | **Để lại**: máy đang dùng có WordApi 1.9; văn bản hành chính hiếm khi quá 30 phần. Ghi ở "Giới hạn đã biết" |
+
+Đã kiểm, không có lỗi: cảnh báo không vào lịch sử gửi model hay lời nhắc hệ thống; lượt bị dừng hoặc lỗi không cảnh báo; thứ tự hoàn tác (gỡ nội dung trước, trả lề sau); Hoàn tác không xóa nhầm đoạn của người dùng (đối chiếu chữ đầu đoạn, đoạn rỗng chỉ xóa khi vẫn rỗng); chế độ Theo dõi thay đổi luôn được trả lại; bản vẽ không bao giờ có đường kẻ ở cuối ô hay bảng đứng sau đoạn rỗng với mọi đầu vào xấu đã thử; kỹ năng không có số hiệu văn bản pháp luật, chỉ nhắc công cụ có thật; không có đường nào mới đưa nội dung tài liệu hay khóa ra ngoài.

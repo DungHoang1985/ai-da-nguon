@@ -148,6 +148,17 @@ interface PageOptions {
   pageNumber: boolean;
 }
 
+/** Model yếu hay truyền "true", 1, "yes" thay cho true */
+export const asBool = (v: any): boolean | undefined => {
+  if (v === undefined || v === null || v === "") return undefined;
+  if (typeof v === "boolean") return v;
+  if (typeof v === "number") return v !== 0;
+  const t = String(v).trim().toLowerCase();
+  if (["true", "1", "yes", "y", "có", "co"].includes(t)) return true;
+  if (["false", "0", "no", "n", "không", "khong"].includes(t)) return false;
+  return undefined;
+};
+
 const num = (v: any, d: number, lo: number, hi: number) => {
   const n = Number(v);
   return Number.isFinite(n) && n >= lo && n <= hi ? n : d;
@@ -227,8 +238,13 @@ export function createWordAdminTools(d: Deps) {
           const first = secs.items[0];
           const h = first.getHeader("Primary" as any);
           h.load("text");
+          // Đầu trang chỉ có ảnh hoặc hình (logo) thì chữ rỗng: phải đếm cả ảnh, hình, nếu không số trang và "trang đầu khác" làm mất logo
+          const pics = h.inlinePictures;
+          pics.load("items");
+          const floats = d.supports("1.2", "WordApiDesktop") ? h.shapes : null;
+          floats?.load("items");
           await ctx.sync();
-          if (h.text.replace(/[\s\u0001-\u001f]/g, ""))
+          if (h.text.replace(/[\s\u0001-\u001f]/g, "") || pics.items.length || floats?.items.length)
             numberNote = " Đầu trang đang có nội dung nên không chèn số trang.";
           else {
             const hp = h.paragraphs.getFirst();
@@ -298,7 +314,7 @@ export function createWordAdminTools(d: Deps) {
     bottomMm: num(a.bottom_mm, ADMIN_PAGE.bottomMm, 5, 80),
     leftMm: num(a.left_mm, ADMIN_PAGE.leftMm, 5, 80),
     rightMm: num(a.right_mm, ADMIN_PAGE.rightMm, 5, 80),
-    a4: a.a4 !== false,
+    a4: asBool(a.a4) !== false,
     pageNumber,
   });
 
@@ -308,9 +324,21 @@ export function createWordAdminTools(d: Deps) {
     ps.load("items/text");
     const ts = ctx.document.body.tables;
     ts.load("items");
+    // Văn bản chỉ có ảnh, ô điền mẫu hay hình thì không phải "trống"
+    const pics = ctx.document.body.inlinePictures;
+    pics.load("items");
+    const ccs = ctx.document.body.contentControls;
+    ccs.load("items");
+    const floats = d.supports("1.2", "WordApiDesktop") ? ctx.document.body.shapes : null;
+    floats?.load("items");
     await ctx.sync();
     return {
-      empty: !ts.items.length && ps.items.every((p) => !p.text.trim()),
+      empty:
+        !ts.items.length &&
+        !pics.items.length &&
+        !ccs.items.length &&
+        !floats?.items.length &&
+        ps.items.every((p) => !p.text.trim()),
       paras: ps.items.filter((p) => p.text.trim()).length,
     };
   }
@@ -343,11 +371,13 @@ export function createWordAdminTools(d: Deps) {
     plan: AdminDocPlan,
     anchor: Word.Paragraph,
     where: "Before" | "After",
-    textWidthMm: number
+    textWidthMm: number,
+    bag: { plain: Word.Paragraph[]; tables: Word.Table[] }
   ) {
     const rules: { p: Word.Paragraph }[] = [];
-    const plain: Word.Paragraph[] = [];
-    const tables: Word.Table[] = [];
+    // Ghi vào `bag` ngay khi chèn: nếu lỗi giữa chừng, bên gọi gỡ được phần đã chèn dở
+    const plain = bag.plain;
+    const tables = bag.tables;
     /** Định dạng làm SAU, khi Theo dõi thay đổi đã tắt: phần chèn là sửa đổi được theo dõi, còn định dạng của chính phần mới chèn
      *  không ghi thành một loạt sửa đổi "Formatted" riêng (xem ảnh thử 16/11/2026: mỗi đoạn một ô chú thích ở lề, rất rối khi duyệt) */
     const later: (() => void)[] = [];
@@ -477,8 +507,7 @@ export function createWordAdminTools(d: Deps) {
     const plan = planAdminDocument({ ...a, year: new Date().getFullYear() });
     return Word.run(async (ctx) => {
       const state = await isEmptyDoc(ctx);
-      const wantPage =
-        a.page_setup === undefined || a.page_setup === null ? state.empty : !!a.page_setup;
+      const wantPage = asBool(a.page_setup) ?? state.empty;
       let pageNote = "";
       if (wantPage) {
         const pg = await applyPage(ctx, { ...pageOptions({}, true) });
@@ -493,24 +522,40 @@ export function createWordAdminTools(d: Deps) {
         await ctx.sync();
         width = ptToMm(ps.pageWidth - ps.leftMargin - ps.rightMargin);
       }
-      const built = await d.tracked(ctx, async () => {
-        let anchor: Word.Paragraph;
-        let where: "Before" | "After" = "After";
-        if (a.position === "after_paragraph")
-          anchor = (await d.resolvePara(ctx, a.paragraph_index, a.expect)).p;
-        else if (state.empty) {
-          anchor = ctx.document.body.paragraphs.getFirst();
-          where = "Before";
-        } else anchor = ctx.document.body.paragraphs.getLast();
-        // Đã đo: chèn bảng ngay SAU một đoạn rỗng thì bảng nuốt đoạn đó và thứ tự bị đảo → gặp đoạn neo rỗng thì chèn TRƯỚC nó
-        if (where === "After") {
-          anchor.load("text");
+      const bag = { plain: [] as Word.Paragraph[], tables: [] as Word.Table[] };
+      const res = await (async () => {
+        const built = await d.tracked(ctx, async () => {
+          let anchor: Word.Paragraph;
+          let where: "Before" | "After" = "After";
+          if (a.position === "after_paragraph")
+            anchor = (await d.resolvePara(ctx, a.paragraph_index, a.expect)).p;
+          else if (state.empty) {
+            anchor = ctx.document.body.paragraphs.getFirst();
+            where = "Before";
+          } else anchor = ctx.document.body.paragraphs.getLast();
+          // Đã đo: chèn bảng ngay SAU một đoạn rỗng thì bảng nuốt đoạn đó và thứ tự bị đảo → gặp đoạn neo rỗng thì chèn TRƯỚC nó
+          if (where === "After") {
+            anchor.load("text");
+            await ctx.sync();
+            if (!anchor.text.trim()) where = "Before";
+          }
+          return build(ctx, plan, anchor, where, width, bag);
+        });
+        const res = await untracked(ctx, () => built.finish());
+        return res;
+      })().catch(async (e) => {
+        // Lỗi giữa chừng: gỡ phần đã chèn dở (nếu không, model thử lại sẽ thành văn bản chèn đôi mà Hoàn tác không gỡ được)
+        await untracked(ctx, async () => {
+          bag.tables.forEach((t) => t.delete());
           await ctx.sync();
-          if (!anchor.text.trim()) where = "Before";
-        }
-        return build(ctx, plan, anchor, where, width);
+          bag.plain
+            .slice()
+            .reverse()
+            .forEach((p) => p.delete());
+          await ctx.sync();
+        }).catch(() => undefined);
+        throw e;
       });
-      const res = await untracked(ctx, () => built.finish());
       if (res.made.length) {
         // Hoàn tác = gỡ thẳng theo định danh (đứng trước bước trả lại thể thức trang trong danh sách, nên chạy sau nó)
         extra.push(removeMade(res.made));
@@ -535,7 +580,7 @@ export function createWordAdminTools(d: Deps) {
 
   async function setPage(a: any, extra: UndoStep[]) {
     return Word.run(async (ctx) => {
-      const pg = await applyPage(ctx, pageOptions(a || {}, a?.page_number === true));
+      const pg = await applyPage(ctx, pageOptions(a || {}, asBool(a?.page_number) === true));
       if (pg.undo) extra.push(pg.undo);
       return {
         ok: true,
@@ -558,9 +603,27 @@ export function createWordAdminTools(d: Deps) {
         : createDocument(a || {}, u.extra, u.inverse, u.touched, u.after || []),
     /** Cảnh báo rủi ro: đổi thể thức trang của một văn bản đang có nội dung khi dựng văn bản mới vào đó */
     risk: {
+      // Đổi khổ giấy của văn bản nhiều phần hoặc có trang ngang: xoay trang, dồn lại bố cục — hỏi trước
+      word_set_page_format: (a: any) =>
+        Word.run(async (ctx) => {
+          if (!d.supports("1.3", "WordApiDesktop")) return null;
+          const secs = ctx.document.sections;
+          secs.load("items");
+          await ctx.sync();
+          const setups = secs.items.slice(0, 30).map((s) => s.pageSetup);
+          setups.forEach((p) => p.load("orientation"));
+          await ctx.sync();
+          const land = setups.filter((p) => String(p.orientation) === "Landscape").length;
+          const s = await isEmptyDoc(ctx);
+          if (s.empty) return null;
+          const a4 = asBool(a?.a4) !== false;
+          if (secs.items.length > 1 || (land && a4))
+            return `Đặt lại lề${a4 ? " và khổ giấy A4 dọc" : ""} cho CẢ văn bản (${secs.items.length} phần${land ? `, trong đó ${land} phần đang là trang ngang${a4 ? " sẽ bị xoay dọc" : ""}` : ""}). Thay đổi này không hiện trong thẻ Review; gỡ bằng nút Hoàn tác của khung.`;
+          return null;
+        }),
       word_create_admin_document: (a: any) =>
         Word.run(async (ctx) => {
-          if (a?.page_setup !== true) return null;
+          if (asBool(a?.page_setup) !== true) return null;
           const s = await isEmptyDoc(ctx);
           return s.empty
             ? null

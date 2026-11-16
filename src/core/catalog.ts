@@ -119,7 +119,9 @@ export function pickModel(
     const reliable = pool.filter((m) => !toolReliabilityNote(o.providerId, m.id));
     if (reliable.length) pool = reliable;
   }
-  const prefer = [...(o.providerId === "openrouter" && o.freeOnly ? PREFER_FREE : []), ...(PREFER[o.providerId] || [])];
+  // Mẫu ưu tiên của nhánh miễn phí chỉ dùng khi nhóm đang xét toàn model miễn phí (không rơi vào bản trả tiền cùng dòng)
+  const allFree = pool.length > 0 && pool.every((m) => m.free);
+  const prefer = [...(o.providerId === "openrouter" && o.freeOnly && allFree ? PREFER_FREE : []), ...(PREFER[o.providerId] || [])];
   for (const re of prefer) {
     const hit = pool.filter((m) => re.test(m.id)).sort(newestFirst);
     if (hit.length) return hit[0].id;

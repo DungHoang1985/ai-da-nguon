@@ -112,16 +112,28 @@ const clean = (s: unknown) =>
   String(s ?? "")
     .replace(/\s+/g, " ")
     .trim();
+/** Danh sách nơi nhận: mảng giữ nguyên từng phần tử; chuỗi thì tách theo dòng hoặc dấu chấm phẩy. Bỏ gạch đầu dòng và dấu câu cuối,
+ *  nhưng giữ dấu chấm của chữ viết tắt ("UBND TP.", "Co., Ltd."). */
 const list = (v: unknown): string[] =>
-  (Array.isArray(v) ? v : String(v ?? "").split(/\r?\n|;\s*(?=\S)/))
+  (Array.isArray(v) ? v.filter((x) => typeof x === "string" || typeof x === "number") : String(v ?? "").split(/\r?\n|;\s*(?=\S)/))
     .map((x) =>
       clean(x)
         .replace(/^[-–•+]\s*/, "")
-        .replace(/[;.,]+$/, "")
+        .replace(/[;,]+$/, "")
+        .replace(/(\p{L}{4,})\.+$/u, "$1")
+        .replace(/[;,]+$/, "")
     )
     .filter(Boolean);
+const noAccent = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D");
 const upper = (s: string) => s.toLocaleUpperCase("vi-VN");
 const BLANK = "…";
+/** Dấu chấm kết thúc danh sách; mục đã kết bằng dấu chấm của chữ viết tắt thì không thêm */
+const dot = (t: string) => (t.endsWith(".") ? "" : ".");
 
 /** Bề rộng ước lượng của một dòng chữ Times New Roman (mm) — để tính độ dài đường kẻ */
 export function estimateWidthMm(text: string, size: number, o: { bold?: boolean } = {}): number {
@@ -156,7 +168,8 @@ const empty = (size: number): Para => ({ text: "", size, align: "Centered" });
 
 export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   const a = input || {};
-  const rawType = clean(a.doc_type).toLowerCase().replace(/[\s-]+/g, "_");
+  // "Tờ trình", "công văn", "to-trinh" đều nhận
+  const rawType = noAccent(clean(a.doc_type)).toLowerCase().replace(/[\s-]+/g, "_");
   const type: DocType = (DOC_TYPES as readonly string[]).includes(rawType) ? (rawType as DocType) : "khac";
   const size = Number(a.font_size) === 13 ? 13 : 14;
   /** Cặp cỡ chữ Quốc hiệu / Tiêu ngữ tăng giảm cùng cỡ nội dung: 12/13 hoặc 13/14 */
@@ -168,18 +181,22 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   const org = clean(a.org);
   if (!org) throw new Error("Thiếu tên cơ quan, tổ chức ban hành (org). Chưa biết thì hỏi người dùng, không tự đặt.");
   const parent = clean(a.parent_org);
-  const bodyLines = String(a.body ?? "")
+  const bodyLines = (Array.isArray(a.body) ? (a.body as unknown[]).map((x) => String(x ?? "")).join("\n") : String(a.body ?? ""))
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
   if (!bodyLines.length) throw new Error("Thiếu nội dung văn bản (body): mỗi dòng là một đoạn.");
   const subject = clean(a.subject).replace(/^v\/v:?\s*/i, "");
   const title = upper(clean(a.title)) || TYPE_TITLE[type];
-  if (type !== "cong_van" && !title) throw new Error("Thiếu tên loại văn bản (title) cho loại “khac”.");
+  if (type !== "cong_van" && !title) throw new Error(`Không nhận ra loại văn bản “${clean(a.doc_type)}”. Dùng một trong: ${DOC_TYPES.filter((t) => t !== "khac").join(", ")}; hoặc doc_type "khac" kèm title (tên loại).`);
   if (!subject) blanks.push("trích yếu nội dung");
 
   // ----- Phần đầu: bảng hai cột không viền -----
-  const number = clean(a.number);
+  // Model hay đưa "Số 12" hoặc cả "12/CV-ABC": chỉ lấy phần số
+  const number = clean(a.number)
+    .replace(/^số\s*:?\s*/i, "")
+    .split("/")[0]
+    .trim();
   const symbol = clean(a.symbol).replace(/^\/+/, "");
   if (!number) blanks.push("số văn bản (để văn thư cấp)");
   if (!symbol) blanks.push("ký hiệu văn bản");
@@ -188,7 +205,9 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   if (!place && type !== "bien_ban") blanks.push("địa danh");
   let date = clean(a.date).replace(/^,\s*/, "");
   if (date && !/^ngày/i.test(date)) {
-    const m = date.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+    const iso = date.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    const m = iso ? [iso[0], iso[3], iso[2], iso[1]] : date.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
+    if (!m && /^\d{1,2}\s+tháng/i.test(date)) date = "ngày " + date;
     if (m) date = `ngày ${m[1].padStart(2, "0")} tháng ${Number(m[2]) <= 2 ? m[2].padStart(2, "0") : String(Number(m[2]))} năm ${m[3]}`;
   }
   if (!date) {
@@ -237,12 +256,14 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   else if (to.length > 1) {
     // Không dùng bảng ở đây: đã đo trong Word, chèn bảng ngay sau một đoạn rỗng (đường kẻ dưới trích yếu) thì bảng nuốt đoạn đó
     blocks.push({ kind: "para", text: "Kính gửi:", size, align: "Left", leftMm: 30, line: 1.2 });
-    to.forEach((t, i) => blocks.push({ kind: "para", text: `- ${t}${i === to.length - 1 ? "." : ";"}`, size, align: "Left", leftMm: 52, line: 1.2, after: i === to.length - 1 ? 12 : 0 }));
+    to.forEach((t, i) => blocks.push({ kind: "para", text: `- ${t}${i === to.length - 1 ? dot(t) : ";"}`, size, align: "Left", leftMm: 52, line: 1.2, after: i === to.length - 1 ? 12 : 0 }));
   }
 
   // ----- Nội dung -----
   const paras = bodyLines.map((l) => bodyPara(l, size));
-  const lastText = [...paras].reverse().find((p) => !p.bold);
+  // Dấu kết thúc "./." chỉ thêm khi đoạn CUỐI CÙNG là lời văn thường (không phải đề mục, không kết bằng ":" hay "…")
+  const lastPara = paras[paras.length - 1];
+  const lastText = lastPara && !lastPara.bold && !/(:|…|\.\.\.)\s*$/.test(lastPara.text) ? lastPara : undefined;
   if (lastText && !/\.\/\.$/.test(lastText.text)) {
     lastText.text = lastText.text.replace(/[.\s]*$/, "") + "./.";
     notes.push("đã thêm dấu kết thúc “./.” vào cuối nội dung");
@@ -253,7 +274,8 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   // ----- Phần ký và nơi nhận -----
   const authority = upper(clean(a.signer_authority));
   const sTitle = upper(clean(a.signer_title));
-  const sName = clean(a.signer_name).replace(/^(ông|bà|ths\.?|ts\.?|pgs\.?|gs\.?|ks\.?|ls\.?|luật sư|tiến sĩ|thạc sĩ)\s+/i, "");
+  // Bỏ học hàm, học vị ở đầu tên (không bỏ "Ông", "Bà": có thể là họ)
+  const sName = clean(a.signer_name).replace(/^(?:(?:pgs|gs|ths|ts|ks|ls)\.?,?\s*|(?:luật sư|tiến sĩ|thạc sĩ|giáo sư|phó giáo sư|kỹ sư)\s+)+/i, "");
   if (!sTitle && !authority) blanks.push("quyền hạn, chức vụ người ký");
   if (!sName) blanks.push("họ tên người ký");
   const lTitle = upper(clean(a.left_signer_title));
@@ -261,11 +283,13 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   let recipients = list(a.recipients);
   const needsNhuTren = to.length > 0 || type === "cong_van" || type === "to_trinh" || type === "bao_cao";
   if (needsNhuTren && !recipients.some((r) => /^như trên/i.test(r))) recipients.unshift("Như trên");
-  if (!recipients.some((r) => /^lưu\s*:/i.test(r))) {
+  const isLuu = (r: string) => /^lưu(\s*:|\s+vt)/i.test(r);
+  recipients = recipients.map((r) => (isLuu(r) ? r.replace(/^lưu\s*:?\s*/i, "Lưu: ") : r));
+  if (!recipients.some(isLuu)) {
     recipients.push(type === "bien_ban" ? "Lưu: VT, Hồ sơ" : `Lưu: VT, ${BLANK}`);
     if (type !== "bien_ban") blanks.push("đơn vị soạn thảo ở dòng Lưu");
   }
-  recipients = [...recipients.filter((r) => !/^lưu\s*:/i.test(r)), ...recipients.filter((r) => /^lưu\s*:/i.test(r))];
+  recipients = [...recipients.filter((r) => !isLuu(r)), ...recipients.filter(isLuu).slice(0, 1)];
   const right: Para[] = [];
   if (authority) right.push({ text: authority, size, bold: true, align: "Centered" });
   right.push({ text: sTitle || (authority ? "" : BLANK), size, bold: true, align: "Centered" });
@@ -281,12 +305,12 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
     if (!lName) blanks.push("họ tên người ký bên trái");
   } else {
     left.push({ text: "Nơi nhận:", size: 12, bold: true, italic: true, align: "Left" });
-    recipients.forEach((r, i) => left.push({ text: `- ${r}${i === recipients.length - 1 ? "." : ";"}`, size: 11, align: "Left" }));
+    recipients.forEach((r, i) => left.push({ text: `- ${r}${i === recipients.length - 1 ? dot(r) : ";"}`, size: 11, align: "Left" }));
   }
   blocks.push({ kind: "table", widths: lTitle ? [TEXT_WIDTH_MM / 2, TEXT_WIDTH_MM / 2] : [78, TEXT_WIDTH_MM - 78], rows: [[left, rightClean]] });
   if (lTitle) {
     blocks.push({ kind: "para", text: "Nơi nhận:", size: 12, bold: true, italic: true, align: "Left", before: 12 });
-    recipients.forEach((r, i) => blocks.push({ kind: "para", text: `- ${r}${i === recipients.length - 1 ? "." : ";"}`, size: 11, align: "Left" }));
+    recipients.forEach((r, i) => blocks.push({ kind: "para", text: `- ${r}${i === recipients.length - 1 ? dot(r) : ";"}`, size: 11, align: "Left" }));
   }
   return { type, blocks, blanks: [...new Set(blanks)], notes, size };
 }

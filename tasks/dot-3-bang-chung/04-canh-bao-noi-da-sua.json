@@ -1,6 +1,6 @@
 {
  "model": "120b. Bấm để đổi Cerebras · gpt-oss-120b",
- "ca1Khung": "AI Đa Nguồn\nv4.2\nĐây là bài thử cơ chế cảnh báo của add-in. Ở lượt này KHÔNG gọi bất kỳ công cụ nào; chỉ trả lời đúng một câu sau, không thêm gì: Đã sửa mức phạt ở Điều 5 từ 150% xuống 120%.\nĐã sửa mức phạt ở Điều 5 từ 150% xuống 120%.\nToken: vào 8.020 · ra 77\n⚠ Cảnh báo: AI nói đã thay đổi tài liệu (“Đã sửa mức phạt ở Điều 5 từ 150% xuống 120%.”) nhưng lượt này AI không gọi công cụ nào. Tài liệu CHƯA được thay đổi.\nYêu cầu làm lại bằng công cụ\nĐổi model\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\nCerebras · gpt-oss-120b",
+ "ca1Khung": "AI Đa Nguồn\nv4.2.1\nĐây là bài thử cơ chế cảnh báo của add-in. Ở lượt này KHÔNG gọi bất kỳ công cụ nào; chỉ trả lời đúng một câu sau, không thêm gì: Đã sửa mức phạt ở Điều 5 từ 150% xuống 120%.\nĐã sửa mức phạt ở Điều 5 từ 150% xuống 120%.\nToken: vào 8.020 · ra 87\n⚠ Cảnh báo: AI nói đã thay đổi tài liệu (“Đã sửa mức phạt ở Điều 5 từ 150% xuống 120%.”) nhưng lượt này AI không gọi công cụ nào. Tài liệu CHƯA được thay đổi.\nYêu cầu làm lại bằng công cụ\nĐổi model\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\nCerebras · gpt-oss-120b",
  "ca1BuocGhi": [],
  "ca1": {
   "traLoi": [
@@ -17,7 +17,7 @@
   "dat": true
  },
  "ca2": {
-  "giay": 6,
+  "giay": 5,
   "cau": "Bên B chậm thanh toán thì chịu phạt bằng 120% lãi suất cơ bản trên số tiền chậm trả.",
   "suaDoi": [
    "Added:120%",
@@ -32,7 +32,7 @@
  },
  "ca3": {
   "soCanhBaoTrenKhung": 1,
-  "cuoi": "õi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nĐiều 5 hiện quy định mức phạt chậm thanh toán là bao nhiêu? Chỉ trả lời, không sửa gì.\nĐiều 5 hiện quy định mức phạt chậm thanh toán là 120 % lãi suất cơ bản trên số tiền chậm trả.\nToken: vào 9.077 · ra 115 · đọc từ bộ nhớ đệm 8.704\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\nCerebras · gpt-oss-120b",
+  "cuoi": " Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nĐiều 5 hiện quy định mức phạt chậm thanh toán là bao nhiêu? Chỉ trả lời, không sửa gì.\nĐiều 5 quy định mức phạt chậm thanh toán là 120% lãi suất cơ bản trên số tiền chậm trả.\nToken: vào 8.951 · ra 34 · đọc từ bộ nhớ đệm 8.576\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\nCerebras · gpt-oss-120b",
   "dat": true
  }
 }

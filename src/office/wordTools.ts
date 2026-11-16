@@ -1504,12 +1504,26 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             }
             const style = a.style ? mapStyle(a.style) : "";
             const isList = style === "ListBullet" || style === "ListNumber";
+            // Tham số số học: chỉ nhận số thật (hoặc chuỗi chữ số) trong khoảng hợp lệ; chuỗi rỗng, false, "6pt", -1 đều bị bỏ và được báo lại
+            const skipped: string[] = [];
+            const numIn = (key: string, lo: number, hi: number): number | null => {
+              const v = a[key];
+              if (v === undefined || v === null) return null;
+              const n = typeof v === "number" ? v : typeof v === "string" && /^\d+(\.\d+)?$/.test(v.trim()) ? Number(v) : NaN;
+              if (!(n >= lo && n <= hi)) {
+                skipped.push(key);
+                return null;
+              }
+              return n;
+            };
+            const indent = numIn("first_line_indent_mm", 0, 100);
+            const spaceAfter = numIn("space_after_pt", 0, 200);
+            const lineSp = numIn("line_spacing", 0.5, 5);
             for (const p of paras) {
               if (a.alignment) p.alignment = a.alignment;
-              if (a.first_line_indent_mm !== undefined && a.first_line_indent_mm !== null && Number(a.first_line_indent_mm) >= 0 && Number(a.first_line_indent_mm) <= 100)
-                p.firstLineIndent = (Number(a.first_line_indent_mm) * 72) / 25.4;
-              if (Number(a.space_after_pt) >= 0 && a.space_after_pt !== null && a.space_after_pt !== undefined && Number(a.space_after_pt) <= 200) p.spaceAfter = Number(a.space_after_pt);
-              if (Number(a.line_spacing) >= 0.5 && Number(a.line_spacing) <= 5) p.lineSpacing = 12 * Number(a.line_spacing);
+              if (indent !== null) p.firstLineIndent = (indent * 72) / 25.4;
+              if (spaceAfter !== null) p.spaceAfter = spaceAfter;
+              if (lineSp !== null) p.lineSpacing = 12 * lineSp;
               if (style && !isList) p.styleBuiltIn = style as any;
             }
             if (isList) {
@@ -1529,7 +1543,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               }
             }
             await ctx.sync();
-            return { ok: true, message: `Đã định dạng ${ranges.length} vùng` };
+            return { ok: true, message: `Đã định dạng ${ranges.length} vùng${skipped.length ? `. Bỏ qua tham số không hợp lệ: ${skipped.join(", ")} (phải là số trong khoảng cho phép)` : ""}` };
           })
         );
 

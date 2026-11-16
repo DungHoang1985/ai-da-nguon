@@ -350,8 +350,9 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
     source: "builtin",
     enabled: true,
     triggers: [
-      "cong van", "to trinh", "van ban hanh chinh", "the thuc", "soan quyet dinh", "du thao quyet dinh", "soan thong bao", "du thao thong bao", "giay moi", "soan bien ban",
-      "bien ban hop", "bien ban lam viec", "soan bao cao", "du thao bao cao", "viet bao cao gui", "soan ke hoach", "van ban gui", "van ban de nghi", "noi nhan", "kinh gui", "quoc hieu",
+      "cong van", "to trinh", "van ban hanh chinh", "dung the thuc", "sai the thuc", "the thuc van ban", "kiem tra the thuc", "soat the thuc", "soan quyet dinh", "du thao quyet dinh",
+      "soan thong bao", "viet thong bao", "du thao thong bao", "giay moi", "soan bien ban", "lap bien ban", "viet bien ban", "soan bao cao", "du thao bao cao", "viet bao cao",
+      "soan ke hoach", "lap ke hoach", "soan van ban gui", "soan van ban de nghi", "quoc hieu",
     ],
     body: `# Soạn thảo văn bản hành chính
 
@@ -362,7 +363,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 2. KHÔNG bịa số văn bản, ngày ký, tên người ký, ký hiệu đơn vị, số liệu, căn cứ pháp lý. Chưa biết thì bỏ trống tham số: công cụ tự chừa chỗ. Số văn bản luôn để trống cho văn thư cấp.
 3. Dựng bằng MỘT lần gọi word_create_admin_document (công cụ tự trình bày đúng mọi thành phần, đặt khổ giấy, lề, số trang khi văn bản đang trống). Không tự chèn từng dòng quốc hiệu, bảng, phần ký bằng công cụ khác.
    - doc_type: cong_van, to_trinh, bao_cao, quyet_dinh, thong_bao, giay_moi, bien_ban, ke_hoach, khac (kèm title).
-   - symbol: chữ viết tắt tên loại + chữ viết tắt tên cơ quan, ví dụ TTr-ABC, BC-ABC, QĐ-ABC, TB-ABC, GM-ABC, BB-ABC, KH-ABC. Công văn không có chữ viết tắt tên loại: chữ viết tắt cơ quan + đơn vị soạn thảo, ví dụ ABC-PC.
+   - symbol: chữ viết tắt tên loại + chữ viết tắt tên cơ quan, ví dụ TTr-ABC, BC-ABC, QĐ-ABC, TB-ABC, GM-ABC, BB-ABC, KH-ABC. Công văn không có chữ viết tắt tên loại: chữ viết tắt cơ quan + đơn vị soạn thảo, ví dụ ABC-PC. Chỉ điền khi người dùng đã cho chữ viết tắt của cơ quan hoặc tài liệu có sẵn; không biết thì bỏ trống, không tự đặt.
    - subject: trích yếu ngắn, nêu đúng việc (công văn: phần sau "V/v").
    - to: nơi nhận ở phần Kính gửi (công văn, tờ trình, báo cáo gửi cấp trên). recipients: các dòng Nơi nhận.
    - body: mỗi dòng một đoạn; "# " đề mục canh giữa; "## " đề mục đậm; cả dòng trong dấu gạch dưới _…_ là chữ nghiêng (dòng căn cứ).
@@ -383,7 +384,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 ## B. Soát và sửa văn bản có sẵn
 1. Đọc văn bản (word_read_paragraphs), kiểm trang bằng word_check_page_format, đọc đầu và chân trang bằng word_read_parts.
 2. Đối chiếu với chuẩn dưới đây, lập bảng: Thành phần | Chuẩn | Hiện trạng | Xử lý.
-3. Tự sửa phần thể thức: lề và khổ giấy (word_set_page_format), phông, cỡ, kiểu chữ, canh lề, thụt đầu dòng, cách đoạn, giãn dòng (word_format_text với font_name, font_size, bold, italic, alignment, first_line_indent_mm, space_after_pt, line_spacing), viết hoa chỗ rõ ràng, dấu câu của Kính gửi và Nơi nhận.
+3. Người dùng chỉ nhờ KIỂM thì chỉ báo kết quả theo bảng, không sửa. Khi được nhờ sửa thể thức: phông, cỡ, kiểu chữ, canh lề, thụt đầu dòng, cách đoạn, giãn dòng (word_format_text với font_name, font_size, bold, italic, alignment, first_line_indent_mm, space_after_pt, line_spacing), viết hoa chỗ rõ ràng, dấu câu của Kính gửi và Nơi nhận; lề và khổ giấy thì nêu số đo hiện tại và số đo sẽ đặt rồi mới gọi word_set_page_format (thay đổi này áp cho cả văn bản). Hợp đồng và văn bản không phải văn bản hành chính: không áp chuẩn này trừ khi người dùng yêu cầu.
 4. KHÔNG tự sửa nội dung: câu chữ, số liệu, ngày tháng, số hiệu văn bản viện dẫn, người ký. Thấy sai thì ghi nhận xét (word_add_comment) để người dùng quyết.
 
 ## C. Chuẩn thể thức (số đo)
