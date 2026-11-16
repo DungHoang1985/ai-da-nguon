@@ -1,0 +1,79 @@
+{
+ "modelTruoc": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "modelThu": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "phienBan": "v4.4",
+ "giay": 5,
+ "daHoi": [
+  "AI muốn: Thiết lập in sheet Tiến độ, giấy ngang | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "lanGoiAI": 2,
+ "hoanTac": null,
+ "soTruocHoanTac": null,
+ "khung": "AI Đa Nguồn\nv4.4\nWord — · PowerPoint —\nChuẩn bị in bảng tiến độ ở sheet Tiến độ: khổ A4 ngang, vừa một trang ngang, lặp dòng tiêu đề ở mỗi trang.\n✅ Thiết lập in sheet Tiến độ, giấy ngang\nĐã thiết lập in cho sheet Tiến độ:\n• Khổ giấy A4, hướng ngang.\n• Co vừa 1 trang theo chiều ngang (chiều dọc tự động theo số dòng).\n• Lặp dòng 1 (tiêu đề \"Hạng mục, Nhóm, Kế hoạch, Thực tế, Ghi chú\") ở đầu mỗi trang.\n \nVùng in chưa đặt riêng, nên Excel sẽ in toàn bộ dữ liệu (A1:E13).\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 32.073 · ra 372 · đọc từ bộ nhớ đệm 30.750 · ghi vào bộ nhớ đệm 1.317\nHoàn tác thay đổi (1)\nGhi vào ô đang chọn\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5",
+ "so": {
+  "sheets": [
+   {
+    "ten": "Sheet1",
+    "vung": null,
+    "bieuDo": [],
+    "pivot": [],
+    "in": {
+     "huong": "Portrait",
+     "kho": null,
+     "vuaNgang": null,
+     "vuaDoc": null,
+     "vungIn": null,
+     "tieuDeLap": null
+    },
+    "baoVe": false
+   },
+   {
+    "ten": "Tiến độ",
+    "vung": "'Tiến độ'!A1:E13",
+    "bieuDo": [],
+    "pivot": [],
+    "in": {
+     "huong": "Landscape",
+     "kho": "A4",
+     "vuaNgang": 1,
+     "vuaDoc": null,
+     "vungIn": null,
+     "tieuDeLap": "'Tiến độ'!1:1"
+    },
+    "baoVe": false
+   },
+   {
+    "ten": "Mô hình",
+    "vung": "'Mô hình'!A1:F13",
+    "bieuDo": [],
+    "pivot": [],
+    "in": {
+     "huong": "Portrait",
+     "kho": null,
+     "vuaNgang": null,
+     "vuaDoc": null,
+     "vungIn": null,
+     "tieuDeLap": null
+    },
+    "baoVe": false
+   },
+   {
+    "ten": "Hồ sơ",
+    "vung": "'Hồ sơ'!A1:D8",
+    "bieuDo": [],
+    "pivot": [],
+    "in": {
+     "huong": "Portrait",
+     "kho": null,
+     "vuaNgang": null,
+     "vuaDoc": null,
+     "vungIn": null,
+     "tieuDeLap": null
+    },
+    "baoVe": false
+   }
+  ],
+  "tenVung": [],
+  "doc": {}
+ }
+}

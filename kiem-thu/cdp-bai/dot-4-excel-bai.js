@@ -77,7 +77,9 @@ const r = await send(bai.yeuCau, { approve, timeout: bai.timeout || 240000, tail
 const khung = r.khung || "";
 const goi = /(\d+) lần gọi AI/.exec(khung);
 let hoanTac = null;
+let soTruocHoanTac = null;
 if (bai.hoanTac) {
+  soTruocHoanTac = await docSo();
   const u = btn(/^Hoàn tác/);
   if (u) {
     u.click();
@@ -93,6 +95,7 @@ return {
   daHoi: r.daHoi,
   lanGoiAI: goi ? Number(goi[1]) : null,
   hoanTac,
+  soTruocHoanTac,
   khung: khung.replace(/\n{2,}/g, "\n"),
   so: await docSo(),
 };
