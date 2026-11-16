@@ -496,16 +496,63 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
         const after = a.after_slide !== undefined ? Math.max(0, Math.min(Number(a.after_slide), ids.length)) : ids.length;
         const layout = await pickChartLayout(ctx, a.layout);
         const b64 = await buildChartPptx(a, size, layout);
+        // Bố cục có sẵn của bài TRƯỚC khi chèn: nếu PowerPoint không ghép được bố cục và tự thêm bố cục lạ (lỗi cũ "thêm một bố cục"),
+        // slide biểu đồ được chuyển về bố cục của mẫu để không lệch mẫu (đã đo 16/11/2026: slide.applyLayout dùng được, PowerPointApi 1.8)
+        let known: { id: string; name: string }[] = [];
+        if (supports("1.8")) {
+          try {
+            const ls = ctx.presentation.slideMasters.getItemAt(0).layouts;
+            ls.load("items/id,items/name");
+            await ctx.sync();
+            known = ls.items.map((l) => ({ id: l.id, name: l.name }));
+          } catch {
+            known = [];
+          }
+        }
         const fresh = await insertAt(ctx, b64, after);
         if (!fresh.length) throw new Error("PowerPoint không chèn được slide biểu đồ.");
         log.push(deleteSlidesUndo(fresh, `Slide biểu đồ ${after + 1}`));
+        let usedLayout = layout.name;
+        let layoutNote = "";
+        if (known.length) {
+          try {
+            const sl = ctx.presentation.slides.getItem(fresh[0]);
+            sl.layout.load("id,name");
+            await ctx.sync();
+            usedLayout = sl.layout.name;
+            if (!known.some((k) => k.id === sl.layout.id)) {
+              const want = known.find((k) => k.name === layout.name) || known.find((k) => /title only|chỉ (có )?tiêu đề/i.test(k.name)) || known.find((k) => /tiêu đề|title/i.test(k.name));
+              if (want) {
+                const ls = ctx.presentation.slideMasters.getItemAt(0).layouts;
+                sl.applyLayout(ls.getItem(want.id));
+                await ctx.sync();
+                // Ô giữ chỗ rỗng của bố cục mới (ô nội dung) nằm đè lên biểu đồ: gỡ đi, giữ ô tiêu đề
+                sl.shapes.load("items/id,items/name,items/type");
+                await ctx.sync();
+                const holders = sl.shapes.items.filter((x) => String(x.type) === "Placeholder");
+                holders.forEach((x) => {
+                  x.placeholderFormat.load("type");
+                  x.textFrame.textRange.load("text");
+                });
+                await ctx.sync();
+                holders.filter((x) => !/Title/.test(String(x.placeholderFormat.type)) && !x.textFrame.textRange.text.trim()).forEach((x) => x.delete());
+                await ctx.sync();
+                usedLayout = want.name;
+                layoutNote = " (PowerPoint không ghép được bố cục khi chèn nên slide đã được chuyển về bố cục này của mẫu)";
+              }
+            }
+          } catch {
+            /* không đổi được bố cục: giữ như PowerPoint đã chèn */
+          }
+        }
         if (supports("1.5")) {
           ctx.presentation.setSelectedSlides([fresh[0]]);
           await ctx.sync();
         }
         return {
           ok: true,
-          message: `Đã chèn biểu đồ gốc (sửa được dữ liệu) ở slide ${after + 1}, bố cục "${layout.name}" của mẫu`,
+          message: `Đã chèn biểu đồ gốc (sửa được dữ liệu) ở slide ${after + 1}, bố cục "${usedLayout}" của mẫu${layoutNote}`,
+          layout: usedLayout,
           slide: after + 1,
         };
       });

@@ -1,0 +1,138 @@
+{
+ "model": " Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "ketNoi": "Excel ✓ · Word —",
+ "yeuCau": "Xem slide 6 bằng mắt: nếu có chữ tràn khỏi khung hoặc hình chồng nhau thì sửa cho gọn (giữ nguyên nội dung), rồi kiểm lại.",
+ "giay": 11,
+ "daHoi": [
+  "AI muốn: Sửa hình \"Rủi ro\" ở slide 6 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "buocCongCu": [
+  "✅ Chụp ảnh slide 6 để tự kiểm — đã chụp ảnh slide 6 · số đo: 1 điểm bố cục cần xem",
+  "✅ Sửa hình \"Rủi ro\" ở slide 6",
+  "✅ Chụp ảnh slide 6 để tự kiểm — đã chụp ảnh slide 6 · số đo: không thấy tràn, chồng"
+ ],
+ "soSlideTruoc": 10,
+ "soSlideSau": 10,
+ "truoc": [
+  {
+   "slide": 6,
+   "layout": "Tiêu đề và nội dung",
+   "shapes": [
+    {
+     "name": "Text 2",
+     "type": "Placeholder",
+     "box": [
+      36,
+      25,
+      648,
+      58
+     ],
+     "text": "Rủi ro chính",
+     "size": 28,
+     "font": "Georgia",
+     "auto": "AutoSizeNone",
+     "uocCao": 41,
+     "tran": false
+    },
+    {
+     "name": "Text 2",
+     "type": "Placeholder",
+     "box": [
+      36,
+      94,
+      648,
+      230
+     ],
+     "text": "Chậm bàn giao mặt bằng đợt 2\rThiếu nhân công thi công phần thân\rBiến động giá vật liệu",
+     "size": 18,
+     "font": "Verdana",
+     "auto": "AutoSizeNone",
+     "uocCao": 72,
+     "tran": false
+    },
+    {
+     "name": "Rủi ro",
+     "type": "GeometricShape",
+     "box": [
+      403,
+      259,
+      281,
+      50
+     ],
+     "text": "Chi tiết rủi ro: việc bàn giao mặt bằng đợt 2 chậm so với cam kết kéo theo chậm hạ tầng kỹ thuật; nhà thầu thiếu nhân công ở phần thân khối A; giá thép và xi măng tăng làm đội chi phí; thủ tục điều chỉnh giấy phép kéo dài hơn dự kiến; cần phương án dự phòng cho từng rủi ro và người chịu trách nhiệm theo dõi hằng tuần.",
+     "size": 16,
+     "font": null,
+     "auto": "AutoSizeNone",
+     "uocCao": 199,
+     "tran": true
+    }
+   ]
+  }
+ ],
+ "sau": [
+  {
+   "slide": 6,
+   "layout": "Tiêu đề và nội dung",
+   "shapes": [
+    {
+     "name": "Text 2",
+     "type": "Placeholder",
+     "box": [
+      36,
+      25,
+      648,
+      58
+     ],
+     "text": "Rủi ro chính",
+     "size": 28,
+     "font": "Georgia",
+     "auto": "AutoSizeNone",
+     "uocCao": 41,
+     "tran": false
+    },
+    {
+     "name": "Text 2",
+     "type": "Placeholder",
+     "box": [
+      36,
+      94,
+      648,
+      230
+     ],
+     "text": "Chậm bàn giao mặt bằng đợt 2\rThiếu nhân công thi công phần thân\rBiến động giá vật liệu",
+     "size": 18,
+     "font": "Verdana",
+     "auto": "AutoSizeNone",
+     "uocCao": 72,
+     "tran": false
+    },
+    {
+     "name": "Rủi ro",
+     "type": "GeometricShape",
+     "box": [
+      403,
+      180,
+      281,
+      200
+     ],
+     "text": "Chi tiết rủi ro: việc bàn giao mặt bằng đợt 2 chậm so với cam kết kéo theo chậm hạ tầng kỹ thuật; nhà thầu thiếu nhân công ở phần thân khối A; giá thép và xi măng tăng làm đội chi phí; thủ tục điều chỉnh giấy phép kéo dài hơn dự kiến; cần phương án dự phòng cho từng rủi ro và người chịu trách nhiệm theo dõi hằng tuần.",
+     "size": 15,
+     "font": null,
+     "auto": "AutoSizeNone",
+     "uocCao": 187,
+     "tran": false
+    }
+   ]
+  }
+ ],
+ "anh": {
+  "truoc": [
+   "slide 6: 84480 ký tự"
+  ],
+  "sau": [
+   "slide 6: 98348 ký tự"
+  ]
+ },
+ "canhBaoNoiDaSua": false,
+ "cuoiKhung": "AI Đa Nguồn\nv4.3\nExcel ✓ · Word —\nXem slide 6 bằng mắt: nếu có chữ tràn khỏi khung hoặc hình chồng nhau thì sửa cho gọn (giữ nguyên nội dung), rồi kiểm lại.\n✅ Chụp ảnh slide 6 để tự kiểm — đã chụp ảnh slide 6 · số đo: 1 điểm bố cục cần xem\nChữ ở ô \"Rủi ro\" đang tràn xuống dưới, đè lên thanh màu chân trang. Tôi sẽ nâng ô lên và cao thêm để chứa hết nội dung.\n✅ Sửa hình \"Rủi ro\" ở slide 6\n✅ Chụp ảnh slide 6 để tự kiểm — đã chụp ảnh slide 6 · số đo: không thấy tràn, chồng\nSlide số 6 đã được sửa. Ô \"Rủi ro\" trước đây tràn xuống thanh màu chân trang; giờ tôi đã nâng ô lên (đỉnh ở 180pt, cao 200pt) và giảm cỡ chữ từ 16pt xuống 15pt. Ảnh chụp lại cho thấy toàn bộ đoạn chữ nằm trong khung, không đè lên thanh chân trang và không chồng lên danh sách rủi ro bên trái. Nội dung giữ nguyên.\nToken: vào 41.794 · ra 1.222 · đọc từ bộ nhớ đệm 25.956 · ghi vào bộ nhớ đệm 15.826\nHoàn tác thay đổi (1)\nChèn vào slide\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}

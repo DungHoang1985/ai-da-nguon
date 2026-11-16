@@ -28,7 +28,12 @@ export async function shapeOn(ctx: PowerPoint.RequestContext, slide: PowerPoint.
   shapes.load("items/id,items/name");
   await ctx.sync();
   const s = String(ref ?? "").trim();
-  let shape = shapes.items.find((x) => x.name.toLowerCase() === s.toLowerCase());
+  // Bài có nhiều hình trùng tên (đã gặp khi Chạy thật: hai ô giữ chỗ cùng tên "Text 2" làm AI sửa nhầm ô tiêu đề): bắt dùng số thứ tự
+  const same = shapes.items.map((x, k) => ({ x, k })).filter((y) => y.x.name.toLowerCase() === s.toLowerCase());
+  if (same.length > 1) {
+    throw new Error(`Slide có ${same.length} hình cùng tên "${s}" (hình số ${same.map((y) => y.k + 1).join(", ")}). Hãy chỉ hình bằng SỐ THỨ TỰ của nó (trường n trong tổng quan), không dùng tên.`);
+  }
+  let shape = same[0]?.x;
   if (!shape) shape = shapes.items.find((x) => x.name.toLowerCase().includes(s.toLowerCase()) && s);
   if (!shape && /^\d+$/.test(s)) shape = shapes.items[Number(s) - 1];
   if (!shape) throw new Error(`Không thấy hình "${s}" trên slide. Có: ${shapes.items.map((x) => x.name).join(", ")}`);

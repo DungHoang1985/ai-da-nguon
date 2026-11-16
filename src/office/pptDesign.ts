@@ -178,7 +178,7 @@ async function readSlides(ctx: PowerPoint.RequestContext, only?: number[]): Prom
       list.push({ text: x.text, font: x.r.font.name ? String(x.r.font.name) : null, size, color: x.r.font.color || null });
       paras.set(x.id, list);
     }
-    const list: DeckShape[] = shapes.map((sh) => {
+    const list: DeckShape[] = shapes.map((sh, k) => {
       let isTitle = false;
       try {
         isTitle = String(sh.type) === "Placeholder" && TITLE_TYPES.has(String(sh.placeholderFormat.type));
@@ -186,7 +186,7 @@ async function readSlides(ctx: PowerPoint.RequestContext, only?: number[]): Prom
         isTitle = false;
       }
       const f = frames.get(sh.id);
-      return { name: sh.name, type: String(sh.type), isTitle, box: [sh.left, sh.top, sh.width, sh.height], paragraphs: paras.get(sh.id) || (f ? [] : undefined), autoSize: f?.auto, wordWrap: f?.wrap };
+      return { name: sh.name, n: k + 1, type: String(sh.type), isTitle, box: [sh.left, sh.top, sh.width, sh.height], paragraphs: paras.get(sh.id) || (f ? [] : undefined), autoSize: f?.auto, wordWrap: f?.wrap };
     });
     out.push({ slide: i + 1, layout: s.layout.name, shapes: list });
   }
@@ -281,7 +281,7 @@ export async function executePptDesign(name: string, a: any, log: UndoEntry[]): 
             : note,
           ...(note && image ? { note } : {}),
           measured: layout.map((i) => i.message),
-          shapes: data[0]?.shapes.map((s) => ({ name: s.name, box: s.box.map((v) => Math.round(v)), ...(s.paragraphs?.length ? { text: truncate(s.paragraphs.map((p) => p.text).join(" / "), 120), size: s.paragraphs[0].size } : {}) })),
+          shapes: data[0]?.shapes.map((s) => ({ n: s.n, name: s.name, ...(s.isTitle ? { title: true } : {}), box: s.box.map((v) => Math.round(v)), ...(s.paragraphs?.length ? { text: truncate(s.paragraphs.map((p) => p.text).join(" / "), 120), size: s.paragraphs[0].size } : {}) })),
           ...(image ? { __images: [{ mime: "image/png", data: image, label: `Ảnh slide ${index}` }] } : {}),
         };
       });

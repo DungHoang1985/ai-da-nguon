@@ -65,8 +65,13 @@ describe("Đợt 3 · B3 · Kiểm bài trình chiếu theo mẫu bằng mã", (
     const kinds = r.issues.map((i) => `${i.kind}:${i.shape}`);
     assert.ok(kinds.includes("overflow:Tràn") && !kinds.includes("overflow:Tự giãn"), kinds.join(","));
     assert.ok(kinds.includes("off_slide:Ngoài") && kinds.includes("placeholder_text:Mẫu"));
-    const two: DeckSlide = { slide: 2, shapes: [title("T"), box("A", [P("a")], [40, 120, 300, 100]), box("B", [P("b")], [100, 150, 300, 100])] };
-    assert.ok(checkDeck([two], O).issues.some((i) => i.kind === "overlap"));
+    const many = [P("Dòng một của khung"), P("Dòng hai của khung"), P("Dòng ba của khung"), P("Dòng bốn của khung")];
+    const two: DeckSlide = { slide: 2, shapes: [title("T"), { ...box("A", many, [40, 120, 300, 100]), n: 2 }, { ...box("B", many, [100, 150, 300, 100]), n: 3 }] };
+    const ov = checkDeck([two], O).issues.find((i) => i.kind === "overlap")!;
+    assert.match(ov.message, /“A” \(hình số 2\) và “B” \(hình số 3\)/);
+    // Khung nội dung cao nhưng ít chữ, nằm trùm lên một hộp chữ ở dưới: chữ không đè nhau thì không báo (ca gặp khi Chạy thật)
+    const roomy: DeckSlide = { slide: 3, shapes: [title("T"), box("Nội dung", [P("Ý một"), P("Ý hai"), P("Ý ba")], [36, 94, 648, 230]), box("Rủi ro", [P("Ghi chú ngắn", "Calibri", 14)], [403, 259, 281, 50])] };
+    assert.ok(!checkDeck([roomy], O).issues.some((i) => i.kind === "overlap"));
     const fixed: DeckSlide = { slide: 1, shapes: [title("T"), box("Tràn", [P(long, "Calibri", 10)], [40, 120, 560, 110], "AutoSizeNone")] };
     assert.ok(!checkDeck([fixed], O).issues.some((i) => i.kind === "overflow"));
     assert.ok(estimateTextHeight([P("a".repeat(100), "Calibri", 20)], 200) > 100);
