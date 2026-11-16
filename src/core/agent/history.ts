@@ -115,12 +115,15 @@ export function prepareHistory(messages: AgentMessage[], target: HistoryTarget):
   });
 
   // 4) Ảnh: không nhận ảnh → bỏ hết; chưa rõ → chỉ giữ ảnh của câu hỏi cuối cùng
-  const lastUser = out.map((m) => m.role).lastIndexOf("user");
+  // "Câu hỏi cuối" = tin nhắn cuối của NGƯỜI DÙNG; tin add-in thêm để gửi ảnh công cụ chụp không tính (nếu tính, ảnh người dùng đính kèm
+  // ở đầu lượt sẽ bị bỏ ngay khi công cụ chụp một ảnh). Ảnh công cụ: chỉ giữ ảnh của lần chụp gần nhất.
+  const lastUser = out.map((m) => (m.role === "user" && !(m as any).fromTool ? "user" : "")).lastIndexOf("user");
+  const lastToolImage = out.map((m) => (m.role === "user" && (m as any).fromTool ? "t" : "")).lastIndexOf("t");
   out = out.map((m, i) => {
     if (m.role !== "user" || !m.images?.length) return m;
     // Anthropic: mọi model Claude hiện hành đều nhận ảnh, và bỏ ảnh của lượt cũ là sửa tin nhắn cũ (làm hỏng khối suy nghĩ
     // đã gắn với phần hội thoại đứng trước, vỡ bộ nhớ đệm) → chưa rõ thì vẫn giữ
-    const keep = target.vision === true || (target.vision === undefined && (i === lastUser || p.kind === "anthropic"));
+    const keep = target.vision === true || (target.vision === undefined && (i === lastUser || i === lastToolImage || p.kind === "anthropic"));
     if (keep) return m;
     const { images, ...rest } = m;
     const note =

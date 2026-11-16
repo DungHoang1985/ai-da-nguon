@@ -20,8 +20,9 @@ export const RES_PREFIX = "aidn.res.";
 /** Nhịp sống: mỗi khung ghi lại mỗi 3 giây; quá 10 giây không thấy thì coi là khung đã đóng */
 export const HEARTBEAT_MS = 3000;
 export const LIVE_MAX_AGE_MS = 10000;
-/** Lệnh chưa được nhận sau bấy lâu thì bỏ (khung nhận không chạy lệnh cũ) */
-export const CMD_MAX_AGE_MS = 20000;
+/** Lệnh chưa được nhận sau bấy lâu thì bỏ (khung nhận không chạy lệnh cũ). Dài hơn hạn chờ của khung gửi: lệnh còn hạn mà khung gửi
+ *  đã thôi chờ thì chính khung gửi rút lệnh, nên "đã nhận mà chưa báo kết quả" luôn nghĩa là khung nhận đã lấy thật. */
+export const CMD_MAX_AGE_MS = 30000;
 /** Khung gửi chờ kết quả tối đa bấy lâu */
 export const SEND_TIMEOUT_MS = 25000;
 export const MAX_TEXT_CHARS = 20000;
@@ -49,6 +50,8 @@ export interface Command {
   from: AppName;
   to: AppName;
   at: number;
+  /** Tên tệp đích mà người dùng đã thấy trong hộp hỏi. Mở hai tài liệu cùng ứng dụng thì chỉ khung của đúng tệp này nhận lệnh. */
+  toTitle?: string;
   payload: CrossOp;
 }
 
@@ -171,6 +174,8 @@ export function validCommand(c: any, self: AppName, now = Date.now()): c is Comm
   if (typeof c.id !== "string" || !/^[a-z0-9]{8,40}$/.test(c.id)) return false;
   if (!isApp(c.from) || c.to !== self || c.from === self) return false;
   if (typeof c.at !== "number" || now - c.at > CMD_MAX_AGE_MS || c.at - now > CMD_MAX_AGE_MS) return false;
+  if (c.toTitle !== undefined && (typeof c.toTitle !== "string" || c.toTitle.length > 200)) return false;
+  if (Object.keys(c).some((k) => !["id", "from", "to", "at", "toTitle", "payload"].includes(k))) return false;
   const p = c.payload;
   if (!p || p.op !== OP_OF[self]) return false;
   try {
@@ -183,11 +188,21 @@ export function validCommand(c: any, self: AppName, now = Date.now()): c is Comm
 }
 
 /** Mô tả lệnh để hỏi người dùng ở khung gửi và để ghi nhận ở khung nhận */
-export function describePayload(p: CrossOp): string {
-  const cut = (s: string, n: number) => (s.length > n ? s.slice(0, n) + "…" : s);
-  if (p.op === "word_append") return `thêm ${p.text.split(/\n+/).filter((l) => l.trim()).length} đoạn vào cuối văn bản: “${cut(p.text.replace(/\s+/g, " "), 160)}”`;
-  if (p.op === "excel_new_sheet") return `tạo sheet mới “${p.name}” với bảng ${p.values.length}×${p.values[0]?.length || 0} ô (hàng đầu: ${cut(p.values[0].join(" | "), 120)})`;
-  return `thêm một slide: “${cut(p.title || "(không tiêu đề)", 80)}”${p.body ? ` — ${cut(p.body.replace(/\s+/g, " "), 120)}` : ""}`;
+/** `full` = bản cho hộp hỏi xác nhận: hiện gần đủ nội dung và nói rõ phần bị cắt (người dùng phải thấy thứ sắp được ghi,
+ *  không chỉ câu mở đầu); bản ngắn dùng cho dòng ghi nhận ở khung nhận. */
+export function describePayload(p: CrossOp, full = false): string {
+  const cut = (s: string, n: number) => (s.length > n ? `${s.slice(0, n)}… [còn ${s.length - n} ký tự nữa chưa hiện ở đây]` : s);
+  if (p.op === "word_append") {
+    const n = p.text.split(/\n+/).filter((l) => l.trim()).length;
+    return `thêm ${n} đoạn (${p.text.length} ký tự) vào cuối văn bản: “${cut(full ? p.text.replace(/\n+/g, " ¶ ") : p.text.replace(/\s+/g, " "), full ? 1500 : 160)}”`;
+  }
+  if (p.op === "excel_new_sheet") {
+    const row = (r: string[]) => cut(r.join(" | "), full ? 200 : 120);
+    const rows = p.values;
+    const shown = full && rows.length > 1 ? `; ${rows.slice(1, 4).map((r, i) => `hàng ${i + 2}: ${row(r)}`).join("; ")}${rows.length > 5 ? `; … ; hàng cuối: ${row(rows[rows.length - 1])}` : rows.length === 5 ? `; hàng 5: ${row(rows[4])}` : ""}` : "";
+    return `tạo sheet mới “${p.name}” với bảng ${rows.length}×${rows[0]?.length || 0} ô (hàng đầu: ${row(rows[0])}${shown})`;
+  }
+  return `thêm một slide: “${cut(p.title || "(không tiêu đề)", full ? 300 : 80)}”${p.body ? ` — ${cut(full ? p.body.replace(/\n+/g, " ¶ ") : p.body.replace(/\s+/g, " "), full ? 1200 : 120)}` : ""}`;
 }
 
 // ---------- Gửi ----------
@@ -222,7 +237,8 @@ export async function sendCommand(s: KVStore, from: AppName, to: AppName, payloa
   if (pending && typeof pending.at === "number" && now() - pending.at <= CMD_MAX_AGE_MS) {
     return { id: "", ok: false, at: now(), error: `${to} đang có một lệnh ghi khác chờ xử lý. Thử lại sau vài giây.` };
   }
-  const cmd: Command = { id: newId(), from, to, at: now(), payload };
+  const title = liveOf(s, to, now())?.title;
+  const cmd: Command = { id: newId(), from, to, at: now(), ...(title ? { toTitle: title } : {}), payload };
   if (!write(s, CMD_PREFIX + to, cmd)) return { id: cmd.id, ok: false, at: now(), error: "Không ghi được lệnh vào bộ nhớ dùng chung của add-in (bộ nhớ đầy?)." };
   const deadline = now() + (o.timeoutMs ?? SEND_TIMEOUT_MS);
   const resKey = RES_PREFIX + cmd.id;
@@ -258,10 +274,12 @@ export async function sendCommand(s: KVStore, from: AppName, to: AppName, payloa
 
 /** Lấy lệnh đang chờ cho ứng dụng này (và gỡ khỏi hộp thư). Lệnh sai hình dạng, quá hạn, đã chạy đều bị bỏ.
  *  `seen` là tập id đã chạy của khung này. Trả null khi không có gì để làm. */
-export function takeCommand(s: KVStore, self: AppName, o: { accept: boolean; seen: Set<string>; now?: number }): Command | null {
+export function takeCommand(s: KVStore, self: AppName, o: { accept: boolean; seen: Set<string>; now?: number; title?: string }): Command | null {
   const now = o.now ?? Date.now();
   const raw = read<any>(s, CMD_PREFIX + self);
   if (!raw) return null;
+  // Lệnh ghi cho một tệp khác đang mở ở cùng ứng dụng: để nguyên cho khung của tệp đó lấy
+  if (raw && typeof raw.toTitle === "string" && raw.toTitle && o.title && raw.toTitle !== o.title) return null;
   const drop = () => {
     try {
       s.removeItem(CMD_PREFIX + self);
@@ -271,6 +289,9 @@ export function takeCommand(s: KVStore, self: AppName, o: { accept: boolean; see
   };
   if (!validCommand(raw, self, now) || o.seen.has(raw.id)) {
     drop();
+    // Lệnh bị bỏ vẫn báo lại (nếu có mã lệnh), để khung gửi không phải chờ hết hạn rồi đoán
+    if (raw && typeof raw.id === "string" && /^[a-z0-9]{8,40}$/.test(raw.id) && !o.seen.has(raw.id))
+      write(s, RES_PREFIX + raw.id, { id: raw.id, ok: false, at: now, error: `${self} đã bỏ lệnh ghi vì không hợp lệ hoặc quá hạn; chưa ghi gì.` } as CommandResult);
     return null;
   }
   drop();
@@ -280,6 +301,31 @@ export function takeCommand(s: KVStore, self: AppName, o: { accept: boolean; see
     return null;
   }
   return raw as Command;
+}
+
+/** Hai khung cùng ứng dụng (hai tài liệu cùng tên hoặc chưa đặt tên) có thể cùng lấy một lệnh: mỗi khung ghi dấu nhận của mình,
+ *  chờ một nhịp rồi đọc lại — chỉ khung còn thấy dấu của mình mới được chạy. */
+export const CLAIM_PREFIX = "aidn.claim.";
+export async function claimCommand(s: KVStore, id: string, token: string, wait: (ms: number) => Promise<void> = (ms) => new Promise((r) => setTimeout(r, ms))): Promise<boolean> {
+  const key = CLAIM_PREFIX + id;
+  try {
+    const prior = s.getItem(key);
+    if (prior && prior !== token) return false;
+    s.setItem(key, token);
+    await wait(80 + Math.floor(Math.random() * 60));
+    const won = s.getItem(key) === token;
+    // Dấu nhận tự hết tác dụng cùng lệnh; dọn sau khi lệnh chắc chắn đã quá hạn
+    setTimeout(() => {
+      try {
+        if (s.getItem(key) === token) s.removeItem(key);
+      } catch {
+        /* bỏ qua */
+      }
+    }, CMD_MAX_AGE_MS + 5000);
+    return won;
+  } catch {
+    return true;
+  }
 }
 
 export function reply(s: KVStore, id: string, r: { ok: boolean; message?: string; error?: string }, now = Date.now()): void {

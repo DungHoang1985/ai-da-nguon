@@ -150,7 +150,7 @@ describe("Đợt 3 · B1 · Kênh lệnh ghi chéo ứng dụng", () => {
     assert.throws(() => buildPayload("Excel", { values: Array.from({ length: 200 }, () => Array(40).fill("x")) }), /quá lớn/);
     assert.throws(() => buildPayload("Word", {}), /text/);
     assert.deepStrictEqual(buildPayload("PowerPoint", { title: "Tiến độ", bullets: ["a", "b"] }), { op: "ppt_add_slide", title: "Tiến độ", body: "a\nb" });
-    assert.match(describePayload(buildPayload("Word", { text: "Một\nHai" })), /thêm 2 đoạn vào cuối văn bản/);
+    assert.match(describePayload(buildPayload("Word", { text: "Một\nHai" })), /thêm 2 đoạn \(7 ký tự\) vào cuối văn bản/);
     assert.match(describePayload(buildPayload("Excel", { values: [["A", "B"]] })), /sheet mới .* 1×2 ô/);
     assert.deepStrictEqual(["=SUM(A1)", "+1", "@x", "-5", "-abc", "12", "Chữ"].map(cellAsText), ["'=SUM(A1)", "'+1", "'@x", "-5", "'-abc", "12", "Chữ"]);
   });

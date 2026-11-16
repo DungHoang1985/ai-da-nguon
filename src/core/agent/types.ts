@@ -29,7 +29,7 @@ export interface RawAssistant {
 
 export type AgentMessage =
   | { role: "system"; content: string }
-  | { role: "user"; content: string; images?: { mime: string; data: string }[]; files?: FilePart[] }
+  | { role: "user"; content: string; images?: { mime: string; data: string }[]; files?: FilePart[]; /** Tin do add-in thêm để gửi ảnh công cụ vừa chụp (không phải lời người dùng) */ fromTool?: boolean }
   | {
       role: "assistant";
       content: string;

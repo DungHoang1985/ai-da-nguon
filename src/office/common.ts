@@ -32,6 +32,10 @@ export function createCommonTools(o: CommonToolsOptions): ExtraTools {
   const specs: ToolSpec[] = [];
   const others = (o.apps || HOSTS).filter((h) => h !== o.host && HOSTS.includes(h));
   const self = normalizeApp(o.host);
+  /** Lệnh ghi chéo gần nhất đã được đưa ra hỏi người dùng (đúng nội dung này). Công cụ chỉ gửi lệnh đã qua bước hỏi:
+   *  nếu lúc kiểm rủi ro đích chưa mở (không hỏi) mà ngay sau đó đích mở, lệnh vẫn KHÔNG được gửi. */
+  let asked = "";
+  const keyOf = (a: any) => JSON.stringify([a?.app, a?.text, a?.sheet_name, a?.values, a?.title, a?.body ?? a?.bullets]);
   if (o.skills.length) {
     specs.push({
       name: "use_skill",
@@ -78,17 +82,19 @@ export function createCommonTools(o: CommonToolsOptions): ExtraTools {
       alwaysAsk: true,
       // Luôn hỏi người dùng trước khi lệnh rời khung này. Lệnh không hợp lệ hoặc khung đích chưa mở thì không hỏi: công cụ tự báo lỗi.
       risky: async (a: any) => {
+        asked = "";
         const to = normalizeApp(a?.app);
         const st = sharedStore(o.store);
         if (!to || !self || !st || !others.includes(to) || blockReason(st, self, to)) return null;
         let what: string;
         try {
-          what = describePayload(buildPayload(to, a));
+          what = describePayload(buildPayload(to, a), true);
         } catch {
           return null;
         }
         const title = liveOf(st, to)?.title;
-        return `Ghi sang ${to}${title ? ` (tệp “${title}”)` : ""}: ${what}. Nội dung được ghi vào tài liệu đang mở ở ${to}; muốn gỡ thì bấm Hoàn tác ở khung AI Đa Nguồn của ${to}.`;
+        asked = keyOf(a);
+        return `Ghi sang ${to}${title ? ` (tệp “${title}”)` : ""}: ${what}. Nội dung do AI soạn (có thể dựa trên dữ liệu đọc từ tài liệu hay ứng dụng khác) — hãy đọc trước khi cho phép. Nó được ghi vào tài liệu đang mở ở ${to}; muốn gỡ thì bấm Hoàn tác ở khung AI Đa Nguồn của ${to}.`;
       },
     });
   }
@@ -108,6 +114,14 @@ export function createCommonTools(o: CommonToolsOptions): ExtraTools {
         if (!others.includes(to)) throw new Error(to === self ? `Đang ở ${self}: dùng công cụ của chính ứng dụng này để ghi.` : `Kết nối với ${to} đang tắt trong Cài đặt của khung này.`);
         if (!st) throw new Error("Bộ nhớ dùng chung của add-in không dùng được nên không gửi được lệnh sang ứng dụng khác.");
         const payload = buildPayload(to, args);
+        const block = blockReason(st, self, to);
+        if (block) throw new Error(block);
+        // Chỉ gửi lệnh đúng nội dung vừa được đưa ra hỏi người dùng
+        if (asked !== keyOf(args)) {
+          asked = "";
+          throw new Error(`Chưa ghi sang ${to}: lệnh này chưa qua bước hỏi người dùng (lúc kiểm, khung ở ${to} chưa sẵn sàng). Hãy gọi lại write_other_app với đúng nội dung này.`);
+        }
+        asked = "";
         const res = await sendCommand(st, self, to, payload, { signal: o.signal, timeoutMs: o.sendTimeoutMs });
         if (!res.ok) throw new Error(res.error || `Không ghi được sang ${to}.`);
         return { ok: true, app: to, op: OP_OF[to], brief: `đã ghi sang ${to}`, message: `${to}: ${res.message || "đã ghi"} Người dùng hoàn tác được ở khung AI Đa Nguồn của ${to}.` };

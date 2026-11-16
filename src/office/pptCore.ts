@@ -34,8 +34,9 @@ export async function shapeOn(ctx: PowerPoint.RequestContext, slide: PowerPoint.
     throw new Error(`Slide có ${same.length} hình cùng tên "${s}" (hình số ${same.map((y) => y.k + 1).join(", ")}). Hãy chỉ hình bằng SỐ THỨ TỰ của nó (trường n trong tổng quan), không dùng tên.`);
   }
   let shape = same[0]?.x;
-  if (!shape) shape = shapes.items.find((x) => x.name.toLowerCase().includes(s.toLowerCase()) && s);
+  // Số thứ tự trước, rồi mới tới khớp một phần của tên ("1" không được trúng hình tên "Rectangle 12")
   if (!shape && /^\d+$/.test(s)) shape = shapes.items[Number(s) - 1];
+  if (!shape) shape = shapes.items.find((x) => x.name.toLowerCase().includes(s.toLowerCase()) && s);
   if (!shape) throw new Error(`Không thấy hình "${s}" trên slide. Có: ${shapes.items.map((x) => x.name).join(", ")}`);
   return shape;
 }

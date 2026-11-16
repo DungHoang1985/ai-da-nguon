@@ -76,7 +76,7 @@ export const deckIssueLabel = (k: DeckIssueKind) => LABEL[k];
 
 const norm = (f: string) => f.trim().toLowerCase();
 const cut = (s: string, n = 40) => (s.length > n ? s.slice(0, n) + "…" : s);
-const PLACEHOLDER_TEXT = /^(click to add|bấm để thêm|nhấp để thêm|lorem ipsum|\[cần bổ sung\]|xxx+|tbd)\b/i;
+const PLACEHOLDER_TEXT = /^(click to add|bấm để thêm|nhấp để thêm|lorem ipsum|xxx+|tbd)(?=\W|$)|\[(cần bổ sung|điền|todo)[^\]]*\]/i;
 
 /** Phông dùng nhiều nhất (theo số ký tự) */
 export function dominantFonts(slides: DeckSlide[], top = 1): string[] {

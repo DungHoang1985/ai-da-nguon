@@ -401,8 +401,9 @@ export async function executePptDesign(name: string, a: any, log: UndoEntry[]): 
           if (!ps[k].text.length) throw new Error(`Đoạn ${a.paragraph} rỗng.`);
           targets.push(whole.getSubstring(ps[k].start, ps[k].text.length));
           where = `đoạn ${a.paragraph}`;
-        } else if (a.find) {
+        } else if (a.find !== undefined && a.find !== null) {
           const f = String(a.find);
+          if (!f) throw new Error("find rỗng: nêu cụm chữ cần định dạng, hoặc bỏ find để định dạng cả hình.");
           for (let at = text.indexOf(f); at >= 0 && targets.length < 50; at = text.indexOf(f, at + f.length)) targets.push(whole.getSubstring(at, f.length));
           if (!targets.length) throw new Error(`Không thấy “${truncate(f, 60)}” trong hình ${shp.name}.`);
           where = `${targets.length} chỗ “${truncate(f, 30)}”`;
@@ -439,7 +440,9 @@ export async function executePptDesign(name: string, a: any, log: UndoEntry[]): 
         const cells = Array.isArray(a.cells) ? a.cells : [];
         const rows = Array.isArray(a.add_rows) ? a.add_rows.filter((r: any) => Array.isArray(r)) : [];
         if (!cells.length && !rows.length) throw new Error("Cần cells (ô cần sửa) hoặc add_rows (hàng thêm vào cuối).");
+        if (cells.length > 300 || rows.length > 50) throw new Error("Quá nhiều ô hoặc hàng trong một lần gọi (tối đa 300 ô, 50 hàng): chia nhỏ.");
         for (const c of cells) {
+          if (c?.row === null || c?.row === undefined || c?.col === null || c?.col === undefined || c.row === "" || c.col === "") throw new Error("Mỗi ô cần row và col (số, đánh từ 0).");
           const r = Number(c?.row);
           const k = Number(c?.col);
           if (!Number.isInteger(r) || !Number.isInteger(k) || r < 0 || k < 0 || r >= t.rowCount || k >= t.columnCount) throw new Error(`Ô (hàng ${c?.row}, cột ${c?.col}) nằm ngoài bảng ${t.rowCount}×${t.columnCount} (đánh số từ 0).`);
