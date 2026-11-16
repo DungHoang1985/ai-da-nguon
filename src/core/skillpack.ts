@@ -27,6 +27,7 @@ export const CORE_GUIDES: Record<string, string> = {
 - Mọi sửa đổi ghi bằng Theo dõi thay đổi để người dùng duyệt; góp ý thì dùng nhận xét neo đúng cụm chữ.
 - Không tự bịa số hiệu, điều, khoản văn bản pháp luật; căn cứ nào không có trong tài liệu/tệp đính kèm thì ghi "cần đối chiếu văn bản gốc".
 - Kiểm tra nhất quán: thuật ngữ định nghĩa, tham chiếu chéo, đánh số, ngày tháng, số tiền bằng số và bằng chữ, tên các bên.
+- Soạn công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản: dựng bằng word_create_admin_document (đúng thể thức trong một lần gọi), theo kỹ năng soan-thao-van-ban-hanh-chinh.
 - Khi nói tới một điều khoản, dẫn số điều kèm số đoạn, ví dụ Điều 5.3 [¶57], để người dùng bấm tới.`,
   PowerPoint: `## Chuẩn làm việc với PowerPoint (luôn áp dụng)
 - Mỗi slide một thông điệp; bài dài theo cấu trúc kim tự tháp: kết luận chính → tóm tắt → các phần → kết luận/bước tiếp theo.
@@ -338,8 +339,64 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 2. Kiểm tra dấu hiệu phải chuyển cấp trên hoặc luật sư: có kiện tụng hoặc đe dọa kiện; yêu cầu của tòa án, cơ quan điều tra, thanh tra, cơ quan quản lý; khiếu nại đông người hoặc có yếu tố báo chí; số tiền lớn hoặc nội dung có thể bị coi là thừa nhận trách nhiệm; dữ liệu cá nhân nhạy cảm; thời hạn trả lời sắp hết. Có dấu hiệu thì nói rõ lý do, đề xuất người duyệt; nếu người dùng vẫn cần bản nháp thì ghi đầu văn bản "BẢN NHÁP – CẦN DUYỆT".
 3. Hỏi gọn chi tiết còn thiếu: số và ngày văn bản đến, nội dung được phép cam kết, người ký, hạn trả lời.
 4. Soạn: dẫn chiếu văn bản đến; trả lời từng ý theo thứ tự câu hỏi; không thừa nhận điều chưa xác nhận; không hứa ngoài thẩm quyền; căn cứ pháp lý chỉ nêu khi có trong tài liệu, còn lại ghi "cần đối chiếu văn bản gốc"; giọng lịch sự, rõ ràng; kết bằng đầu mối liên hệ.
-5. Văn bản gửi cơ quan nhà nước: theo thể thức văn bản hành chính hiện hành (quốc hiệu, số và ký hiệu, trích yếu, nơi nhận), dùng kiểu đoạn sẵn có của văn bản.
-6. Chèn vào Word bằng word_insert_paragraphs (Theo dõi thay đổi); báo các chỗ cần điền [ ].`,
+5. Văn bản gửi cơ quan nhà nước hoặc cần đúng thể thức văn bản hành chính (quốc hiệu, số và ký hiệu, trích yếu, nơi nhận): đọc kỹ năng soan-thao-van-ban-hanh-chinh (use_skill) và dựng bằng word_create_admin_document.
+6. Văn bản khác (thư trả lời khách hàng, đối tác): chèn vào Word bằng word_insert_paragraphs (Theo dõi thay đổi); báo các chỗ cần điền [ ].`,
+  },
+  {
+    name: "soan-thao-van-ban-hanh-chinh",
+    description:
+      "Soạn, sửa và soát thể thức văn bản hành chính trong Word: công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch. Dựng trọn văn bản đúng thể thức (quốc hiệu, tiêu ngữ, tên cơ quan, số và ký hiệu, địa danh ngày tháng, trích yếu, kính gửi, phần ký, nơi nhận, lề, phông, cỡ chữ) và kiểm lại. Dùng khi người dùng nói 'soạn công văn', 'soạn tờ trình', 'viết báo cáo gửi…', 'soạn quyết định', 'thông báo', 'giấy mời', 'biên bản', 'kiểm tra thể thức', 'đúng thể thức chưa'.",
+    hosts: ["Word"],
+    source: "builtin",
+    enabled: true,
+    triggers: [
+      "cong van", "to trinh", "van ban hanh chinh", "the thuc", "soan quyet dinh", "du thao quyet dinh", "soan thong bao", "du thao thong bao", "giay moi", "soan bien ban",
+      "bien ban hop", "bien ban lam viec", "soan bao cao", "du thao bao cao", "viet bao cao gui", "soan ke hoach", "van ban gui", "van ban de nghi", "noi nhan", "kinh gui", "quoc hieu",
+    ],
+    body: `# Soạn thảo văn bản hành chính
+
+Áp dụng chuẩn thể thức và kỹ thuật trình bày văn bản hành chính đang có hiệu lực (bắt buộc với cơ quan, tổ chức nhà nước và doanh nghiệp nhà nước; doanh nghiệp khác nên theo, nhất là văn bản gửi cơ quan nhà nước). Không dùng cho văn bản quy phạm pháp luật. Mẫu do bộ, ngành ban hành riêng (đơn, văn bản đề nghị theo mẫu thủ tục): giữ nguyên bố cục và câu chữ của mẫu, chỉ chỉnh phông, cỡ chữ, lề.
+
+## A. Soạn mới
+1. Xác định trước khi viết: loại văn bản; cơ quan ban hành (và cơ quan chủ quản nếu có); gửi ai; nội dung chính; ai ký và ký với quyền hạn gì. Người dùng đã nêu đủ ý chính thì soạn ngay; chỉ hỏi khi thiếu tên cơ quan ban hành hoặc thiếu nội dung chính.
+2. KHÔNG bịa số văn bản, ngày ký, tên người ký, ký hiệu đơn vị, số liệu, căn cứ pháp lý. Chưa biết thì bỏ trống tham số: công cụ tự chừa chỗ. Số văn bản luôn để trống cho văn thư cấp.
+3. Dựng bằng MỘT lần gọi word_create_admin_document (công cụ tự trình bày đúng mọi thành phần, đặt khổ giấy, lề, số trang khi văn bản đang trống). Không tự chèn từng dòng quốc hiệu, bảng, phần ký bằng công cụ khác.
+   - doc_type: cong_van, to_trinh, bao_cao, quyet_dinh, thong_bao, giay_moi, bien_ban, ke_hoach, khac (kèm title).
+   - symbol: chữ viết tắt tên loại + chữ viết tắt tên cơ quan, ví dụ TTr-ABC, BC-ABC, QĐ-ABC, TB-ABC, GM-ABC, BB-ABC, KH-ABC. Công văn không có chữ viết tắt tên loại: chữ viết tắt cơ quan + đơn vị soạn thảo, ví dụ ABC-PC.
+   - subject: trích yếu ngắn, nêu đúng việc (công văn: phần sau "V/v").
+   - to: nơi nhận ở phần Kính gửi (công văn, tờ trình, báo cáo gửi cấp trên). recipients: các dòng Nơi nhận.
+   - body: mỗi dòng một đoạn; "# " đề mục canh giữa; "## " đề mục đậm; cả dòng trong dấu gạch dưới _…_ là chữ nghiêng (dòng căn cứ).
+   - signer_authority (TM., KT., TL., TUQ., Q. nếu có), signer_title, signer_name (không ghi học hàm, học vị).
+4. Viết nội dung theo loại:
+   - Công văn: mở đầu nêu lý do hoặc dẫn văn bản liên quan; nội dung trình bày từng ý, đề nghị cụ thể, thời hạn; câu kết ("Trân trọng." hoặc đề nghị phối hợp). Văn bản gửi cấp trên dùng "kính đề nghị", gửi ngang cấp hoặc cấp dưới dùng "đề nghị".
+   - Tờ trình: "## I. …" sự cần thiết / căn cứ; "## II. …" nội dung trình (phương án, số liệu, kinh phí, tiến độ); "## III. …" kiến nghị, đề xuất cụ thể để người có thẩm quyền quyết; kết "Kính trình … xem xét, quyết định."
+   - Báo cáo: tình hình và kết quả (có số liệu, mốc thời gian); tồn tại, nguyên nhân; phương hướng; đề xuất, kiến nghị.
+   - Quyết định: dòng "# <THẨM QUYỀN BAN HÀNH>" (ví dụ "# GIÁM ĐỐC CÔNG TY …"); các dòng căn cứ nghiêng "_Căn cứ …;_", dòng cuối "_Theo đề nghị của …._" kết bằng dấu chấm; "# QUYẾT ĐỊNH:"; rồi "## Điều 1. …", "## Điều 2. …"; điều cuối nêu hiệu lực và người chịu trách nhiệm thi hành. Nơi nhận ghi "Như Điều …".
+   - Thông báo: nội dung thông báo, đối tượng, thời gian, yêu cầu thực hiện, đầu mối liên hệ.
+   - Giấy mời: dòng "<cơ quan> trân trọng kính mời: …"; "Tới dự: …"; "Chủ trì: …"; "Thời gian: …"; "Địa điểm: …".
+   - Biên bản: thời gian bắt đầu, địa điểm, thành phần tham dự, chủ trì, thư ký, nội dung, giờ kết thúc; ký hai bên: left_signer_title "THƯ KÝ", signer_title "CHỦ TỌA".
+   - Đề mục trong nội dung: phần "I., II.", mục "1., 2.", điểm "a), b)"; đánh số liên tục, không nhảy, không trùng.
+5. Căn cứ pháp lý chỉ ghi khi có trong tài liệu, tệp đính kèm hoặc người dùng cung cấp; lần đầu viện dẫn ghi đủ tên loại, số, ký hiệu, ngày, cơ quan ban hành, trích yếu. Không có thì ghi "[cần bổ sung căn cứ]" và báo người dùng.
+6. Viết hoa: tên cơ quan viết hoa chữ đầu các từ chỉ loại hình, chức năng (Sở Xây dựng, Ủy ban nhân dân tỉnh …); "khoản", "điểm" viết thường, "Điều", "Chương" viết hoa khi viện dẫn; "cơ quan nhà nước", "quản lý nhà nước" viết thường chữ "nhà nước"; chức vụ viết hoa khi đi liền tên người.
+7. Sau khi dựng: gọi word_check_page_format để xác nhận lề, khổ giấy, phông, cỡ chữ; báo người dùng danh sách chỗ còn trống (trường blanks của công cụ) cần điền trước khi ký. Sửa câu chữ sau đó thì dùng word_set_paragraph_text trên đúng đoạn, không dựng lại cả văn bản.
+
+## B. Soát và sửa văn bản có sẵn
+1. Đọc văn bản (word_read_paragraphs), kiểm trang bằng word_check_page_format, đọc đầu và chân trang bằng word_read_parts.
+2. Đối chiếu với chuẩn dưới đây, lập bảng: Thành phần | Chuẩn | Hiện trạng | Xử lý.
+3. Tự sửa phần thể thức: lề và khổ giấy (word_set_page_format), phông, cỡ, kiểu chữ, canh lề, thụt đầu dòng, cách đoạn, giãn dòng (word_format_text với font_name, font_size, bold, italic, alignment, first_line_indent_mm, space_after_pt, line_spacing), viết hoa chỗ rõ ràng, dấu câu của Kính gửi và Nơi nhận.
+4. KHÔNG tự sửa nội dung: câu chữ, số liệu, ngày tháng, số hiệu văn bản viện dẫn, người ký. Thấy sai thì ghi nhận xét (word_add_comment) để người dùng quyết.
+
+## C. Chuẩn thể thức (số đo)
+- Giấy A4 đứng. Lề trên 20–25 mm, dưới 20–25 mm, trái 30–35 mm, phải 15–20 mm. Phông Times New Roman, màu đen.
+- Nội dung: cỡ 13–14, đứng, canh đều hai lề, thụt đầu dòng 10–12,7 mm (không dùng tab hay dấu cách), cách đoạn tối thiểu 6 pt, giãn dòng từ đơn đến 1,5; kết thúc bằng "./.".
+- Quốc hiệu: in hoa, đậm, cỡ 12–13. Tiêu ngữ: chữ thường, đậm, cỡ 13–14, có đường kẻ liền bên dưới dài bằng dòng chữ. Hai cỡ tăng giảm cùng nhau (12 và 13, hoặc 13 và 14).
+- Tên cơ quan chủ quản: in hoa, đứng, cỡ 12–13. Tên cơ quan ban hành: in hoa, đậm, cỡ 12–13, có đường kẻ bên dưới dài khoảng một phần ba đến một nửa dòng chữ.
+- Số và ký hiệu: "Số: 15/QĐ-ABC", cỡ 13, đặt dưới tên cơ quan. Địa danh và ngày tháng: nghiêng, cỡ 13–14, cùng hàng với số, dưới tiêu ngữ; ngày dưới 10 và tháng 1, 2 thêm số 0 ở trước.
+- Tên loại: in hoa, đậm, cỡ 13–14, canh giữa. Trích yếu: chữ thường, đậm, ngay dưới tên loại, có đường kẻ bên dưới. Công văn: "V/v …" cỡ 12–13, đứng, dưới số và ký hiệu.
+- Kính gửi: cỡ 13–14; nhiều nơi nhận thì mỗi nơi một dòng có gạch đầu dòng, cuối dòng dấu chấm phẩy, dòng cuối dấu chấm.
+- Phần ký: quyền hạn và chức vụ in hoa, đậm; chừa bốn đến năm dòng cho chữ ký và dấu; họ tên chữ thường, đậm.
+- Nơi nhận: chữ "Nơi nhận:" cỡ 12, nghiêng, đậm; các dòng bên dưới cỡ 11, đứng; dòng cuối "- Lưu: VT, <đơn vị soạn thảo>."
+- Số trang: chữ số Ả Rập, cỡ 13–14, canh giữa ở lề trên, không hiện ở trang đầu.`,
   },
   {
     name: "thiet-ke-bieu-do",

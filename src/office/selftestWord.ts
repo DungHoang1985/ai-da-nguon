@@ -919,6 +919,140 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       .join(", ")}`;
   });
 
+  await step("Văn bản hành chính: dựng công văn đúng thể thức trong vùng thử, đọc lại cỡ chữ, kiểu chữ, đường kẻ; hoàn tác thì hết", async () => {
+    const zone = async () => {
+      const s = await need(START);
+      const e = await need(END);
+      return Word.run(async (ctx) => {
+        const ps = ctx.document.body.paragraphs;
+        ps.load("items/text,items/alignment,items/firstLineIndent,items/font/name,items/font/size,items/font/bold,items/font/italic,items/tableNestingLevel");
+        const ts = ctx.document.body.tables;
+        ts.load("items");
+        await ctx.sync();
+        return { tables: ts.items.length, paras: ps.items.slice(s, e + 1).map((p) => ({ text: p.text, align: String(p.alignment), indent: p.firstLineIndent, font: p.font.name, size: p.font.size, bold: p.font.bold, italic: p.font.italic, inTable: p.tableNestingLevel > 0 })) };
+      });
+    };
+    const before = await zone();
+    const c0 = await countAll();
+    const mark = log.length;
+    const anchor = await need(T.plain);
+    const body = [`Công ty nhận được văn bản đề nghị cung cấp hồ sơ ${code} của Quý Sở.`, "## 1. Nội dung báo cáo", `Tiến độ thực hiện ${code} đạt 60% khối lượng.`, "Trân trọng."].join("\n");
+    const r = await run("word_create_admin_document", {
+      doc_type: "cong_van",
+      org: `Công ty cổ phần thử ${code}`,
+      parent_org: "Tổng công ty thử",
+      symbol: "THU-PC",
+      place: "Hà Nội",
+      subject: `báo cáo tiến độ ${code}`,
+      to: ["Sở Xây dựng thử"],
+      body,
+      signer_title: "Giám đốc",
+      page_setup: false,
+      position: "after_paragraph",
+      paragraph_index: anchor,
+      expect: T.plain.slice(0, 30),
+    });
+    expect(r.ok && Array.isArray(r.blanks), "Công cụ không trả danh sách chỗ trống");
+    expect(r.blanks.some((b: string) => b.includes("số văn bản")) && r.blanks.some((b: string) => b.includes("họ tên người ký")), `Thiếu chỗ trống phải báo: ${r.blanks.join("; ")}`);
+    const mid = await zone();
+    expect(mid.tables === before.tables + 2, `Số bảng tăng ${mid.tables - before.tables} (phải là 2: phần đầu và phần ký)`);
+    const find = (part: string) => mid.paras.find((p) => p.text.includes(part));
+    const qh = find("CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM");
+    const tn = find("Độc lập - Tự do - Hạnh phúc");
+    const so = find("/THU-PC");
+    const vv = find(`V/v báo cáo tiến độ ${code}`);
+    const kg = find("Kính gửi: Sở Xây dựng thử");
+    const nd = find(`Tiến độ thực hiện ${code}`);
+    const ky = find("GIÁM ĐỐC");
+    const nn = find("Nơi nhận:");
+    const luu = find("- Lưu: VT");
+    const org = find(`CÔNG TY CỔ PHẦN THỬ ${code}`);
+    for (const [name, p] of [["quốc hiệu", qh], ["tiêu ngữ", tn], ["số và ký hiệu", so], ["V/v", vv], ["Kính gửi", kg], ["nội dung", nd], ["chức vụ ký", ky], ["Nơi nhận", nn], ["dòng Lưu", luu], ["tên cơ quan", org]] as [string, any][])
+      expect(!!p, `Không thấy thành phần: ${name}`);
+    expect(qh!.inTable && qh!.bold && qh!.size === 13 && qh!.align === "Centered" && qh!.font === "Times New Roman", `Quốc hiệu sai: ${JSON.stringify(qh)}`);
+    expect(tn!.bold && tn!.size === 14, `Tiêu ngữ sai cỡ hoặc không đậm: ${tn!.size}`);
+    expect(org!.bold && org!.size === 13, "Tên cơ quan ban hành phải đậm cỡ 13");
+    expect(vv!.size === 13 && !vv!.bold, "V/v phải cỡ 12–13, đứng");
+    expect(!nd!.inTable && nd!.size === 14 && nd!.align === "Justified" && Math.abs(nd!.indent - 28.35) < 0.5 && !nd!.bold, `Đoạn nội dung sai: ${JSON.stringify(nd)}`);
+    expect(/\.\/\.$/.test(find("Trân trọng")!.text), "Thiếu dấu kết thúc ./.");
+    expect(ky!.bold && ky!.inTable, "Chức vụ ký phải đậm, nằm trong bảng phần ký");
+    expect(nn!.size === 12 && nn!.bold && nn!.italic && luu!.size === 11, "Nơi nhận phải cỡ 12 đậm nghiêng, danh sách cỡ 11");
+    // Đường kẻ: đếm đoạn rỗng có viền dưới trong vùng thử
+    let rules = -1;
+    if (sup("1.3", "WordApiDesktop")) {
+      const s = await need(START);
+      const e = await need(END);
+      rules = await Word.run(async (ctx) => {
+        const ps = ctx.document.body.paragraphs;
+        ps.load("items/text");
+        await ctx.sync();
+        const empties = ps.items.slice(s, e + 1).filter((p) => !p.text.trim());
+        empties.forEach((p) => p.borders.load("items/lineStyle"));
+        await ctx.sync();
+        return empties.filter((p) => p.borders.items[2] && String(p.borders.items[2].lineStyle) === "Single").length;
+      });
+      expect(rules === 2, `Số đường kẻ (viền dưới) là ${rules}, phải là 2: dưới tên cơ quan và dưới tiêu ngữ`);
+    }
+    const c1 = await countAll();
+    expect(c1.changes > c0.changes, "Dựng văn bản mà không sinh sửa đổi được theo dõi");
+    const entries = log.slice(mark);
+    expect(entries.length === 1, `Ghi ${entries.length} mục hoàn tác (phải là 1)`);
+    for (const u of entries.reverse()) await u.undo();
+    log.length = mark;
+    const after = await zone();
+    const c2 = await countAll();
+    expect(after.tables === before.tables, `Sau hoàn tác còn ${after.tables - before.tables} bảng thừa`);
+    expect(after.paras.map((p) => p.text).join("\n") === before.paras.map((p) => p.text).join("\n"), "Chữ của vùng thử sau hoàn tác khác trước");
+    expect(c2.changes === c0.changes, `Sửa đổi chờ duyệt: trước ${c0.changes}, sau hoàn tác ${c2.changes}`);
+    return `Công văn: 2 bảng không viền, ${mid.paras.length - before.paras.length} đoạn, ${rules < 0 ? "không đo được đường kẻ" : rules + " đường kẻ"}, báo ${r.blanks.length} chỗ trống; hoàn tác sạch`;
+  });
+
+  await step("Đặt thể thức trang: đổi lề rồi hoàn tác về đúng lề cũ; định dạng thụt đầu dòng, cách đoạn, giãn dòng", async () => {
+    if (!sup("1.3", "WordApiDesktop")) throw new Skip("Cần WordApiDesktop 1.3 để đặt lề và khổ giấy");
+    const read = () =>
+      Word.run(async (ctx) => {
+        const p = ctx.document.sections.getFirst().pageSetup;
+        p.load("topMargin,bottomMargin,leftMargin,rightMargin,pageWidth,pageHeight");
+        await ctx.sync();
+        return { top: p.topMargin, bottom: p.bottomMargin, left: p.leftMargin, right: p.rightMargin, w: p.pageWidth, h: p.pageHeight };
+      });
+    const mm = (pt: number) => Math.round(((pt * 25.4) / 72) * 10) / 10;
+    const b = await read();
+    const mark = log.length;
+    const want = { top_mm: Math.round(mm(b.top)) + 3, bottom_mm: Math.round(mm(b.bottom)) + 2, left_mm: Math.round(mm(b.left)) + 4, right_mm: Math.round(mm(b.right)) + 1, a4: false };
+    let msg = "";
+    try {
+      const r = await run("word_set_page_format", want);
+      expect(r.ok && r.changed === true, "Công cụ không báo đã đổi lề");
+      const m = await read();
+      expect(Math.abs(mm(m.top) - want.top_mm) < 0.2 && Math.abs(mm(m.left) - want.left_mm) < 0.2 && Math.abs(mm(m.right) - want.right_mm) < 0.2 && Math.abs(mm(m.bottom) - want.bottom_mm) < 0.2, `Lề sau khi đặt: ${JSON.stringify(m)}`);
+      expect(Math.abs(m.w - b.w) < 0.5 && Math.abs(m.h - b.h) < 0.5, "a4=false mà khổ giấy bị đổi");
+      const same = await run("word_set_page_format", want);
+      expect(same.changed === false, "Đặt lại đúng lề đang có mà vẫn báo đã đổi");
+      msg = `lề trái ${mm(b.left)} → ${mm(m.left)} mm`;
+    } finally {
+      for (const u of log.slice(mark).reverse()) await u.undo();
+      log.length = mark;
+    }
+    const a = await read();
+    expect(Math.abs(a.top - b.top) < 0.3 && Math.abs(a.left - b.left) < 0.3 && Math.abs(a.right - b.right) < 0.3 && Math.abs(a.bottom - b.bottom) < 0.3, `Hoàn tác không trả đúng lề cũ: ${JSON.stringify(a)} so với ${JSON.stringify(b)}`);
+    // Định dạng đoạn theo chuẩn văn bản hành chính
+    const i = await need(T.plain);
+    const mark2 = log.length;
+    await run("word_format_text", { paragraph_index: i, expect: T.plain.slice(0, 30), first_line_indent_mm: 10, space_after_pt: 6, line_spacing: 1.5 });
+    const f = await Word.run(async (ctx) => {
+      const ps = ctx.document.body.paragraphs;
+      ps.load("items/firstLineIndent,items/spaceAfter,items/lineSpacing");
+      await ctx.sync();
+      const p = ps.items[i];
+      return { indent: p.firstLineIndent, after: p.spaceAfter, line: p.lineSpacing };
+    });
+    expect(Math.abs(f.indent - 28.35) < 0.5 && Math.abs(f.after - 6) < 0.1 && Math.abs(f.line - 18) < 0.1, `Định dạng đoạn đọc lại: ${JSON.stringify(f)}`);
+    for (const u of log.slice(mark2).reverse()) await u.undo();
+    log.length = mark2;
+    return `${msg}, hoàn tác về ${mm(a.left)} mm; thụt đầu dòng 10 mm, cách đoạn 6 pt, giãn dòng 1,5`;
+  });
+
   await step("So sánh phiên bản: liệt kê đúng 3 chỗ khác kèm số điều; văn bản đang mở không đổi", async () => {
     if (!sup("1.3", "WordApiHiddenDocument")) throw new Skip("Cần WordApiHiddenDocument 1.3 để đọc tệp .docx khác");
     const KEEP = `Đoạn so sánh giữ nguyên SS${code}.`;

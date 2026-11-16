@@ -156,6 +156,10 @@ export function describeCall(call: ToolCall): string {
       return "Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản";
     case "word_check_page_format":
       return "Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ";
+    case "word_create_admin_document":
+      return `Dựng văn bản hành chính đúng thể thức${a.subject ? `: ${String(a.subject).slice(0, 50)}` : ""}`;
+    case "word_set_page_format":
+      return "Đặt khổ giấy và lề theo chuẩn";
     case "word_compare_versions":
       return `So với phiên bản khác${a.file ? ` (${String(a.file).slice(0, 40)})` : ""}${a.open_redline ? ", mở bản so sánh của Word" : ""}`;
     // PowerPoint nâng cao
@@ -194,6 +198,7 @@ export const QUICK_PROMPTS: Record<string, string[]> = {
     "Tóm tắt các sửa đổi của đối tác (Track Changes) và đề xuất chấp nhận hay từ chối",
     "Xử lý các nhận xét trong văn bản",
     "Soát nhất quán văn bản trước khi trình ký: đánh số, dẫn chiếu, thuật ngữ, chỗ trống, số và chữ",
+    "Soạn công văn đúng thể thức theo nội dung tôi đưa (hỏi tôi cơ quan gửi, nơi nhận và nội dung chính)",
   ],
   PowerPoint: [
     "Tạo 5 slide giới thiệu về chủ đề tôi đưa",

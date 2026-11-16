@@ -21,6 +21,7 @@ import {
 } from "./util";
 import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseName, findClause, outlineByParagraph } from "../core/outline";
 import { WORD_REVIEW_SPECS, createWordReviewTools } from "./wordReview";
+import { WORD_ADMIN_SPECS, createWordAdminTools } from "./wordAdmin";
 import {
   ChangeSnap,
   EditPlan,
@@ -228,6 +229,9 @@ export const WORD_SPECS: ToolSpec[] = [
         font_color: { type: "string", description: "Hex colour like #C00000." },
         highlight_color: { type: "string", description: "Hex colour like #FFFF00, or 'none'." },
         alignment: { type: "string", enum: ["Left", "Centered", "Right", "Justified"] },
+        first_line_indent_mm: { type: "number", description: "First-line indent of the paragraph(s) in mm (administrative documents: 10). 0 removes it." },
+        space_after_pt: { type: "number", description: "Space after the paragraph(s) in points (administrative documents: 6)." },
+        line_spacing: { type: "number", description: "Line spacing in lines: 1 single, 1.2, 1.5." },
         style: { type: "string", enum: STYLE_ENUM },
       },
     },
@@ -370,6 +374,8 @@ export const WORD_SPECS: ToolSpec[] = [
   },
   // Đợt 1B: soát nhất quán, đọc phần ngoài thân văn bản, thể thức trang, so sánh phiên bản (wordReview.ts)
   ...WORD_REVIEW_SPECS,
+  // Đợt 3: dựng văn bản hành chính đúng thể thức, đặt thể thức trang (wordAdmin.ts)
+  ...WORD_ADMIN_SPECS,
 ];
 /** Công cụ ghi chữ vào điều khoản: khi người dùng bật "Soát lập luận trước khi sửa", mỗi lần gọi được soát trước khi ghi */
 const REVIEWABLE = ["word_set_paragraph_text", "word_insert_clause", "word_replace_selection"];
@@ -907,9 +913,12 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     loadRowsOf: (ctx, body) => loadRowsOf(ctx, body, true, true),
   });
 
+  const admin = createWordAdminTools({ supports, tracked, resolvePara });
+
   async function run(name: string, a: any, u: Undo): Promise<any> {
     const extra = u.extra;
     if (review.has(name)) return review.run(name, a);
+    if (admin.has(name)) return admin.run(name, a, extra);
     switch (name) {
       case "word_get_overview":
         return overview();
@@ -1495,6 +1504,10 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             const isList = style === "ListBullet" || style === "ListNumber";
             for (const p of paras) {
               if (a.alignment) p.alignment = a.alignment;
+              if (a.first_line_indent_mm !== undefined && a.first_line_indent_mm !== null && Number(a.first_line_indent_mm) >= 0 && Number(a.first_line_indent_mm) <= 100)
+                p.firstLineIndent = (Number(a.first_line_indent_mm) * 72) / 25.4;
+              if (Number(a.space_after_pt) >= 0 && a.space_after_pt !== null && a.space_after_pt !== undefined && Number(a.space_after_pt) <= 200) p.spaceAfter = Number(a.space_after_pt);
+              if (Number(a.line_spacing) >= 0.5 && Number(a.line_spacing) <= 5) p.lineSpacing = 12 * Number(a.line_spacing);
               if (style && !isList) p.styleBuiltIn = style as any;
             }
             if (isList) {
@@ -1895,6 +1908,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     word_add_comment: "Gỡ nhận xét vừa thêm",
     word_reply_comment: "Gỡ câu trả lời nhận xét",
     word_resolve_comment: "Trả lại trạng thái nhận xét",
+    word_set_page_format: "Trả lại khổ giấy và lề cũ",
   };
 
   /** Chạy công cụ và ghi cách hoàn tác: sửa đổi được theo dõi nào xuất hiện thêm sau công cụ này là của AI — hoàn tác = từ chối đúng
@@ -2032,6 +2046,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
 
   /** Cảnh báo rủi ro: trả về lý do (luôn hỏi người dùng) hoặc null (không rủi ro). */
   const RISK: Record<string, (a: any) => string | null | Promise<string | null>> = {
+    ...admin.risk,
     // Xóa đoạn: hộp xác nhận hiện trích nội dung sắp xóa
     word_delete_paragraphs: (a) =>
       Word.run(async (ctx) => {
@@ -2153,6 +2168,7 @@ export const WORD_SYSTEM_PROMPT = [
   "- VĂN BẢN ĐANG CÓ SỬA ĐỔI (Track Changes): nội dung đọc được là bản hiện tại (đã tính các sửa đổi chờ duyệt); đoạn có changed=true đang có sửa đổi chưa duyệt, deleted=true là đoạn đã bị xóa. Muốn biết ai sửa gì: word_list_revisions (đọc hết theo next_start, đối chiếu total). Chỉ chấp nhận hoặc từ chối sửa đổi khi người dùng ra lệnh.",
   "- SOÁT VĂN BẢN (kiểm tra trước khi ký, rà lỗi, soát nhất quán): gọi word_check_consistency trước — mã tự dò đánh số nhảy hoặc trùng, dẫn chiếu tới điều không có, thuật ngữ viết lệch hoặc chưa định nghĩa, một bên nhiều tên, chỗ trống, số lệch chữ — rồi đọc đúng các chỗ được chỉ để xác nhận trước khi báo. Báo đủ mọi điểm công cụ trả về (đếm theo total), kèm số điều và số đoạn.",
   "- NGOÀI THÂN VĂN BẢN: chú thích của một đoạn đi kèm đoạn đó trong kết quả đọc (trường notes). Đầu trang, chân trang, bookmark, trường dẫn chiếu, ô điền mẫu, hộp văn bản không nằm trong các đoạn: đọc bằng word_read_parts khi người dùng hỏi tới, và khi rà soát toàn văn.",
+  "- VĂN BẢN HÀNH CHÍNH (công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản): soạn mới thì dựng bằng MỘT lần gọi word_create_admin_document — công cụ tự trình bày đúng thể thức; thông tin chưa biết (số, ngày, người ký) thì bỏ trống tham số, không bịa. Lề và khổ giấy sai thì sửa bằng word_set_page_format.",
   "- THỂ THỨC TRANG (lề, khổ giấy, phông, cỡ chữ của công văn, tờ trình…): word_check_page_format. SO VỚI PHIÊN BẢN KHÁC (tệp .docx người dùng đính kèm): word_compare_versions, rồi tóm tắt đủ mọi chỗ khác theo số điều (đếm theo differences); công cụ không sửa văn bản đang mở.",
   "- Mọi sửa đổi của bạn được ghi bằng Theo dõi thay đổi để người dùng duyệt, và người dùng có nút Hoàn tác cho cả lượt.",
   "- Rà soát văn bản/hợp đồng: ghi nhận xét đúng chỗ bằng word_add_comment; chỉ sửa trực tiếp khi được yêu cầu.",

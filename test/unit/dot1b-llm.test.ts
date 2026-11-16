@@ -512,8 +512,8 @@ describe("Đợt 1B – tệp đính kèm và công cụ Word mới", () => {
       assert.notStrictEqual(describeCall({ id: "1", name, args: {} }), name);
       assert.ok(WORD_SYSTEM_PROMPT.includes(name), `lời nhắc hệ thống chưa nhắc ${name}`);
     }
-    assert.strictEqual(WORD_SPECS.length, 27);
-    assert.strictEqual(new Set(WORD_SPECS.map((x) => x.name)).size, 27);
+    assert.strictEqual(WORD_SPECS.length, 29);
+    assert.strictEqual(new Set(WORD_SPECS.map((x) => x.name)).size, 29);
   });
   it("Công cụ ghi chữ vào điều khoản được đánh dấu để soát lập luận; công cụ khác thì không", () => {
     const reviewable = WORD_SPECS.filter((x) => x.reviewable).map((x) => x.name).sort();
