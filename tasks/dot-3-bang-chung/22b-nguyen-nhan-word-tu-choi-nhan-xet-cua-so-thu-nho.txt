@@ -1,0 +1,11 @@
+== Word vừa mở, cửa sổ đang thu nhỏ (WindowState=2): lệnh Office.js thô ==
+[ "insertComment: LỖI AccessDenied", "insertContentControl: LỖI GeneralException" ] — thêm nhận xét bằng COM của Word: được; tài liệu không bị bảo vệ (ProtectionType=-1, ReadOnly=False)
+== đặt WindowState=0 ==
+WindowState=0
+[ "thêm đoạn neo: được", "insertComment (lệnh Office.js thô): được", "insertContentControl: được", "chế độ theo dõi Off, đã lưu false, số nhận xét 0"]
+== đặt WindowState=2 ==
+WindowState=2
+[ "thêm đoạn neo: được", "insertComment (lệnh Office.js thô): LỖI AccessDenied AccessDenied", "insertContentControl: LỖI GeneralException GeneralException", "chế độ theo dõi Off, đã lưu false, số nhận xét 0"]
+== đặt WindowState=0 ==
+WindowState=0
+[ "thêm đoạn neo: được", "insertComment (lệnh Office.js thô): được", "insertContentControl: được", "chế độ theo dõi Off, đã lưu false, số nhận xét 0"]

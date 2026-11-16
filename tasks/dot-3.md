@@ -13,7 +13,8 @@ Viết ngày 16/11/2026, nhánh `claude/dot-3-b3b8f4` (gốc `origin/main` = `0b
 **Trạng thái của khung trước khi thử (để trả lại khi xong):** nguồn đang chọn Anthropic · Claude Opus 5.5; model nhớ của OpenRouter: ERNIE 5.5 Flash free (theo ghi chú bàn giao Đợt 2); Groq: GPT OSS 20B; Cerebras: gpt-oss-120b. Bài thử đã chọn Haiku 5.5 (Anthropic), Nemotron 3 Ultra free (OpenRouter), GPT OSS 120B (Groq).
 - [x] B1 thăm dò kho chung và kênh lệnh (bảng kết quả ở dưới) · [ ] B1 mã ghi chéo (đang viết, nhánh `claude/dot-3-b-wip`) · [ ] B2 chỉ báo và công tắc
 - [x] B1 mã ghi chéo · [x] B2 chỉ báo và công tắc · [x] B3 PowerPoint phần chắc (7 công cụ) · [x] B4 thăm dò: phông chủ đề đọc được, chèn ảnh làm được nhưng chưa thành công cụ, ghi chú diễn giả và sửa số liệu biểu đồ không có API · B5: [x] lỗi bố cục của slide biểu đồ đã chữa phần người dùng thấy; [ ] phiên Word từ chối chèn nhận xét: chưa tìm ra nguyên nhân (có manh mối)
-- [x] Soát mã độc lập phần B, đã sửa, đã chạy lại · [x] Bảng nghiệm thu, HANDOFF, CLAUDE.md, bảng so sánh · [ ] Hỏi anh phát hành 4.3.0, kiểm bản phát hành, dọn dẹp
+- [x] Soát mã độc lập phần B, đã sửa, đã chạy lại · [x] Bảng nghiệm thu, HANDOFF, CLAUDE.md, bảng so sánh · [x] anh duyệt, **đã phát hành 4.3.0**, đã kiểm bản phát hành · dọn dẹp: xem cuối mục "Phát hành 4.3.0"
+- **Anh nêu thêm cuối phiên (16/11/2026):** "cơ chế gọi AI đang rất phân mảnh — giao một việc mà số lần gọi AI nhảy lên mấy chục lần; sợ phân mảnh lệnh làm AI không hiểu và làm sai mục tiêu. Cần khắc phục." → việc đầu tiên của phiên sau, xem mục Bước tiếp theo của `tasks/HANDOFF.md`.
 
 ## Tiêu chí nghiệm thu
 
@@ -214,10 +215,17 @@ Chạy 16/11/2026 trong PowerPoint 16.0 (PowerPointApi 1.3–1.10 đều có), b
 | C-3 | Soát mã độc lập đã chạy, phát hiện đã sửa hoặc ghi lý do để lại | **Đạt** — phần A: 2 cao, 8 trung bình, 6 thấp, sửa 15, để lại 1; phần B: 0 cao, 6 trung bình + 1 khe cấu trúc, 10 thấp, sửa 11, để lại 6 | `soat-ma-doc-lap-phan-A.md`, `soat-ma-doc-lap-phan-B.md` |
 | C-4 | Bằng chứng không lộ key, token, email, tên tài khoản Office, số dư | **Đạt** — soát bằng mã trước mỗi lần commit (mẫu key, email, mã tổ chức, tên trong hồ sơ Office): không có | lệnh soát trong nhật ký phiên |
 
+### Phát hành 4.3.0 (16/11/2026, anh duyệt bằng ô tích chọn)
+
+- Đẩy tiến thẳng `4659a6b..5717571` lên `main`; GitHub Actions đạt; `gh-pages` "Bản chạy thật v4.3.0 (main@5717571)"; Pages phục vụ `taskpane.6f0addd7.js` (trùng gói đóng cục bộ).
+- Kiểm trên bản đã phát hành (ba khung tải từ GitHub Pages, đã tắt nạp bản cục bộ; tệp `23`): đầu khung v4.3, chỉ báo kết nối đúng ở cả ba khung; Tự kiểm tra **Word 37/37** (`24b`), **Excel 23/23** (`25`), **PowerPoint 21/21** (`26`); Chạy thật Excel ghi tóm tắt sang Word: có hỏi (hộp hỏi nêu tệp, số ký tự, nội dung), 1 sửa đổi được theo dõi, Hoàn tác ở Word về 0 (`27`).
+- Dọn dẹp sau khi thử: xóa hội thoại thử ở cả ba khung (Word còn 4 hội thoại có từ trước, Excel 1, PowerPoint 2), nguồn về Anthropic · Claude Opus 5.5 (Groq: GPT OSS 20B, OpenRouter: ERNIE như trước), đóng Word, Excel, PowerPoint thử (không lưu), cổng 9229 đã đóng.
+- Lần chạy Word đầu tiên trên bản phát hành ra 31/37 (`24a`) vì **cửa sổ Word đang thu nhỏ** — xem mục B5 ngay dưới: đây chính là nguyên nhân của vấn đề mở từ Đợt 2, không phải lỗi của bản 4.3.
+
 ### Việc B5
 
 - **Lỗi cũ "Biểu đồ gốc thêm một bố cục"**: đã chữa phần người dùng thấy — khi PowerPoint không ghép được bố cục và tự thêm bố cục lạ, slide biểu đồ được chuyển về bố cục có sẵn của mẫu (đúng dải màu, phông tiêu đề), ô giữ chỗ rỗng đè lên biểu đồ được gỡ. Bố cục thừa vẫn nằm lại trong mẫu, không dùng tới: PowerPoint không cho add-in xóa bố cục.
-- **Phiên Word từ chối chèn nhận xét mới**: **chưa tìm ra nguyên nhân.** Hôm nay trạng thái này xuất hiện hai lần sau các bài thăm dò; bài bisect `kiem-thu/cdp-bai/tham-do-3-nhan-xet.js` thử lần lượt 9 thao tác nghi ngờ (chèn / xóa bảng và đoạn lúc bật, tắt theo dõi; xóa theo định danh; `body.clear()`; bảng sau đoạn rỗng; từ chối mọi sửa đổi) trong một phiên Word mới — **không thao tác nào tái hiện** (tệp `22`). Cách hết vẫn là đóng mở lại Word.
+- **Phiên Word từ chối chèn nhận xét mới: ĐÃ TÌM RA NGUYÊN NHÂN (cuối phiên 16/11).** Khi **cửa sổ Word bị thu nhỏ** (WindowState = 2), Office.js từ chối `Range.insertComment` (`AccessDenied`) và `Range.insertContentControl` (`GeneralException`); khôi phục cửa sổ thì chạy ngay. Tái hiện cả hai chiều ba lần liên tiếp bằng cách đổi trạng thái cửa sổ qua COM (tệp `22b`); thêm nhận xét bằng COM của Word vẫn được, tài liệu không bị bảo vệ. Không phải lỗi của add-in. Hệ quả: (a) Tự kiểm tra Word phải chạy khi cửa sổ Word không thu nhỏ — `kiem-thu/mo-office.ps1` nay tự khôi phục cửa sổ; (b) người dùng thu nhỏ Word rồi nhờ AI (từ ứng dụng khác) thì thêm đoạn vẫn được, còn thêm nhận xét sẽ lỗi; **chưa làm**: câu báo lỗi tiếng Việt gợi ý "mở lại cửa sổ Word" khi gặp `AccessDenied` ở chèn nhận xét (việc nhỏ cho bản kế). Ghi chú lịch sử điều tra trước khi tìm ra: hôm nay trạng thái này xuất hiện hai lần sau các bài thăm dò; bài bisect `kiem-thu/cdp-bai/tham-do-3-nhan-xet.js` thử lần lượt 9 thao tác nghi ngờ (chèn / xóa bảng và đoạn lúc bật, tắt theo dõi; xóa theo định danh; `body.clear()`; bảng sau đoạn rỗng; từ chối mọi sửa đổi) trong một phiên Word mới — **không thao tác nào tái hiện** (tệp `22`). Cách hết vẫn là đóng mở lại Word.
 
 ### Giới hạn đã biết của 4.3.0
 

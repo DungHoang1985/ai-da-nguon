@@ -1,0 +1,9 @@
+{ "phienBan": "v4.3", "goi": [  "taskpane.6f0addd7.js" ], "nguon": "https://dunghoang1985.github.io", "model": " Bấm để đổi Anthropic · Claude Haiku 5.5"}
+{ "phienBan": "v4.3", "ketNoi": "Excel ✓ · PowerPoint ✓", "tip": "Kết nối với k
+
+{ "phienBan": "v4.3", "goi": [  "taskpane.6f0addd7.js" ], "nguon": "https://dunghoang1985.github.io", "model": " Bấm để đổi Anthropic · Claude Haiku 5.5"}
+{ "phienBan": "v4.3", "ketNoi": "Word ✓ · PowerPoint ✓", "tip": "Kết nối với kh
+
+{ "phienBan": "v4.3", "goi": [  "taskpane.6f0addd7.js" ], "nguon": "https://dunghoang1985.github.io", "model": " Bấm để đổi Anthropic · Claude Haiku 5.5"}
+{ "phienBan": "v4.3", "ketNoi": "Excel ✓ · Word ✓", "tip": "Kết nối với khung A
+

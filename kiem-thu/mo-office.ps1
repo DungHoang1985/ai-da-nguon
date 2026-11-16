@@ -68,7 +68,12 @@ for ($i = 0; $i -lt 90; $i++) {
   Start-Sleep -Seconds 1
   try {
     $list = (Invoke-WebRequest -UseBasicParsing "http://127.0.0.1:$Cong/json/list" -TimeoutSec 2).Content
-    if ($list -match 'taskpane\.html') { Write-Output "San sang: khung add-in da mo sau $($i + 1) giay (cong $Cong)."; exit 0 }
+    if ($list -match 'taskpane\.html') {
+      # Word đang thu nhỏ cửa sổ thì Office.js từ chối chèn nhận xét (AccessDenied) và ô điền mẫu (GeneralException) — đã đo 16/11/2026:
+      # đưa cửa sổ về trạng thái thường trước khi chạy bài thử.
+      if ($exe -eq 'winword.exe') { try { $ww = [Runtime.InteropServices.Marshal]::GetActiveObject('Word.Application'); if ($ww.WindowState -eq 2) { $ww.WindowState = 0 } } catch { } }
+      Write-Output "San sang: khung add-in da mo sau $($i + 1) giay (cong $Cong)."; exit 0
+    }
   } catch { }
 }
 Write-Output "Chua thay khung add-in sau 90 giay."
