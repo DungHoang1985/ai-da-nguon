@@ -230,6 +230,45 @@ describe("Tác tử: đọc luồng trả về", () => {
     assert.strictEqual(r.text, "Xin chào");
     assert.strictEqual(r.toolCalls[0].name, "excel_get_overview");
   });
+  // Nhà cung cấp nhận yêu cầu rồi im lặng (đo với Gemini lúc quá tải, 16/11/2026): trước đây khung treo vô hạn
+  const hang = (seen: { n: number }) =>
+    ((_u: string, init: any) =>
+      new Promise((_res, rej) => {
+        seen.n++;
+        init.signal.addEventListener("abort", () => rej(new DOMException("aborted", "AbortError")));
+      })) as any;
+  it("callModelStep: nhà cung cấp im lặng quá hạn chờ → báo lỗi rõ, không treo, không tự gửi lại", async () => {
+    const seen = { n: 0 };
+    await assert.rejects(
+      callModelStep({ provider: P("gemini"), key: "K", model: "m", messages: HISTORY.slice(0, 2), tools: TOOLS, onText: () => {}, fetchFn: hang(seen), stallMs: 30 }),
+      (e: any) => /không nhận được phản hồi trong/.test(e.message) && e.status === 504,
+    );
+    assert.strictEqual(seen.n, 1);
+  });
+  it("callModelStep: luồng đang chảy rồi im lặng giữa chừng cũng bị hủy theo hạn chờ", async () => {
+    const f = (async (_u: string, init: any) => {
+      const enc = new TextEncoder();
+      const body = new ReadableStream({
+        start(c) {
+          c.enqueue(enc.encode('data: {"choices":[{"delta":{"content":"Xin"}}]}\n\n'));
+          init.signal.addEventListener("abort", () => c.error(new DOMException("aborted", "AbortError")));
+        },
+      });
+      return new Response(body, { status: 200, headers: { "content-type": "text/event-stream" } });
+    }) as any;
+    let text = "";
+    await assert.rejects(
+      callModelStep({ provider: P("groq"), key: "K", model: "m", messages: HISTORY.slice(0, 2), tools: TOOLS, onText: (d) => (text += d), fetchFn: f, stallMs: 30 }),
+      /không nhận được phản hồi trong/,
+    );
+    assert.strictEqual(text, "Xin");
+  });
+  it("callModelStep: người dùng bấm Dừng khi đang chờ → lỗi dừng, không phải lỗi hạn chờ", async () => {
+    const ctl = new AbortController();
+    const p = callModelStep({ provider: P("gemini"), key: "K", model: "m", messages: HISTORY.slice(0, 2), tools: TOOLS, onText: () => {}, fetchFn: hang({ n: 0 }), stallMs: 5000, signal: ctl.signal });
+    setTimeout(() => ctl.abort(), 10);
+    await assert.rejects(p, (e: any) => !/không nhận được phản hồi trong/.test(String(e.message)));
+  });
 });
 
 function fakeTools(calls: string[]): HostToolSet {
