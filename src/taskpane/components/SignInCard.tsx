@@ -7,7 +7,7 @@ import { Storage } from "../../core/storage";
 import { fetchModels } from "../../core/models";
 import { cleanKey, describeError, keyProblem } from "../../core/errors";
 import { LoginSession, buildAuthUrl, createLoginSession, dialogStartUrl, exchangeCode, extractCode, readDialogMessage } from "../../core/oauth";
-import { describeKeyInfo } from "../../core/credits";
+import { describeKeyInfo, fetchKeyInfo, hasKeyInfo } from "../../core/credits";
 import { DialogHandle, openDialog, openInBrowser } from "../../office/dialog";
 import { invalidateKeyInfo, useCredits } from "./useCredits";
 
@@ -80,7 +80,21 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
     const problem = keyProblem(k);
     if (!k || problem) {
       setStatus({ kind: "err", text: problem || `${p.name} trả về khóa rỗng. Bấm đăng nhập lại.` });
-      return;
+      return false;
+    }
+    // OpenRouter trả danh sách model cả khi key sai (đo 16/11/2026): hỏi thẳng máy chủ về chính key này trước khi lưu,
+    // để một key sai không thay mất key đang dùng được. Lỗi khác (mất mạng…) thì vẫn lưu và báo ở bước sau.
+    if (hasKeyInfo(p)) {
+      setStatus({ kind: "busy", text: "Đang kiểm tra khóa…" });
+      try {
+        await fetchKeyInfo(p, k);
+      } catch (e) {
+        const info = describeError(e, { provider: p });
+        if (info.reason === "key_invalid" || info.reason === "key_expired") {
+          setStatus({ kind: "err", text: `${info.text} Chưa lưu khóa này.` });
+          return false;
+        }
+      }
     }
     storage.setKey(p.id, k);
     invalidateKeyInfo(p.id);
@@ -93,6 +107,7 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
       setStatus({ kind: "err", text: `Đã lưu khóa nhưng chưa tải được danh sách model: ${describeError(e, { provider: p }).text}` });
     }
     onChanged();
+    return true;
   };
 
   /** Đổi mã lấy khóa. Dù được hay không, cặp mã kiểm / thách thức của lần này bỏ đi, tạo cặp mới. */
@@ -161,8 +176,7 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
     }
     if (r.kind === "key") {
       // Dán nhầm API key vào ô mã: dùng luôn như key dán tay
-      await adopt(r.key, "Đã kết nối bằng key vừa dán");
-      return true;
+      return adopt(r.key, "Đã kết nối bằng key vừa dán");
     }
     await finish(r.code);
     return true;
@@ -177,8 +191,7 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
       setStatus({ kind: "err", text: problem });
       return false;
     }
-    await adopt(k, "Đã kết nối");
-    return true;
+    return adopt(k, "Đã kết nối");
   };
 
   /** Đăng xuất: xóa khóa và danh mục model của nguồn này khỏi kho của add-in */

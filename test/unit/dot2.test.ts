@@ -197,6 +197,8 @@ describe("Đợt 2 — đổi mã lấy key", () => {
   const cases: [number, any, RegExp][] = [
     [403, { error: { code: 403, message: "Invalid code or code_verifier" } }, /không nhận mã này/],
     [403, { error: { code: 403, message: "Authorization code expired" } }, /hết hạn.*10 phút/],
+    // Câu thật của máy chủ với mã giả (đo 16/11/2026): 400, không phải 403 như tài liệu
+    [400, { error: { code: 400, message: "Invalid code" } }, /không nhận mã này/],
     [400, { error: { code: 400, message: "Invalid code_challenge_method" } }, /từ chối yêu cầu đổi mã \(400\)/],
     [405, "Method Not Allowed", /405/],
     [429, { error: { message: "Too many requests" } }, /quá nhiều/],

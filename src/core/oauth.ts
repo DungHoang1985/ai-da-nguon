@@ -193,8 +193,10 @@ export function exchangeRequest(cfg: OAuthConfig, code: string, verifier: string
 /** Câu tiếng Việt cho lỗi đổi mã (mã lỗi theo tài liệu OpenRouter: 400, 403, 405). `detail` đã được bỏ bí mật. */
 export function exchangeErrorMessage(name: string, status: number, detail = ""): string {
   const d = detail ? ` (${detail.slice(0, 160)})` : "";
-  if (status === 403 && /expired/i.test(detail)) return `Mã đăng nhập ${name} đã hết hạn (mã chỉ dùng được trong 10 phút). Bấm đăng nhập lại để lấy mã mới.`;
-  if (status === 403 || status === 401)
+  if ((status === 403 || status === 400) && /expired/i.test(detail)) return `Mã đăng nhập ${name} đã hết hạn (mã chỉ dùng được trong 10 phút). Bấm đăng nhập lại để lấy mã mới.`;
+  // Đo 16/11/2026 với mã giả: máy chủ trả 400 "Invalid code" (tài liệu ghi 403 "Invalid code or code_verifier")
+  const badCode = status === 400 && /\bcode\b|code_verifier/i.test(detail) && !/challenge_method/i.test(detail);
+  if (status === 403 || status === 401 || badCode)
     return `${name} không nhận mã này: mã sai, đã dùng rồi, hoặc không phải mã lấy từ lần mở trang vừa rồi của khung này. Bấm đăng nhập lại để lấy mã mới${d}.`;
   if (status === 400) return `${name} từ chối yêu cầu đổi mã (400). Bấm đăng nhập lại; nếu vẫn lỗi thì dán key theo cách cũ${d}.`;
   if (status === 405) return `${name} từ chối kiểu gọi đổi mã (405). Đây là lỗi của add-in: dán key theo cách cũ và báo lại lỗi này.`;
