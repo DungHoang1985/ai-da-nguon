@@ -1,0 +1,12 @@
+{
+ "nguonCu": "gemini",
+ "modelAnthropicCu": "claude-opus-5-5",
+ "chon": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5"
+ },
+ "giay": 3,
+ "traLoi": "Tín dụng API đã dùng được. | Token: vào 14.176 · ra 16 · ghi vào bộ nhớ đệm 14.172",
+ "coLoi": false,
+ "traLaiModelAnthropic": "Model đang dùng: Anthropic (Claude) Claude Opus 5.5. Bấm để đổi Anthropic · Claude Opus 5.5",
+ "nguonSauCung": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi Google Gemini · Gemini 3.8 Fla"
+}

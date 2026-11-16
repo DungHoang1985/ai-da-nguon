@@ -1,0 +1,15 @@
+{
+ "phienBan": "v4.2",
+ "model": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi Google Gemini · Gemini 3.8 Fla",
+ "theOpenRouter": "OpenRouter | Lấy key | Nhiều model miễn phí (đuôi :free) | Chưa đăng nhập | Đăng nhập OpenRouter | Mở cửa sổ của OpenRouter: đăng nhập (nếu được hỏi), bấm Authorize là xong — không phải chép key. Add-in không thấy mật khẩu của anh. | Cửa sổ không mở hoặc không đăng nhập được? Dùng lối dán mã: | Mở trang lấy mã trong trình duyệt | Xác nhận mã | Hoặc dán API key như trước: | Lưu",
+ "coTheHanMuc": false,
+ "soDongHanMuc": 0,
+ "nutTrongThe": [
+  "Đăng nhập OpenRouter",
+  "Mở trang lấy mã trong trình duyệt",
+  "Xác nhận mã",
+  "Lưu"
+ ],
+ "hopThoaiHoTro": true,
+ "moTrinhDuyetHoTro": true
+}

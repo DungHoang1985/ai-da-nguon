@@ -52,7 +52,10 @@ const soModel = document.querySelectorAll('[role="listbox"][aria-label="Model"] 
 document.body.click();
 await sleep(300);
 const truoc = await doc();
-const q = "Ở câu về chậm hoàn trả (“Chậm hoàn trả, Bên Thuê trả tiền sử dụng bằng 150% Tiền Thuê…”), đổi “150%” thành “120%”. Chỉ sửa đúng chỗ đó.";
+// Chạy lần hai trên cùng tệp (số đã đổi ở lần trước): đặt window.__aidnDoi = ["120%", "130%"] ở tệp ghép phía trước
+const [TU, THANH] = window.__aidnDoi || ["150%", "120%"];
+delete window.__aidnDoi;
+const q = `Ở câu về chậm hoàn trả (“Chậm hoàn trả, Bên Thuê trả tiền sử dụng bằng ${TU} Tiền Thuê…”), đổi “${TU}” thành “${THANH}”. Chỉ sửa đúng chỗ đó.`;
 const r = await send(q, { timeout: 300000 });
 const all = document.body.innerText;
 const ans = all.slice(all.lastIndexOf(q) + q.length);
@@ -68,7 +71,7 @@ return {
   cacBuoc: (ans.match(/^[✅❌].*$/gm) || []).map((l) => l.slice(0, 110)),
   truoc,
   sau,
-  daDoi: /120%/.test(sau.cauHienTai) && !/150%/.test(sau.cauHienTai),
+  daDoi: sau.cauHienTai.includes(THANH) && !sau.cauHienTai.includes(TU),
   coSuaDoiDuocTheoDoi: sau.tongSuaDoi > truoc.tongSuaDoi,
   traLoi: ans
     .split("\n")

@@ -1,0 +1,14 @@
+{
+ "phienBan": "v4.2",
+ "model": "Model đang dùng: Anthropic (Claude) Claude Opus 5.5. Bấm để đổi Anthropic · Claude Opus 5.",
+ "theOpenRouter": "OpenRouter | Lấy key | Nhiều model miễn phí (đuôi :free) | Đã đăng nhập · # model | Hạn mức | Làm mới | Xem số dư | Số dư tài khoản: # USD | Trần của key: không đặt trần | Key này đã dùng: hôm nay # USD · tháng này # USD | Model miễn phí hôm nay: còn #/# lượt (tính lại lúc # giờ sáng giờ Việt Nam) | Tài khoản đã từng nạp từ # credit thì được # lượt miễn phí mỗi ngày. | Đăng xuất | Đăng nhập lại (đổi khóa)",
+ "coTheHanMuc": true,
+ "soDongHanMuc": 8,
+ "nutTrongThe": [
+  "Làm mới",
+  "Đăng xuất",
+  "Đăng nhập lại (đổi khóa)"
+ ],
+ "hopThoaiHoTro": true,
+ "moTrinhDuyetHoTro": true
+}

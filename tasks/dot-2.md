@@ -7,10 +7,10 @@ Lập 15/11/2026 (phiên Claude Code trên máy, nhánh `claude/dot-2-4268ba`, g
 - [x] Đọc tài liệu dự án, đối chiếu tài liệu chính thức hiện hành (bảng dưới).
 - [x] Mã, kiểm thử máy, thử trong Office tới ngay trước bước anh phải đăng nhập (16/11/2026).
 - [x] Soát mã độc lập (0 cao, 4 trung bình, 8 thấp), sửa cả 12, chạy lại mọi bài trong Word.
-- [ ] Việc cần anh ở máy (mục cuối): tiêu chí 1, 2, 3, 4 còn **Chưa kiểm được**.
-- [ ] Hỏi anh, phát hành 4.2.0, kiểm bản đã phát hành, dọn dẹp.
+- [x] Anh duyệt phát hành 16/11/2026 → **đã phát hành 4.2.0** (`main@72af7a1`), kiểm trên bản đã phát hành, dọn dẹp.
+- [x] Việc cần anh ở máy (16/11/2026, anh làm, phiên đọc kết quả): tiêu chí 1, 2, 3, 4 **đạt**.
 
-Mã ở nhánh `claude/dot-2-4268ba` (chưa đẩy lên `main`). Bảng nghiệm thu ở mục "Kết quả" cuối tệp.
+**Đợt 2 đạt cả 6 tiêu chí.** Bảng nghiệm thu ở mục "Kết quả" cuối tệp; phần "Phát hành và buổi ngồi máy với anh" ở ngay sau bảng.
 
 ## Tiêu chí nghiệm thu (nêu trước khi làm)
 
@@ -149,31 +149,42 @@ Ca "key không có số dư" (tiêu chí 5) dùng tài khoản Gemini đang báo
 
 ---
 
-## Kết quả (16/11/2026, bản cục bộ 4.2.0 nạp vào khung, chưa phát hành)
+## Kết quả (16/11/2026)
 
-Mã: 5 commit `c72805f` → `e352118` trên nhánh `claude/dot-2-4268ba`. Bằng chứng: `tasks/dot-2-bang-chung/` (đã soát: không có key, mã đăng nhập, email, tên tài khoản Office; số trong thẻ hạn mức thay bằng `#`; hai số tiền còn lại trong tệp 01 là số của phản hồi giả lập).
+Các dòng 1a–1d, 2a–2b, 3a, 4a, 5, 6 là kết quả trên bản cục bộ 4.2.0 nạp vào khung trước khi phát hành; các dòng 1, 2, 3, 4 là kết quả buổi ngồi máy với anh trên **bản đã phát hành**.
+
+Mã: 5 commit `c72805f` → `e352118` trên nhánh `claude/dot-2-4268ba`, phát hành ở `main@72af7a1`. Bằng chứng: `tasks/dot-2-bang-chung/` (đã soát: không có key, mã đăng nhập, email, tên tài khoản Office; số trong thẻ hạn mức thay bằng `#`; hai số tiền còn lại trong tệp 01 là số của phản hồi giả lập).
 
 ### Bảng nghiệm thu
 
 | # | Tiêu chí | Kết quả | Bằng chứng |
 |---|---|---|---|
-| 1 | Từ trạng thái chưa có key OpenRouter: bấm một nút → đăng nhập → danh sách model hiện → sửa được một đoạn Word (Chạy thật) | **Chưa kiểm được** — bước đăng nhập và bấm Authorize phải do anh làm; chưa xóa khóa thật đang lưu vì chưa hỏi anh | — |
+| 1 | Từ trạng thái chưa có key OpenRouter: bấm một nút → đăng nhập → danh sách model hiện → sửa được một đoạn Word (Chạy thật) | **Đạt** (Chạy thật trên bản đã phát hành, anh tự bấm) — anh Đăng xuất, bấm Đăng nhập OpenRouter, đăng nhập và Authorize trong hộp thoại của Office: cửa sổ tự đóng, thẻ hiện "Đã đăng nhập · n model" và thẻ hạn mức; khóa đang dùng là khóa mới (mức đã dùng của khóa hôm nay và tháng này đều bằng 0 — chỉ ghi đúng / sai); 15 model hiện theo bộ lọc; OpenRouter · Nemotron 3 Ultra free sửa "150%" → "120%" ở Điều 12.2 bằng 3 bước công cụ, có cặp xóa / thêm được theo dõi | 13a, 13b, 13c, 13d |
 | 1a | Phần phiên tự kiểm được: hộp thoại của Office mở trang của add-in rồi tới `openrouter.ai/auth` với đúng `callback_url`, mã thách thức 43 ký tự, `S256`, `state`, nhãn khóa | **Đạt** (chạy trong Word thật, dừng trước bước đăng nhập) | 03 mục B; 08b; ảnh 02 |
 | 1b | Đường về: trang trả về gửi mã về khung, khung kiểm `state`, đóng hộp thoại, gọi đổi mã; mã giả bị máy chủ từ chối với câu tiếng Việt đúng; khóa đang lưu không đổi | **Đạt** (chạy trong Word thật, mã giả; cả ca state sai) | 03 mục C; 08c |
 | 1c | Màn chào khi chưa có key nào có nút Đăng nhập OpenRouter | **Đạt** (Thử giao diện ngoài Office, kho thử trống) | 01 mục A |
 | 1d | Với khóa OpenRouter đang có: danh sách model hiện, sửa được một đoạn Word có Track Changes | **Đạt** (Chạy thật, OpenRouter · NVIDIA Nemotron 3 Ultra free: 3 bước công cụ, "150%" → "120%", một cặp xóa/thêm). Với model ERNIE 5.5 Flash free: **không đạt** — model nói đã sửa nhưng không gọi công cụ (xem Vấn đề mở) | 09b; 09a |
-| 2 | Lối dự phòng: chép mã từ trang, dán vào add-in, kết quả như trên (Chạy thật) | **Chưa kiểm được** — cần anh đăng nhập ở trình duyệt và chép mã thật | — |
+| 2 | Lối dự phòng: chép mã từ trang, dán vào add-in, kết quả như trên (Chạy thật) | **Đạt** (Chạy thật trên bản đã phát hành, anh tự bấm) — anh Đăng xuất, bấm "Mở trang lấy mã trong trình duyệt", Authorize, chép mã, dán vào ô, bấm "Xác nhận mã": thẻ hiện "Đã đăng nhập · n model"; khóa đang dùng lại là khóa mới (mức đã dùng bằng 0); model OpenRouter sửa tiếp "120%" → "130%" đúng chỗ bằng 3 bước công cụ (Word gộp vào phần chèn đang chờ duyệt nên số sửa đổi không tăng — hành vi đã biết từ Đợt 1A) | 14a, 14b, 14c |
 | 2a | Phần phiên tự kiểm được: nút mở trang lấy mã mở được trình duyệt mặc định; địa chỉ không có `callback_url` và `state`; ô dán mã từ chối chuỗi sai dạng, địa chỉ không có mã, API key dán nhầm (0 lần gọi mạng); mã giả hợp dạng bị máy chủ từ chối với câu tiếng Việt đúng | **Đạt** (chạy trong Word thật với mã giả; địa chỉ kiểm ở bản đóng gói ngoài Office) | 03 mục D; 08d; 01 mục B, G |
 | 2b | Trọn luồng dán mã → nhận khóa → danh sách model → thẻ hạn mức, với nhà cung cấp giả lập | **Đạt** (Thử giao diện ngoài Office; không phải Chạy thật) | 01 mục D |
-| 3 | Đăng xuất xóa sạch khóa trên máy (Chạy thật) | **Chưa kiểm được** với khóa thật — xóa khóa thật phải hỏi anh trước | — |
+| 3 | Đăng xuất xóa sạch khóa trên máy (Chạy thật) | **Đạt** (Chạy thật trên bản đã phát hành, khóa thật, anh tự bấm) — sau "Đăng xuất" → "Xóa khóa trên máy": thẻ về trạng thái chưa đăng nhập, không còn thẻ hạn mức; OpenRouter biến khỏi danh sách nguồn có key (còn 7 nguồn khác, không đổi); **tải lại khung** vẫn vậy, thẻ ghi "Chưa đăng nhập" (khóa đã bị xóa khỏi kho, không chỉ khỏi màn hình). Phiên không đọc kho lưu: kết luận dựa trên những gì add-in tự đọc từ kho rồi hiện ra. Sau đó anh đăng nhập lại để dùng tiếp | 15a, 15b, 15c, 15d, 15e |
 | 3a | Phần phiên tự kiểm được: Đăng xuất có hỏi xác nhận; sau đó kho thử không còn khóa, không còn danh mục model của nguồn đó, tệp sao lưu mới không còn khóa; nguồn khác giữ nguyên | **Đạt** (Thử giao diện ngoài Office trên kho thử với key giả + Kiểm thử máy) | 01 mục F; `test/unit/dot2.test.ts` nhóm "đăng xuất" |
-| 4 | Trang Thanh toán của Console hiện tín dụng; một yêu cầu chạy xong, số dư giảm (ảnh trước và sau) | **Chưa kiểm được** — nhận tín dụng, tạo key và chụp trang Thanh toán phải do anh làm. Đã đối chiếu tài liệu 15/11/2026: ưu đãi còn (Max 100 USD mỗi tháng), điều kiện và từng cú bấm ở mục D | Bảng đối chiếu ở đầu tệp |
+| 4 | Trang Thanh toán của Console hiện tín dụng; một yêu cầu chạy xong, số dư giảm (ảnh trước và sau) | **Đạt theo xác nhận của anh** — anh liên kết tổ chức Console ở claude.ai, thấy mục Promotional credits ở trang Billing của Console và chụp ảnh "trước"; phiên gửi một yêu cầu bằng Claude Haiku 5.5 qua key Anthropic đang lưu (vào 14.176 token, ra 16, trả lời đúng); anh tải lại trang, xác nhận số dư **có giảm** và chụp ảnh "sau". Hai ảnh có số dư nên **anh giữ trên máy, không đưa vào kho; phiên không xem ảnh** — bằng chứng trong kho là câu trả lời của anh ở ô tích chọn và nhật ký yêu cầu | 16; câu trả lời của anh trong phiên 16/11/2026 |
 | 4a | Phần mã: add-in nhận ra thông báo hết tín dụng của Anthropic (câu trong tài liệu chính thức) và gợi ý đổi nguồn; key chưa gắn workspace và tổ chức chặn gọi từ trình duyệt có câu riêng | **Đạt** (Kiểm thử máy; chưa có ca Chạy thật vì key Anthropic của anh còn tiền) | `test/unit/dot2.test.ts` nhóm "phân loại lỗi key và tiền" |
 | 5 | Key không có số dư: thông báo tiếng Việt rõ lý do, hội thoại còn nguyên (Chạy thật) | **Đạt** — Gemini (tài khoản hết tiền) trả 402; add-in gọi đúng 1 lần, 2 giây, báo "Google Gemini: tài khoản đã hết tiền (hết tín dụng)…", có nút Đổi nguồn mở bảng chọn; đổi sang Claude Haiku 5.5 rồi hỏi lại thì model trả đúng mã thử của lượt trước, đọc 14.193 token từ bộ nhớ đệm. Chạy hai lần (trước và sau khi sửa theo soát mã) | 04; 08e; ảnh 04b |
 | 6 | `npm test` đạt hết, `npx tsc --noEmit -p .` sạch, `npm run build` đạt; Tự kiểm tra Word 34/34, Excel 22/22, PowerPoint 14/14 không giảm | **Đạt** — `npm test` **363/363** (291 cũ + 72 mới), tsc sạch, đóng gói đạt (có `dang-nhap.html`). Word **34/34** (trên mã đã sửa theo soát mã); Excel **22/22**; PowerPoint 13/14 lần đầu trên bài mới rồi **14/14** (đúng lỗi cũ "Biểu đồ gốc thêm một bố cục", có từ bản 3.6). Ghi nhận: lần chạy Word đầu tiên ra 28/34 (xem Vấn đề mở), ba lần sau đều 34/34 | 05 (Word); 06 (Excel); 07a, 07b (PowerPoint) |
 | — | Thẻ hạn mức với khóa thật của anh: đọc được số dư tài khoản, trần của key, mức đã dùng hôm nay / tháng này, số lượt miễn phí còn trong ngày | **Đạt** (chạy trong Word thật; số được che) | 03 mục A; 08a |
 
-Tóm lại: **tiêu chí 5 và 6 đạt; tiêu chí 1, 2, 3, 4 chưa kiểm được** vì cần chính anh đăng nhập, bấm Authorize, đồng ý xóa khóa thật, nhận tín dụng. Mọi phần của bốn tiêu chí đó mà phiên tự kiểm được đều đã kiểm và đạt.
+Tóm lại: **cả 6 tiêu chí đạt.** Tiêu chí 4 dựa trên xác nhận của anh (phiên không xem ảnh trang Thanh toán).
+
+### Phát hành và buổi ngồi máy với anh (16/11/2026)
+
+- **Anh duyệt phát hành** bằng ô tích chọn ("Đồng ý phát hành"). Đẩy `claude/dot-2-4268ba` lên `main` kiểu tiến thẳng (`572f40f..72af7a1`, không ghi đè lịch sử). GitHub Actions đạt; `gh-pages` có "Bản chạy thật v4.2.0 (main@72af7a1)"; GitHub Pages phục vụ `taskpane.3504635d.js` (trùng gói đã kiểm cục bộ) và `dang-nhap.html` (200).
+- **Kiểm trên bản đã phát hành** (khung tải từ GitHub Pages, không nạp bản cục bộ): đầu khung v4.2; thẻ OpenRouter và thẻ hạn mức đọc được (tệp 11); Tự kiểm tra Word **34/34** trong một phiên Word mới (tệp 12e). Trong phiên Word mở trước đó, Tự kiểm tra ra 28/34 bốn lần liền (tệp 12a–12d) — xem "Vấn đề mở".
+- **Bốn việc ở máy**: anh tự bấm theo hướng dẫn hiện ở ô tích chọn, phiên đọc kết quả bằng `kiem-thu/cdp-bai/dot-2-doc-the.js`, `dot-2-khoa-moi.js`, `dot-2-nho-nguon.js`, `dot-2-openrouter-sua-doan.js`, `dot-2-anthropic-mot-yeu-cau.js`. Phiên không gõ mật khẩu, không bấm Authorize, không đọc kho lưu, không xem trang Thanh toán.
+- Ghi nhận trong buổi: (1) hộp thoại đăng nhập của Office dùng được với cách đăng nhập anh chọn, không phải chuyển sang lối dán mã; (2) sau Đăng xuất, add-in tự chuyển sang nguồn có key kế tiếp (Gemini), và sau khi đăng nhập lại nguồn đang chọn vẫn là nguồn đó — anh muốn dùng OpenRouter thì chọn lại ở nhãn model; (3) lần hỏi đầu của việc C anh trả lời trước khi bấm, phiên đọc khung thấy khóa còn nên hỏi lại — kết quả ở bảng là của lần bấm thật.
+- **Anh nêu thêm khi duyệt** (ngoài phạm vi Đợt 2, ghi vào HANDOFF): add-in chưa có kỹ năng soạn thảo văn bản hành chính; các model miễn phí soạn Word rất kém.
+- **Anh quyết định**: cảnh báo ca "AI nói đã sửa nhưng lượt đó không có thao tác ghi nào" làm ở đầu Đợt 3.
 
 ### Lệch so với kế hoạch và tài liệu, đã đo thật
 
@@ -212,9 +223,9 @@ Nghi vấn của lần soát chưa kiểm: office.js có ghi địa chỉ có `?
 ### Giới hạn đã biết và vấn đề mở
 
 - **Model miễn phí nói "đã sửa" mà không gọi công cụ** (ERNIE 5.5 Flash free, bằng chứng 09a): add-in hiện chưa cảnh báo khi câu trả lời khẳng định đã sửa mà lượt đó không có thao tác ghi nào. Không thuộc phạm vi đợt này; đề xuất thêm cảnh báo ở đợt sau.
-- **Tự kiểm tra Word lần đầu 28/34**: 5 bước lỗi `AccessDenied` (chèn nhận xét) và `GeneralException` (chèn ô điền mẫu), ngay sau bài Chạy thật với Gemini và sau khi trình duyệt ngoài vừa được mở; chạy lại ngay ra 34/34, và hai lần sau cũng 34/34. Chưa rõ nguyên nhân (nghi Word chưa sẵn sàng nhận lệnh chèn lúc cửa sổ vừa mất tiêu điểm). Các công cụ đó không bị sửa ở đợt này.
+- **Word có phiên từ chối chèn nhận xét mới** (chưa rõ nguyên nhân, không do mã add-in): Tự kiểm tra Word ra 28/34 ở lần chạy đầu ngày 15/11 (rồi 34/34 ba lần), và ra 28/34 **bốn lần liền** trong phiên Word đầu của ngày 16/11 trên bản đã phát hành; 5 bước lỗi đều là `AccessDenied (Range.insertComment)` và `GeneralException (Range.insertContentControl)`. Thăm dò bằng lệnh Office.js thô (`kiem-thu/cdp-bai/tham-do-chen-nhan-xet.js`, không qua mã add-in) trong phiên lỗi: `insertComment` bị `AccessDenied` ở mọi vị trí, trong khi trả lời nhận xét có sẵn thì được; Track Changes tắt, văn bản không bị bảo vệ. Đưa cửa sổ Word lên phía trước không đổi kết quả. Đóng Word, mở phiên mới: chèn được ngay, Tự kiểm tra 34/34. Hệ quả cho người dùng: trong một phiên Word như vậy, AI không thêm được nhận xét mới (công cụ báo lỗi, không sửa sai gì); đóng mở lại Word thì hết. Cần tìm nguyên nhân ở đợt sau (nghi có ô nhận xét đang soạn dở hoặc trạng thái đồng bộ nhận xét của Word).
 - Add-in không thu hồi được khóa ở phía OpenRouter (cần khóa quản lý): Đăng xuất chỉ xóa trên máy và chỉ đường tới trang quản lý key. Mỗi lần đăng nhập lại, OpenRouter cấp thêm một khóa mới.
-- Đăng nhập bằng Google trong hộp thoại nhúng có thể bị Google chặn: chưa kiểm được (cần anh); có lối dán mã.
+- Đăng nhập trong hộp thoại nhúng: anh đăng nhập được (16/11/2026; phiên không biết anh dùng cách nào trong ba cách GitHub / Google / email). Riêng đăng nhập bằng Google trong cửa sổ nhúng có thể bị Google chặn ở máy khác hoặc về sau; khi đó dùng lối dán mã.
 - Số dư tài khoản Anthropic không xem được bằng API (không có địa chỉ xem số dư): chỉ báo khi đã hết.
 - Ô "Dán mã vào đây" là ô chữ thường (không che ký tự): mã dùng một lần và vô dụng khi thiếu mã kiểm; chuỗi có dạng API key bị từ chối.
 - Tệp sao lưu tạo **trước** khi đăng xuất vẫn chứa khóa cũ (đúng thiết kế của Sao lưu); khôi phục kiểu gộp sẽ đưa khóa đó trở lại.
@@ -222,4 +233,6 @@ Nghi vấn của lần soát chưa kiểm: office.js có ghi địa chỉ có `?
 
 ### Dọn dẹp sau khi thử (16/11/2026)
 
-Đã xóa các hội thoại thử trong Word (lịch sử trở lại 3 hội thoại như trước khi thử), trả nguồn về OpenRouter và model của anh (ERNIE 5.5 Flash free), đóng Word / Excel / PowerPoint thử không lưu, cổng gỡ lỗi 9229 đã đóng, kho thử `127.0.0.1:8765` đã xóa. Còn lại trên máy: một thẻ trình duyệt ở trang openrouter.ai do bài thử mở (anh đóng đi); model đang nhớ của nguồn Anthropic là Claude Haiku 5.5 (bài thử chọn, như các đợt trước).
+Sau buổi ngồi máy: đã xóa 3 hội thoại thử trong Word (còn 4: 3 hội thoại cũ và 1 hội thoại anh tự thử), trả nguồn về **Anthropic · Claude Opus 5.5** (nguồn và model anh đang chọn lúc bắt đầu buổi), trả model của nguồn OpenRouter về ERNIE 5.5 Flash free như trước khi thử, đóng Word thử không lưu, cổng gỡ lỗi 9229 đã đóng (tệp 17, ảnh 18). Kho thử `127.0.0.1:8765` đã xóa từ hôm trước.
+
+Còn lại, anh cần biết: (1) trên máy có thể còn một thẻ trình duyệt ở trang openrouter.ai do bài thử hôm trước mở, đóng đi là xong; (2) **ở trang quản lý key của OpenRouter nay có thêm 3 khóa mới** tên "AI Da Nguon (Office)" do ba lần đăng nhập hôm nay (việc A, việc B, lần đăng nhập lại sau việc C) — add-in đang dùng khóa cuối cùng; hai khóa trước và khóa cũ anh dán tay trước đây vẫn còn hiệu lực ở phía OpenRouter cho tới khi anh xóa ở `openrouter.ai/settings/keys`; (3) model của nguồn OpenRouter đang là ERNIE 5.5 Flash free — chính model đã có lần nói "Đã sửa" mà không sửa; cùng yêu cầu thì NVIDIA Nemotron 3 Ultra (free) làm đúng cả ba lần thử.

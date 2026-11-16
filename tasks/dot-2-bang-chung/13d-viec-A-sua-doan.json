@@ -1,0 +1,33 @@
+{
+ "model": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi OpenRouter · NVIDIA: Nemotron 3 Ultra ",
+ "traLaiModel": null,
+ "soModelDangHien": 15,
+ "yeuCau": "Ở câu về chậm hoàn trả (“Chậm hoàn trả, Bên Thuê trả tiền sử dụng bằng 150% Tiền Thuê…”), đổi “150%” thành “120%”. Chỉ sửa đúng chỗ đó.",
+ "giay": 18,
+ "daHoi": [
+  "AI muốn: Thay \"150%\" → \"120%\" ở [¶62] | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "cacBuoc": [
+  "✅ Tìm \"Chậm hoàn trả\" trong văn bản",
+  "✅ Đọc đoạn 62–63",
+  "✅ Thay \"150%\" → \"120%\" ở [¶62]"
+ ],
+ "truoc": {
+  "doan": 62,
+  "cauHienTai": "Chậm hoàn trả, Bên Thuê trả tiền sử dụng bằng 150% Tiền Thuê tính theo ngày cho thời gian chậm.",
+  "suaDoi": [],
+  "tongSuaDoi": 2
+ },
+ "sau": {
+  "doan": 62,
+  "cauHienTai": "Chậm hoàn trả, Bên Thuê trả tiền sử dụng bằng 120% Tiền Thuê tính theo ngày cho thời gian chậm.",
+  "suaDoi": [
+   "Added: “120%” — (người dùng)",
+   "Deleted: “150%” — (người dùng)"
+  ],
+  "tongSuaDoi": 4
+ },
+ "daDoi": true,
+ "coSuaDoiDuocTheoDoi": true,
+ "traLoi": "Đã sửa: ở Điều 12.2 [¶62] đổi “150%” thành “120%”. Sửa đổi được ghi bằng Theo dõi thay đổi để bạn duyệt."
+}

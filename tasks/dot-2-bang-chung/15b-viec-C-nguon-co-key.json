@@ -1,0 +1,13 @@
+{
+ "nguonDangChon": "gemini",
+ "nguonCuDaNho": "openrouter",
+ "cacNguonCoKey": [
+  "gemini",
+  "groq",
+  "anthropic",
+  "openai",
+  "cerebras",
+  "deepseek",
+  "cohere"
+ ]
+}
