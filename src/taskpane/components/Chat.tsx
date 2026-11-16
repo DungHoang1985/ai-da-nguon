@@ -205,6 +205,8 @@ interface Item {
   skills?: string[];
   /** Số token của lượt (cộng mọi bước) */
   usage?: Usage;
+  /** Số lần gọi model của nhiệm vụ này (mỗi bước của vòng "model → công cụ → kết quả" là một lần gọi) */
+  calls?: number;
   /** Mục do khung ở ứng dụng khác nhờ ghi (không phải câu trả lời của model; không vào lịch sử gửi model) */
   incoming?: string;
   /** AI nói đã thay đổi tài liệu nhưng lượt này không có thao tác ghi nào thành công (chỉ để hiện; không gửi cho model) */
@@ -777,6 +779,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
             setNotice({ text: "Cuộc trò chuyện dài: đã tự tóm tắt phần đầu để AI nhớ gọn hơn." });
           } else if (ev.type === "step") {
             if (ev.step > 1) needSep = true;
+            patchLast((it) => ({ ...it, calls: Math.max(it.calls || 0, ev.step) }));
           } else if (ev.type === "text") {
             clearRetry();
             appendText(needSep ? "\n" + ev.delta : ev.delta);
@@ -1138,7 +1141,13 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                   </div>
                 )}
                 {it.usage && formatUsage(it.usage) ? (
-                  <Text size={100} className={s.muted} title="Số token của lượt này, cộng mọi bước. Phần đọc từ bộ nhớ đệm được nhà cung cấp tính rẻ hơn nhiều.">
+                  <Text
+                    size={100}
+                    className={s.muted}
+                    data-calls={it.calls || undefined}
+                    title="Một nhiệm vụ anh giao được AI làm qua nhiều bước nối tiếp: mỗi bước là một lần gọi AI (AI ra lệnh công cụ → add-in làm trên tài liệu → trả kết quả cho AI). Lần gọi nào cũng kèm toàn bộ yêu cầu và các bước trước, nên AI không mất mạch. Nhà cung cấp tính mỗi bước là một lượt dùng. Số token là tổng mọi bước; phần đọc từ bộ nhớ đệm được tính rẻ hơn nhiều."
+                  >
+                    {it.calls && it.calls > 1 ? `1 nhiệm vụ · ${it.calls} lần gọi AI · ` : ""}
                     {formatUsage(it.usage)}
                   </Text>
                 ) : null}

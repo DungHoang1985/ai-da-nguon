@@ -16,8 +16,11 @@ export const PPT_DESIGN_SPECS: ToolSpec[] = [
   {
     name: "ppt_get_slide_image",
     description:
-      "Take a picture of one slide so you can LOOK at it (text overflowing its box, overlapping shapes, crowded layout), plus a code-based measurement of that slide. Call it after creating or changing a slide to check the result, fix what is wrong, then look once more. Only useful with a model that accepts images; otherwise you get the measurements only.",
-    parameters: { type: "object", properties: { slide: slideProp }, required: ["slide"] },
+      "Take a picture of one or several slides (up to 4 in ONE call) so you can LOOK at them (text overflowing its box, overlapping shapes, crowded layout), plus a code-based measurement of each. Finish creating or changing ALL the slides first, then check them together in a single call with `slides`; fix what is wrong, then look once more only at the slides you changed. Only useful with a model that accepts images; otherwise you get the measurements only.",
+    parameters: {
+      type: "object",
+      properties: { slide: slideProp, slides: { type: "array", items: { type: "number" }, description: "Several slide numbers to capture in one call (max 4). Prefer this over one call per slide." } },
+    },
   },
   {
     name: "ppt_check_deck",
@@ -255,34 +258,47 @@ export async function executePptDesign(name: string, a: any, log: UndoEntry[]): 
   switch (name) {
     case "ppt_get_slide_image":
       return PowerPoint.run(async (ctx) => {
-        const { slide, index } = await slideAt(ctx, a.slide);
+        // Một lần gọi chụp được nhiều slide (tối đa 4): kiểm cả loạt slide vừa tạo trong MỘT lượt gọi model thay vì mỗi slide một lượt
+        const wanted: any[] = Array.isArray(a.slides) && a.slides.length ? a.slides : [a.slide];
+        const picked: { slide: PowerPoint.Slide; index: number }[] = [];
+        for (const n of wanted.slice(0, 4)) {
+          const at = await slideAt(ctx, n);
+          if (!picked.some((p) => p.index === at.index)) picked.push({ slide: at.slide, index: at.index });
+        }
+        const nums = picked.map((p) => p.index);
         const o = await deckOptions(ctx, {});
-        const data = await readSlides(ctx, [index]);
+        const data = await readSlides(ctx, nums);
         const rep = checkDeck(data, { slideW: o.size.w, slideH: o.size.h, themeFonts: o.fonts, minSize: 12 });
         const layout = rep.issues.filter((i) => ["overflow", "off_slide", "overlap"].includes(i.kind));
-        let image: string | null = null;
-        let note = "";
+        const images: { mime: string; data: string; label: string }[] = [];
+        let note = wanted.length > 4 ? `Chỉ chụp 4 slide đầu trong danh sách (${nums.join(", ")}).` : "";
         if (!supports("1.8")) note = "PowerPoint trên máy này chưa chụp được ảnh slide (cần PowerPointApi 1.8): chỉ có số đo bằng mã.";
         else {
           try {
-            const img = slide.getImageAsBase64({ width: 960 });
+            // Nhiều ảnh thì mỗi ảnh nhỏ hơn một chút để không phình lượt gửi
+            const shots = picked.map((p) => ({ index: p.index, img: p.slide.getImageAsBase64({ width: picked.length > 1 ? 800 : 960 }) }));
             await ctx.sync();
-            image = img.value;
+            shots.forEach((s) => images.push({ mime: "image/png", data: s.img.value, label: `Ảnh slide ${s.index}` }));
           } catch (e: any) {
             note = `Không chụp được ảnh slide (${e?.message || e}): chỉ có số đo bằng mã.`;
           }
         }
+        const list = nums.join(", ");
+        const shapesOf = (d: DeckSlide | undefined) =>
+          d?.shapes.map((s) => ({ n: s.n, name: s.name, ...(s.isTitle ? { title: true } : {}), box: s.box.map((v) => Math.round(v)), ...(s.paragraphs?.length ? { text: truncate(s.paragraphs.map((p) => p.text).join(" / "), 120), size: s.paragraphs[0].size } : {}) }));
         return {
           ok: true,
-          slide: index,
-          brief: `${image ? "đã chụp ảnh slide " + index : "không có ảnh"}${layout.length ? ` · số đo: ${layout.length} điểm bố cục cần xem` : " · số đo: không thấy tràn, chồng"}`,
-          message: image
-            ? `Ảnh slide ${index} được gửi kèm ngay sau kết quả này: hãy NHÌN ảnh để xem chữ có tràn khung, hình có chồng nhau, bố cục có cân không. Số đo bằng mã ở measured (chữ tràn chỉ là ước lượng — tin ảnh hơn).`
+          slide: nums[0],
+          slides: nums,
+          brief: `${images.length ? "đã chụp ảnh slide " + list : "không có ảnh"}${layout.length ? ` · số đo: ${layout.length} điểm bố cục cần xem` : " · số đo: không thấy tràn, chồng"}`,
+          message: images.length
+            ? `Ảnh slide ${list} được gửi kèm ngay sau kết quả này: hãy NHÌN ảnh để xem chữ có tràn khung, hình có chồng nhau, bố cục có cân không. Số đo bằng mã ở measured (chữ tràn chỉ là ước lượng — tin ảnh hơn).`
             : note,
-          ...(note && image ? { note } : {}),
+          ...(note && images.length ? { note } : {}),
           measured: layout.map((i) => i.message),
-          shapes: data[0]?.shapes.map((s) => ({ n: s.n, name: s.name, ...(s.isTitle ? { title: true } : {}), box: s.box.map((v) => Math.round(v)), ...(s.paragraphs?.length ? { text: truncate(s.paragraphs.map((p) => p.text).join(" / "), 120), size: s.paragraphs[0].size } : {}) })),
-          ...(image ? { __images: [{ mime: "image/png", data: image, label: `Ảnh slide ${index}` }] } : {}),
+          shapes: shapesOf(data[0]),
+          ...(data.length > 1 ? { other_slides: data.slice(1).map((d) => ({ slide: d.slide, shapes: shapesOf(d) })) } : {}),
+          ...(images.length ? { __images: images } : {}),
         };
       });
 
