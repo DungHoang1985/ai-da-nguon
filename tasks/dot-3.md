@@ -12,7 +12,7 @@ Viết ngày 16/11/2026, nhánh `claude/dot-3-b3b8f4` (gốc `origin/main` = `0b
 
 **Trạng thái của khung trước khi thử (để trả lại khi xong):** nguồn đang chọn Anthropic · Claude Opus 5.5; model nhớ của OpenRouter: ERNIE 5.5 Flash free (theo ghi chú bàn giao Đợt 2); Groq: GPT OSS 20B; Cerebras: gpt-oss-120b. Bài thử đã chọn Haiku 5.5 (Anthropic), Nemotron 3 Ultra free (OpenRouter), GPT OSS 120B (Groq).
 - [x] B1 thăm dò kho chung và kênh lệnh (bảng kết quả ở dưới) · [ ] B1 mã ghi chéo (đang viết, nhánh `claude/dot-3-b-wip`) · [ ] B2 chỉ báo và công tắc
-- [ ] B3 PowerPoint phần chắc · [ ] B4 PowerPoint phần phải thử (bảng thăm dò ở dưới) · [ ] B5 hai việc tồn
+- [x] B1 mã ghi chéo · [x] B2 chỉ báo và công tắc · [x] B3 PowerPoint phần chắc (7 công cụ) · [x] B4 thăm dò: phông chủ đề đọc được, chèn ảnh làm được nhưng chưa thành công cụ, ghi chú diễn giả và sửa số liệu biểu đồ không có API · B5: [x] lỗi bố cục của slide biểu đồ đã chữa phần người dùng thấy; [ ] phiên Word từ chối chèn nhận xét: chưa tìm ra nguyên nhân (có manh mối)
 - [ ] Soát mã độc lập, sửa, chạy lại · [ ] Bảng nghiệm thu, HANDOFF, CLAUDE.md, bảng so sánh · [ ] Hỏi anh phát hành, kiểm bản phát hành, dọn dẹp
 
 ## Tiêu chí nghiệm thu
@@ -173,9 +173,44 @@ Chạy 16/11/2026 với Word, Excel, PowerPoint cùng mở (cùng tài khoản O
 
 **Kết luận: kênh lệnh cục bộ dùng được, không cần phương án dự phòng.** Thiết kế chốt: "hộp thư" là các khóa trong `localStorage` (bền, khung nào mở sau vẫn đọc được trạng thái), báo tin bằng sự kiện `storage`, có thăm dò định kỳ làm lối dự phòng khi sự kiện bị lỡ; nhịp sống của từng khung cũng là một khóa. Không dùng `BroadcastChannel` làm kênh chính (không bền, không cho biết khung kia có mở không).
 
-## Bảng thăm dò B4 — PowerPoint
+## Bảng thăm dò B3, B4 — PowerPoint
 
-(chưa chạy)
+Chạy 16/11/2026 trong PowerPoint 16.0 (PowerPointApi 1.3–1.10 đều có), bài `kiem-thu/cdp-bai/tham-do-3-ppt.js`; bằng chứng `tasks/dot-3-bang-chung/09-tham-do-powerpoint.json`.
+
+| Điều thử | Kết quả | Dùng cho |
+|---|---|---|
+| Ảnh slide: `slide.getImageAsBase64({ width })` | **Được**, PNG, 40 ms | `ppt_get_slide_image` |
+| Màu chủ đề: `themeColorScheme.getThemeColor` (12 màu) | **Được** | `ppt_get_theme`, kiểm bài |
+| Bố cục của mẫu và loại ô giữ chỗ (`layouts`, `placeholderFormat.type`) | **Được** | `ppt_get_theme`, `ppt_set_layout` |
+| Định dạng một cụm chữ / một đoạn: `textRange.getSubstring`, `paragraphFormat`, `bulletFormat` | **Được**; đoạn ngắt bằng `\n` | `ppt_format_text` |
+| Bảng có sẵn: `shape.getTable()`, đọc `values`, sửa ô, `rows.add` | **Được** | `ppt_edit_table`, tổng quan kèm nội dung bảng |
+| Vùng chọn: `getSelectedShapes`, `getSelectedTextRangeOrNullObject`, `getSelectedSlides` | **Được** | `ppt_get_selection` |
+| Đổi bố cục: `slide.applyLayout(layout)` | **Được** (ô tiêu đề được giữ) | `ppt_set_layout`, sửa lỗi bố cục của slide biểu đồ |
+| Chèn ảnh: hình chữ nhật tô bằng ảnh (`fill.setImage(base64)`) | **Được về kỹ thuật**; **chưa làm thành công cụ** (cần đường đưa ảnh đính kèm trong khung chat tới công cụ — để đợt sau) | — |
+| Phông chủ đề | **Không có API.** Đọc được gián tiếp: xuất một slide (`exportAsBase64`) rồi đọc tệp chủ đề trong gói (chỉ đọc) | `ppt_get_theme`, kiểm bài |
+| Ghi chú diễn giả | **Không có API** (đối tượng Slide không có thuộc tính ghi chú) → **không làm**, AI được dặn nói rõ | — |
+| Cập nhật số liệu biểu đồ đã có | **Không có API** (hình loại Chart không có phương thức nào về dữ liệu) → **không làm**; cách thay: tạo biểu đồ mới bằng `ppt_add_chart` rồi xóa biểu đồ cũ sau khi người dùng đồng ý | — |
+
+## Phần B — mã và kết quả (bản cục bộ 4.3.0)
+
+### Mã
+
+- **Ghi chéo ứng dụng** (`src/core/crossapp.ts`, `src/office/crossExec.ts`, `write_other_app` trong `src/office/common.ts`): hộp thư lệnh trong kho dùng chung; **luôn hỏi ở khung gửi** trước khi lệnh rời đi (cờ `alwaysAsk`: hỏi cả khi anh tắt "hỏi trước thao tác rủi ro", và "Cho phép hết lần này" không áp dụng); hộp hỏi nêu ứng dụng đích, tên tệp và nội dung. Khung nhận chỉ chạy ba thao tác THÊM mới (Word: thêm đoạn ở cuối, ghi có theo dõi · Excel: tạo sheet mới, công thức từ ứng dụng khác bị ghi thành chữ · PowerPoint: thêm một slide), kiểm lại hình dạng / kích thước / hạn / đã chạy chưa, hiện mục "📥 Vừa ghi theo yêu cầu từ …" kèm nút Hoàn tác. Khung đích chưa mở, tắt nhận ghi, hoặc không trả lời: báo rõ, không treo (rút lệnh khi hết hạn).
+- **Chỉ báo và công tắc**: đầu khung hiện "Excel ✓ · Word —" theo nhịp sống 3 giây; Cài đặt có công tắc kết nối theo từng ứng dụng và công tắc "Nhận ghi từ ứng dụng khác".
+- **PowerPoint** (`src/core/deckcheck.ts`, `src/office/pptDesign.ts`): 7 công cụ mới — `ppt_get_slide_image` (ảnh slide gửi cho model ở một tin nhắn riêng + số đo bằng mã), `ppt_check_deck`, `ppt_get_theme`, `ppt_format_text`, `ppt_edit_table`, `ppt_get_selection`, `ppt_set_layout`. PowerPoint nay 21 công cụ. Slide biểu đồ tự chuyển về bố cục có sẵn của mẫu khi PowerPoint chèn bố cục lạ; slide có hình trùng tên thì công cụ bắt chỉ hình bằng số thứ tự.
+
+### Bảng nghiệm thu phần B
+
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| B-1 | Từ PowerPoint: "lấy bảng tiến độ ở Excel đang mở, tạo 3 slide và 1 biểu đồ" chạy trọn, đúng số | **Đạt** — Chạy thật (Haiku 5.5, 33 giây): đọc bảng ở Excel, thêm 3 slide đúng mẫu của bài (dải màu, phông Georgia / Verdana): biểu đồ cột kế hoạch – thực tế 5 hạng mục (100/100, 80/62, 60/55, 35/20, 10/0), bảng chênh lệch (0, −18, −5, −15, −10), slide nguyên nhân. Đối chiếu bằng mã đọc lại bảng và xem ảnh slide. Lần chạy đầu lộ lỗi slide biểu đồ lệch mẫu → đã sửa rồi chạy lại trên bài mới | `20`, `20b-slide-11/12/13.png` |
+| B-2 | Từ Excel: "ghi tóm tắt sang Word đang mở": đoạn mới xuất hiện, có hỏi xác nhận, hoàn tác được ở Word | **Đạt** — Chạy thật (Haiku 5.5, 11 giây): hộp hỏi "Ghi sang Word (tệp “aidn-thu-vbhc.docx”): thêm 1 đoạn…"; Word có thêm đúng 1 đoạn (1 sửa đổi được theo dõi), số liệu đúng (62/80, 20/35, 0/10, 55/60); khung Word hiện mục "Vừa ghi theo yêu cầu từ … Excel"; bấm Hoàn tác ở khung Word → văn bản về 2 đoạn ban đầu, 0 sửa đổi | `16` |
+| B-3 | Đóng khung ở ứng dụng kia: AI báo rõ, không treo; chỉ báo đúng | **Đạt** — Chạy thật: đóng Word → chỉ báo ở Excel thành "Word — · PowerPoint ✓"; AI trả lời trong 10 giây "chưa ghi được sang Word… mở tệp Word, bấm nút AI Đa Nguồn…" và đưa đoạn tóm tắt để chép tay | `17`, `12` |
+| B-4 | Slide cố ý để chữ tràn khung: AI tự phát hiện qua ảnh và sửa hết tràn | **Đạt** — Chạy thật (Haiku 5.5, 11 giây, 3 bước): chụp ảnh slide 6 → nới và dời khung "Rủi ro", giảm cỡ chữ 16 → 15 → chụp lại, hết tràn; ô tiêu đề và ô nội dung không bị đụng. Ảnh trước / sau đã xem. Lần chạy đầu AI sửa nhầm ô tiêu đề (hai hình trùng tên, phép đo "chồng nhau" báo cả khung rỗng) → đã sửa công cụ rồi chạy lại | `18`, `18a`, `18b` |
+| B-5 | Bài 10 slide cài 5 lỗi lệch mẫu: kiểm bài tìm đủ 5 | **Đạt** — Tự kiểm tra (bước "Kiểm bài theo mẫu": cài 5 lỗi, tìm đủ 5, không báo thêm) trên bài trống và trên bài thử 10 slide; Kiểm thử máy cùng ca; Chạy thật trên `kiem-thu/ppt-thu.mjs`: tìm đủ 5 lỗi cài sẵn và cả slide chữ tràn | `15`, `21`, `19` |
+| B-6 | Slide mới dùng đúng màu và bố cục của mẫu | **Đạt** — Tự kiểm tra (bước "Slide mới dùng đúng bố cục và màu của mẫu"): bố cục đọc lại trùng bố cục của mẫu, khối màu = Accent1 của mẫu (bài trống: #5B9BD5; bài 10 slide: #4472C4) | `15`, `21` |
+| C-2 | Mỗi công cụ mới có bước Tự kiểm tra; bước cũ không hỏng | **Đạt** — Word **37/37** (thêm bước ghi chéo), Excel **23/23**, PowerPoint **21/21** (thêm 6 bước PowerPoint + bước ghi chéo) | `13`, `14`, `15`, `21` |
+
 
 ## Bảng nghiệm thu
 
