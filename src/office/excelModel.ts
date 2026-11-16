@@ -5,6 +5,7 @@
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { getRange, restoreFrom, snapshot } from "./excelCore";
 import { cellAddress, lettersToCol, splitAddress, topLeft, truncate } from "./util";
+import { formulaRisksOf } from "../core/formularisk";
 import { auditModel } from "../core/modelaudit";
 import { cleanNumberList, goalSeek, tidy } from "../core/goalseek";
 
@@ -209,7 +210,9 @@ const FILL: Record<string, string> = {
 };
 const CM = 28.3464567;
 const cm = (pt: number) => Math.round((pt / CM) * 100) / 100;
-const isNone = (v: any) => /^(none|không|khong|clear|)$/i.test(String(v ?? "").trim());
+/** Chỉ chữ "none" (hoặc "không", "clear") mới là lệnh bỏ; chuỗi rỗng model điền cho tham số không dùng thì bỏ qua tham số đó */
+const isNone = (v: any) => /^(none|không|khong|clear)$/i.test(String(v ?? "").trim());
+const given = (v: any) => v !== undefined && v !== null && String(v).trim() !== "";
 const list = (v: any): string[] => (Array.isArray(v) ? v.map((x) => String(x).trim()).filter(Boolean) : typeof v === "string" && v.trim() ? [v.trim()] : []);
 
 function sheetOf(ctx: Excel.RequestContext, sheet?: string) {
@@ -338,12 +341,12 @@ function applyPageSetup(ws: Excel.Worksheet, a: any) {
       done.push(`co vừa ${w ? `${w} trang ngang` : ""}${w && h ? ", " : ""}${h ? `${h} trang dọc` : ""}`);
     }
   }
-  if (a.print_area !== undefined && a.print_area !== null) {
+  if (given(a.print_area)) {
     if (isNone(a.print_area)) pl.setPrintArea("" as any);
     else pl.setPrintArea(ws.getRange(splitAddress(String(a.print_area)).address));
     done.push(isNone(a.print_area) ? "bỏ vùng in" : `vùng in ${splitAddress(String(a.print_area)).address}`);
   }
-  if (a.title_rows !== undefined && a.title_rows !== null) {
+  if (given(a.title_rows)) {
     if (isNone(a.title_rows)) pl.setPrintTitleRows("" as any);
     else {
       const t = splitAddress(String(a.title_rows)).address;
@@ -351,7 +354,7 @@ function applyPageSetup(ws: Excel.Worksheet, a: any) {
     }
     done.push(isNone(a.title_rows) ? "bỏ dòng tiêu đề lặp" : `dòng tiêu đề lặp ${a.title_rows}`);
   }
-  if (a.title_columns !== undefined && a.title_columns !== null) {
+  if (given(a.title_columns)) {
     if (isNone(a.title_columns)) pl.setPrintTitleColumns("" as any);
     else {
       const t = splitAddress(String(a.title_columns)).address;
@@ -394,9 +397,28 @@ export async function excelModelRisk(name: string, a: any): Promise<string | nul
   if (name === "excel_edit_chart" && a.delete) return `Xóa biểu đồ${a.chart ? ` "${a.chart}"` : ""}${a.sheet ? ` ở sheet ${a.sheet}` : ""} — KHÔNG hoàn tác được.`;
   if (name === "excel_named_range" && a.action === "delete") return `Xóa tên vùng "${a.name}": các công thức đang dùng tên này sẽ báo #NAME? (có thể Hoàn tác).`;
   if (name === "excel_clean_data" && a.action === "remove_duplicates")
-    return `Xóa các dòng trùng trong ${a.sheet && !String(a.address).includes("!") ? a.sheet + "!" : ""}${a.address}${list(a.columns).length ? ` (so theo cột ${list(a.columns).join(", ")})` : " (so mọi cột)"}; chỉ giữ dòng đầu tiên của mỗi nhóm trùng (có thể Hoàn tác).`;
-  if (name === "excel_clean_data" && a.action === "replace_all") {
+    return `Xóa các dòng trùng trong ${a.sheet && !String(a.address).includes("!") ? a.sheet + "!" : ""}${a.address}${list(a.columns).length ? ` (so theo cột ${list(a.columns).join(", ")})` : " (so mọi cột)"}; chỉ giữ dòng đầu tiên của mỗi nhóm trùng (Hoàn tác được khi vùng không quá 10.000 ô).`;
+  if (name === "excel_clean_data" && a.action === "fill_series") {
+    // Tự điền ghi đè mọi ô của vùng đích: có dữ liệu ngoài các ô mẫu thì hỏi (quy tắc ghi đè luôn hỏi)
     return Excel.run(async (ctx) => {
+      const { ws, range } = getRange(ctx, a.address, a.sheet);
+      ws.load("name");
+      await ctx.sync();
+      const dest = getRange(ctx, String(a.fill_to || a.address), a.sheet || ws.name).range;
+      range.load("formulas");
+      dest.load("formulas,address,rowCount,columnCount");
+      await ctx.sync();
+      const filled = (g: any[][]) => g.flat().filter((v) => v !== "" && v !== null).length;
+      const extra = filled(dest.formulas) - filled(range.formulas);
+      const big = dest.rowCount * dest.columnCount > 10000;
+      return extra > 0 ? `Tự điền sẽ ghi đè ${extra} ô đang có dữ liệu trong ${dest.address}${big ? " — vùng lớn nên KHÔNG hoàn tác được" : " (có thể Hoàn tác)"}.` : null;
+    }).catch(() => null);
+  }
+  if (name === "excel_clean_data" && a.action === "replace_all") {
+    // Chữ thay vào là công thức có hàm cần hỏi: hỏi như khi ghi ô (không để thay hàng loạt thành đường vòng)
+    const fr = formulaRisksOf(String(a.replace ?? "").trim());
+    const frMsg = fr.length ? `Chữ thay vào là công thức có ${fr.map((x) => x.what).join(", ")} (${fr[0].why}): ${truncate(a.replace, 120)}.` : "";
+    const many = await Excel.run(async (ctx) => {
       const { range } = getRange(ctx, a.address, a.sheet);
       const used = range.getUsedRangeOrNullObject(true);
       used.load("formulas");
@@ -409,8 +431,9 @@ export async function excelModelRisk(name: string, a: any): Promise<string | nul
               const t = a.match_case ? String(v) : String(v).toLowerCase();
               return a.whole_cell ? t === find : t.includes(find);
             }).length;
-      return n > 20 ? `Thay "${truncate(a.find, 40)}" → "${truncate(a.replace, 40)}" ở ${n} ô trong ${a.address} (có thể Hoàn tác).` : null;
+      return n > 20 ? `Thay "${truncate(a.find, 40)}" → "${truncate(a.replace, 40)}" ở ${n} ô trong ${a.address} (Hoàn tác được khi vùng không quá 10.000 ô).` : null;
     }).catch(() => null);
+    return [many, frMsg].filter(Boolean).join(" ") || null;
   }
   if (name === "excel_protect" && a.action === "unprotect") return `Bỏ bảo vệ sheet "${a.sheet || "đang mở"}": mọi ô, kể cả ô công thức, sẽ sửa được.`;
   return null;
@@ -564,6 +587,10 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
           if (!hit) throw new Error(`PivotTable "${pname}" không có trường "${n}". Các trường: ${f.all.join(", ")}.`);
           return hit;
         };
+        // Kiểm mọi tên trường TRƯỚC khi đổi bất cứ gì: tên sai thì báo lỗi khi Pivot còn nguyên (soát mã 16/11/2026, #18)
+        for (const n of [...list(a.remove), ...list(a.add_rows), ...list(a.add_columns), ...list(a.add_filters)]) known(n);
+        for (const v of Array.isArray(a.add_values) ? a.add_values : []) known(String(v?.field ?? v ?? ""));
+        if (a.filter && typeof a.filter === "object") known(String(a.filter.field ?? ""));
         const done: string[] = [];
         const undo: ((p: Excel.PivotTable) => void)[] = [];
         // Bớt trước, thêm sau (một trường có thể đổi từ hàng sang cột trong cùng một lệnh)
@@ -875,7 +902,7 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
           await ctx.sync();
           const u = restoreFrom(snap, `Tự điền ${dest.address}`);
           if (u) log.push(u);
-          return { ok: true, message: `Đã tự điền ${dest.address} theo mẫu ở ${range.address}`, address: dest.address, preview: first.text };
+          return { ok: true, message: `Đã tự điền ${dest.address} theo mẫu ở ${range.address}`, address: dest.address, preview: first.text, ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }) };
         }
         throw new Error(`action không hỗ trợ: ${a.action}`);
       });
@@ -916,15 +943,21 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
         const prevLocked = used.format.protection.locked;
         const inputs = list(a.input_ranges);
         let nFormula = 0;
+        // Trạng thái khóa của CẢ sheet trước khi đổi (true / false = đồng nhất; null = đang lẫn lộn, tức đã có người bố trí khóa riêng)
+        const whole = ws.getRange();
+        whole.format.protection.load("locked");
+        const fs = used.getSpecialCellsOrNullObject("Formulas" as any);
+        fs.load("cellCount");
+        await ctx.sync();
+        const wholeLocked = whole.format.protection.locked;
+        // Kiểm xong mọi điều kiện rồi mới đổi khóa (không để dở dang khi báo lỗi)
+        if (!inputs.length && fs.isNullObject) throw new Error(`Sheet "${sheetName}" không có ô công thức nào để khóa. Muốn khóa cả sheet trừ ô nhập thì nêu input_ranges.`);
         if (inputs.length) {
-          used.format.protection.locked = true;
+          whole.format.protection.locked = true;
           for (const r of inputs) ws.getRange(splitAddress(r).address).format.protection.locked = false;
         } else {
-          used.format.protection.locked = false;
-          const fs = used.getSpecialCellsOrNullObject("Formulas" as any);
-          fs.load("cellCount");
-          await ctx.sync();
-          if (fs.isNullObject) throw new Error(`Sheet "${sheetName}" không có ô công thức nào để khóa. Muốn khóa cả sheet trừ ô nhập thì nêu input_ranges.`);
+          // Mở khóa cả sheet (kể cả ô ngoài vùng đang dùng, để còn thêm được dòng mới), rồi chỉ khóa ô công thức
+          whole.format.protection.locked = false;
           nFormula = fs.cellCount;
           fs.format.protection.locked = true;
         }
@@ -937,7 +970,7 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
           selectionMode: "Normal" as any,
         });
         await ctx.sync();
-        const usedAddr = splitAddress(used.address).address;
+        void prevLocked;
         log.push({
           label: `Bảo vệ ${sheetName}`,
           undo: () =>
@@ -945,7 +978,7 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
               const w = c.workbook.worksheets.getItem(sheetName);
               w.protection.unprotect();
               // Trạng thái khóa cũ đồng nhất thì trả lại; lẫn lộn (null) thì về mặc định của Excel: mọi ô đều khóa
-              w.getRange(usedAddr).format.protection.locked = prevLocked === false ? false : true;
+              w.getRange().format.protection.locked = wholeLocked === false ? false : true;
               await c.sync();
             }),
         });
@@ -954,7 +987,9 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
           message: inputs.length
             ? `Đã bảo vệ sheet "${sheetName}" (không mật khẩu): chỉ sửa được ${inputs.join(", ")}`
             : `Đã khóa ${nFormula} ô công thức và bảo vệ sheet "${sheetName}" (không mật khẩu); các ô còn lại vẫn nhập được`,
-          note: "Không đặt mật khẩu: ai cũng bỏ bảo vệ được ở thẻ Review. Bảo vệ này chống sửa nhầm, không phải bảo mật. Khi sheet đang bảo vệ, AI cũng không ghi được vào ô bị khóa.",
+          note:
+            "Không đặt mật khẩu: ai cũng bỏ bảo vệ được ở thẻ Review. Bảo vệ này chống sửa nhầm, không phải bảo mật. Khi sheet đang bảo vệ, AI cũng không ghi được vào ô bị khóa." +
+            (wholeLocked === null ? " Sheet trước đó đã có bố trí khóa / mở khóa riêng từng ô: bố trí đó đã bị thay; Hoàn tác chỉ bỏ bảo vệ và đưa mọi ô về trạng thái khóa mặc định." : ""),
         };
       });
   }
@@ -995,13 +1030,23 @@ async function whatIf(a: any): Promise<any> {
   if (new Set([...orig.inputs.map((c) => c.address), orig.out.address]).size !== orig.inputs.length + 1) throw new Error("Ô đầu vào và ô kết quả phải là các ô khác nhau.");
 
   /** Ghi các ô đầu vào rồi đọc ô kết quả (một lần đồng bộ; chế độ tính tay thì tính lại cả sổ) */
+  /** Đã có lần ghi thử nào tới được sổ tính chưa (chưa thì không có gì phải trả lại) */
+  let touched = false;
   const evalAt = (vals: number[]) =>
     Excel.run(async (ctx) => {
       vals.forEach((v, i) => (getRange(ctx, orig.inputs[i].address).range.values = [[v]]));
       if (orig.manual) ctx.workbook.application.calculate("Full" as any);
       const out = getRange(ctx, orig.out.address).range;
       out.load("values");
-      await ctx.sync();
+      // Đặt cờ TRƯỚC khi đồng bộ: nếu lần đồng bộ lỗi giữa chừng vẫn phải thử trả lại
+      touched = true;
+      try {
+        await ctx.sync();
+      } catch (e: any) {
+        // Ô đầu vào bị khóa (sheet bảo vệ): lệnh ghi bị từ chối trọn gói, sổ tính chưa đổi
+        if (e?.code === "AccessDenied") touched = false;
+        throw e;
+      }
       const y = out.values[0][0];
       return typeof y === "number" ? y : NaN;
     });
@@ -1092,7 +1137,7 @@ async function whatIf(a: any): Promise<any> {
   } catch (e) {
     failure = e;
   }
-  const bad = await restore();
+  const bad = touched ? await restore() : null;
   if (bad) {
     if (failure) throw new Error(`${failure?.message || failure}. ${bad}`);
     return { ...result, ok: false, error: bad, message: bad };

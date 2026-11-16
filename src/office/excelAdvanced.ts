@@ -2,7 +2,7 @@
 /** Công cụ Excel nâng cao: tìm kiếm, quét lỗi, lần công thức, lọc, PivotTable, định dạng có điều kiện, danh sách chọn, nhận xét ô, chèn/xóa hàng cột, thao tác sheet. */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { getRange, restoreFrom, snapshot } from "./excelCore";
-import { cellAddress, lettersToCol, sanitizeSheetName, splitAddress, topLeft, truncate } from "./util";
+import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, topLeft, truncate } from "./util";
 import { formulaRiskMessage } from "../core/formularisk";
 
 const addressProp = { type: "string", description: "A1-style range, optionally with sheet, e.g. 'Sheet1!A1:D20'." };
@@ -207,10 +207,12 @@ export async function excelRisk(name: string, a: any): Promise<string | null> {
   if (name === "excel_write_range") {
     // Công thức gọi ra mạng, chạy mã ngoài, tham chiếu gián tiếp, liên kết tệp khác: hỏi trước khi ghi (kể cả vào ô trống)
     const tl = topLeft(String(a.address || "A1"));
-    const formulaRisk = formulaRiskMessage(a.values, (r, c) => cellAddress(tl.col + c, tl.row + r));
+    // Quét và đếm trên ĐÚNG khối mà công cụ sẽ ghi (values có thể tới dưới dạng chuỗi JSON — soát mã 16/11/2026, #2)
+    const vals = normalize2D(a.values);
+    const formulaRisk = formulaRiskMessage(vals, (r, c) => cellAddress(tl.col + c, tl.row + r));
     const overwrite = await Excel.run(async (ctx) => {
-      const rows = Array.isArray(a.values) ? a.values.length : 1;
-      const cols = Array.isArray(a.values) && Array.isArray(a.values[0]) ? Math.max(...a.values.map((r: any[]) => (Array.isArray(r) ? r.length : 1))) : 1;
+      const rows = vals.length;
+      const cols = vals[0]?.length || 1;
       const { range } = getRange(ctx, a.address, a.sheet);
       const target = range.getCell(0, 0).getResizedRange(Math.max(rows, 1) - 1, Math.max(cols, 1) - 1);
       target.load("address,formulas");

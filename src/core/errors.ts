@@ -56,7 +56,7 @@ export function maskSecrets(text: string): string {
     .replace(/\bAIza[A-Za-z0-9_\-]{16,}/g, "AIza…")
     .replace(/\b(gsk|xai|csk|nvapi|pplx|r8|hf)[_-][A-Za-z0-9_\-]{8,}/g, "$1_…")
     // Mã tổ chức / dự án của tài khoản (Groq "org_01…", OpenAI "org-…", "proj_…"): thông tin riêng, câu lỗi 413 và 429 hay nhắc lại
-    .replace(/\b(org|proj|organization|project)[_-][A-Za-z0-9]{8,}/g, "$1_…")
+    .replace(/\b(org|proj)[_-](?=[A-Za-z0-9-]*\d)[A-Za-z0-9]{4,}(?:-[A-Za-z0-9]{4,})*(?![A-Za-z0-9_])/gi, (m, p) => (m.length - p.length - 1 >= 12 ? `${p}_…` : m))
     .replace(/\b(Bearer)\s+[A-Za-z0-9._~+/\-]{12,}=*/gi, "$1 …")
     .replace(/\b(api[ _-]?key|x-api-key|x-goog-api-key|access[ _-]?token|token)(['"]?\s*[:=]\s*['"]?)[A-Za-z0-9._~+/\-]{16,}/gi, "$1$2…");
 }
@@ -77,7 +77,7 @@ const KEY_BAD =
   /(invalid (x-)?api[ _-]?key|incorrect api key|api key not valid|api[ _-]?key[^.]{0,40}(invalid|not found|malformed)|invalid (authentication|credentials|bearer|token)|no auth credentials|user not found|authentication (failed|error)|invalid_api_key|api_key_invalid)/i;
 const SPEND_LIMIT = /(specified (api |workspace )?usage limits?|spend(ing)? limit|key limit (exceeded|reached)|budget (limit|exceeded|exhausted)|usage cap)/i;
 /** Yêu cầu lớn hơn hạn mức mỗi phút của gói (đo 16/11/2026, Groq gói miễn phí trong Word: "Request too large for model … on tokens per minute (TPM): Limit 8000, Requested 8300") */
-const TOO_LARGE = /request too large[^.]*tokens per minute/i;
+const TOO_LARGE = /request too large[\s\S]{0,400}?tokens per min/i;
 
 /** Số trong câu "Limit 8000, Requested 8300" (nếu có) */
 export function tpmNumbers(detail: string): { limit?: number; requested?: number } {

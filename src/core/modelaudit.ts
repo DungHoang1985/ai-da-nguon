@@ -39,17 +39,14 @@ const isNum = (v: any) => typeof v === "number" && Number.isFinite(v);
 /** Số gõ thẳng trong công thức đáng xem: số thập phân (0.05, 1.1) hoặc phần trăm (10%). Số nguyên (1, 12, 100, 365) bỏ qua vì
  *  thường là hằng số kỹ thuật (số tháng, làm tròn, chỉ số cột). Chuỗi và tên sheet trong nháy không tính. */
 export function embeddedRates(formula: string): string[] {
-  const code = stripStrings(String(formula ?? "")).replace(/'(?:[^']|'')*'(?=\s*!)/g, "S");
+  // Bỏ chuỗi, tên sheet trong nháy và phần trong ngoặc vuông (tên cột của bảng như [VAT 10%], [Phí bảo trì 2%])
+  let code = stripStrings(String(formula ?? "")).replace(/'(?:[^']|'')*'(?=\s*!)/g, "S");
+  for (let k = 0; k < 4 && /\[[^\[\]]*\]/.test(code); k++) code = code.replace(/\[[^\[\]]*\]/g, "T");
   const out: string[] = [];
-  const re = /(?<![A-Za-z_$.\d\]])(\d+[.,]\d+%?|\d+%)(?![\d.]*[A-Za-z_(!:])/g;
+  // Dấu phẩy là dấu ngăn tham số, không phải dấu thập phân: chỉ nhận số có dấu chấm, hoặc số kèm %
+  const re = /(?<![\p{L}_$.\d])(\d+\.\d+%?|\d+%)(?![\d.]*[\p{L}_(!:])/gu;
   let m: RegExpExecArray | null;
-  while ((m = re.exec(code))) {
-    const tok = m[1];
-    // "1,5" trong danh sách tham số (dấu phẩy ngăn tham số) không phải số thập phân: chỉ nhận dấu chấm, hoặc có %
-    if (tok.includes(",") && !tok.endsWith("%")) continue;
-    if (tok.includes(",")) continue;
-    out.push(tok);
-  }
+  while ((m = re.exec(code))) out.push(m[1]);
   return [...new Set(out)];
 }
 
@@ -79,9 +76,11 @@ export function auditModel(input: AuditInput): AuditResult {
       const D = at(i + 1, j);
       if (isNum(v)) {
         constants++;
-        // Hằng số nằm giữa hai công thức cùng mẫu (theo hàng hoặc theo cột): nhiều khả năng một ô công thức bị gõ đè
-        const h = isF(L) && isF(R) && L === R;
-        const vv = isF(U) && isF(D) && U === D;
+        // Hằng số nằm giữa hai công thức cùng mẫu (theo hàng hoặc theo cột): nhiều khả năng một ô công thức bị gõ đè.
+        // Nhưng nếu ô liền kề theo chiều kia cũng là số nhập tay thì đây là cả một hàng / cột số liệu nhập (hàng "Số căn" giữa hai hàng
+        // công thức, cột "Thực hiện" xen giữa các cột "Kế hoạch", hàng tiêu đề năm): không phải gõ đè — soát mã 16/11/2026, #13
+        const h = isF(L) && isF(R) && L === R && !isNum(U) && !isNum(D);
+        const vv = isF(U) && isF(D) && U === D && !isNum(L) && !isNum(R);
         if (h || vv) {
           const [pi, pj] = h ? [i, j - 1] : [i - 1, j];
           findings.push({

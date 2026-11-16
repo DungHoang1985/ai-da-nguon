@@ -26,6 +26,23 @@ export function splitAddress(full: string, sheet?: string): { sheet?: string; ad
   return { sheet: sheet || undefined, address: s.replace(/\$/g, "") };
 }
 
+/** Tách "A1:B2,'Quý 1, 2026'!C3:D4" thành từng vùng: dấu phẩy nằm trong tên sheet đặt trong nháy đơn không phải dấu ngăn. */
+export function splitAreas(address: any): string[] {
+  const s = String(address ?? "");
+  const out: string[] = [];
+  let cur = "";
+  let quoted = false;
+  for (const ch of s) {
+    if (ch === "'") quoted = !quoted;
+    if (ch === "," && !quoted) {
+      if (cur.trim()) out.push(cur.trim());
+      cur = "";
+    } else cur += ch;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+
 /** Ô trên-trái của địa chỉ, vd "B2:D9" → { col: 1, row: 1 } */
 export function topLeft(address: string): { col: number; row: number } {
   const a = splitAddress(address).address.split(":")[0];

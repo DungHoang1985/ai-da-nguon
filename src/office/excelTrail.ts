@@ -6,8 +6,8 @@
  *  - Luôn luôn: AI không được ghi vào sheet nhật ký; kết quả trả cho model không chứa dữ liệu nội bộ (__trail).
  *  Mặc định cả hai công tắc đều tắt. Ghi nhật ký lỗi thì không làm hỏng thao tác chính. */
 import { HostToolSet, ToolCall, UndoEntry } from "../core/agent/types";
-import { CellChange, HIGHLIGHT_COLOR, LOG_HEADER, LOG_SHEET, buildLogRows, diffCells, isLogSheet, targetsLogSheet, undoLogRow } from "../core/auditlog";
-import { cellAddress, splitAddress, topLeft } from "./util";
+import { CellChange, HIGHLIGHT_COLOR, LOG_HEADER, LOG_SHEET, buildLogRows, diffCells, isLogSheet, namesSheet, targetsLogSheet, undoLogRow } from "../core/auditlog";
+import { cellAddress, splitAddress, splitAreas, topLeft } from "./util";
 
 export interface TrailOptions {
   /** Đọc cài đặt lúc chạy: { excelLog, excelHighlight } */
@@ -121,7 +121,7 @@ export async function clearHighlights(): Promise<number> {
 const whereOf = (a: any): { sheet: string; address: string } => {
   for (const k of ["address", "cell", "source_address", "print_area", "fill_to"]) {
     if (typeof a?.[k] === "string" && a[k].trim()) {
-      const s = splitAddress(a[k].split(",")[0], a.sheet);
+      const s = splitAddress(splitAreas(a[k])[0] || "", a.sheet);
       return { sheet: s.sheet || "", address: s.address };
     }
   }
@@ -132,21 +132,46 @@ export function withAuditTrail(base: HostToolSet, o: TrailOptions): HostToolSet 
   const logSheet = o.logSheet || LOG_SHEET;
   const now = o.now || (() => new Date());
   const isWrite = (name: string) => !!base.specs.find((s) => s.name === name)?.write;
+  const hideLog = (ov: any) => {
+    // Sheet nhật ký không cần nằm trong trạng thái gửi model (chứa lời cũ của người dùng và của AI)
+    if (ov && Array.isArray(ov.sheets)) {
+      ov.sheets = ov.sheets.map((s: any) => (isLogSheet(s?.name, logSheet) ? { ...s, firstRows: [], note: "Sheet nhật ký do add-in tự ghi; AI không sửa sheet này." } : s));
+    }
+    return ov;
+  };
+  const refuse = () =>
+    new Error(`Sheet “${logSheet}” là nhật ký do add-in tự ghi: AI không ghi, sửa hay đổi tên sheet này. Người dùng muốn bỏ nhật ký thì xóa sheet (excel_sheet, action delete) hoặc tắt nhật ký trong Cài đặt.`);
+  const activeSheetName = () =>
+    Excel.run(async (c) => {
+      const s = c.workbook.worksheets.getActiveWorksheet();
+      s.load("name");
+      await c.sync();
+      return s.name;
+    });
   return {
     ...base,
-    overview: async () => {
-      const ov = await base.overview();
-      // Sheet nhật ký không cần nằm trong trạng thái gửi model mỗi lượt (chứa lời cũ của người dùng và của AI)
-      if (ov && Array.isArray(ov.sheets)) {
-        ov.sheets = ov.sheets.map((s: any) => (isLogSheet(s?.name, logSheet) ? { ...s, firstRows: [], note: "Sheet nhật ký do add-in tự ghi; AI không sửa sheet này." } : s));
-      }
-      return ov;
-    },
+    overview: async () => hideLog(await base.overview()),
     execute: async (name, args, ctx: { log: UndoEntry[]; said?: string; request?: string }) => {
       const a = args || {};
       const write = isWrite(name);
-      if (write && targetsLogSheet(a, logSheet) && !(name === "excel_sheet" && a.action === "delete")) {
-        throw new Error(`Sheet “${logSheet}” là nhật ký do add-in tự ghi: AI không ghi, sửa hay đổi tên sheet này. Người dùng muốn bỏ nhật ký thì xóa sheet (excel_sheet, action delete) hoặc tắt nhật ký trong Cài đặt.`);
+      const deletesLog = name === "excel_sheet" && a.action === "delete";
+      if (write && !deletesLog) {
+        if (targetsLogSheet(a, logSheet)) throw refuse();
+        // Lệnh không nêu sheet chạy trên sheet đang mở: người dùng đang xem sheet nhật ký thì cũng không được ghi (soát mã 16/11/2026, #5)
+        if (!namesSheet(a)) {
+          let active = "";
+          try {
+            active = await activeSheetName();
+          } catch {
+            active = "";
+          }
+          if (isLogSheet(active, logSheet)) throw refuse();
+        }
+      }
+      let deletedLog = false;
+      if (write && deletesLog) {
+        if (targetsLogSheet(a, logSheet)) deletedLog = true;
+        else if (!namesSheet(a)) deletedLog = isLogSheet(await activeSheetName().catch(() => ""), logSheet);
       }
       const logBefore = ctx.log.length;
       let result: any;
@@ -166,24 +191,15 @@ export function withAuditTrail(base: HostToolSet, o: TrailOptions): HostToolSet 
         trail = __trail as TrailData;
         result = rest;
       }
-      if (!write || result?.ok === false) return result;
+      if (name === "excel_get_overview") return hideLog(result);
+      // Vừa xóa chính sheet nhật ký: không ghi nhật ký cho lệnh này (ghi là tạo lại sheet ngay — soát mã 16/11/2026, #7)
+      if (!write || result?.ok === false || deletedLog) return result;
       const st = o.settings() || {};
       if (!st.excelLog && !st.excelHighlight) return result;
 
       const w = trail ? { sheet: trail.sheet, address: trail.address } : whereOf(a);
       let sheet = w.sheet;
-      if (!sheet) {
-        try {
-          sheet = await Excel.run(async (c) => {
-            const s = c.workbook.worksheets.getActiveWorksheet();
-            s.load("name");
-            await c.sync();
-            return s.name;
-          });
-        } catch {
-          sheet = "";
-        }
-      }
+      if (!sheet) sheet = await activeSheetName().catch(() => "");
       const changes = trail ? diffCells(trail.before, trail.after, topLeft(trail.address), cellAddress) : undefined;
       const action = o.describe({ id: "", name, args: a });
       const notes: string[] = [];

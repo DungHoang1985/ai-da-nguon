@@ -29,11 +29,14 @@ const fin = (v: any): v is number => typeof v === "number" && Number.isFinite(v)
 
 export async function goalSeek(f: (x: number) => Promise<number>, o: GoalSeekOptions): Promise<GoalSeekResult> {
   const T = o.target;
-  const tol = (o.tolRel ?? 1e-5) * Math.max(Math.abs(T), 1e-9) || 1e-9;
-  const absTol = T === 0 ? 1e-7 : tol;
+  const tolRel = fin(o.tolRel) && o.tolRel > 0 ? o.tolRel : 1e-5;
+  // Thang đo sai số: theo mục tiêu; mục tiêu = 0 (hòa vốn, NPV = 0) thì theo độ lớn đầu ra ở điểm xuất phát — đặt sau lần tính đầu
+  let scale = Math.abs(T);
+  let absTol = tolRel * scale;
   const maxIter = Math.max(5, Math.min(o.maxIter ?? 60, 200));
-  const lo = fin(o.min) ? o.min : -Infinity;
-  const hi = fin(o.max) ? o.max : Infinity;
+  const num = (v: any) => (v === null || v === undefined || v === "" ? NaN : Number(v));
+  const lo = fin(num(o.min)) ? num(o.min) : -Infinity;
+  const hi = fin(num(o.max)) ? num(o.max) : Infinity;
   if (lo > hi) return { ok: false, x: o.start, y: NaN, iterations: 0, error: NaN, reason: "min lớn hơn max" };
   const clamp = (x: number) => Math.min(hi, Math.max(lo, x));
   let n = 0;
@@ -51,13 +54,17 @@ export async function goalSeek(f: (x: number) => Promise<number>, o: GoalSeekOpt
     x: best.x,
     y: best.y,
     iterations: n,
-    error: fin(best.d) ? Math.abs(best.d) / Math.max(Math.abs(T), 1e-9) : NaN,
+    error: fin(best.d) ? Math.abs(best.d) / Math.max(scale, 1e-12) : NaN,
     ...(reason ? { reason } : {}),
   });
 
   let x0 = clamp(fin(o.start) ? o.start : 0);
   let d0 = await g(x0);
   if (Number.isNaN(d0)) return done(false, `Ô kết quả không ra số khi ô đầu vào = ${x0}`);
+  if (scale === 0) {
+    scale = Math.max(Math.abs(d0), 1e-9);
+    absTol = tolRel * scale;
+  }
   if (Math.abs(d0) <= absTol) return done(true);
 
   // Tìm hai điểm kẹp nghiệm (đầu ra nằm hai phía của mục tiêu) bằng cách nới dần quanh điểm xuất phát
@@ -120,7 +127,7 @@ export async function goalSeek(f: (x: number) => Promise<number>, o: GoalSeekOpt
     if (Math.abs(b - a) <= 1e-14 * Math.max(1, Math.abs(a))) break;
   }
   // Hết số vòng: chấp nhận nếu đã trong sai số 0,1% (hàm bậc thang, làm tròn)
-  const rel = Math.abs(best.d) / Math.max(Math.abs(T), 1e-9);
+  const rel = Math.abs(best.d) / Math.max(scale, 1e-12);
   return rel <= 1e-3 ? done(true) : done(false, "Chưa hội tụ trong số vòng cho phép; đây là đầu vào gần mục tiêu nhất tìm được");
 }
 

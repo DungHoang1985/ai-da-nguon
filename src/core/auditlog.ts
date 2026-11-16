@@ -95,13 +95,48 @@ export function undoLogRow(time: Date, sheet: string, address: string, label: st
 
 /** Tên sheet (đã bỏ dấu nháy bao ngoài) có phải sheet nhật ký không — so không phân biệt hoa thường, bỏ khoảng trắng hai đầu. */
 export function isLogSheet(name: any, logSheet = LOG_SHEET): boolean {
-  const n = String(name ?? "")
-    .trim()
-    .replace(/^'|'$/g, "")
-    .replace(/''/g, "'")
-    .trim()
-    .toLowerCase();
-  return !!n && n === logSheet.toLowerCase();
+  // Chuẩn hóa như công cụ làm sạch tên sheet trước khi dùng (ký tự \ / ? * [ ] : thành dấu cách, bỏ nháy bao ngoài, cắt 31 ký tự):
+  // "Nhật ký AI?" hay "Nhật ký AI/" sau khi làm sạch chính là sheet nhật ký
+  const norm = (x: any) =>
+    String(x ?? "")
+      .trim()
+      .replace(/''/g, "'")
+      .replace(/[\\/?*[\]:]/g, " ")
+      .replace(/^'+|'+$/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 31)
+      .trim()
+      .toLowerCase();
+  const n = norm(name);
+  return !!n && n === norm(logSheet);
+}
+
+/** Như splitAreas của office/util (lõi không phụ thuộc lớp office): tách danh sách vùng, bỏ qua dấu phẩy trong tên sheet đặt trong nháy */
+function areas(v: string): string[] {
+  const out: string[] = [];
+  let cur = "";
+  let q = false;
+  for (const ch of v) {
+    if (ch === "'") q = !q;
+    if (ch === "," && !q) {
+      out.push(cur);
+      cur = "";
+    } else cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+/** Lệnh có nêu sheet ở tham số nào không (không nêu = chạy trên sheet đang mở: lớp bọc phải tự xem sheet đang mở có phải nhật ký không) */
+export function namesSheet(args: any): boolean {
+  if (!args || typeof args !== "object") return false;
+  if (typeof args.sheet === "string" && args.sheet.trim()) return true;
+  for (const k of ["address", "cell", "source_address", "fill_to", "print_area"]) {
+    const v = args[k];
+    if (typeof v === "string" && areas(v).some((p) => /^\s*(?:'(?:[^']|'')+'|[^'!]+)!/.test(p))) return true;
+  }
+  return false;
 }
 
 /** Lệnh công cụ có nhắm vào sheet nhật ký không (qua tham số sheet hoặc phần sheet của các tham số địa chỉ). */
@@ -111,7 +146,7 @@ export function targetsLogSheet(args: any, logSheet = LOG_SHEET): boolean {
   for (const k of ["address", "cell", "source_address", "destination", "fill_to", "print_area", "target_cell", "input_cell", "input_cell_2", "output_cell"]) {
     const v = args[k];
     if (typeof v !== "string") continue;
-    for (const part of v.split(",")) {
+    for (const part of areas(v)) {
       const m = part.trim().match(/^(?:'((?:[^']|'')+)'|([^'!]+))!/);
       if (m && isLogSheet(m[1] ?? m[2], logSheet)) return true;
     }

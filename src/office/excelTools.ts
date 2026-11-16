@@ -1,7 +1,7 @@
 /* global Excel */
 /** Công cụ để AI thao tác trực tiếp trên sổ tính Excel. Mỗi thao tác ghi đều lưu ảnh chụp để Hoàn tác. */
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
-import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, topLeft, truncate } from "./util";
+import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, splitAreas, topLeft, truncate } from "./util";
 import { getRange, restoreFrom, snapshot } from "./excelCore";
 import { EXCEL_ADV_SPECS, excelRisk, executeExcelAdvanced } from "./excelAdvanced";
 import { EXCEL_MODEL_SPECS, excelModelRisk, executeExcelModel } from "./excelModel";
@@ -297,10 +297,8 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
 
     case "excel_format_range": {
       // Nhiều vùng rời ("C2:D13,F2:F13"): định dạng lần lượt từng vùng trong cùng một lệnh
-      const parts = String(a.address || "")
-        .split(",")
-        .map((x) => x.trim())
-        .filter(Boolean);
+      const parts = splitAreas(a.address);
+      if (parts.length > 20) throw new Error(`Tối đa 20 vùng trong một lệnh (nhận ${parts.length}). Chia thành nhiều lệnh.`);
       if (parts.length > 1) {
         let sheet = a.sheet;
         const done: string[] = [];
@@ -416,10 +414,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         };
         const by: Record<string, string> = { auto: "Auto", rows: "Rows", columns: "Columns" };
         // Nguồn gồm cột nhãn + khối số nằm rời nhau ("A1:A13,C1:D13"): vẽ từ khối số, lấy nhãn trục từ cột nhãn
-        const srcParts = String(a.source_address || "")
-          .split(",")
-          .map((x) => x.trim())
-          .filter(Boolean);
+        const srcParts = splitAreas(a.source_address);
         if (srcParts.length > 2) throw new Error("Nguồn biểu đồ chỉ nhận một vùng liền, hoặc hai vùng: cột nhãn rồi khối số (ví dụ 'A1:A13,C1:D13').");
         const first = splitAddress(srcParts[0], a.sheet);
         const dataPart = srcParts.length === 2 ? splitAddress(srcParts[1], first.sheet) : first;
