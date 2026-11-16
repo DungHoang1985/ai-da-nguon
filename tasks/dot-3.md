@@ -13,7 +13,7 @@ Viết ngày 16/11/2026, nhánh `claude/dot-3-b3b8f4` (gốc `origin/main` = `0b
 **Trạng thái của khung trước khi thử (để trả lại khi xong):** nguồn đang chọn Anthropic · Claude Opus 5.5; model nhớ của OpenRouter: ERNIE 5.5 Flash free (theo ghi chú bàn giao Đợt 2); Groq: GPT OSS 20B; Cerebras: gpt-oss-120b. Bài thử đã chọn Haiku 5.5 (Anthropic), Nemotron 3 Ultra free (OpenRouter), GPT OSS 120B (Groq).
 - [x] B1 thăm dò kho chung và kênh lệnh (bảng kết quả ở dưới) · [ ] B1 mã ghi chéo (đang viết, nhánh `claude/dot-3-b-wip`) · [ ] B2 chỉ báo và công tắc
 - [x] B1 mã ghi chéo · [x] B2 chỉ báo và công tắc · [x] B3 PowerPoint phần chắc (7 công cụ) · [x] B4 thăm dò: phông chủ đề đọc được, chèn ảnh làm được nhưng chưa thành công cụ, ghi chú diễn giả và sửa số liệu biểu đồ không có API · B5: [x] lỗi bố cục của slide biểu đồ đã chữa phần người dùng thấy; [ ] phiên Word từ chối chèn nhận xét: chưa tìm ra nguyên nhân (có manh mối)
-- [ ] Soát mã độc lập, sửa, chạy lại · [ ] Bảng nghiệm thu, HANDOFF, CLAUDE.md, bảng so sánh · [ ] Hỏi anh phát hành, kiểm bản phát hành, dọn dẹp
+- [x] Soát mã độc lập phần B, đã sửa, đã chạy lại · [x] Bảng nghiệm thu, HANDOFF, CLAUDE.md, bảng so sánh · [ ] Hỏi anh phát hành 4.3.0, kiểm bản phát hành, dọn dẹp
 
 ## Tiêu chí nghiệm thu
 
@@ -209,7 +209,22 @@ Chạy 16/11/2026 trong PowerPoint 16.0 (PowerPointApi 1.3–1.10 đều có), b
 | B-4 | Slide cố ý để chữ tràn khung: AI tự phát hiện qua ảnh và sửa hết tràn | **Đạt** — Chạy thật (Haiku 5.5, 11 giây, 3 bước): chụp ảnh slide 6 → nới và dời khung "Rủi ro", giảm cỡ chữ 16 → 15 → chụp lại, hết tràn; ô tiêu đề và ô nội dung không bị đụng. Ảnh trước / sau đã xem. Lần chạy đầu AI sửa nhầm ô tiêu đề (hai hình trùng tên, phép đo "chồng nhau" báo cả khung rỗng) → đã sửa công cụ rồi chạy lại | `18`, `18a`, `18b` |
 | B-5 | Bài 10 slide cài 5 lỗi lệch mẫu: kiểm bài tìm đủ 5 | **Đạt** — Tự kiểm tra (bước "Kiểm bài theo mẫu": cài 5 lỗi, tìm đủ 5, không báo thêm) trên bài trống và trên bài thử 10 slide; Kiểm thử máy cùng ca; Chạy thật trên `kiem-thu/ppt-thu.mjs`: tìm đủ 5 lỗi cài sẵn và cả slide chữ tràn | `15`, `21`, `19` |
 | B-6 | Slide mới dùng đúng màu và bố cục của mẫu | **Đạt** — Tự kiểm tra (bước "Slide mới dùng đúng bố cục và màu của mẫu"): bố cục đọc lại trùng bố cục của mẫu, khối màu = Accent1 của mẫu (bài trống: #5B9BD5; bài 10 slide: #4472C4) | `15`, `21` |
-| C-2 | Mỗi công cụ mới có bước Tự kiểm tra; bước cũ không hỏng | **Đạt** — Word **37/37** (thêm bước ghi chéo), Excel **23/23**, PowerPoint **21/21** (thêm 6 bước PowerPoint + bước ghi chéo) | `13`, `14`, `15`, `21` |
+| C-1 | `npm test` đạt hết, tsc sạch, đóng gói đạt | **Đạt** — `npm test` **420/420** (363 cũ + 57 mới), `npx tsc --noEmit -p .` sạch, `npm run build` đạt | Kiểm thử máy |
+| C-2 | Mỗi công cụ mới có bước Tự kiểm tra; bước cũ không hỏng | **Đạt** — trên mã cuối (sau khi sửa theo soát mã): Word **37/37** (thêm bước ghi chéo), Excel **23/23**, PowerPoint **21/21** trên bài mới tinh (thêm 6 bước PowerPoint + bước ghi chéo). Bước "Biểu đồ gốc" nay kiểm điều người dùng thấy — slide biểu đồ dùng bố cục có sẵn của mẫu — và ghi rõ ở dòng kết quả rằng PowerPoint vẫn thêm 1 bố cục không dùng vào mẫu ở lần chèn đầu (add-in không có API xóa bố cục) | `13`, `14`, `15`, `21` |
+| C-3 | Soát mã độc lập đã chạy, phát hiện đã sửa hoặc ghi lý do để lại | **Đạt** — phần A: 2 cao, 8 trung bình, 6 thấp, sửa 15, để lại 1; phần B: 0 cao, 6 trung bình + 1 khe cấu trúc, 10 thấp, sửa 11, để lại 6 | `soat-ma-doc-lap-phan-A.md`, `soat-ma-doc-lap-phan-B.md` |
+| C-4 | Bằng chứng không lộ key, token, email, tên tài khoản Office, số dư | **Đạt** — soát bằng mã trước mỗi lần commit (mẫu key, email, mã tổ chức, tên trong hồ sơ Office): không có | lệnh soát trong nhật ký phiên |
+
+### Việc B5
+
+- **Lỗi cũ "Biểu đồ gốc thêm một bố cục"**: đã chữa phần người dùng thấy — khi PowerPoint không ghép được bố cục và tự thêm bố cục lạ, slide biểu đồ được chuyển về bố cục có sẵn của mẫu (đúng dải màu, phông tiêu đề), ô giữ chỗ rỗng đè lên biểu đồ được gỡ. Bố cục thừa vẫn nằm lại trong mẫu, không dùng tới: PowerPoint không cho add-in xóa bố cục.
+- **Phiên Word từ chối chèn nhận xét mới**: **chưa tìm ra nguyên nhân.** Hôm nay trạng thái này xuất hiện hai lần sau các bài thăm dò; bài bisect `kiem-thu/cdp-bai/tham-do-3-nhan-xet.js` thử lần lượt 9 thao tác nghi ngờ (chèn / xóa bảng và đoạn lúc bật, tắt theo dõi; xóa theo định danh; `body.clear()`; bảng sau đoạn rỗng; từ chối mọi sửa đổi) trong một phiên Word mới — **không thao tác nào tái hiện** (tệp `22`). Cách hết vẫn là đóng mở lại Word.
+
+### Giới hạn đã biết của 4.3.0
+
+- Ghi chéo chỉ thêm mới (Word thêm đoạn ở cuối, Excel sheet mới, PowerPoint một slide ở cuối); không sửa nội dung có sẵn ở ứng dụng kia. Khung AI Đa Nguồn ở ứng dụng đích phải đang mở. Hai tài liệu cùng ứng dụng: đã có cơ chế chọn đúng tệp nhưng chưa thử trong Office với hai tài liệu thật.
+- PowerPoint: không ghi chú diễn giả, không sửa số liệu biểu đồ đã có (không có API); chèn ảnh chưa thành công cụ; kiểm màu ngoài bảng màu chủ đề chưa bật; bài nhiều mẫu (master) chỉ xét mẫu đầu; chữ tràn khung là ước lượng (AI được dặn tin ảnh hơn số đo).
+- Ảnh slide tốn token: một lượt tạo 3 slide có tự kiểm bằng mắt dùng khoảng 270 nghìn token đầu vào, phần lớn đọc từ bộ nhớ đệm (Anthropic). Model không nhận ảnh thì chỉ có số đo bằng mã.
+- Chưa Chạy thật phần B với model miễn phí (hết lượt miễn phí của OpenRouter trong ngày).
 
 
 ## Bảng nghiệm thu

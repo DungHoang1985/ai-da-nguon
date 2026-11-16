@@ -1,4 +1,4 @@
-# So sánh AI Đa Nguồn (v4.2.1) với add-in Claude chính thức
+# So sánh AI Đa Nguồn (v4.3.0) với add-in Claude chính thức
 
 Cập nhật 15/11/2026 (bước 9 Đợt 0A): sửa theo mục 7 của `tasks/ke-hoach-v4.md` sau khi đối chiếu lại 13 trang tài liệu chính thức (bản `.md`) và tệp `pivot.claude.ai/shortcuts.json` tải từ máy cùng ngày. Số dòng 1–55 giữ nguyên như bản 14/11; dòng 56–67 là khả năng mới của bản chính thức. Cập nhật 15/11/2026 buổi chiều (Đợt 0B, bản 3.7.0): sửa dòng 5, 9, 61, 66 và cột Bằng chứng của dòng 7, 8, 10, 13, 15, 22 sau khi kiểm bản 3.7.0 trong Office (bằng chứng: `tasks/dot-0b-bang-chung/`).
 
@@ -9,6 +9,8 @@ Cập nhật 15/11/2026 đêm (Đợt 1B, bản 4.1.0, đã phát hành cùng đ
 Cập nhật 16/11/2026 (Đợt 2, bản 4.2.0 — đăng nhập và chi phí): sửa dòng 1 và 2 (`tasks/dot-2.md`, bằng chứng `tasks/dot-2-bang-chung/`). Đã kiểm trong Word thật bằng bản đóng gói cục bộ: hộp thoại đăng nhập của Office mở đúng trang OpenRouter với đúng tham số, đường về gửi mã về khung, lối dán mã nhận và từ chối đúng, thẻ hạn mức đọc được, thông báo hết tiền (Chạy thật với tài khoản Gemini hết tiền). Cùng ngày anh duyệt phát hành 4.2.0 và tự làm bốn việc ở máy trên bản đã phát hành: đăng nhập thật một lần bấm, dán mã thật, đăng xuất với khóa thật, nhận tín dụng API của gói Max — đều đạt.
 
 Cập nhật 16/11/2026 (phần A của Đợt 3, bản 4.2.1): sửa dòng 11 (18 kỹ năng, thêm soạn thảo văn bản hành chính — bản chính thức không có kỹ năng thể thức văn bản hành chính Việt Nam). Ngoài bảng: add-in có công cụ dựng trọn công văn, tờ trình, quyết định… đúng thể thức trong một lần gọi (Chạy thật: Claude Haiku 5.5 và Nemotron 3 Ultra free đều đạt 16/16 điểm đối chiếu) và cảnh báo khi AI nói đã sửa mà lượt đó không ghi gì (Chạy thật 3/3 ca). Chi tiết và bằng chứng: `tasks/dot-3.md`, `tasks/dot-3-bang-chung/`.
+
+Cập nhật 16/11/2026 tối (phần B của Đợt 3, bản 4.3.0): **làm việc chéo ứng dụng** nay có cả chiều GHI — khung ở ứng dụng này nhờ khung ở ứng dụng kia thêm nội dung (Word thêm đoạn có theo dõi, Excel tạo sheet mới, PowerPoint thêm slide), luôn hỏi anh trước, hoàn tác được ở ứng dụng đích, có chỉ báo ứng dụng đang kết nối; bản chính thức làm việc này qua máy chủ của Anthropic và sửa được cả nội dung có sẵn, bản của mình không cần máy chủ nhưng chỉ thêm mới. **PowerPoint**: AI tự chụp ảnh slide để nhìn và sửa chữ tràn, kiểm bài theo mẫu bằng mã (phông, cỡ chữ, tiêu đề, chữ tràn), đọc màu chủ đề / phông / bố cục của mẫu, định dạng chữ theo đoạn, sửa bảng có sẵn, đọc vùng đang chọn, đổi bố cục slide. Vẫn không làm được (Office không mở cho add-in): ghi chú diễn giả, sửa số liệu biểu đồ đã có. Chạy thật 4/4 bài của bảng tiêu chí (Claude Haiku 5.5); chi tiết và bằng chứng ở `tasks/dot-3.md`. Các dòng về chéo ứng dụng và PowerPoint trong bảng bên dưới đọc cùng đoạn này.
 
 ## Cách đọc cột "Bằng chứng"
 

@@ -14,11 +14,11 @@
  "ketNoiSau": "Word ✓ · PowerPoint ✓",
  "giay": 11,
  "daHoi": [
-  "⚠️ Ghi sang Word (tệp “aidn-thu-vbhc.docx”): thêm 1 đoạn vào cuối văn bản: “Tóm tắt tiến độ dự án: Hạng mục San nền đã hoàn thành 100%, đúng kế hoạch (xong tháng 6). Bốn hạng mục đang chậm so với kế hoạch: Hạ tầng kỹ thuật đạt 62% so vớ…”. Nội dung được ghi và → allow"
+  "⚠️ Ghi sang Word (tệp “aidn-thu-vbhc.docx”): thêm 1 đoạn (492 ký tự) vào cuối văn bản: “Tóm tắt tiến độ dự án: Hạng mục San nền đã hoàn thành 100% so với kế hoạch (xong tháng 6). Bốn hạng mục đang chậm tiến độ: Hạ tầng kỹ thuật đạt 62% thực tế so với 80% kế ho → allow"
  ],
  "hoiGhiCheo": 1,
  "canhBaoNoiDaSua": false,
- "cuoiKhung": "AI Đa Nguồn\nv4.3\nWord ✓ · PowerPoint ✓\nĐọc bảng ở sheet Tiến độ rồi ghi một đoạn tóm tắt tiến độ (3–4 câu, có số liệu kế hoạch và thực tế của từng hạng mục chậm) sang văn bản Word đang mở.\n✅ Đọc 'Tiến độ'!A1:D6\n✅ Ghi sang Word — đã ghi sang Word\n✅ Chọn 'Tiến độ'!A1:D6\nĐã đọc bảng ở sheet 'Tiến độ' (A1:D6) và chèn một đoạn tóm tắt vào cuối văn bản Word đang mở, dưới dạng thay đổi được theo dõi. Nội dung đoạn:\n \n\"Tóm tắt tiến độ dự án: Hạng mục San nền đã hoàn thành 100%, đúng kế hoạch (xong tháng 6). Bốn hạng mục đang chậm so với kế hoạch: Hạ tầng kỹ thuật đạt 62% so với kế hoạch 80% (chậm 18 điểm phần trăm, do mưa); Thân khối A đạt 20% so với 35% (chậm 15 điểm, thiếu nhân công). Cảnh quan đạt 0% so với 10% (chưa khởi công), còn Móng khối A đạt 55% so với 60% (chậm 5 điểm). Nguồn số liệu: sheet \"Tiến độ\", vùng A1:D6 của sổ Excel.\"\n \nBạn có thể hoàn tác trong khung AI Đa Nguồn của Word nếu cần. Ô nguồn dữ liệu là 'Tiến độ'!A1:D6.\nToken: vào 45.359 · ra 1.514 · đọc từ bộ nhớ đệm 33.352 · ghi vào bộ nhớ đệm 11.997\nGhi vào ô đang chọn\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+ "cuoiKhung": "AI Đa Nguồn\nv4.3\nWord ✓ · PowerPoint ✓\nĐọc bảng ở sheet Tiến độ rồi ghi một đoạn tóm tắt tiến độ (3–4 câu, có số liệu kế hoạch và thực tế của từng hạng mục chậm) sang văn bản Word đang mở.\n✅ Đọc 'Tiến độ'!A1:D6\n✅ Ghi sang Word — đã ghi sang Word\nTôi đã đọc bảng ở sheet Tiến độ (A1:D6) và ghi đoạn tóm tắt vào cuối văn bản Word đang mở, dưới dạng sửa đổi được theo dõi (tracked changes).\n \nNội dung đoạn tóm tắt:\n• San nền đã hoàn thành 100%, đúng kế hoạch (Tiến độ!B2:C2).\n• Hạ tầng kỹ thuật: thực tế 62% so với kế hoạch 80%, chậm 18 điểm phần trăm do mưa (Tiến độ!B3:C3).\n• Thân khối A: thực tế 20% so với kế hoạch 35%, chậm 15 điểm do thiếu nhân công (Tiến độ!B5:C5).\n• Cảnh quan: thực tế 0% so với kế hoạch 10%, chưa khởi công (Tiến độ!B6:C6).\n• Móng khối A: thực tế 55% so với kế hoạch 60%, chậm 5 điểm (Tiến độ!B4:C4).\n \nĐoạn có thêm một câu khuyến nghị (bổ sung nhân công cho Thân khối A, đẩy nhanh Hạ tầng kỹ thuật). Bạn có thể xóa câu này nếu không cần. Nếu muốn hoàn tác, dùng khung AI Đa Nguồn trong Word.\nToken: vào 33.501 · ra 1.628 · đọc từ bộ nhớ đệm 21.497 · ghi vào bộ nhớ đệm 11.996\nGhi vào ô đang chọn\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
 }
 == Word sau khi ghi, rồi bấm Hoàn tác ở khung Word ==
 {
@@ -27,12 +27,12 @@
   "doan": [
    "BÁO CÁO TIẾN ĐỘ DỰ ÁN (văn bản thử ghi chéo)",
    "Phần mở đầu do người dùng viết, không được đụng tới.",
-   "Tóm tắt tiến độ dự án: Hạng mục San nền đã hoàn thành 100%, đúng kế hoạch (xong tháng 6). Bốn hạng mục đang chậm so với kế hoạch: Hạ tầng kỹ thuật đạt 62% so với kế hoạch 80% (chậm 18 điểm phần trăm, do mưa); Thân khối A đạt 20% so với 35% (chậm 15 điểm, thiếu nhân công). Cảnh quan đạt 0% so với 10% (chưa khởi công), còn Móng khối A đạt 55% so với 60% (chậm 5 điểm). Nguồn số liệu: sheet \"Tiến độ\", vùng A1:D6 của sổ Excel."
+   "Tóm tắt tiến độ dự án: Hạng mục San nền đã hoàn thành 100% so với kế hoạch (xong tháng 6). Bốn hạng mục đang chậm tiến độ: Hạ tầng kỹ thuật đạt 62% thực tế so với 80% kế hoạch (chậm 18 điểm phần trăm, do mưa); Thân khối A đạt 20% so với 35% kế hoạch (chậm 15 điểm, thiếu nhân công); Cảnh quan đạt 0% so với 10% kế hoạch (chưa khởi công); Móng khối A đạt 55% so với 60% kế hoạch (chậm 5 điểm). Cần bổ sung nhân công cho Thân khối A và đẩy nhanh Hạ tầng kỹ thuật để kéo tiến độ về mức kế hoạch."
   ],
   "suaDoi": 1
  },
  "mucVuaGhi": [
-  "📥 Vừa ghi theo yêu cầu từ khung AI Đa Nguồn ở Excel: thêm 1 đoạn vào cuối văn bản: “Tóm tắt tiến độ dự án: Hạng mục San nền đã hoàn thành 100%, đúng kế hoạch (xong tháng 6). Bốn hạng mục đang chậm so với kế hoạch: Hạ tầng kỹ thuật đạt 62% so vớ…”."
+  "📥 Vừa ghi theo yêu cầu từ khung AI Đa Nguồn ở Excel: thêm 1 đoạn (492 ký tự) vào cuối văn bản: “Tóm tắt tiến độ dự án: Hạng mục San nền đã hoàn thành 100% so với kế hoạch (xong tháng 6). Bốn hạng mục đang chậm tiến độ: Hạ tầng kỹ thuật đạt 62% thực tế so v… [còn 332 ký tự nữa chưa hiện ở đây]”."
  ],
  "coNutHoanTac": true,
  "sauHoanTac": {
@@ -42,5 +42,5 @@
   ],
   "suaDoi": 0
  },
- "thongBao": "ạch (xong tháng 6). Bốn hạng mục đang chậm so với kế hoạch: Hạ tầng kỹ thuật đạt 62% so vớ…”.\nĐã hoàn tác.\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nĐã hoàn tác 1 thao tác.\nHỏi trước\nAnthropic · Claude Opus 5.5"
+ "thongBao": "g chậm tiến độ: Hạ tầng kỹ thuật đạt 62% thực tế so v… [còn 332 ký tự nữa chưa hiện ở đây]”.\nĐã hoàn tác.\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nĐã hoàn tác 1 thao tác.\nHỏi trước\nAnthropic · Claude Haiku 5.5"
 }
