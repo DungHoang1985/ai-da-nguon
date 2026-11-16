@@ -93,6 +93,9 @@ return {
   ketNoi: document.querySelector("[data-links]")?.innerText || null,
   yeuCau: bai.yeuCau,
   giay: r.giay,
+  // Số lần gọi model của nhiệm vụ (khung ghi ở thuộc tính data-calls của dòng token) và dòng hiện trên khung
+  lanGoiAI: Number([...document.querySelectorAll("[data-calls]")].pop()?.getAttribute("data-calls") || 0),
+  dongToken: ([...document.querySelectorAll("[data-calls]")].pop()?.innerText || "").slice(0, 160),
   daHoi: r.daHoi.map((q) => q.slice(0, 160)),
   buocCongCu: (khung.match(/^[✅⚠️❌][^\n]*/gm) || []).map((x) => x.slice(0, 170)),
   soSlideTruoc: tong0,

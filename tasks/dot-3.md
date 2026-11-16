@@ -222,6 +222,23 @@ Chạy 16/11/2026 trong PowerPoint 16.0 (PowerPointApi 1.3–1.10 đều có), b
 - Dọn dẹp sau khi thử: xóa hội thoại thử ở cả ba khung (Word còn 4 hội thoại có từ trước, Excel 1, PowerPoint 2), nguồn về Anthropic · Claude Opus 5.5 (Groq: GPT OSS 20B, OpenRouter: ERNIE như trước), đóng Word, Excel, PowerPoint thử (không lưu), cổng 9229 đã đóng.
 - Lần chạy Word đầu tiên trên bản phát hành ra 31/37 (`24a`) vì **cửa sổ Word đang thu nhỏ** — xem mục B5 ngay dưới: đây chính là nguyên nhân của vấn đề mở từ Đợt 2, không phải lỗi của bản 4.3.
 
+### Sau Đợt 3 — bản 4.3.1: một nhiệm vụ, ít lượt gọi AI (anh nêu cuối phiên 16/11/2026)
+
+Anh nêu: "giao AI một việc mà số lần gọi AI nhảy lên mấy chục lần; sợ phân mảnh lệnh làm AI không hiểu và làm sai mục tiêu — cần khắc phục."
+
+- **Vì sao có nhiều lần gọi:** AI làm việc theo vòng "AI ra lệnh công cụ → add-in làm trên tài liệu → trả kết quả cho AI"; mỗi vòng là một lần gọi nhà cung cấp, và lần nào cũng gửi kèm toàn bộ yêu cầu của anh cùng mọi bước trước đó (AI không mất mạch, không phải nhiều lệnh rời nhau). Cái sai là **quá nhiều vòng**: bản 4.3.0 mỗi vòng chỉ ra một lệnh, đọc lại tổng quan sau từng bước và chụp từng slide nhiều lần.
+- **Đã sửa (mã bản 4.3.1):** (1) lời nhắc chung của cả ba ứng dụng thêm mục "Một nhiệm vụ, ít lượt gọi nhất": gộp các lệnh không phụ thuộc nhau vào cùng một lượt, không đọc lại thứ đã có, xong thì trả lời ngay; (2) `ppt_get_slide_image` chụp được tới 4 slide trong một lần gọi; lời nhắc PowerPoint dặn làm xong hết rồi kiểm một lần; (3) khung hiện ngay dưới câu trả lời "1 nhiệm vụ · N lần gọi AI · Token …" kèm lời giải thích khi rê chuột.
+- **Tiêu chí:** cùng nhiệm vụ "lấy bảng tiến độ ở Excel, tạo 3 slide và 1 biểu đồ" phải giảm ít nhất một nửa số lần gọi, kết quả vẫn đúng số, đúng mẫu; các việc khác không tăng; Tự kiểm tra không hỏng.
+
+| Việc (Chạy thật, Claude Haiku 5.5) | 4.3.0 | 4.3.1 | Bằng chứng |
+|---|---|---|---|
+| PowerPoint: lấy bảng Excel → 3 slide + 1 biểu đồ | 17 lần gọi (270 nghìn token vào) và 30 lần gọi (513 nghìn) ở hai lần chạy | **8 lần gọi** ở cả hai lần chạy (161 và 156 nghìn token vào); số liệu đúng, slide đúng mẫu | `20`; `28`, `28b`, `28c` |
+| PowerPoint: kiểm bài 10 slide | 5 lần gọi | **3 lần gọi** | `19`; số đo trong nhật ký phiên |
+| Word: soạn một công văn đúng thể thức | 3 lần gọi | 3 lần gọi, 16/16 điểm đối chiếu | `32` |
+
+- `npm test` **423/423**, tsc sạch, đóng gói đạt. Tự kiểm tra trên bản cục bộ 4.3.1: Word **37/37** (`31`), Excel **23/23** (`30`), PowerPoint **21/21** (`29`).
+- Chưa làm ở bản này (để phiên sau, đã ghi HANDOFF): đo và giảm bước cho các việc Excel nhiều thao tác; trần số bước theo loại việc; công cụ gộp "thêm nhiều slide trong một lệnh"; đo với model miễn phí (model yếu có thể không gộp lệnh).
+
 ### Việc B5
 
 - **Lỗi cũ "Biểu đồ gốc thêm một bố cục"**: đã chữa phần người dùng thấy — khi PowerPoint không ghép được bố cục và tự thêm bố cục lạ, slide biểu đồ được chuyển về bố cục có sẵn của mẫu (đúng dải màu, phông tiêu đề), ô giữ chỗ rỗng đè lên biểu đồ được gỡ. Bố cục thừa vẫn nằm lại trong mẫu, không dùng tới: PowerPoint không cho add-in xóa bố cục.

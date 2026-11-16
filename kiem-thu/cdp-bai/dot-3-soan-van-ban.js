@@ -129,6 +129,7 @@ return {
   model,
   yeuCau: bai.yeuCau,
   giay: r.giay,
+  lanGoiAI: Number([...document.querySelectorAll("[data-calls]")].pop()?.getAttribute("data-calls") || 0),
   daHoi: r.daHoi,
   kyNangTuNap: (khung.match(/Kỹ năng[^\n]*soan-thao-van-ban-hanh-chinh[^\n]*/) || [""])[0].slice(0, 120) || /soan-thao-van-ban-hanh-chinh/.test(khung),
   canhBaoNoiDaSua: !!document.querySelector("[data-claim-warning]"),
