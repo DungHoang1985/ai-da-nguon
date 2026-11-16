@@ -425,6 +425,183 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(ov.slide_count === before, `Còn ${ov.slide_count} slide, ban đầu ${before}`);
       return `Hoàn tác ${log.length} thao tác, bài trình chiếu trở lại như cũ`;
     });
+    // ----- Đợt 3: đọc mẫu, slide theo mẫu, kiểm bài theo mẫu, định dạng theo đoạn, bảng, bố cục, vùng chọn, ảnh slide -----
+    {
+      const mine: UndoEntry[] = [];
+      const go = (name: string, args: any = {}) => tools.execute(name, args, { log: mine });
+      const tag = "AIDN3" + Date.now().toString(36).slice(-4).toUpperCase();
+      let base = 0;
+      let theme: any = null;
+      const countSlides = async () => (await go("ppt_get_overview")).slide_count as number;
+      const shapeInfo = (slide: number, part: string) =>
+        PowerPoint.run(async (ctx) => {
+          const s = ctx.presentation.slides.getItemAt(slide - 1);
+          s.layout.load("name");
+          s.shapes.load("items/id,items/name,items/type");
+          await ctx.sync();
+          const out: any = { layout: s.layout.name, shapes: s.shapes.items.map((x) => x.name) };
+          for (const sh of s.shapes.items) {
+            if (!["TextBox", "GeometricShape", "Placeholder"].includes(String(sh.type))) continue;
+            try {
+              const tr = sh.textFrame.textRange;
+              tr.load("text");
+              sh.fill.load("foregroundColor,type");
+              await ctx.sync();
+              if (tr.text.includes(part)) {
+                out.name = sh.name;
+                out.text = tr.text;
+                out.fill = sh.fill.foregroundColor;
+                const lines = tr.text.split(/\r\n|\r|\n|\v/);
+                let at = 0;
+                out.paras = [];
+                for (const line of lines) {
+                  if (line.length) {
+                    const r = tr.getSubstring(at, line.length);
+                    r.font.load("bold,size,name");
+                    await ctx.sync();
+                    out.paras.push({ text: line, bold: r.font.bold, size: r.font.size, font: r.font.name });
+                  }
+                  at += line.length + 1;
+                }
+                break;
+              }
+            } catch {
+              /* hình không có chữ */
+            }
+          }
+          return out;
+        });
+      const cleanup = async () => {
+        await PowerPoint.run(async (ctx) => {
+          const sl = ctx.presentation.slides;
+          sl.load("items/id");
+          await ctx.sync();
+          for (let k = sl.items.length - 1; k >= base && k >= 1; k--) sl.items[k].delete();
+          await ctx.sync();
+        }).catch(() => undefined);
+      };
+
+      await step("Đọc mẫu: màu chủ đề, phông, bố cục và ô giữ chỗ", async () => {
+        base = await countSlides();
+        theme = await go("ppt_get_theme");
+        expect(/^#[0-9A-F]{6}$/i.test(theme.colors?.Accent1 || ""), `Không đọc được màu Accent1: ${JSON.stringify(theme.colors)}`);
+        expect(theme.layouts?.length > 0 && theme.layouts.some((l: any) => l.placeholders.some((p: string) => /Title/.test(p))), "Không đọc được bố cục có ô tiêu đề");
+        expect(theme.slide_size?.width > 100, "Không đọc được kích thước slide");
+        return `${theme.brief}; Accent1 ${theme.colors.Accent1}; slide ${theme.slide_size.width}×${theme.slide_size.height}`;
+      });
+
+      await step("Slide mới dùng đúng bố cục và màu của mẫu", async () => {
+        expect(theme, "Chưa đọc được mẫu");
+        const lay = theme.layouts.find((l: any) => l.placeholders.some((p: string) => p === "Title") && l.placeholders.some((p: string) => /Body|Content|Object/.test(p))) || theme.layouts.find((l: any) => l.placeholders.some((p: string) => p === "Title"));
+        const r = await go("ppt_add_slide", { layout: lay.name, title: `Theo mẫu ${tag}`, body: "Ý một\nÝ hai" });
+        await go("ppt_add_shape", { slide: r.slide, shape_type: "rectangle", text: `Khối màu ${tag}`, left: 60, top: 300, width: 200, height: 60, fill_color: theme.colors.Accent1 });
+        const info = await shapeInfo(r.slide, `Khối màu ${tag}`);
+        expect(info.layout === lay.name, `Slide mới dùng bố cục “${info.layout}”, phải là “${lay.name}”`);
+        expect(String(info.fill || "").toUpperCase() === String(theme.colors.Accent1).toUpperCase(), `Màu khối là ${info.fill}, phải là Accent1 ${theme.colors.Accent1}`);
+        return `Slide ${r.slide}: bố cục “${info.layout}”, khối màu ${info.fill} = Accent1 của mẫu`;
+      });
+
+      await step("Kiểm bài theo mẫu: cài 5 lỗi (2 phông lạ, 1 slide thiếu tiêu đề, 2 chỗ chữ dưới 12 pt) → tìm đủ 5, không báo nhầm", async () => {
+        const lay = theme.layouts.find((l: any) => l.placeholders.some((p: string) => p === "Title")) || theme.layouts[0];
+        const a = (await go("ppt_add_slide", { layout: lay.name, title: `Slide A ${tag}`, body: "Nội dung đúng mẫu" })).slide;
+        const b = (await go("ppt_add_slide", { layout: lay.name, title: `Slide B ${tag}`, body: "Nội dung đúng mẫu" })).slide;
+        const c = (await go("ppt_add_slide", { layout: lay.name, title: "", body: "Slide này cố ý không có tiêu đề" })).slide;
+        await go("ppt_add_textbox", { slide: a, text: `Phông lạ một ${tag}`, left: 60, top: 330, width: 260, height: 40 });
+        await go("ppt_format_text", { slide: a, shape: (await shapeInfo(a, `Phông lạ một ${tag}`)).name, font_name: "Comic Sans MS" });
+        await go("ppt_add_textbox", { slide: a, text: `Chữ nhỏ một ${tag}`, left: 360, top: 330, width: 260, height: 40, font_size: 9 });
+        await go("ppt_add_textbox", { slide: b, text: `Phông lạ hai ${tag}`, left: 60, top: 330, width: 260, height: 40 });
+        await go("ppt_format_text", { slide: b, shape: (await shapeInfo(b, `Phông lạ hai ${tag}`)).name, font_name: "Courier New" });
+        await go("ppt_add_textbox", { slide: b, text: `Chữ nhỏ hai ${tag}`, left: 360, top: 330, width: 260, height: 40, font_size: 10 });
+        await go("ppt_add_textbox", { slide: c, text: `Chữ đúng mẫu ${tag}`, left: 60, top: 330, width: 260, height: 40, font_size: 18 });
+        const r = await go("ppt_check_deck", { slides: [a, b, c] });
+        const of = (kind: string) => r.issues.filter((x: any) => x.kind === kind);
+        const fonts = of("font");
+        const small = of("small_text");
+        const noTitle = of("missing_title");
+        expect(fonts.length === 2 && fonts.some((x: any) => x.slide === a && /Comic Sans MS/.test(x.message)) && fonts.some((x: any) => x.slide === b && /Courier New/.test(x.message)), `Phông lạ: ${JSON.stringify(fonts.map((x: any) => x.message))}`);
+        expect(small.length === 2 && small.some((x: any) => x.slide === a && /cỡ 9 pt/.test(x.message)) && small.some((x: any) => x.slide === b && /cỡ 10 pt/.test(x.message)), `Chữ nhỏ: ${JSON.stringify(small.map((x: any) => x.message))}`);
+        expect(noTitle.length === 1 && noTitle[0].slide === c, `Thiếu tiêu đề: ${JSON.stringify(noTitle.map((x: any) => x.message))}`);
+        const other = r.issues.filter((x: any) => !["font", "small_text", "missing_title"].includes(x.kind));
+        expect(other.length === 0, `Báo thêm điểm không cài: ${JSON.stringify(other.map((x: any) => x.message))}`);
+        return `Tìm đủ 5/5: ${r.brief}; phông mẫu ${r.template_fonts.join(", ")}`;
+      });
+
+      await step("Định dạng chữ theo đoạn (có Hoàn tác); sửa bảng có sẵn; đổi bố cục; đọc vùng chọn", async () => {
+        const lay = theme.layouts.find((l: any) => l.placeholders.some((p: string) => p === "Title")) || theme.layouts[0];
+        const n = (await go("ppt_add_slide", { layout: lay.name, title: `Slide D ${tag}` })).slide;
+        await go("ppt_add_textbox", { slide: n, text: `Đoạn một ${tag}\nĐoạn hai cần đậm\nĐoạn ba`, left: 60, top: 150, width: 300, height: 110, font_size: 16 });
+        const box = (await shapeInfo(n, `Đoạn một ${tag}`)).name;
+        const mark = mine.length;
+        await go("ppt_format_text", { slide: n, shape: box, paragraph: 2, bold: true, font_size: 22 });
+        let info = await shapeInfo(n, `Đoạn một ${tag}`);
+        expect(info.paras[1].bold === true && info.paras[1].size === 22 && info.paras[0].bold !== true && info.paras[0].size === 16 && info.paras[2].size === 16, `Định dạng theo đoạn sai: ${JSON.stringify(info.paras)}`);
+        await mine[mine.length - 1].undo();
+        mine.length = mark;
+        info = await shapeInfo(n, `Đoạn một ${tag}`);
+        expect(info.paras[1].bold !== true && info.paras[1].size === 16, `Hoàn tác định dạng chưa về như cũ: ${JSON.stringify(info.paras[1])}`);
+        await go("ppt_format_text", { slide: n, shape: info.name, find: "cần đậm", italic: true });
+        let bad = "";
+        try {
+          await go("ppt_format_text", { slide: n, shape: info.name, paragraph: 9, bold: true });
+        } catch (e: any) {
+          bad = e.message;
+        }
+        expect(/không có đoạn số 9/.test(bad), "Đoạn không tồn tại mà không báo lỗi");
+        // Bảng
+        await go("ppt_add_table", { slide: n, values: [["Hạng mục", "Kế hoạch"], ["Móng", "100"]], left: 400, top: 150, width: 280, height: 80 });
+        const ov = await go("ppt_get_overview");
+        const tb = ov.slides.find((x: any) => x.slide === n).shapes.find((x: any) => x.type === "Table");
+        expect(tb && tb.table && tb.table[1][1] === "100", `Tổng quan không kèm nội dung bảng: ${JSON.stringify(tb)}`);
+        const t = await go("ppt_edit_table", { slide: n, shape: tb.name, cells: [{ row: 1, col: 1, text: "120" }], add_rows: [["Thân", "200"]] });
+        expect(t.values[1][1] === "120" && t.rows === 3 && t.values[2][0] === "Thân" && t.values[2][1] === "200", `Sửa bảng sai: ${JSON.stringify(t.values)}`);
+        let out = "";
+        try {
+          await go("ppt_edit_table", { slide: n, shape: tb.name, cells: [{ row: 9, col: 0, text: "x" }] });
+        } catch (e: any) {
+          out = e.message;
+        }
+        expect(/ngoài bảng/.test(out), "Ô ngoài bảng mà không báo lỗi");
+        // Bố cục
+        const other = theme.layouts.find((l: any) => l.name !== lay.name && l.placeholders.some((p: string) => /Title/.test(p))) || theme.layouts.find((l: any) => l.name !== lay.name);
+        const L = await go("ppt_set_layout", { slide: n, layout: other.name });
+        expect((await shapeInfo(n, tag)).layout === other.name, `Đổi bố cục không ăn: ${L.message}`);
+        // Vùng chọn
+        const sel = await go("ppt_get_selection");
+        expect(Array.isArray(sel.slides) && Array.isArray(sel.shapes), "Không đọc được vùng chọn");
+        return `Đoạn 2 đậm cỡ 22 rồi hoàn tác; bảng: ô (1,1) = 120, thêm hàng “Thân”; ${L.message}; vùng chọn: ${sel.brief}`;
+      });
+
+      await step("Ảnh slide cho AI tự nhìn; chữ cố ý tràn khung được đo ra, sửa xong thì hết", async () => {
+        const lay = theme.layouts.find((l: any) => l.placeholders.some((p: string) => p === "Title")) || theme.layouts[0];
+        const n = (await go("ppt_add_slide", { layout: lay.name, title: `Slide E ${tag}` })).slide;
+        await PowerPoint.run(async (ctx) => {
+          const s = ctx.presentation.slides.getItemAt(n - 1);
+          const tb = s.shapes.addTextBox(`Tràn ${tag}: ` + "chữ rất dài cố ý để tràn khỏi khung. ".repeat(10), { left: 60, top: 200, width: 220, height: 50 });
+          tb.name = `Tran ${tag}`;
+          tb.textFrame.autoSizeSetting = "AutoSizeNone" as any;
+          tb.textFrame.wordWrap = true;
+          await ctx.sync();
+        });
+        const r = await go("ppt_get_slide_image", { slide: n });
+        const img = r.__images?.[0];
+        if (!img) throw new Skip(r.message || "Máy không chụp được ảnh slide");
+        expect(img.mime === "image/png" && img.data.startsWith("iVBOR") && img.data.length > 2000, "Ảnh slide không phải PNG hợp lệ");
+        expect(r.measured.some((m: string) => m.includes(`Tran ${tag}`) && /tràn khung/.test(m)), `Không đo ra chữ tràn: ${JSON.stringify(r.measured)}`);
+        await go("ppt_format_text", { slide: n, shape: `Tran ${tag}`, font_size: 10 });
+        await go("ppt_update_shape", { slide: n, shape: `Tran ${tag}`, width: 560, height: 110 });
+        const again = await go("ppt_get_slide_image", { slide: n });
+        expect(!again.measured.some((m: string) => m.includes(`Tran ${tag}`)), `Sửa rồi vẫn đo ra tràn: ${JSON.stringify(again.measured)}`);
+        return `Ảnh PNG ${Math.round((img.data.length * 3) / 4 / 1024)} KB; đo ra tràn khung → giảm cỡ chữ và nới khung → hết tràn`;
+      });
+
+      await step("Dọn các slide thử của Đợt 3", async () => {
+        await cleanup();
+        const n = await countSlides();
+        expect(n === base, `Còn ${n} slide, ban đầu ${base}`);
+        return `Bài trở lại ${n} slide`;
+      });
+    }
+
   } else {
     steps.push({ name: "Ứng dụng", ok: null, detail: "Chỉ chạy được trong Excel, Word, PowerPoint" });
   }

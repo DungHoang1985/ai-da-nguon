@@ -36,6 +36,7 @@ export const CORE_GUIDES: Record<string, string> = {
 - Mỗi slide nên có yếu tố trực quan: biểu đồ gốc (ppt_add_chart) cho số liệu, sơ đồ (ppt_add_process_flow) cho quy trình/mốc thời gian, bảng cho so sánh.
 - Không để chữ tràn khỏi khung: nhiều chữ thì tách slide; lề ≥ 36pt, khoảng cách giữa khối đều nhau.
 - Kiểm tra lại sau khi tạo: ppt_get_overview để soát lỗi chính tả, thứ tự, chữ mẫu còn sót ("Click to add…", "[cần bổ sung]").
+- Bài có sẵn mẫu: xem mẫu bằng ppt_get_theme rồi dùng đúng bố cục, màu chủ đề, phông của mẫu. Slide nhiều chữ, có bảng hoặc hình: chụp bằng ppt_get_slide_image để tự nhìn, thấy tràn hoặc chồng thì sửa rồi chụp lại một lần. Kiểm cả bài: ppt_check_deck.
 - Biểu đồ: chọn dạng theo mục đích (so sánh → cột/thanh; xu hướng → đường; tỷ trọng → thanh ngang, tròn chỉ khi được yêu cầu và ≤ 5 phần); một trục tung; màu theo màu chủ đề; tiêu đề slide nêu ý chính kèm đơn vị (chi tiết: kỹ năng thiet-ke-bieu-do).
 - Khi nói tới slide, ghi "slide số N" để người dùng bấm tới.`,
 };
@@ -251,10 +252,10 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
     triggers: ["kiem tra bai trinh chieu", "soat slide", "ra soat slide", "hoan thien slide", "deck check", "kiem tra slide"],
     body: `# Kiểm tra bài trình chiếu
 
-1. ppt_get_overview toàn bài.
-2. Soát: chữ mẫu còn sót ("Click to add…", "Lorem", "[cần bổ sung]"); lỗi chính tả; tiêu đề có dấu chấm cuối hoặc khác vị trí; slide > 6 ý hoặc chữ dài; số liệu mâu thuẫn giữa các slide; thứ tự kể chuyện; slide thiếu yếu tố trực quan.
+1. ppt_check_deck trước (mã tự dò: phông lệch mẫu, chữ quá nhỏ, slide thiếu tiêu đề, chữ ước tràn khung, hình ra ngoài slide, khung chồng nhau), rồi ppt_get_overview toàn bài. Slide bị nghi tràn hoặc chồng: ppt_get_slide_image để nhìn tận mắt.
+2. Soát thêm: chữ mẫu còn sót ("Click to add…", "Lorem", "[cần bổ sung]"); lỗi chính tả; tiêu đề có dấu chấm cuối hoặc khác vị trí; slide > 6 ý hoặc chữ dài; số liệu mâu thuẫn giữa các slide; thứ tự kể chuyện; slide thiếu yếu tố trực quan.
 3. Báo bảng: Slide số | Vấn đề | Đề xuất.
-4. Sửa khi được đồng ý: ppt_set_shape_text, ppt_update_shape, ppt_move_slide; có Hoàn tác.`,
+4. Sửa khi được đồng ý: ppt_set_shape_text, ppt_format_text (phông, cỡ chữ theo mẫu), ppt_update_shape, ppt_set_layout (slide thiếu ô tiêu đề), ppt_move_slide; có Hoàn tác. Sửa xong slide nào thì chụp lại slide đó một lần để xác nhận.`,
   },
   {
     name: "kiem-tra-tuan-thu",

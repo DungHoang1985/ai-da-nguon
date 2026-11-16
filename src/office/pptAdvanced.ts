@@ -193,7 +193,7 @@ function deleteSlidesUndo(ids: string[], label: string): UndoEntry {
 }
 
 /** Hoàn tác bằng bản sao slide: chèn lại bản sao vào đúng chỗ, xóa slide hiện tại (nếu còn), ghi nhận id mới. */
-function restoreSlideUndo(b64: string, oldId: string, index0: number, removeCurrent: boolean, label: string): UndoEntry {
+export function restoreSlideUndo(b64: string, oldId: string, index0: number, removeCurrent: boolean, label: string): UndoEntry {
   return {
     label,
     undo: () =>
@@ -212,7 +212,7 @@ function restoreSlideUndo(b64: string, oldId: string, index0: number, removeCurr
   };
 }
 
-async function exportSlide(ctx: PowerPoint.RequestContext, slide: PowerPoint.Slide): Promise<string | null> {
+export async function exportSlide(ctx: PowerPoint.RequestContext, slide: PowerPoint.Slide): Promise<string | null> {
   if (!supports("1.8")) return null;
   try {
     const r = slide.exportAsBase64();

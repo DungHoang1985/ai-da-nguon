@@ -156,6 +156,20 @@ export function describeCall(call: ToolCall): string {
       return "Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản";
     case "word_check_page_format":
       return "Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ";
+    case "ppt_get_slide_image":
+      return `Chụp ảnh slide ${a.slide ?? ""} để tự kiểm`;
+    case "ppt_check_deck":
+      return "Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài";
+    case "ppt_get_theme":
+      return "Đọc mẫu: màu chủ đề, phông, bố cục, ô giữ chỗ";
+    case "ppt_format_text":
+      return `Định dạng chữ ở slide ${a.slide ?? ""}${a.paragraph ? `, đoạn ${a.paragraph}` : a.find ? `: “${String(a.find).slice(0, 30)}”` : ""}`;
+    case "ppt_edit_table":
+      return `Sửa bảng ở slide ${a.slide ?? ""}`;
+    case "ppt_get_selection":
+      return "Đọc hình và chữ đang chọn";
+    case "ppt_set_layout":
+      return `Đổi bố cục slide ${a.slide ?? ""} sang “${String(a.layout || "").slice(0, 30)}”`;
     case "write_other_app":
       return `Ghi sang ${a.app || "ứng dụng khác"}${a.title ? `: slide “${String(a.title).slice(0, 40)}”` : a.sheet_name ? `: sheet “${String(a.sheet_name).slice(0, 30)}”` : ""}`;
     case "word_create_admin_document":

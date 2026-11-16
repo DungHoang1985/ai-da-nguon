@@ -4,6 +4,7 @@ import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { normalize2D, truncate } from "./util";
 import { currentSlideId, deleteShapeUndo, findShape, loadShapeTexts, shapeOn, slideAt, supports } from "./pptCore";
 import { PPT_ADV_SPECS, executePptAdvanced, pptRisk, slideSizePt } from "./pptAdvanced";
+import { PPT_DESIGN_SPECS, executePptDesign } from "./pptDesign";
 
 const slideProp = { type: "number", description: "Slide number (1-based)." };
 
@@ -130,6 +131,20 @@ async function overview() {
     for (let i = 0; i < list.length; i++) {
       const s = list[i];
       const texts = await loadShapeTexts(ctx, s.shapes.items);
+      // Bảng: kèm nội dung ô để AI đọc và sửa được bảng có sẵn (ppt_edit_table)
+      const tabs: Record<string, string[][]> = {};
+      if (supports("1.8")) {
+        const ts = s.shapes.items.filter((x) => String(x.type) === "Table").map((x) => ({ id: x.id, t: x.getTable() }));
+        if (ts.length) {
+          ts.forEach((x) => x.t.load("values"));
+          try {
+            await ctx.sync();
+            ts.forEach((x) => (tabs[x.id] = x.t.values.slice(0, 15).map((r) => r.slice(0, 8).map((c) => truncate(String(c ?? ""), 40)))));
+          } catch {
+            /* không đọc được bảng: bỏ qua */
+          }
+        }
+      }
       result.push({
         slide: i + 1,
         id: s.id,
@@ -139,6 +154,7 @@ async function overview() {
           name: sh.name,
           type: sh.type,
           ...(texts[sh.id] !== undefined ? { text: truncate(texts[sh.id], 300) } : {}),
+          ...(tabs[sh.id] ? { table: tabs[sh.id] } : {}),
           box: [Math.round(sh.left), Math.round(sh.top), Math.round(sh.width), Math.round(sh.height)],
         })),
       });
@@ -392,11 +408,13 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
 }
 
 const PPT_RISKY = new Set(["ppt_delete_slide", "ppt_delete_shape"]);
+const ALL_PPT_SPECS = [...PPT_SPECS, ...PPT_ADV_SPECS, ...PPT_DESIGN_SPECS];
 
 export const pptTools: HostToolSet = {
   host: "PowerPoint",
-  specs: [...PPT_SPECS, ...PPT_ADV_SPECS].map((sp) => (PPT_RISKY.has(sp.name) ? { ...sp, risky: (args: any) => pptRisk(sp.name, args) } : sp)),
+  specs: ALL_PPT_SPECS.map((sp) => (PPT_RISKY.has(sp.name) ? { ...sp, risky: (args: any) => pptRisk(sp.name, args) } : sp)),
   execute: async (name, a, ctx) => {
+    if (PPT_DESIGN_SPECS.some((sp) => sp.name === name)) return executePptDesign(name, a || {}, ctx.log);
     const adv = PPT_ADV_SPECS.some((sp) => sp.name === name);
     return adv ? executePptAdvanced(name, a || {}, ctx.log) : execute(name, a || {}, ctx);
   },
@@ -409,6 +427,11 @@ export const pptTools: HostToolSet = {
       "- Khi người dùng muốn tạo slide, sửa chữ, thêm hình/bảng… hãy GỌI CÔNG CỤ để làm thật, không chỉ đưa dàn ý.",
       "- Slide đánh số từ 1; kích thước slide (điểm) ở slide_size. Dùng bố cục có sẵn của tệp (danh sách layouts) để giữ đúng giao diện.",
       "- Số liệu cần so sánh → ppt_add_chart (biểu đồ gốc, sửa được dữ liệu, theo màu chủ đề). Quy trình/các bước/mốc thời gian → ppt_add_process_flow. Sắp xếp slide → ppt_move_slide / ppt_duplicate_slide / ppt_delete_slide. Chỉnh vị trí, màu, chữ của hình → ppt_update_shape.",
+      "- THEO MẪU: trước khi thêm slide hoặc hình vào một bài có sẵn, xem mẫu bằng ppt_get_theme (màu chủ đề, phông, bố cục và ô giữ chỗ); dùng bố cục và màu của mẫu, không tự đặt phông hay màu lạ.",
+      "- TỰ KIỂM BẰNG MẮT: sau khi tạo hoặc sửa slide có nhiều chữ, bảng, hình, gọi ppt_get_slide_image để NHÌN slide; thấy chữ tràn khung, hình chồng nhau thì sửa (giảm cỡ chữ bằng ppt_format_text, nới hoặc dời khung bằng ppt_update_shape, tách slide) rồi chụp lại MỘT lần để xác nhận. Không chụp lại quá hai lần cho một slide.",
+      "- KIỂM BÀI: khi người dùng nhờ kiểm tra, soát, hoàn thiện bài, gọi ppt_check_deck trước (phông lệch mẫu, chữ quá nhỏ, slide thiếu tiêu đề, chữ tràn, hình ra ngoài slide), báo đủ từng điểm kèm số slide; chỉ sửa khi được nhờ.",
+      "- Định dạng một đoạn hay một cụm chữ trong hình: ppt_format_text. Sửa bảng có sẵn: ppt_edit_table. Người dùng nói 'slide này', 'hình này', 'chữ đang chọn': ppt_get_selection. Đổi bố cục slide: ppt_set_layout.",
+      "- PowerPoint không cho add-in ghi chú diễn giả, sửa số liệu của biểu đồ đã có, tạo SmartArt, chuyển cảnh: được nhờ thì nói rõ là không làm được và gợi ý cách thay (biểu đồ: tạo biểu đồ mới bằng ppt_add_chart rồi xóa biểu đồ cũ sau khi người dùng đồng ý).",
       "- Khi nhắc tới slide, ghi \"slide N\" để người dùng bấm vào xem.",
       "- Nội dung slide ngắn gọn: tiêu đề ≤ 10 từ, mỗi slide 3–6 ý, mỗi ý một dòng.",
       "- Đặt hình/ô chữ không chồng lên nhau, cách mép ≥ 40 điểm.",

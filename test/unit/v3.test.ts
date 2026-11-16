@@ -1,3 +1,4 @@
+import { PPT_DESIGN_SPECS } from "../../src/office/pptDesign";
 import * as assert from "assert";
 import JSZip from "jszip";
 import { getProvider } from "../../src/core/providers";
@@ -49,7 +50,7 @@ class MemStorage {
   }
 }
 
-const ALL_SPECS: ToolSpec[] = [...EXCEL_SPECS, ...EXCEL_ADV_SPECS, ...WORD_SPECS, ...PPT_SPECS, ...PPT_ADV_SPECS];
+const ALL_SPECS: ToolSpec[] = [...EXCEL_SPECS, ...EXCEL_ADV_SPECS, ...WORD_SPECS, ...PPT_SPECS, ...PPT_ADV_SPECS, ...PPT_DESIGN_SPECS];
 
 describe("v3 · Ảnh và tìm kiếm web trong yêu cầu gửi nhà cung cấp", () => {
   const msgs: AgentMessage[] = [{ role: "user", content: "Ảnh này là gì?", images: [{ mime: "image/png", data: "QUJD" }] }];
@@ -237,7 +238,7 @@ describe("v3 · Bộ kỹ năng tích hợp chuyển thể từ skill/plugin ch�
     }
   });
   it("Mọi công cụ được nhắc trong kỹ năng và hướng dẫn nền đều tồn tại", () => {
-    const names = new Set([...ALL_SPECS.map((s) => s.name), "use_skill", "read_other_app"]);
+    const names = new Set([...ALL_SPECS.map((s) => s.name), "use_skill", "read_other_app", "write_other_app"]);
     const text = BUILTIN_SKILLS.map((s) => s.body).join("\n") + Object.values(CORE_GUIDES).join("\n");
     const used = new Set(text.match(/\b(?:excel|word|ppt)_[a-z_]+/g) || []);
     const missing = [...used].filter((u) => !names.has(u));
