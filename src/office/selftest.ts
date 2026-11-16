@@ -506,13 +506,15 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         const a = (await go("ppt_add_slide", { layout: lay.name, title: `Slide A ${tag}`, body: "Nội dung đúng mẫu" })).slide;
         const b = (await go("ppt_add_slide", { layout: lay.name, title: `Slide B ${tag}`, body: "Nội dung đúng mẫu" })).slide;
         const c = (await go("ppt_add_slide", { layout: lay.name, title: "", body: "Slide này cố ý không có tiêu đề" })).slide;
-        await go("ppt_add_textbox", { slide: a, text: `Phông lạ một ${tag}`, left: 60, top: 330, width: 260, height: 40 });
+        // Hộp chữ thử đặt sát đáy slide, không đè lên ô giữ chỗ nào của bố cục
+        const bottom = theme.slide_size.height - 44;
+        await go("ppt_add_textbox", { slide: a, text: `Phông lạ một ${tag}`, left: 40, top: bottom, width: 260, height: 36 });
         await go("ppt_format_text", { slide: a, shape: (await shapeInfo(a, `Phông lạ một ${tag}`)).name, font_name: "Comic Sans MS" });
-        await go("ppt_add_textbox", { slide: a, text: `Chữ nhỏ một ${tag}`, left: 360, top: 330, width: 260, height: 40, font_size: 9 });
-        await go("ppt_add_textbox", { slide: b, text: `Phông lạ hai ${tag}`, left: 60, top: 330, width: 260, height: 40 });
+        await go("ppt_add_textbox", { slide: a, text: `Chữ nhỏ một ${tag}`, left: 340, top: bottom, width: 260, height: 36, font_size: 9 });
+        await go("ppt_add_textbox", { slide: b, text: `Phông lạ hai ${tag}`, left: 40, top: bottom, width: 260, height: 36 });
         await go("ppt_format_text", { slide: b, shape: (await shapeInfo(b, `Phông lạ hai ${tag}`)).name, font_name: "Courier New" });
-        await go("ppt_add_textbox", { slide: b, text: `Chữ nhỏ hai ${tag}`, left: 360, top: 330, width: 260, height: 40, font_size: 10 });
-        await go("ppt_add_textbox", { slide: c, text: `Chữ đúng mẫu ${tag}`, left: 60, top: 330, width: 260, height: 40, font_size: 18 });
+        await go("ppt_add_textbox", { slide: b, text: `Chữ nhỏ hai ${tag}`, left: 340, top: bottom, width: 260, height: 36, font_size: 10 });
+        await go("ppt_add_textbox", { slide: c, text: `Chữ đúng mẫu ${tag}`, left: 40, top: bottom, width: 260, height: 36, font_size: 18 });
         const r = await go("ppt_check_deck", { slides: [a, b, c] });
         const of = (kind: string) => r.issues.filter((x: any) => x.kind === kind);
         const fonts = of("font");
