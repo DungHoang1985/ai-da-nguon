@@ -1,0 +1,11 @@
+{
+ "modelTruoc": "Model đang dùng: Groq GPT OSS 20B. Bấm để đổi Groq · GPT OSS 20B",
+ "modelThu": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Nano Omni (free). Bấm để đổi OpenRouter · NVIDIA: Nemotron 3 Nano Omni (free)",
+ "phienBan": "v4.4",
+ "giay": 3,
+ "nhanXetTruoc": 1,
+ "nhanXetSau": 1,
+ "soMaToChucTrenKhung": 0,
+ "coNutDoiNguon": true,
+ "khung": "AI Đa Nguồn\nv4.4\nExcel ✓ · PowerPoint ✓\nVăn bản này nói về việc gì? Trả lời một câu.\nOpenRouter: đã hết lượt dùng model miễn phí của hôm nay (50 lượt mỗi ngày; 1.000 lượt nếu tài khoản đã từng nạp từ 10 credit). Có lại lúc 7 giờ sáng giờ Việt Nam. Chọn model trả tiền hoặc đổi sang nguồn khác ở nhãn model cạnh ô nhập rồi gửi lại. Hội thoại vẫn còn nguyên. (Rate limit exceeded: free-models-per-day. Add 10 credits to unlock 1000 free model requests per day: https://openrouter.ai/settings/credits?utm_source=api&utm_campaign=free_daily_limit)\nĐổi nguồn\nMở Cài đặt\nChép chi tiết lỗi\nHỏi trước\nOpenRouter · NVIDIA: Nemotron 3 Nano Omni (free)\n⚠️ OpenRouter: đã hết lượt model miễn phí hôm nay (có lại lúc 7 giờ sáng). Chọn model trả tiền hoặc đổi nguồn."
+}

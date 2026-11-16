@@ -1,0 +1,25 @@
+{
+ "ghiChu": "Lần 1: cửa sổ Word thu nhỏ bằng COM (WindowState = 2). Lần 2: đã khôi phục (WindowState = 0).",
+ "lan1_thuNho": {
+  "modelTruoc": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+  "modelThu": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+  "phienBan": "v4.4",
+  "giay": 5,
+  "nhanXetTruoc": 0,
+  "nhanXetSau": 0,
+  "soMaToChucTrenKhung": 0,
+  "coNutDoiNguon": false,
+  "khung": "AI Đa Nguồn\nv4.4\nExcel ✓ · PowerPoint ✓\nThêm một nhận xét vào đoạn nói về thanh toán trong vòng 30 ngày, nội dung: 'Cần làm rõ ngày nhận hóa đơn'. Chỉ thêm nhận xét, không sửa chữ.\n⚠️ Thêm nhận xét: Cần làm rõ ngày nhận hóa đơn — Word từ chối thêm nhận xét. Nguyên nhân thường gặp nhất: cửa sổ Word đang bị THU NHỎ — khi đó Word không cho add-in thêm nhận xét (sửa chữ vẫn được). Chưa thêm được nhận xét nào. Nhắn người dùng mở lại (khôi phục) cửa sổ Word rồi bảo làm lại; nếu cửa sổ đang mở bình thường thì văn bản có thể đang bị hạn chế chỉnh sửa (thẻ Review → Restrict Editing).\nWord từ chối thêm nhận xét. Tôi chưa thêm được nhận xét nào. Nguyên nhân có thể là:\n \n• Cửa sổ Word đang bị thu nhỏ. Hãy mở lại (khôi phục) cửa sổ Word rồi bảo tôi làm lại.\n• Văn bản đang bị hạn chế chỉnh sửa. Nếu cửa sổ đang mở bình thường, hãy kiểm tra thẻ Review → Restrict Editing.\n \nKhi bạn xử lý xong, tôi sẽ thêm nhận xét \"Cần làm rõ ngày nhận hóa đơn\" vào đoạn 0 (\"Bên B thanh toán trong vòng 30 ngày kể từ ngày nhận hóa đơn.\"), neo tại cụm \"trong vòng 30 ngày\". Nội dung văn bản sẽ không bị thay đổi.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 33.900 · ra 492 · đọc từ bộ nhớ đệm 16.753 · ghi vào bộ nhớ đệm 17.141\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+ },
+ "lan2_khoiPhuc": {
+  "modelTruoc": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+  "modelThu": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+  "phienBan": "v4.4",
+  "giay": 4,
+  "nhanXetTruoc": 0,
+  "nhanXetSau": 1,
+  "soMaToChucTrenKhung": 0,
+  "coNutDoiNguon": false,
+  "khung": "AI Đa Nguồn\nv4.4\nExcel ✓ · PowerPoint ✓\nThêm một nhận xét vào đoạn nói về thanh toán trong vòng 30 ngày, nội dung: 'Cần làm rõ ngày nhận hóa đơn'. Chỉ thêm nhận xét, không sửa chữ.\n✅ Thêm nhận xét: Cần làm rõ ngày nhận hóa đơn\nĐã thêm nhận xét \"Cần làm rõ ngày nhận hóa đơn\" vào cụm \"trong vòng 30 ngày\" ở đoạn 0 (câu \"Bên B thanh toán trong vòng 30 ngày kể từ ngày nhận hóa đơn.\"). Không có chữ nào trong văn bản bị sửa.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 33.720 · ra 293 · đọc từ bộ nhớ đệm 33.506 · ghi vào bộ nhớ đệm 208\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+ }
+}
