@@ -1,0 +1,194 @@
+{
+ "model": "Model đang dùng: OpenAI gpt-5.4-mini. Bấm để đổi OpenAI · gpt-5.4-mini",
+ "phienBan": "v4.4",
+ "bai": {
+  "a": {
+   "giay": 2,
+   "daHoi": 0,
+   "buocDat": 0,
+   "buocLoi": [],
+   "dongDem": "",
+   "canhBao": [],
+   "cham": {
+    "dung": false
+   },
+   "traLoi": "OpenAI trả về lỗi nhưng không cho add-in đọc chi tiết. Thường do: key sai hoặc hết hạn, tài khoản hết tiền, hoặc tài khoản chưa được dùng model “gpt-5.4-mini” (OpenAI yêu cầu xác minh tổ chức với một số model mới). Kiểm tra key và số dư trên trang OpenAI, hoặc chọn model khác.\nChép chi tiết lỗi\nOpenAI · gpt-5.4-mini"
+  },
+  "b": {
+   "giay": 2,
+   "daHoi": 0,
+   "buocDat": 0,
+   "buocLoi": [],
+   "dongDem": "",
+   "canhBao": [],
+   "cham": {
+    "dung": false
+   },
+   "traLoi": "OpenAI trả về lỗi nhưng không cho add-in đọc chi tiết. Thường do: key sai hoặc hết hạn, tài khoản hết tiền, hoặc tài khoản chưa được dùng model “gpt-5.4-mini” (OpenAI yêu cầu xác minh tổ chức với một số model mới). Kiểm tra key và số dư trên trang OpenAI, hoặc chọn model khác.\nChép chi tiết lỗi\nOpenAI · gpt-5.4-mini"
+  },
+  "c": {
+   "giay": 2,
+   "daHoi": 0,
+   "buocDat": 0,
+   "buocLoi": [],
+   "dongDem": "",
+   "canhBao": [],
+   "cham": {
+    "neu30": false,
+    "thieuDieu": [
+     "2.3",
+     "3.2",
+     "4.3",
+     "5.1",
+     "6.1",
+     "6.4",
+     "7.4",
+     "8.3",
+     "9.2",
+     "10.3",
+     "11.3",
+     "15.2",
+     "16.2",
+     "22.4",
+     "23.1",
+     "23.3",
+     "24.3",
+     "27.3"
+    ]
+   },
+   "traLoi": "Kỹ năng áp dụng: tom-tat-sua-doi-doi-tac\nOpenAI trả về lỗi nhưng không cho add-in đọc chi tiết. Thường do: key sai hoặc hết hạn, tài khoản hết tiền, hoặc tài khoản chưa được dùng model “gpt-5.4-mini” (OpenAI yêu cầu xác minh tổ chức với một số model mới). Kiểm tra key và số dư trên trang OpenAI, hoặc chọn model khác.\nChép chi tiết lỗi\nOpenAI · gpt-5.4-mini"
+  },
+  "d": {
+   "giay": 2,
+   "daHoi": 0,
+   "buocDat": 0,
+   "buocLoi": [],
+   "dongDem": "",
+   "canhBao": [],
+   "cham": {},
+   "traLoi": "Kỹ năng áp dụng: tom-tat-sua-doi-doi-tac\nOpenAI trả về lỗi nhưng không cho add-in đọc chi tiết. Thường do: key sai hoặc hết hạn, tài khoản hết tiền, hoặc tài khoản chưa được dùng model “gpt-5.4-mini” (OpenAI yêu cầu xác minh tổ chức với một số model mới). Kiểm tra key và số dư trên trang OpenAI, hoặc chọn model khác.\nChép chi tiết lỗi\nOpenAI · gpt-5.4-mini",
+   "vanBan": {
+    "soDoan": 165,
+    "suaDoiDoiTac": 30,
+    "suaDoiKhac": 0,
+    "suaDoiKhacMau": [],
+    "nhanXet": [
+     {
+      "nd": "Đề nghị giảm đơn giá thuê xuống 420.000 đồng cho m",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị giảm tiền đặt cọc còn 02 tháng Tiền Thuê.",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị sửa “ngay lập tức” thành “trong vòng 05 Ng",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị kéo dài thời hạn bảo mật thành 05 năm.",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị rút thời hạn thương lượng xuống 20 ngày.",
+      "traLoi": [],
+      "daXuLy": false
+     }
+    ],
+    "namDoan": [
+     "Đơn giá thuê là 450.000 đồng cho mỗi mét vuông mỗi tháng, chưa gồm thuế giá trị gia tăng, áp dụng cố định trong ba năm đầu. Chi ph",
+     "Bên Thuê đặt cọc cho Bên Cho Thuê một khoản tiền bằng 03 tháng Tiền Thuê trong vòng 20 Ngày Làm Việc kể từ ngày ký hợp đồng. Các b",
+     "Bên bị vi phạm gửi thông báo bằng văn bản nêu rõ hành vi vi phạm và yêu cầu khắc phục ngay lập tức. Định kỳ hằng năm, hai bên rà s",
+     "Mỗi bên giữ bí mật nội dung hợp đồng và thông tin kinh doanh của bên kia trong thời hạn thuê và 03 năm sau đó. Hai bên ghi nhận rằ",
+     "Mọi tranh chấp trước hết được giải quyết bằng thương lượng trong vòng 30 ngày kể từ ngày một bên gửi thông báo tranh chấp. Việc th"
+    ],
+    "dungYeuCau": [
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "dieu8": [
+     "Điều 8. | Heading 1 | Bàn giao mặt bằng",
+     "8.1. | Heading 2 | Bên Cho Thuê bàn giao Khu Nhà Xưởng cho ",
+     "8.2. | Heading 2 | Tại thời điểm bàn giao, hai bên lập biên",
+     "8.3. | Heading 2 | Nếu Bên Cho Thuê chậm bàn giao quá 30 ng"
+    ],
+    "khoanMoi": "(không thấy)",
+    "khoanCu": "8.3.",
+    "cungKieu": false
+   }
+  },
+  "e": {
+   "giay": 2,
+   "daHoi": 0,
+   "buocDat": 0,
+   "buocLoi": [],
+   "dongDem": "",
+   "canhBao": [],
+   "cham": {},
+   "traLoi": "OpenAI trả về lỗi nhưng không cho add-in đọc chi tiết. Thường do: key sai hoặc hết hạn, tài khoản hết tiền, hoặc tài khoản chưa được dùng model “gpt-5.4-mini” (OpenAI yêu cầu xác minh tổ chức với một số model mới). Kiểm tra key và số dư trên trang OpenAI, hoặc chọn model khác.\nChép chi tiết lỗi\nOpenAI · gpt-5.4-mini",
+   "vanBan": {
+    "soDoan": 165,
+    "suaDoiDoiTac": 30,
+    "suaDoiKhac": 0,
+    "suaDoiKhacMau": [],
+    "nhanXet": [
+     {
+      "nd": "Đề nghị giảm đơn giá thuê xuống 420.000 đồng cho m",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị giảm tiền đặt cọc còn 02 tháng Tiền Thuê.",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị sửa “ngay lập tức” thành “trong vòng 05 Ng",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị kéo dài thời hạn bảo mật thành 05 năm.",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị rút thời hạn thương lượng xuống 20 ngày.",
+      "traLoi": [],
+      "daXuLy": false
+     }
+    ],
+    "namDoan": [
+     "Đơn giá thuê là 450.000 đồng cho mỗi mét vuông mỗi tháng, chưa gồm thuế giá trị gia tăng, áp dụng cố định trong ba năm đầu. Chi ph",
+     "Bên Thuê đặt cọc cho Bên Cho Thuê một khoản tiền bằng 03 tháng Tiền Thuê trong vòng 20 Ngày Làm Việc kể từ ngày ký hợp đồng. Các b",
+     "Bên bị vi phạm gửi thông báo bằng văn bản nêu rõ hành vi vi phạm và yêu cầu khắc phục ngay lập tức. Định kỳ hằng năm, hai bên rà s",
+     "Mỗi bên giữ bí mật nội dung hợp đồng và thông tin kinh doanh của bên kia trong thời hạn thuê và 03 năm sau đó. Hai bên ghi nhận rằ",
+     "Mọi tranh chấp trước hết được giải quyết bằng thương lượng trong vòng 30 ngày kể từ ngày một bên gửi thông báo tranh chấp. Việc th"
+    ],
+    "dungYeuCau": [
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "dieu8": [
+     "Điều 8. | Heading 1 | Bàn giao mặt bằng",
+     "8.1. | Heading 2 | Bên Cho Thuê bàn giao Khu Nhà Xưởng cho ",
+     "8.2. | Heading 2 | Tại thời điểm bàn giao, hai bên lập biên",
+     "8.3. | Heading 2 | Nếu Bên Cho Thuê chậm bàn giao quá 30 ng"
+    ],
+    "khoanMoi": "(không thấy)",
+    "khoanCu": "8.3.",
+    "cungKieu": false
+   }
+  }
+ }
+}

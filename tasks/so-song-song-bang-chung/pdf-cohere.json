@@ -1,0 +1,28 @@
+{
+ "bai": "pdf",
+ "phienBan": "v4.4",
+ "model": "Model đang dùng: Cohere command-a-plus-05-2026. Bấm để đổi Cohere · command-a-plus-05-2026",
+ "cauHoi": "Không dùng công cụ. Tệp đính kèm là bản quét. Tóm tắt tệp trong 3 câu, rồi trả lời đúng ba số liệu: (1) Giá trị hợp đồng; (2) Diện tích sàn bàn giao; (3) Số tiền giữ lại bảo hành.",
+ "tepDinhKem": [
+  "📑 aidn-thu-quet.pdf"
+ ],
+ "giay": 4,
+ "daHoi": [],
+ "soBuocCongCu": 0,
+ "cacBuoc": [],
+ "token": "",
+ "vanBanTruoc": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanSau": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "📎 aidn-thu-quet.pdf\nTôi không thể đọc được tệp PDF quét đính kèm (aidn-thu-quet.pdf) vì nó không có lớp chữ (image-only PDF). Để trích xuất ba số liệu bạn yêu cầu (giá trị hợp đồng, diện tích sàn bàn giao, số tiền giữ lại bảo hành), bạn cần sử dụng một model có khả năng nhận diện ký tự trong ảnh như Anthropic hoặc Gemini, hoặc chuyển tệp PDF thành tệp có thể đọc được (ví dụ: dùng công cụ OCR chuyển PDF quét thành PDF có thể tìm kiếm hoặc thành tệp Word).\nHãy gửi lại tệp dưới định dạng có thể đọc được hoặc sử dụng một model khác có hỗ trợ OCR, tôi sẽ giúp bạn trích xuất và tóm tắt thông tin ngay.\nChèn vào chỗ con trỏ\nSao chép\nCohere không đọc được PDF quét (aidn-thu-quet.pdf): tệp không được gửi đi. Đổi sang nguồn Anthropic hoặc Gemini rồi đính kèm lại.\nCohere · command-a-plus-05-2026"
+}

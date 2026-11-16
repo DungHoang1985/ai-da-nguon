@@ -1,0 +1,28 @@
+{
+ "bai": "pdf",
+ "phienBan": "v4.4",
+ "model": "Model đang dùng: Cerebras gpt-oss-120b. Bấm để đổi Cerebras · gpt-oss-120b",
+ "cauHoi": "Không dùng công cụ. Tệp đính kèm là bản quét. Tóm tắt tệp trong 3 câu, rồi trả lời đúng ba số liệu: (1) Giá trị hợp đồng; (2) Diện tích sàn bàn giao; (3) Số tiền giữ lại bảo hành.",
+ "tepDinhKem": [
+  "📑 aidn-thu-quet.pdf"
+ ],
+ "giay": 4,
+ "daHoi": [],
+ "soBuocCongCu": 0,
+ "cacBuoc": [],
+ "token": "Token: vào 9.445 · ra 258",
+ "vanBanTruoc": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanSau": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "📎 aidn-thu-quet.pdf\nXin lỗi, tệp “aidn‑thu‑quet.pdf” là bản quét ảnh nên không chứa lớp văn bản có thể được trích xuất. Vì thế hiện tại tôi không thể đọc nội dung, tóm tắt hay lấy các số liệu (giá trị hợp đồng, diện tích sàn bàn giao, số tiền giữ lại bảo hành) từ tệp này. Bạn có thể chuyển tệp sang một mô hình có khả năng nhận dạng ký tự quét (ví dụ: Anthropic, Gemini, hoặc bất kỳ dịch vụ OCR nào) để trích xuất văn bản, sau đó tôi sẽ hỗ trợ xử lý và trả lời các câu hỏi dựa trên nội dung đã được chuyển đổi.\nChèn vào chỗ con trỏ\nSao chép\nCerebras không đọc được PDF quét (aidn-thu-quet.pdf): tệp không được gửi đi. Đổi sang nguồn Anthropic hoặc Gemini rồi đính kèm lại.\nCerebras · gpt-oss-120b"
+}

@@ -1,0 +1,17 @@
+{
+ "luot1": {
+  "giay": 36,
+  "bam": [
+   "Allow once",
+   "Apply all",
+   "Apply all",
+   "Apply all",
+   "Apply edit"
+  ]
+ },
+ "luot2": {
+  "giay": 20,
+  "bam": [],
+  "traLoi": "Tôi đã bấm Apply cho cả 5 chỉnh sửa. Hãy trả lời từng nhận xét là đã sửa gì. Không đánh dấu đã xử lý.\nTrả lời 5 nhận xét\n\nTôi đã trả lời cả 5 nhận xét của đối tác, mỗi nhận xét một câu nêu rõ đã sửa gì. Các nhận xét vẫn ở trạng thái mở, không đánh dấu đã xử lý.\n\nCác sửa đổi đều nằm trong Track Changes:\n\n4.2: đơn giá thuê từ 450.000 đồng xuống 420.000 đồng.\n5.1: tiền đặt cọc từ 03 tháng xuống 02 tháng Tiền Thuê.\n21.1: \"ngay lập tức\" thành \"trong vòng 05 Ngày Làm Việc\".\n25.1: thời hạn bảo mật sau thời hạn thuê từ 03 năm lên 05 năm.\n33.1: thời hạn thương lượng từ 30 ngày xuống 20 ngày.\n\nTôi chưa đối chiếu lại các sửa đổi của đối tác (ngày 10/11) ở những điều khoản khác. Tôi cũng không động tới chúng.\n\nClaude is AI and can make mistakes.\n\n\n\n\nSonnet 5.5High"
+ }
+}

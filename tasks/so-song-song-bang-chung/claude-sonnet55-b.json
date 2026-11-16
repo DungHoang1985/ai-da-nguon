@@ -1,0 +1,18 @@
+{
+ "bai": "b",
+ "model": "Sonnet 5.5High",
+ "giay": 14,
+ "hetGio": false,
+ "nutDaBam": [],
+ "nutDaThay": [
+  "Stop",
+  "Ask before edits",
+  "Navigate to Khoản 6.4",
+  "Navigate to Khoản 23.1",
+  "Navigate to Khoản 5.3(a)"
+ ],
+ "cham": {
+  "dung": true
+ },
+ "traLoi": "\n\nĐiều 6 (Thanh toán), khoản 6.3. Bên Thuê chậm thanh toán thì phải trả lãi chậm trả 0,05% mỗi ngày trên số tiền chậm trả. Lãi tính từ ngày đến hạn tới ngày trả đủ. Tương đương khoảng 18,25%/năm nếu quy đổi đơn giản (0,05% × 365).\n\nKhoản 6.3 không có thay đổi hay bình luận nào của Đối tác. Mức 0,05%/ngày đang là nội dung gốc của hợp đồng.\n\nCó ba điều khoản liên quan đến việc chậm thanh toán:\n\nKhoản 6.4\n: Chậm thanh toán quá 45 ngày là vi phạm nghiêm trọng, Bên Cho Thuê có quyền chấm dứt hợp đồng theo Điều 22. Đối tác đang đề xuất sửa 45 ngày thành 90 ngày.\nKhoản 23.1\n: Phạt vi phạm nghĩa vụ hợp đồng là 8% giá trị phần nghĩa vụ bị vi phạm. Đối tác đề xuất giảm xuống 6%. Khoản này tính riêng, ngoài lãi chậm trả.\nKhoản 5.3(a)\n: Bên Thuê chậm trả Tiền Thuê quá thời hạn thì Bên Cho Thuê được khấu trừ tiền đặt cọc.\n\nClaude is AI and can make mistakes.\n\n\n\n\nSonnet 5.5High"
+}

@@ -1,0 +1,38 @@
+{
+ "giay": 118,
+ "log": [
+  {
+   "status": 429,
+   "genCfg": "{\"thinkingConfig\":{\"thinkingLevel\":\"high\"}}",
+   "parts": [
+    "user:text"
+   ],
+   "loi": "\"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-"
+  },
+  {
+   "status": 429,
+   "genCfg": "{\"thinkingConfig\":{\"thinkingLevel\":\"high\"}}",
+   "parts": [
+    "user:text"
+   ],
+   "loi": "\"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-"
+  },
+  {
+   "status": 429,
+   "genCfg": "{\"thinkingConfig\":{\"thinkingLevel\":\"high\"}}",
+   "parts": [
+    "user:text"
+   ],
+   "loi": "\"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-"
+  },
+  {
+   "status": 429,
+   "genCfg": "{\"thinkingConfig\":{\"thinkingLevel\":\"high\"}}",
+   "parts": [
+    "user:text"
+   ],
+   "loi": "\"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-"
+  }
+ ],
+ "tail": "AI Đa Nguồn\nv4.4\nExcel — · PowerPoint —\nĐọc Điều 6 và Điều 7 rồi cho biết: nếu Bên Thuê chậm trả Tiền Thuê 50 ngày thì Bên Cho Thuê có những quyền gì theo hợp đồng này? Dẫn số điều cho từng quyền.\nHết hạn mức (gọi quá nhiều). Thử lại sau hoặc đổi model (You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, h)\nChép chi tiết lỗi\nHết hạn mức tạm thời: đang thử lại lần 3/3 sau 15 giây… Bấm Dừng để hủy.\nHỏi trước\n🧠 Nghĩ kỹ ✕\nGoogle Gemini · Gemini 3.8 Flash"
+}

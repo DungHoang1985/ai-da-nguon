@@ -1,0 +1,19 @@
+{
+ "bai": "c",
+ "model": "Sonnet 5.5High",
+ "giay": 33,
+ "hetGio": false,
+ "nutDaBam": [],
+ "nutDaThay": [
+  "Stop",
+  "Ask before edits",
+  "Đọc các sửa đổi theo dõi và vị trí điều ",
+  "Thinking",
+  "Đang xác định từng sửa đổi của đối tác t"
+ ],
+ "cham": {
+  "neu30": true,
+  "thieuDieu": []
+ },
+ "traLoi": "\nĐọc các sửa đổi theo dõi và vị trí điều khoản\n\nHợp đồng có 30 sửa đổi được theo dõi, tất cả do \"Đối tác\" thực hiện ngày 10/11/2026. Gồm 16 chèn và 14 xóa. Các sửa đổi nằm ở 18 khoản của 15 điều. Tôi chưa chấp nhận hay từ chối sửa đổi nào.\n\nSửa đổi thay thế (12 khoản, mỗi khoản gồm 1 xóa và 1 chèn)\n\nKhoản 3.2 (gia hạn): thời hạn gửi đề nghị gia hạn trước ngày hết hạn đổi từ \"09 tháng\" thành \"06 tháng\".\nKhoản 4.3 (tăng giá thuê): mức tăng sau mỗi hai năm đổi từ 5% thành 3%.\nKhoản 5.1 (đặt cọc): thời hạn đặt cọc đổi từ 10 Ngày Làm Việc thành 20 Ngày Làm Việc.\nKhoản 6.1 (thanh toán): thời hạn thanh toán mỗi quý đổi từ \"15 ngày đầu\" thành \"30 ngày đầu\".\nKhoản 6.4 (chậm thanh toán): ngưỡng vi phạm nghiêm trọng đổi từ \"quá 45 ngày\" thành \"quá 90 ngày\".\nKhoản 8.3 (chậm bàn giao): mức miễn Tiền Thuê đổi từ \"gấp đôi\" thành \"gấp ba\" số ngày chậm.\nKhoản 10.3 (cải tạo): thời hạn Bên Cho Thuê trả lời đổi từ 15 Ngày Làm Việc thành 10 Ngày Làm Việc.\nKhoản 11.3 (sửa chữa): thời hạn khắc phục đổi từ 07 ngày thành 05 ngày.\nKhoản 22.4 (chấm dứt trước hạn): phí chấm dứt đổi từ 06 tháng thành 03 tháng Tiền Thuê.\nKhoản 23.1 (phạt vi phạm): mức phạt đổi từ 8% thành 6%.\nKhoản 24.3 (chậm hoàn trả mặt bằng): mức tiền sử dụng đổi từ 150% thành 120% Tiền Thuê.\nKhoản 27.3 (bất khả kháng): thời hạn được quyền chấm dứt hợp đồng đổi từ 180 ngày thành 120 ngày.\n\nSửa đổi chỉ chèn (4 khoản)\n\nKhoản 2.3 (sử dụng sai mục đích): thêm \", và Bên Cho Thuê không được từ chối nếu không có lý do chính đáng\".\nKhoản 7.4 (phí quản lý): thêm khoản mới \"Bên Cho Thuê thông báo trước ít nhất 30 ngày khi điều chỉnh phí quản lý.\"\nKhoản 9.2 (nội quy): thêm \" đã được thông báo cho Bên Thuê\" sau cụm nội quy khu công nghiệp.\nKhoản 16.2 (kiểm tra mặt bằng): thêm \" và không quá hai lần mỗi quý\".\n\nSửa đổi chỉ xóa (2 khoản)\n\nKhoản 15.2 (chuyển nhượng): xóa \" bằng văn bản\", nên chấp thuận của Bên Cho Thuê không còn yêu cầu hình thức văn bản.\nKhoản 23.3 (giới hạn bồi thường): xóa \", trừ trường hợp cố ý vi phạm\", nên mức giới hạn 12 tháng Tiền Thuê không còn ngoại lệ cho vi phạm cố ý.\n\nNgoài các sửa đổi trên: cũng từ \"Đối tác\" còn 5 bình luận chưa trả lời, không phải sửa đổi được theo dõi nên không tính vào tổng 30. Các bình luận đề nghị:\n\ngiảm đơn giá thuê ở khoản 4.2 xuống 420.000 đồng;\ngiảm đặt cọc ở khoản 5.1 còn 02 tháng;\nsửa \"ngay lập tức\" ở khoản 21.1 thành \"trong vòng 05 Ngày Làm Việc\";\nkéo dài bảo mật ở khoản 25.1 lên 05 năm;\nrút thời hạn thương lượng ở khoản 33.1 xuống 20 ngày.\n\nClaude is AI and can make mistakes.\n\n\n\n\nSonnet 5.5High"
+}

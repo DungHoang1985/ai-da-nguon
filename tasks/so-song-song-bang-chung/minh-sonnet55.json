@@ -1,0 +1,219 @@
+{
+ "model": "Model đang dùng: Anthropic (Claude) Claude Sonnet 5.5. Bấm để đổi Anthropic · Claude Sonnet 5.5",
+ "phienBan": "v4.4",
+ "bai": {
+  "a": {
+   "giay": 15,
+   "daHoi": 0,
+   "buocDat": 2,
+   "buocLoi": [],
+   "dongDem": "1 nhiệm vụ · 3 lần gọi AI · Token: vào 56.354 · ra 506 · đọc từ bộ nhớ đệm 36.611 · ghi vào bộ nhớ đệm 19.735",
+   "canhBao": [],
+   "cham": {
+    "dung": true
+   },
+   "traLoi": "Điều 18.2(b) [¶87] quy định: “nguồn điện hoặc nước bị gián đoạn quá 72 giờ liên tục do lỗi của Bên Cho Thuê;”\nĐây là một trong ba trường hợp tại Điều 18.2 [¶85] mà Bên Thuê được yêu cầu Bên Cho Thuê giảm Tiền Thuê. Hai trường hợp còn lại là:\n• (a) [¶86]: Khu Nhà Xưởng bị hư hỏng không do lỗi của Bên Thuê, làm giảm diện tích sử dụng.\n• (c) [¶88]: đường vào khu công nghiệp bị phong tỏa quá 05 ngày.\nĐoạn dẫn của Điều 18.2 [¶85] còn kèm một chuỗi câu chung chung về “quyền của Bên Thuê”, như rà soát hằng năm, không coi là từ bỏ quyền và lưu giữ tài liệu. Các câu này không liên quan đến nội dung (b).\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 56.354 · ra 506 · đọc từ bộ nhớ đệm 36.611 · ghi vào bộ nhớ đệm 19.735\nAnthropic · Claude Sonnet 5.5"
+  },
+  "b": {
+   "giay": 9,
+   "daHoi": 0,
+   "buocDat": 3,
+   "buocLoi": [],
+   "dongDem": "1 nhiệm vụ · 3 lần gọi AI · Token: vào 57.966 · ra 586 · đọc từ bộ nhớ đệm 54.130 · ghi vào bộ nhớ đệm 3.828",
+   "canhBao": [],
+   "cham": {
+    "dung": true
+   },
+   "traLoi": "Lãi chậm thanh toán nằm ở Điều 6.3 [¶35] (Điều 6 – Thanh toán). Điều khoản quy định:\n• Mức lãi: 0,05% mỗi ngày trên số tiền chậm trả.\n• Người phải trả: Bên Thuê.\n• Cách tính: từ ngày đến hạn tới ngày trả đủ.\nĐiều liên quan: Điều 6.4 [¶36] coi việc chậm thanh toán quá 90 ngày là vi phạm nghiêm trọng. Khi đó Bên Cho Thuê có quyền chấm dứt hợp đồng theo Điều 22.\nMức 0,05%/ngày tương đương khoảng 18,25%/năm nếu tính đơn.\nTôi chỉ thấy từ \"lãi\" ở hai chỗ là Điều 6.3 và Điều 5.2 [¶27]. Điều 5.2 nói tiền đặt cọc không tính lãi. Điều 7 và Điều 23 không có quy định riêng về lãi chậm trả.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 57.966 · ra 586 · đọc từ bộ nhớ đệm 54.130 · ghi vào bộ nhớ đệm 3.828\nAnthropic · Claude Sonnet 5.5"
+  },
+  "c": {
+   "giay": 26,
+   "daHoi": 0,
+   "buocDat": 1,
+   "buocLoi": [],
+   "dongDem": "1 nhiệm vụ · 2 lần gọi AI · Token: vào 44.864 · ra 3.586 · đọc từ bộ nhớ đệm 35.072 · ghi vào bộ nhớ đệm 9.786",
+   "canhBao": [],
+   "cham": {
+    "neu30": true,
+    "thieuDieu": []
+   },
+   "traLoi": "Kỹ năng áp dụng: tom-tat-sua-doi-doi-tac\nĐối tác (tác giả duy nhất) có 30 sửa đổi (revision) trong 17 điều khoản. Tôi đã đọc hết, total = 30. Phần đề xuất dưới đây giả định bạn là Bên Cho Thuê, vì hầu hết sửa đổi có lợi cho Bên Thuê. Nếu bạn là Bên Thuê thì đảo lại chiều đánh giá. Tôi chưa chấp nhận hay từ chối sửa đổi nào.\n#\tĐiều khoản [¶]\tĐối tác sửa (cũ → mới)\tSố sửa đổi\tTác động\tĐề xuất\n1\t2.3 [¶15]\tThêm: “, và Bên Cho Thuê không được từ chối nếu không có lý do chính đáng”\t1\tHạn chế quyền chấp thuận việc đổi mục đích sử dụng. “Lý do chính đáng” dễ gây tranh chấp.\tĐàm phán: liệt kê các lý do từ chối hợp lý hoặc bỏ cụm này.\n2\t3.2 [¶18]\tHạn gửi đề nghị gia hạn: 09 tháng → 06 tháng trước ngày hết hạn\t2\tBên Cho Thuê có ít thời gian hơn để tìm khách thuê khác.\tĐàm phán: giữ 09 tháng hoặc thoả hiệp 07–08 tháng.\n3\t4.3 [¶23]\tTăng đơn giá sau mỗi 2 năm: 5% → 3%\t2\tGiảm doanh thu cho thuê trong dài hạn.\tĐàm phán (hoặc từ chối): đây là điều khoản thương mại cốt lõi.\n4\t5.1 [¶26]\tHạn nộp đặt cọc: 10 → 20 Ngày Làm Việc\t2\tNhận cọc chậm hơn, rủi ro tín dụng tăng nhẹ.\tĐàm phán: có thể chấp nhận nếu bàn giao mặt bằng chỉ sau khi nhận cọc.\n5\t6.1 [¶33]\tHạn thanh toán Tiền Thuê mỗi quý: 15 → 30 ngày đầu quý\t2\tDòng tiền chậm hơn.\tĐàm phán: thoả hiệp 20–25 ngày.\n6\t6.4 [¶36]\tNgưỡng chậm thanh toán được coi là vi phạm nghiêm trọng, cho phép chấm dứt hợp đồng: 45 → 90 ngày\t2\tQuyền chấm dứt của Bên Cho Thuê bị trì hoãn gấp đôi, rủi ro nợ kéo dài.\tTừ chối hoặc đàm phán: giữ 45 ngày, tối đa 60 ngày.\n7\t7.4 [¶41]\tThêm mới: “Bên Cho Thuê thông báo trước ít nhất 30 ngày khi điều chỉnh phí quản lý.”\t1\tThêm nghĩa vụ thông báo, ít ảnh hưởng.\tChấp nhận, nếu Điều 7 không có cơ chế điều chỉnh phí tự động mâu thuẫn với khoản này.\n8\t8.3 [¶45]\tMiễn Tiền Thuê khi chậm bàn giao quá 30 ngày: gấp đôi → gấp ba số ngày chậm\t2\tTăng chế tài đối với Bên Cho Thuê.\tTừ chối hoặc đàm phán: giữ gấp đôi hoặc đặt mức trần.\n9\t9.2 [¶48]\tThêm: “đã được thông báo cho Bên Thuê” (sau nội quy khu công nghiệp)\t1\tHợp lý, nhưng cần có bằng chứng đã thông báo.\tChấp nhận, kèm quy định cách thông báo (ví dụ gửi bản nội quy).\n10\t10.3 [¶53]\tThời hạn Bên Cho Thuê trả lời đề nghị cải tạo: 15 → 10 Ngày Làm Việc\t2\tThời hạn ngắn hơn, mà quá hạn là coi như đồng ý. Rủi ro đồng ý mặc nhiên.\tĐàm phán: giữ 15 ngày hoặc bỏ cơ chế “coi như đồng ý”.\n11\t11.3 [¶57]\tThời hạn khắc phục hư hỏng: 07 → 05 ngày\t2\tNghĩa vụ sửa chữa chặt hơn.\tĐàm phán: có thể chấp nhận nếu nhà thầu đáp ứng được.\n12\t15.2 [¶73]\tXoá “bằng văn bản” trong “chấp thuận bằng văn bản của Bên Cho Thuê”\t1\tThay đổi kín đáo. Chấp thuận miệng hoặc ngầm có thể bị viện dẫn, mâu thuẫn với 2.3 vốn vẫn yêu cầu văn bản.\tTừ chối: khôi phục “bằng văn bản”.\n13\t16.2 [¶77]\tThêm: “và không quá hai lần mỗi quý” (quyền kiểm tra)\t1\tHạn chế quyền kiểm tra của Bên Cho Thuê.\tĐàm phán: chấp nhận nếu có ngoại lệ khi nghi ngờ vi phạm hoặc khi vi phạm an toàn.\n14\t22.4 [¶106]\tPhí chấm dứt trước hạn của Bên Thuê: 06 → 03 tháng Tiền Thuê\t2\tGiảm đền bù cho Bên Cho Thuê khi Bên Thuê rút lui sớm.\tTừ chối hoặc đàm phán: giữ 06 tháng, thoả hiệp 04–05 tháng.\n15\t23.1 [¶108]\tMức phạt vi phạm: 8% → 6% giá trị nghĩa vụ bị vi phạm\t2\tGiảm mức phạt. Mức phạt áp dụng cho cả hai bên, nên cần cân nhắc cả hai chiều.\tĐàm phán.\n16\t23.3 [¶110]\tXoá “, trừ trường hợp cố ý vi phạm” (trần bồi thường 12 tháng Tiền Thuê)\t1\tTrần bồi thường áp dụng cả khi cố ý vi phạm, rủi ro lớn.\tTừ chối: khôi phục ngoại lệ cố ý vi phạm.\n17\t24.3 [¶114]\tTiền sử dụng khi chậm hoàn trả mặt bằng: 150% → 120% Tiền Thuê theo ngày\t2\tG"
+  },
+  "d": {
+   "giay": 27,
+   "daHoi": 1,
+   "buocDat": 16,
+   "buocLoi": [],
+   "dongDem": "1 nhiệm vụ · 5 lần gọi AI · Token: vào 115.119 · ra 2.441 · đọc từ bộ nhớ đệm 104.690 · ghi vào bộ nhớ đệm 10.417",
+   "canhBao": [],
+   "cham": {},
+   "traLoi": "Kỹ năng áp dụng: tom-tat-sua-doi-doi-tac\nTôi đã sửa cả 5 chỗ theo nhận xét bằng Track Changes và trả lời từng nhận xét. Tôi không đánh dấu nhận xét nào là đã xử lý.\nĐiều\tĐoạn\tSửa\n4.2\t¶22\tĐơn giá thuê từ 450.000 đồng thành 420.000 đồng/m²/tháng\n5.1\t¶26\tTiền đặt cọc từ 03 tháng thành 02 tháng Tiền Thuê\n21.1\t¶99\t\"ngay lập tức\" thành \"trong vòng 05 Ngày Làm Việc\"\n25.1\t¶116\tThời hạn bảo mật sau thời hạn thuê từ 03 năm thành 05 năm\n33.1\t¶143\tThời hạn thương lượng từ 30 ngày thành 20 ngày\nTôi chỉ sửa đúng các điều trên. Đơn giá 420.000 đồng và mức đặt cọc 02 tháng có thể còn xuất hiện ở chỗ khác, ví dụ Phụ lục 01 (tiến độ thanh toán). Tôi chưa kiểm các chỗ đó, bạn nên đối chiếu lại.\nCác nhận xét này đều là đề nghị của đối tác, và hai đề nghị đầu có lợi cho Bên Thuê. Nếu bạn đại diện Bên Cho Thuê, nên cân nhắc trước khi chấp nhận.\n1 nhiệm vụ · 5 lần gọi AI · Token: vào 115.119 · ra 2.441 · đọc từ bộ nhớ đệm 104.690 · ghi vào bộ nhớ đệm 10.417\nAnthropic · Claude Sonnet 5.5",
+   "vanBan": {
+    "soDoan": 165,
+    "suaDoiDoiTac": 30,
+    "suaDoiKhac": 10,
+    "suaDoiKhacMau": [
+     "Added \"420.000\"",
+     "Deleted \"450.000\"",
+     "Added \"02\"",
+     "Deleted \"03\"",
+     "Added \"trong vòng 05 Ngày Làm Việc\"",
+     "Deleted \"ngay lập tức\"",
+     "Added \"05\"",
+     "Deleted \"03\"",
+     "Added \"20\"",
+     "Deleted \"30\""
+    ],
+    "nhanXet": [
+     {
+      "nd": "Đề nghị giảm đơn giá thuê xuống 420.000 đồng cho m",
+      "traLoi": [
+       "Đã sửa Điều 4.2: đơn giá thuê từ 450.000 đồng xuống 420.000 đồng/m²/tháng (Track Changes)."
+      ],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị giảm tiền đặt cọc còn 02 tháng Tiền Thuê.",
+      "traLoi": [
+       "Đã sửa Điều 5.1: tiền đặt cọc từ 03 tháng xuống 02 tháng Tiền Thuê (Track Changes)."
+      ],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị sửa “ngay lập tức” thành “trong vòng 05 Ng",
+      "traLoi": [
+       "Đã sửa Điều 21.1: \"ngay lập tức\" thành \"trong vòng 05 Ngày Làm Việc\" (Track Changes)."
+      ],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị kéo dài thời hạn bảo mật thành 05 năm.",
+      "traLoi": [
+       "Đã sửa Điều 25.1: thời hạn bảo mật sau thời hạn thuê từ 03 năm thành 05 năm (Track Changes)."
+      ],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị rút thời hạn thương lượng xuống 20 ngày.",
+      "traLoi": [
+       "Đã sửa Điều 33.1: thời hạn thương lượng từ 30 ngày xuống 20 ngày (Track Changes)."
+      ],
+      "daXuLy": false
+     }
+    ],
+    "namDoan": [
+     "Đơn giá thuê là 420.000 đồng cho mỗi mét vuông mỗi tháng, chưa gồm thuế giá trị gia tăng, áp dụng cố định trong ba năm đầu. Chi ph",
+     "Bên Thuê đặt cọc cho Bên Cho Thuê một khoản tiền bằng 02 tháng Tiền Thuê trong vòng 20 Ngày Làm Việc kể từ ngày ký hợp đồng. Các b",
+     "Bên bị vi phạm gửi thông báo bằng văn bản nêu rõ hành vi vi phạm và yêu cầu khắc phục trong vòng 05 Ngày Làm Việc. Định kỳ hằng nă",
+     "Mỗi bên giữ bí mật nội dung hợp đồng và thông tin kinh doanh của bên kia trong thời hạn thuê và 05 năm sau đó. Hai bên ghi nhận rằ",
+     "Mọi tranh chấp trước hết được giải quyết bằng thương lượng trong vòng 20 ngày kể từ ngày một bên gửi thông báo tranh chấp. Việc th"
+    ],
+    "dungYeuCau": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "dieu8": [
+     "Điều 8. | Heading 1 | Bàn giao mặt bằng",
+     "8.1. | Heading 2 | Bên Cho Thuê bàn giao Khu Nhà Xưởng cho ",
+     "8.2. | Heading 2 | Tại thời điểm bàn giao, hai bên lập biên",
+     "8.3. | Heading 2 | Nếu Bên Cho Thuê chậm bàn giao quá 30 ng"
+    ],
+    "khoanMoi": "(không thấy)",
+    "khoanCu": "8.3.",
+    "cungKieu": false
+   }
+  },
+  "e": {
+   "giay": 11,
+   "daHoi": 1,
+   "buocDat": 2,
+   "buocLoi": [],
+   "dongDem": "1 nhiệm vụ · 3 lần gọi AI · Token: vào 60.885 · ra 538 · đọc từ bộ nhớ đệm 55.593 · ghi vào bộ nhớ đệm 5.284",
+   "canhBao": [],
+   "cham": {},
+   "traLoi": "Tôi đã chèn khoản mới thành Điều 8.3 [¶45], ngay sau Điều 8.2. Nội dung là: “Bên Cho Thuê bàn giao kèm hồ sơ hoàn công và bản vvẽ hiện trạng của Khu Nhà Xưởng.” Thay đổi được ghi bằng Theo dõi thay đổi.\nKhoản cũ 8.3 (chậm bàn giao quá 30 ngày) nay là 8.4 [¶46]. Tôi chưa kiểm tra xem có chỗ nào trong hợp đồng dẫn chiếu tới số khoản cũ không.\nXin lỗi, tôi gõ nhầm chữ “vẽ” trong phần tóm tắt này. Văn bản chèn vào hợp đồng đúng nguyên văn bạn đưa: “bản vẽ hiện trạng”.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 60.885 · ra 538 · đọc từ bộ nhớ đệm 55.593 · ghi vào bộ nhớ đệm 5.284\nAnthropic · Claude Sonnet 5.5",
+   "vanBan": {
+    "soDoan": 166,
+    "suaDoiDoiTac": 30,
+    "suaDoiKhac": 11,
+    "suaDoiKhacMau": [
+     "Added \"420.000\"",
+     "Deleted \"450.000\"",
+     "Added \"02\"",
+     "Deleted \"03\"",
+     "Added \"\\rBên Cho Thuê bàn giao kèm hồ sơ hoàn cô\"",
+     "Added \"trong vòng 05 Ngày Làm Việc\"",
+     "Deleted \"ngay lập tức\"",
+     "Added \"05\"",
+     "Deleted \"03\"",
+     "Added \"20\"",
+     "Deleted \"30\""
+    ],
+    "nhanXet": [
+     {
+      "nd": "Đề nghị giảm đơn giá thuê xuống 420.000 đồng cho m",
+      "traLoi": [
+       "Đã sửa Điều 4.2: đơn giá thuê từ 450.000 đồng xuống 420.000 đồng/m²/tháng (Track Changes)."
+      ],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị giảm tiền đặt cọc còn 02 tháng Tiền Thuê.",
+      "traLoi": [
+       "Đã sửa Điều 5.1: tiền đặt cọc từ 03 tháng xuống 02 tháng Tiền Thuê (Track Changes)."
+      ],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị sửa “ngay lập tức” thành “trong vòng 05 Ng",
+      "traLoi": [
+       "Đã sửa Điều 21.1: \"ngay lập tức\" thành \"trong vòng 05 Ngày Làm Việc\" (Track Changes)."
+      ],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị kéo dài thời hạn bảo mật thành 05 năm.",
+      "traLoi": [
+       "Đã sửa Điều 25.1: thời hạn bảo mật sau thời hạn thuê từ 03 năm thành 05 năm (Track Changes)."
+      ],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị rút thời hạn thương lượng xuống 20 ngày.",
+      "traLoi": [
+       "Đã sửa Điều 33.1: thời hạn thương lượng từ 30 ngày xuống 20 ngày (Track Changes)."
+      ],
+      "daXuLy": false
+     }
+    ],
+    "namDoan": [
+     "Đơn giá thuê là 420.000 đồng cho mỗi mét vuông mỗi tháng, chưa gồm thuế giá trị gia tăng, áp dụng cố định trong ba năm đầu. Chi ph",
+     "Bên Thuê đặt cọc cho Bên Cho Thuê một khoản tiền bằng 02 tháng Tiền Thuê trong vòng 20 Ngày Làm Việc kể từ ngày ký hợp đồng. Các b",
+     "Bên bị vi phạm gửi thông báo bằng văn bản nêu rõ hành vi vi phạm và yêu cầu khắc phục trong vòng 05 Ngày Làm Việc. Định kỳ hằng nă",
+     "Mỗi bên giữ bí mật nội dung hợp đồng và thông tin kinh doanh của bên kia trong thời hạn thuê và 05 năm sau đó. Hai bên ghi nhận rằ",
+     "Mọi tranh chấp trước hết được giải quyết bằng thương lượng trong vòng 20 ngày kể từ ngày một bên gửi thông báo tranh chấp. Việc th"
+    ],
+    "dungYeuCau": [
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "dieu8": [
+     "Điều 8. | Heading 1 | Bàn giao mặt bằng",
+     "8.1. | Heading 2 | Bên Cho Thuê bàn giao Khu Nhà Xưởng cho ",
+     "8.2. | Heading 2 | Tại thời điểm bàn giao, hai bên lập biên",
+     "8.3. | Heading 2 | Bên Cho Thuê bàn giao kèm hồ sơ hoàn côn",
+     "8.4. | Heading 2 | Nếu Bên Cho Thuê chậm bàn giao quá 30 ng"
+    ],
+    "khoanMoi": "8.3.",
+    "khoanCu": "8.4.",
+    "cungKieu": true
+   }
+  }
+ }
+}
