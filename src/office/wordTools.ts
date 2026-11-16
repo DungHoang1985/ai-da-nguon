@@ -3,6 +3,7 @@
  *  Bản 4.0 (Đợt 1A): mục lục điều khoản, tìm và đọc theo điều, chống sửa nhầm đoạn, sửa mức từ, đọc đúng khi văn bản đang có
  *  sửa đổi, chèn điều khoản kế thừa đánh số, Hoàn tác. Căn cứ kỹ thuật: bảng thăm dò trong tasks/dot-1a.md. */
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
+import { officeErrorHint } from "../core/errors";
 import {
   RESULT_JSON_BUDGET,
   escapeWordSearch,
@@ -1555,7 +1556,13 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
           const { ranges } = await targetRanges(ctx, a);
           const c = ranges[0].insertComment(text);
           c.load("id");
-          await ctx.sync();
+          try {
+            await ctx.sync();
+          } catch (e: any) {
+            const hint = officeErrorHint("word_add_comment", e);
+            if (hint) throw new Error(hint);
+            throw e;
+          }
           const id = c.id;
           extra.push(() =>
             Word.run(async (c2) => {

@@ -18,7 +18,9 @@ export type ErrorReason =
   /** Anthropic: key chưa gắn workspace */
   | "workspace"
   /** Anthropic: tổ chức không cho gọi trực tiếp từ trình duyệt */
-  | "browser_blocked";
+  | "browser_blocked"
+  /** Một yêu cầu lớn hơn hạn mức token mỗi phút của gói (Groq gói miễn phí trả 413): gửi lại bao nhiêu lần cũng thế */
+  | "too_large";
 
 export class ApiError extends Error {
   /** Lỗi tạm thời dù mã trạng thái không thuộc nhóm tự thử lại (OpenRouter: 402 do ngân sách của các yêu cầu đang chạy) */
@@ -53,6 +55,8 @@ export function maskSecrets(text: string): string {
     .replace(/\bsk-[A-Za-z0-9_*.\-]{6,}/g, "sk-…")
     .replace(/\bAIza[A-Za-z0-9_\-]{16,}/g, "AIza…")
     .replace(/\b(gsk|xai|csk|nvapi|pplx|r8|hf)[_-][A-Za-z0-9_\-]{8,}/g, "$1_…")
+    // Mã tổ chức / dự án của tài khoản (Groq "org_01…", OpenAI "org-…", "proj_…"): thông tin riêng, câu lỗi 413 và 429 hay nhắc lại
+    .replace(/\b(org|proj|organization|project)[_-][A-Za-z0-9]{8,}/g, "$1_…")
     .replace(/\b(Bearer)\s+[A-Za-z0-9._~+/\-]{12,}=*/gi, "$1 …")
     .replace(/\b(api[ _-]?key|x-api-key|x-goog-api-key|access[ _-]?token|token)(['"]?\s*[:=]\s*['"]?)[A-Za-z0-9._~+/\-]{16,}/gi, "$1$2…");
 }
@@ -72,6 +76,16 @@ const KEY_GONE_OF_KEY = /\b(api[ _-]?key|key|token)\b[^.]{0,40}\b(expired|revoke
 const KEY_BAD =
   /(invalid (x-)?api[ _-]?key|incorrect api key|api key not valid|api[ _-]?key[^.]{0,40}(invalid|not found|malformed)|invalid (authentication|credentials|bearer|token)|no auth credentials|user not found|authentication (failed|error)|invalid_api_key|api_key_invalid)/i;
 const SPEND_LIMIT = /(specified (api |workspace )?usage limits?|spend(ing)? limit|key limit (exceeded|reached)|budget (limit|exceeded|exhausted)|usage cap)/i;
+/** Yêu cầu lớn hơn hạn mức mỗi phút của gói (đo 16/11/2026, Groq gói miễn phí trong Word: "Request too large for model … on tokens per minute (TPM): Limit 8000, Requested 8300") */
+const TOO_LARGE = /request too large[^.]*tokens per minute/i;
+
+/** Số trong câu "Limit 8000, Requested 8300" (nếu có) */
+export function tpmNumbers(detail: string): { limit?: number; requested?: number } {
+  const l = /\bLimit:?\s*([\d.,]+)/i.exec(detail);
+  const r = /\bRequested:?\s*([\d.,]+)/i.exec(detail);
+  const n = (m: RegExpExecArray | null) => (m ? Number(m[1].replace(/[.,](?=\d{3}\b)/g, "").replace(/[.,]$/, "")) || undefined : undefined);
+  return { limit: n(l), requested: n(r) };
+}
 const RESTRICTED = /(only available|not available|not allowed|not permitted|agentic|your region|country|verif)/i;
 
 /** Nhận ra lý do về key và tiền từ mã trạng thái, câu báo lỗi và thân phản hồi (nếu đọc được).
@@ -96,6 +110,11 @@ export function classifyError(status: number | undefined, detail = "", body?: an
   if (/not scoped to a workspace/i.test(detail)) return { reason: "workspace" };
 
   if (FREE_DAILY.test(detail)) return { reason: "free_limit" };
+  // 413, hoặc 429 mà số token yêu cầu đã vượt trần mỗi phút: chờ cũng không qua
+  if (TOO_LARGE.test(detail)) {
+    const n = tpmNumbers(detail);
+    if (status === 413 || (n.limit && n.requested && n.requested > n.limit)) return { reason: "too_large" };
+  }
   // "exceeded your current quota": với OpenAI là hết tiền và có mã insufficient_quota (nhận ở dòng dưới); với Gemini là hết hạn mức
   // theo phút hoặc theo ngày, tự thử lại được — nên câu này không nằm trong các mẫu hết tiền.
   if (type === "billing_error" || code === "insufficient_quota" || type === "insufficient_quota") return { reason: "no_credit" };
@@ -152,6 +171,15 @@ export function messageForReason(reason: ErrorReason, p?: Provider, detail = "")
         `Key của ${name} chưa gắn với workspace nào nên add-in không gọi được. Vào platform.claude.com → API keys, tạo key mới và chọn một workspace ` +
         `(Default là được), rồi dán vào Cài đặt.`
       );
+    case "too_large": {
+      const n = tpmNumbers(detail);
+      const nf = (v: number) => Math.round(v).toLocaleString("vi-VN");
+      const nums = n.limit && n.requested ? ` (yêu cầu này cần khoảng ${nf(n.requested)} token, gói chỉ cho ${nf(n.limit)} token mỗi phút)` : "";
+      return (
+        `${name}: yêu cầu lớn hơn hạn mức token mỗi phút của gói đang dùng${nums}. Mỗi yêu cầu của add-in gửi kèm mô tả các công cụ nên không thu nhỏ được; ` +
+        `gửi lại cũng không qua. ${keep}: ${swap}, hoặc nâng gói ở trang của ${name}.`
+      );
+    }
     case "browser_blocked":
       return (
         `Tổ chức của key ${name} này không cho gọi trực tiếp từ add-in (do thiết lập lưu dữ liệu hoặc Compliance API của tổ chức); key không sai. ` +
@@ -195,6 +223,20 @@ export function messageForStatus(status: number, detail = ""): string {
   if (status === 529) return `Nhà cung cấp đang quá tải (529). Thử lại sau hoặc đổi model${d}`;
   if (status >= 500) return `Máy chủ nhà cung cấp đang lỗi (${status}). Thử lại sau${d}`;
   return `Lỗi ${status}${d}`;
+}
+
+/** Gợi ý tiếng Việt cho lỗi Office.js đã biết nguyên nhân (đo trong Office). Không nhận ra thì trả null.
+ *  Word thu nhỏ cửa sổ: Office.js từ chối chèn nhận xét (AccessDenied) và ô điền mẫu (GeneralException) — đo 16/11/2026, tasks/dot-3.md. */
+export function officeErrorHint(tool: string, e: any): string | null {
+  const code = String(e?.code || "");
+  const msg = String(e?.message || e || "");
+  if (tool === "word_add_comment" && (code === "AccessDenied" || /AccessDenied|access.*denied/i.test(msg))) {
+    return (
+      "Word từ chối thêm nhận xét. Nguyên nhân thường gặp nhất: cửa sổ Word đang bị THU NHỎ — khi đó Word không cho add-in thêm nhận xét (sửa chữ vẫn được). " +
+      "Chưa thêm được nhận xét nào. Nhắn người dùng mở lại (khôi phục) cửa sổ Word rồi bảo làm lại; nếu cửa sổ đang mở bình thường thì văn bản có thể đang bị hạn chế chỉnh sửa (thẻ Review → Restrict Editing)."
+    );
+  }
+  return null;
 }
 
 /** Ký tự ẩn hay lẫn vào khi chép key từ web, Zalo, Word: dấu cách rộng 0, BOM, gạch nối mềm… */
