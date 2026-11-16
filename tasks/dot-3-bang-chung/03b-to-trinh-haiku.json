@@ -1,0 +1,91 @@
+{
+ "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "yeuCau": "Soạn một tờ trình của Ban Pháp chế, Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng trình Hội đồng quản trị về việc phê duyệt phương án điều chỉnh tiến độ dự án Khu nhà ở Sông Hồng: lùi mốc hoàn thành hạ tầng kỹ thuật từ quý IV/2026 sang quý II/2027, chi phí phát sinh dự kiến 4,2 tỷ đồng. Người ký: Trưởng ban Pháp chế Trần Thị Hoa. Địa danh: Hà Nội.",
+ "giay": 39,
+ "daHoi": [
+  "AI muốn: Dựng văn bản hành chính đúng thể thức: Phê duyệt phương án điều chỉnh tiến độ dự án Khu n | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "kyNangTuNap": "Kỹ năng áp dụng: soan-thao-van-ban-hanh-chinh",
+ "canhBaoNoiDaSua": false,
+ "buocCongCu": [
+  "Sửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt."
+ ],
+ "truoc": {
+  "soDoanCoChu": 0,
+  "trang": {
+   "tren": 25.4,
+   "duoi": 25.4,
+   "trai": 25.4,
+   "phai": 25.4,
+   "rong": 215.9,
+   "cao": 279.4,
+   "soTrangDauTrang": "",
+   "anTrangDau": false
+  }
+ },
+ "sau": {
+  "soDoanCoChu": 27,
+  "bang": 2,
+  "suaDoiDuocTheoDoi": 51,
+  "trang": {
+   "tren": 20,
+   "duoi": 20,
+   "trai": 30,
+   "phai": 20,
+   "rong": 210,
+   "cao": 297,
+   "soTrangDauTrang": "1",
+   "anTrangDau": true
+  }
+ },
+ "doiChieu": [
+  "Đạt · Quốc hiệu in hoa, đậm, cỡ 12–13, canh giữa — cỡ 13",
+  "Đạt · Tiêu ngữ đậm, cỡ 13–14, lớn hơn quốc hiệu 1 cỡ — cỡ 14",
+  "Đạt · Tên cơ quan ban hành in hoa, đậm, cỡ 12–13 — “CÔNG TY CỔ PHẦN ĐẦU TƯ PHÁT TRIỂN ĐÔ THỊ SÔNG HỒNG” đậm 13 | “TRƯỞNG BAN PHÁP CHẾ” đậm 14",
+  "Đạt · Số và ký hiệu, cỡ 13 — “Số:      /TTr-SH”",
+  "Đạt · Địa danh, ngày tháng: nghiêng, cỡ 13–14 — “Hà Nội, ngày      tháng      năm 2026”",
+  "Đạt · Tên loại in hoa, đậm, canh giữa, cỡ 13–14 — TỜ TRÌNH",
+  "Đạt · Trích yếu đậm, canh giữa, ngay dưới tên loại — “Phê duyệt phương án điều chỉnh tiến độ dự án Khu nhà ở Sông Hồng”",
+  "Đạt · Kính gửi, cỡ 13–14 — “Kính gửi: Hội đồng quản trị Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng”",
+  "KHÔNG · Nội dung: cỡ 13–14, canh đều, thụt đầu dòng 10–12,7 mm, cách đoạn ≥ 6 pt — 8/10 đoạn dài đúng",
+  "Đạt · Kết thúc nội dung bằng “./.”",
+  "Đạt · “Nơi nhận:” cỡ 12, nghiêng, đậm",
+  "Đạt · Dòng “- Lưu: …” cỡ 11, kết bằng dấu chấm — “- Lưu: VT, Ban Pháp chế.”",
+  "Đạt · Phần ký: chức vụ in hoa đậm, họ tên đậm — TRƯỞNG BAN PHÁP CHẾ / Trần Thị Hoa",
+  "Đạt · Phông Times New Roman, chữ đen ở mọi đoạn — Times New Roman",
+  "KHÔNG · Đường kẻ dưới tên cơ quan, dưới tiêu ngữ, dưới trích yếu — 4 đường kẻ",
+  "Đạt · Giấy A4, lề trên 20–25, dưới 20–25, trái 30–35, phải 15–20 mm — 210×297 mm; lề 20/20/30/20",
+  "Đạt · Số trang ở đầu trang, ẩn trang đầu — đầu trang: “1”"
+ ],
+ "dat": "15/17",
+ "vanBan": [
+  "▦ CÔNG TY CỔ PHẦN ĐẦU TƯ PHÁT TRIỂN ĐÔ THỊ SÔNG HỒNG",
+  "▦ CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+  "▦ Độc lập - Tự do - Hạnh phúc",
+  "▦ Số:      /TTr-SH",
+  "▦ Hà Nội, ngày      tháng      năm 2026",
+  "TỜ TRÌNH",
+  "Phê duyệt phương án điều chỉnh tiến độ dự án Khu nhà ở Sông Hồng",
+  "Kính gửi: Hội đồng quản trị Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng",
+  "I. Sự cần thiết và căn cứ",
+  "Dự án Khu nhà ở Sông Hồng đang được triển khai theo tiến độ đã thông qua, trong đó mốc hoàn thành hạ tầng kỹ thuật dự kiến trong quý IV/2026. Ban Pháp",
+  "II. Nội dung đề xuất",
+  "1. Điều chỉnh mốc hoàn thành hạ tầng kỹ thuật Khu nhà ở Sông Hồng từ quý IV/2026 sang quý II/2027.",
+  "2. Chi phí phát sinh dự kiến do điều chỉnh tiến độ: 4,2 tỷ đồng (bốn tỷ hai trăm triệu đồng). Nguồn chi phí: [cần xác định].",
+  "3. Giao Tổng giám đốc tổ chức thực hiện phương án; định kỳ báo cáo Hội đồng quản trị về tiến độ và chi phí; Ban Pháp chế phối hợp rà soát hồ sơ pháp l",
+  "III. Kiến nghị",
+  "Trên cơ sở nêu trên, Ban Pháp chế kính trình Hội đồng quản trị xem xét, thông qua:",
+  "a) Phê duyệt phương án điều chỉnh tiến độ hoàn thành hạ tầng kỹ thuật Khu nhà ở Sông Hồng từ quý IV/2026 sang quý II/2027;",
+  "b) Chấp thuận chi phí phát sinh dự kiến 4,2 tỷ đồng để thực hiện phương án;",
+  "c) Giao Tổng giám đốc tổ chức triển khai và báo cáo kết quả theo quy định.",
+  "Kính trình Hội đồng quản trị xem xét, quyết định./.",
+  "▦ Nơi nhận:",
+  "▦ TRƯỞNG BAN PHÁP CHẾ",
+  "▦ - Như trên;",
+  "▦ - Hội đồng quản trị (để báo cáo);",
+  "▦ - Ban Tổng giám đốc;",
+  "▦ - Lưu: VT, Ban Pháp chế.",
+  "▦ Trần Thị Hoa"
+ ],
+ "cuoiKhung": "iền\n✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — đúng chuẩn\nTôi đã soạn xong tờ trình của Ban Pháp chế, dựng theo thể thức hành chính và ghi bằng Theo dõi thay đổi để bạn duyệt.\n \nNội dung chính:\n• Phần đầu: Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng; kính gửi Hội đồng quản trị; ký hiệu TTr-SH; trích yếu \"Phê duyệt phương án điều chỉnh tiến độ dự án Khu nhà ở Sông Hồng\".\n• I. Sự cần thiết và căn cứ: nêu hiện trạng tiến độ (quý IV/2026).\n• II. Nội dung đề xuất: lùi mốc hoàn thành hạ tầng kỹ thuật sang quý II/2027; chi phí phát sinh dự kiến 4,2 tỷ đồng; giao Tổng giám đốc tổ chức thực hiện.\n• III. Kiến nghị: ba điểm a), b), c) để Hội đồng quản trị thông qua; kết \"Kính trình Hội đồng quản trị xem xét, quyết định./.\"\n• Người ký: Trưởng Ban Pháp chế Trần Thị Hoa; địa danh Hà Nội.\n \nCần điền trước khi trình ký:\n1. Số văn bản (để văn thư cấp).\n2. Ngày tháng ban hành.\n3. Lý do cụ thể của việc điều chỉnh tiến độ và căn cứ pháp lý liên quan (ghi trong mục I).\n4. Nguồn chi phí 4,2 tỷ đồng (ghi trong mục II.2).\n \nBạn cung cấp các thông tin này, tôi sẽ cập nhật đúng từng đoạn. Thể thức trang đã đạt chuẩn: A4 dọc, lề trên/dưới 20 mm, trái 30 mm, phải 20 mm, Times New Roman.\nToken: vào 43.381 · ra 3.991 · đọc từ bộ nhớ đệm 34.826 · ghi vào bộ nhớ đệm 8.549\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}

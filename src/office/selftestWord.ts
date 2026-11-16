@@ -1030,8 +1030,58 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     expect(after.tables === before.tables, `Sau hoàn tác còn ${after.tables - before.tables} bảng thừa`);
     expect(after.paras.map((p) => p.text).join("\n") === before.paras.map((p) => p.text).join("\n"), "Chữ của vùng thử sau hoàn tác khác trước");
     expect(c2.changes === c0.changes, `Sửa đổi chờ duyệt: trước ${c0.changes}, sau hoàn tác ${c2.changes}`);
+    // Tờ trình không có cơ quan chủ quản: ba đường kẻ (tên cơ quan, tiêu ngữ, trích yếu), có tên loại và trích yếu
+    let rules2 = -1;
+    let where2 = "";
+    const mark3 = log.length;
+    await run("word_create_admin_document", {
+      doc_type: "to_trinh",
+      org: `Công ty thử ${code}`,
+      symbol: "TTr-THU",
+      subject: `Phê duyệt phương án thử ${code}`,
+      to: ["Hội đồng quản trị", "Ban Kiểm soát"],
+      body: `## I. Sự cần thiết\nNội dung trình ${code}.`,
+      signer_authority: "KT. Giám đốc",
+      signer_title: "Phó Giám đốc",
+      signer_name: "TS. Nguyễn Văn Thử",
+      page_setup: false,
+      position: "after_paragraph",
+      paragraph_index: await need(NEO),
+      expect: NEO.slice(0, 30),
+    });
+    const tt = await zone();
+    const has = (t: string) => tt.paras.find((p) => p.text === t);
+    expect(!!has("TỜ TRÌNH") && has("TỜ TRÌNH")!.bold && has("TỜ TRÌNH")!.align === "Centered", "Thiếu tên loại TỜ TRÌNH in đậm canh giữa");
+    expect(!!has(`Phê duyệt phương án thử ${code}`)?.bold, "Trích yếu phải đậm");
+    expect(!!has("- Hội đồng quản trị;") && !!has("- Ban Kiểm soát.") && !!has("Kính gửi:"), "Kính gửi nhiều nơi: mỗi nơi một dòng, chấm phẩy rồi chấm");
+    expect(!!has("KT. GIÁM ĐỐC") && !!has("PHÓ GIÁM ĐỐC") && !!has("Nguyễn Văn Thử"), "Phần ký: quyền hạn, chức vụ in hoa; họ tên bỏ học vị");
+    expect(tt.tables === before.tables + 2, `Tờ trình: ${tt.tables - before.tables} bảng (phải là 2)`);
+    // Thứ tự các thành phần đúng như bản vẽ (đã có lần bảng chèn sau đoạn rỗng làm đảo thứ tự)
+    const order = ["CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM", "TỜ TRÌNH", `Phê duyệt phương án thử ${code}`, "Kính gửi:", "- Hội đồng quản trị;", "I. Sự cần thiết", "Nơi nhận:", "Nguyễn Văn Thử"].map((t) => tt.paras.findIndex((p) => p.text === t));
+    expect(order.every((v, k) => v >= 0 && (k === 0 || v > order[k - 1])), `Thứ tự thành phần sai: ${order.join(", ")}`);
+    if (sup("1.3", "WordApiDesktop")) {
+      const s = await need(START);
+      const e = await need(END);
+      rules2 = await Word.run(async (ctx) => {
+        const ps = ctx.document.body.paragraphs;
+        ps.load("items/text");
+        await ctx.sync();
+        const empties = ps.items.slice(s, e + 1).filter((p) => !p.text.trim());
+        empties.forEach((p) => p.borders.load("items/lineStyle"));
+        await ctx.sync();
+        const hit = empties.filter((p) => p.borders.items[2] && String(p.borders.items[2].lineStyle) === "Single");
+        where2 = ps.items.map((p, k) => (hit.includes(p) ? `${k - s}:${ps.items[k - 1]?.text.slice(0, 12)}|${ps.items[k + 1]?.text.slice(0, 12)}` : "")).filter(Boolean).join(" ; ");
+        return hit.length;
+      });
+      expect(rules2 === 3, `Tờ trình: ${rules2} đường kẻ, phải là 3 (tên cơ quan, tiêu ngữ, trích yếu) — ở: ${where2}`);
+    }
+    for (const u of log.slice(mark3).reverse()) await u.undo();
+    log.length = mark3;
+    const after2 = await zone();
+    const left = after2.paras.map((p) => p.text).filter((t, k) => t !== before.paras[k]?.text).slice(0, 4);
+    expect(after2.tables === before.tables && after2.paras.length === before.paras.length, `Hoàn tác tờ trình chưa sạch: bảng ${before.tables} → ${after2.tables}, đoạn ${before.paras.length} → ${after2.paras.length}; còn lại: ${left.map((t) => `“${t.slice(0, 30)}”`).join(", ")}`);
     await dropNeo();
-    return `Công văn: 2 bảng không viền, ${mid.paras.length - before.paras.length} đoạn, ${rules < 0 ? "không đo được đường kẻ" : rules + " đường kẻ"}, báo ${r.blanks.length} chỗ trống; hoàn tác sạch`;
+    return `Tờ trình: 2 bảng, ${rules2 < 0 ? "không đo được" : rules2} đường kẻ, hoàn tác sạch. Công văn: 2 bảng không viền, ${mid.paras.length - before.paras.length} đoạn, ${rules < 0 ? "không đo được đường kẻ" : rules + " đường kẻ"}, báo ${r.blanks.length} chỗ trống; hoàn tác sạch`;
   });
 
   await step("Đặt thể thức trang: đổi lề rồi hoàn tác về đúng lề cũ; định dạng thụt đầu dòng, cách đoạn, giãn dòng", async () => {

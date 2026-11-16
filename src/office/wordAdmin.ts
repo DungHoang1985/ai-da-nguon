@@ -18,8 +18,8 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
       type: "object",
       properties: {
         doc_type: { type: "string", enum: DOC_TYPES as unknown as string[], description: "cong_van has no title line and shows the subject as 'V/v …' under the number." },
-        org: { type: "string", description: "Issuing organisation, full official name." },
-        parent_org: { type: "string", description: "Direct parent organisation, if any." },
+        org: { type: "string", description: "The organisation or unit that issues and signs this document (printed in bold), full official name." },
+        parent_org: { type: "string", description: "Organisation directly ABOVE the issuing one, printed on the line above it (e.g. the company when one of its departments issues the document). Omit if none." },
         number: { type: "string", description: "Document number. Normally omit: the records clerk assigns it." },
         symbol: { type: "string", description: "Symbol after the number, e.g. 'TTr-ABC' (type abbreviation + organisation) or 'ABC-PC' for a công văn." },
         place: { type: "string", description: "Place name, e.g. 'Hà Nội'." },
@@ -251,7 +251,7 @@ export function createWordAdminTools(d: Deps) {
       p.rightIndent = mm(side);
       rules.push({ p });
     } else {
-      p.leftIndent = 0;
+      p.leftIndent = x.leftMm ? mm(x.leftMm) : 0;
       p.rightIndent = 0;
     }
   }
@@ -263,7 +263,8 @@ export function createWordAdminTools(d: Deps) {
     let prev: Word.Paragraph | Word.Table | null = null;
     for (const b of plan.blocks) {
       if (b.kind === "table") {
-        const values = b.rows.map((r) => [r[0].text, r[1].text]);
+        // Ô nhiều đoạn: đoạn sẵn có của ô mang chữ của đoạn CUỐI, các đoạn trước chèn "Before" nó (đã đo: "After" rơi sang ô kế)
+        const values = b.rows.map((r) => [r[0][r[0].length - 1].text, r[1][r[1].length - 1].text]);
         const t: Word.Table = prev ? prev.insertTable(values.length, 2, "After", values) : anchor.insertTable(values.length, 2, where, values);
         t.headerRowCount = 0;
         t.getBorder("All" as any).type = "None" as any;
@@ -274,7 +275,12 @@ export function createWordAdminTools(d: Deps) {
         t.getCell(0, 1).columnWidth = mm(b.widths[1]);
         b.rows.forEach((r, ri) =>
           r.forEach((cell, ci) => {
-            fmt(t.getCell(ri, ci).body.paragraphs.getFirst(), cell, b.widths[ci], rules);
+            let cur = t.getCell(ri, ci).body.paragraphs.getFirst();
+            fmt(cur, cell[cell.length - 1], b.widths[ci], rules);
+            for (let k = cell.length - 2; k >= 0; k--) {
+              cur = cur.insertParagraph(cell[k].text, "Before");
+              fmt(cur, cell[k], b.widths[ci], rules);
+            }
           })
         );
         prev = t;
@@ -308,16 +314,20 @@ export function createWordAdminTools(d: Deps) {
         bottom.lineWidth = "Pt075" as any;
       }
       await ctx.sync();
+
     }
     // Định danh của thứ đã chèn — cho cách hoàn tác thay thế khi Word gộp phần chèn vào một sửa đổi có từ trước
     const made: { id: string; head: string; table: boolean }[] = [];
     if (d.supports("1.6")) {
       const marks: { p: Word.Paragraph; table: boolean }[] = [];
+      // Theo đúng thứ tự trong văn bản: khi gỡ (từ cuối lên) không đoạn rỗng nào còn đứng ngay trước một bảng
+      // (đã đo: xóa đoạn rỗng đứng ngay trước bảng thì Word giữ lại đoạn đó)
       let k = 0;
+      let j = 0;
       for (const b of plan.blocks) {
         if (b.kind === "table") marks.push({ p: tables[k++].getCell(0, 0).body.paragraphs.getFirst(), table: true });
+        else marks.push({ p: plain[j++], table: false });
       }
-      plain.forEach((p) => marks.push({ p, table: false }));
       marks.forEach((m) => m.p.load("uniqueLocalId,text"));
       await ctx.sync();
       marks.forEach((m) => made.push({ id: m.p.uniqueLocalId, head: m.p.text.slice(0, 20), table: m.table }));
@@ -334,7 +344,7 @@ export function createWordAdminTools(d: Deps) {
             const p = ctx.document.getParagraphByUniqueLocalId(m.id);
             p.load("text");
             await ctx.sync();
-            if (m.head && !p.text.includes(m.head)) return;
+            if (m.head ? !p.text.includes(m.head) : !!p.text.trim()) return;
             if (m.table) p.parentTable.delete();
             else p.delete();
             await ctx.sync();
@@ -346,7 +356,7 @@ export function createWordAdminTools(d: Deps) {
     }
   };
 
-  async function createDocument(a: any, extra: UndoStep[], inverse: UndoStep[], touched: string[]) {
+  async function createDocument(a: any, extra: UndoStep[], inverse: UndoStep[], touched: string[], after: UndoStep[]) {
     const plan = planAdminDocument({ ...a, year: new Date().getFullYear() });
     return Word.run(async (ctx) => {
       const state = await isEmptyDoc(ctx);
@@ -373,10 +383,19 @@ export function createWordAdminTools(d: Deps) {
           anchor = ctx.document.body.paragraphs.getFirst();
           where = "Before";
         } else anchor = ctx.document.body.paragraphs.getLast();
+        // Đã đo: chèn bảng ngay SAU một đoạn rỗng thì bảng nuốt đoạn đó và thứ tự bị đảo → gặp đoạn neo rỗng thì chèn TRƯỚC nó
+        if (where === "After") {
+          anchor.load("text");
+          await ctx.sync();
+          if (!anchor.text.trim()) where = "Before";
+        }
         return build(ctx, plan, anchor, where, width);
       });
       if (res.made.length) {
-        inverse.push(removeMade(res.made));
+        // Hoàn tác = gỡ thẳng theo định danh (đứng trước bước trả lại thể thức trang trong danh sách, nên chạy sau nó)
+        extra.push(removeMade(res.made));
+        void inverse;
+        void after;
         res.made.forEach((m) => touched.push(m.id));
       }
       const narrow = width < 150 ? ` Lưu ý: vùng trình bày của trang chỉ rộng ${width} mm (chuẩn 160 mm), các bảng thể thức có thể tràn lề — đặt lại lề bằng word_set_page_format.` : "";
@@ -401,8 +420,8 @@ export function createWordAdminTools(d: Deps) {
 
   return {
     has: (name: string) => names.has(name),
-    run: (name: string, a: any, u: { extra: UndoStep[]; inverse: UndoStep[]; touched: string[] }) =>
-      name === "word_set_page_format" ? setPage(a, u.extra) : createDocument(a || {}, u.extra, u.inverse, u.touched),
+    run: (name: string, a: any, u: { extra: UndoStep[]; inverse: UndoStep[]; touched: string[]; after?: UndoStep[] }) =>
+      name === "word_set_page_format" ? setPage(a, u.extra) : createDocument(a || {}, u.extra, u.inverse, u.touched, u.after || []),
     /** Cảnh báo rủi ro: đổi thể thức trang của một văn bản đang có nội dung khi dựng văn bản mới vào đó */
     risk: {
       word_create_admin_document: (a: any) =>

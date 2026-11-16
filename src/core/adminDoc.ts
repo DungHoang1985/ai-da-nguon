@@ -40,6 +40,8 @@ export interface Para {
   before?: number;
   /** Giãn dòng theo số dòng (1 = đơn) */
   line?: number;
+  /** Thụt cả đoạn về bên trái (mm) */
+  leftMm?: number;
   /** Đường kẻ ngang thay cho chữ: bề dài (mm), đặt giữa */
   ruleMm?: number;
   keepNext?: boolean;
@@ -49,8 +51,9 @@ export interface TableBlock {
   kind: "table";
   /** Bề rộng hai cột (mm) */
   widths: [number, number];
-  /** Mỗi hàng hai ô, mỗi ô đúng một đoạn (đã đo trong Word: chèn đoạn thứ hai vào ô bằng insertParagraph sẽ rơi sang ô kế) */
-  rows: [Para, Para][];
+  /** Mỗi hàng hai ô, mỗi ô là một dãy đoạn (ít nhất một). Đã đo trong Word 16/11/2026: thêm đoạn vào ô phải chèn "Before" đoạn sẵn có
+   *  ("After" rơi sang ô kế); viền dưới của đoạn DUY NHẤT hoặc đoạn CUỐI trong ô dính sang ô cùng hàng → đường kẻ không bao giờ là đoạn cuối ô. */
+  rows: [Para[], Para[]][];
 }
 export interface ParaBlock extends Para {
   kind: "para";
@@ -196,22 +199,19 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   const leftW = 62;
   const rightW = TEXT_WIDTH_MM - leftW;
   const orgUp = upper(org);
-  const head: [Para, Para][] = [];
-  if (parent) head.push([{ text: upper(parent), size: hdr, align: "Centered" }, { text: QUOC_HIEU, size: hdr, bold: true, align: "Centered" }]);
-  head.push([
-    { text: orgUp, size: hdr, bold: true, align: "Centered" },
-    parent ? { text: TIEU_NGU, size: hdr + 1, bold: true, align: "Centered" } : { text: QUOC_HIEU, size: hdr, bold: true, align: "Centered" },
-  ]);
+  const head: [Para[], Para[]][] = [];
   const orgRule = Math.max(12, Math.min(leftW - 8, Math.min(estimateWidthMm(orgUp, hdr, { bold: true }), leftW - 4) * 0.4));
   const mottoRule = Math.min(rightW - 6, estimateWidthMm(TIEU_NGU, hdr + 1, { bold: true }));
-  if (parent) head.push([{ text: "", size: 3, align: "Centered", ruleMm: orgRule }, { text: "", size: 3, align: "Centered", ruleMm: mottoRule }]);
-  else {
-    head.push([{ text: "", size: 3, align: "Centered", ruleMm: orgRule }, { text: TIEU_NGU, size: hdr + 1, bold: true, align: "Centered" }]);
-    head.push([empty(3), { text: "", size: 3, align: "Centered", ruleMm: mottoRule }]);
-  }
-  const dateCell: Para = type === "bien_ban" ? empty(size) : { text: diaDanh, size: hdr + 1, italic: true, align: "Centered", before: 6 };
-  head.push([{ text: soKyHieu, size: 13, align: "Centered", before: 6 }, dateCell]);
-  if (type === "cong_van") head.push([{ text: `V/v ${subject || BLANK}`, size: hdr, align: "Centered", before: 6 }, empty(hdr)]);
+  const leftTop: Para[] = [];
+  if (parent) leftTop.push({ text: upper(parent), size: hdr, align: "Centered" });
+  leftTop.push({ text: orgUp, size: hdr, bold: true, align: "Centered" }, { text: "", size: 3, align: "Centered", ruleMm: orgRule }, empty(2));
+  head.push([
+    leftTop,
+    [{ text: QUOC_HIEU, size: hdr, bold: true, align: "Centered" }, { text: TIEU_NGU, size: hdr + 1, bold: true, align: "Centered" }, { text: "", size: 3, align: "Centered", ruleMm: mottoRule }, empty(2)],
+  ]);
+  const dateCell: Para = type === "bien_ban" ? empty(size) : { text: diaDanh, size: hdr + 1, italic: true, align: "Centered", before: 4 };
+  head.push([[{ text: soKyHieu, size: 13, align: "Centered", before: 4 }], [dateCell]]);
+  if (type === "cong_van") head.push([[{ text: `V/v ${subject || BLANK}`, size: hdr, align: "Centered", before: 6 }], [empty(hdr)]]);
   blocks.push({ kind: "table", widths: [leftW, rightW], rows: head });
 
   // ----- Tên loại và trích yếu -----
@@ -235,11 +235,9 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   }
   if (to.length === 1) blocks.push({ kind: "para", text: `Kính gửi: ${to[0]}`, size, align: "Centered", after: 12, line: 1.2 });
   else if (to.length > 1) {
-    blocks.push({ kind: "table", widths: [48, TEXT_WIDTH_MM - 48], rows: to.map((t, i) => [
-      i === 0 ? { text: "Kính gửi:", size, align: "Right" as Align } : { text: "", size, align: "Right" as Align },
-      { text: `- ${t}${i === to.length - 1 ? "." : ";"}`, size, align: "Left" as Align },
-    ]) as [Para, Para][] });
-    blocks.push({ kind: "para", text: "", size: 6, align: "Centered" });
+    // Không dùng bảng ở đây: đã đo trong Word, chèn bảng ngay sau một đoạn rỗng (đường kẻ dưới trích yếu) thì bảng nuốt đoạn đó
+    blocks.push({ kind: "para", text: "Kính gửi:", size, align: "Left", leftMm: 30, line: 1.2 });
+    to.forEach((t, i) => blocks.push({ kind: "para", text: `- ${t}${i === to.length - 1 ? "." : ";"}`, size, align: "Left", leftMm: 52, line: 1.2, after: i === to.length - 1 ? 12 : 0 }));
   }
 
   // ----- Nội dung -----
@@ -285,10 +283,7 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
     left.push({ text: "Nơi nhận:", size: 12, bold: true, italic: true, align: "Left" });
     recipients.forEach((r, i) => left.push({ text: `- ${r}${i === recipients.length - 1 ? "." : ";"}`, size: 11, align: "Left" }));
   }
-  const n = Math.max(left.length, rightClean.length);
-  const rows: [Para, Para][] = [];
-  for (let i = 0; i < n; i++) rows.push([left[i] || empty(11), rightClean[i] || empty(size)]);
-  blocks.push({ kind: "table", widths: lTitle ? [TEXT_WIDTH_MM / 2, TEXT_WIDTH_MM / 2] : [78, TEXT_WIDTH_MM - 78], rows });
+  blocks.push({ kind: "table", widths: lTitle ? [TEXT_WIDTH_MM / 2, TEXT_WIDTH_MM / 2] : [78, TEXT_WIDTH_MM - 78], rows: [[left, rightClean]] });
   if (lTitle) {
     blocks.push({ kind: "para", text: "Nơi nhận:", size: 12, bold: true, italic: true, align: "Left", before: 12 });
     recipients.forEach((r, i) => blocks.push({ kind: "para", text: `- ${r}${i === recipients.length - 1 ? "." : ";"}`, size: 11, align: "Left" }));

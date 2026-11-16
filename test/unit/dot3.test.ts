@@ -8,7 +8,7 @@ import { QUICK_PROMPTS, describeCall } from "../../src/office/tools";
 
 const tables = (p: ReturnType<typeof planAdminDocument>) => p.blocks.filter((b) => b.kind === "table") as TableBlock[];
 const paras = (p: ReturnType<typeof planAdminDocument>) => p.blocks.filter((b) => b.kind === "para") as ParaBlock[];
-const cells = (t: TableBlock) => t.rows.flatMap((r) => r);
+const cells = (t: TableBlock) => t.rows.flatMap((r) => [...r[0], ...r[1]]);
 
 describe("Đợt 3 · A1 · Bản vẽ văn bản hành chính", () => {
   const base = {
@@ -59,7 +59,7 @@ describe("Đợt 3 · A1 · Bản vẽ văn bản hành chính", () => {
       ]
     );
     // Chừa ít nhất bốn dòng cho chữ ký
-    const right = sign.rows.map((r) => r[1].text);
+    const right = sign.rows[0][1].map((c) => c.text);
     assert.ok(right.indexOf("Nguyễn Văn A") - right.indexOf("GIÁM ĐỐC") >= 5);
     assert.deepStrictEqual(p.blanks, ["số văn bản (để văn thư cấp)", "ngày tháng ban hành", "đơn vị soạn thảo ở dòng Lưu"]);
     assert.match(adminDocBrief(p), /công văn.*3 chỗ cần điền/);
@@ -105,17 +105,24 @@ describe("Đợt 3 · A1 · Bản vẽ văn bản hành chính", () => {
   it("Biên bản: hai người ký, không có địa danh ngày tháng ở đầu, Nơi nhận nằm dưới", () => {
     const p = planAdminDocument({ doc_type: "bien_ban", org: "Công ty ABC", subject: "Họp giao ban tháng 11", body: "Thời gian bắt đầu: 8 giờ.\nNội dung: …", left_signer_title: "Thư ký", left_signer_name: "Trần Thị B", signer_title: "Chủ tọa", signer_name: "Nguyễn Văn A" });
     const sign = tables(p)[1];
-    assert.deepStrictEqual(sign.rows[0].map((c) => c.text), ["THƯ KÝ", "CHỦ TỌA"]);
-    assert.deepStrictEqual(sign.rows[sign.rows.length - 1].map((c) => c.text), ["Trần Thị B", "Nguyễn Văn A"]);
+    assert.deepStrictEqual(sign.rows[0].map((c) => c[0].text), ["THƯ KÝ", "CHỦ TỌA"]);
+    assert.deepStrictEqual(sign.rows[0].map((c) => c[c.length - 1].text), ["Trần Thị B", "Nguyễn Văn A"]);
+    assert.strictEqual(sign.rows[0][0].length, sign.rows[0][1].length);
     assert.ok(!cells(tables(p)[0]).some((c) => /ngày\s+tháng/.test(c.text)));
     assert.ok(paras(p).some((x) => x.text === "- Lưu: VT, Hồ sơ."));
   });
 
   it("Nhiều nơi nhận ở Kính gửi: mỗi nơi một dòng, chấm phẩy rồi chấm", () => {
     const p = planAdminDocument({ ...base, to: ["Sở Xây dựng", "Sở Tài chính;", "- Ủy ban nhân dân quận"] });
-    const kg = tables(p)[1];
-    assert.deepStrictEqual(kg.rows.map((r) => r[1].text), ["- Sở Xây dựng;", "- Sở Tài chính;", "- Ủy ban nhân dân quận."]);
-    assert.strictEqual(kg.rows[0][0].text, "Kính gửi:");
+    const ps = paras(p);
+    const k = ps.findIndex((x) => x.text === "Kính gửi:");
+    assert.deepStrictEqual(ps.slice(k + 1, k + 4).map((x) => x.text), ["- Sở Xây dựng;", "- Sở Tài chính;", "- Ủy ban nhân dân quận."]);
+    assert.ok((ps[k + 1].leftMm || 0) > (ps[k].leftMm || 0));
+    // Chỉ hai bảng (phần đầu, phần ký) và không bảng nào đứng ngay sau một đoạn rỗng
+    assert.strictEqual(tables(p).length, 2);
+    p.blocks.forEach((b, i) => assert.ok(!(b.kind === "table" && i > 0 && p.blocks[i - 1].kind === "para" && !(p.blocks[i - 1] as ParaBlock).text), "bảng sau đoạn rỗng"));
+    // Đường kẻ không bao giờ là đoạn cuối của một ô (viền của đoạn cuối ô dính sang ô cùng hàng)
+    for (const t of tables(p)) for (const r of t.rows) for (const c of r) assert.ok(c.length >= 1 && !c[c.length - 1].ruleMm);
   });
 
   it("Không bịa: thiếu cơ quan ban hành hoặc nội dung thì từ chối; bỏ học hàm học vị khỏi tên người ký", () => {
@@ -178,5 +185,85 @@ describe("Đợt 3 · A1 · Kỹ năng soạn thảo văn bản hành chính", (
     assert.ok(QUICK_PROMPTS.Word.some((q) => /công văn/.test(q)));
     const fmt = WORD_SPECS.find((s) => s.name === "word_format_text")!;
     assert.ok(fmt.parameters.properties.first_line_indent_mm && fmt.parameters.properties.line_spacing);
+  });
+});
+
+import { REDO_WITH_TOOLS, findWriteClaim, hasEditIntent, unverifiedWriteClaim } from "../../src/core/claims";
+
+describe("Đợt 3 · A2 · Cảnh báo 'nói đã sửa mà không ghi'", () => {
+  const ask = "Sửa mức phạt ở Điều 5 từ 150% xuống 120%";
+  const warn = (answer: string, o: Partial<Parameters<typeof unverifiedWriteClaim>[0]> = {}) =>
+    unverifiedWriteClaim({ userText: ask, answer, wrote: false, toolsCalled: [], ...o });
+
+  it("Khẳng định đã làm mà không có thao tác ghi: cảnh báo", () => {
+    for (const a of [
+      "Đã sửa mức phạt tại Điều 5 từ 150% xuống 120%.",
+      "Tôi đã thay “150%” bằng “120%” ở Điều 5.2.",
+      "✅ Đã cập nhật Điều 5.",
+      "Xong rồi ạ. Em đã chỉnh sửa điều khoản theo yêu cầu.",
+      "Điều 5.2 đã được sửa thành 120%.",
+      "- Đã thay 150% bằng 120% ở [¶57]\n- Đã thêm nhận xét giải thích",
+      "**Đã sửa xong**, anh có thể kiểm tra lại ở Điều 5.",
+      "I've updated clause 5 to 120%.",
+      "The penalty rate has been changed to 120%.",
+      "Văn bản đã được cập nhật theo yêu cầu của anh.",
+      "Tôi vừa chèn công văn vào văn bản.",
+    ])
+      assert.ok(warn(a), a);
+  });
+
+  it("Có ghi thật thì không cảnh báo, dù câu trả lời nói đã sửa", () => {
+    assert.strictEqual(warn("Đã sửa mức phạt tại Điều 5.", { wrote: true, toolsCalled: ["word_replace_text"] }), null);
+  });
+
+  it("Mô tả, đề xuất, hỏi lại, nói chưa làm: không cảnh báo", () => {
+    for (const a of [
+      "Điều 5 quy định mức phạt 150%. Anh có muốn tôi sửa thành 120% không?",
+      "Tôi sẽ sửa Điều 5 từ 150% xuống 120% nếu anh đồng ý.",
+      "Tôi chưa sửa được vì không tìm thấy Điều 5 trong văn bản.",
+      "Tôi không thể sửa trực tiếp; đề xuất câu chữ như sau: “Mức phạt là 120%”.",
+      "Đề xuất: thay 150% bằng 120% ở Điều 5.2.",
+      "Nếu đã sửa mức phạt thì cần sửa cả Điều 9 cho thống nhất.",
+      "Anh nên sửa Điều 5 như sau: mức phạt 120%.",
+      "Sau khi anh xác nhận, tôi sẽ thay ngay.",
+      "Mức phạt hiện là 150%; để sửa, tôi cần biết anh muốn áp dụng từ ngày nào.",
+      "Văn bản có câu “Bên B đã thay đổi địa chỉ” ở Điều 3.",
+      "Đã đọc Điều 5: mức phạt đang là 150%.",
+      "Đã kiểm tra văn bản, không thấy Điều 5.",
+      "Bạn đã sửa mức phạt ở lượt trước rồi, hiện là 120%.",
+      "```\nĐã sửa Điều 5\n```\nĐây là câu mẫu để ghi vào biên bản.",
+    ])
+      assert.strictEqual(warn(a), null, a);
+  });
+
+  it("Kể lại sửa đổi của đối tác (đã gọi công cụ đọc sửa đổi), người dùng không nhờ sửa: không cảnh báo", () => {
+    const f = { userText: "Đối tác đã đụng vào những điều nào?", wrote: false, toolsCalled: ["word_list_revisions"] };
+    assert.strictEqual(unverifiedWriteClaim({ ...f, answer: "Điều 5.2 đã được sửa từ 30 thành 45 ngày.\n- Đã thêm khoản 8.3 về bảo hành." }), null);
+    assert.strictEqual(unverifiedWriteClaim({ ...f, answer: "Đã xóa Điều 12 và đã đổi tên Bên B ở phần đầu." }), null);
+    // Nhưng người dùng nhờ chấp nhận mà AI nói đã chấp nhận, không gọi công cụ duyệt: cảnh báo
+    assert.ok(unverifiedWriteClaim({ userText: "Chấp nhận các sửa đổi ở Điều 5", answer: "Đã chấp nhận 3 sửa đổi ở Điều 5.", wrote: false, toolsCalled: ["word_list_revisions"] }));
+  });
+
+  it("Người dùng chỉ hỏi, AI dùng câu bị động để mô tả: không cảnh báo; AI tự nhận 'tôi đã sửa': vẫn cảnh báo", () => {
+    assert.strictEqual(unverifiedWriteClaim({ userText: "Điều 5 nói gì?", answer: "Điều 5 đã được sửa đổi theo phụ lục 02.", wrote: false, toolsCalled: ["word_read_clause"] }), null);
+    assert.ok(unverifiedWriteClaim({ userText: "Điều 5 nói gì?", answer: "Tôi đã sửa Điều 5 cho rõ hơn.", wrote: false, toolsCalled: ["word_read_clause"] }));
+  });
+
+  it("Câu cảnh báo nêu đúng lý do: không gọi công cụ / chỉ đọc / ghi đều lỗi", () => {
+    assert.match(warn("Đã sửa Điều 5.")!.text, /không gọi công cụ nào.*CHƯA được thay đổi/);
+    assert.match(warn("Đã sửa Điều 5.", { toolsCalled: ["word_find"] })!.text, /chỉ gọi công cụ đọc/);
+    assert.match(warn("Đã sửa Điều 5.", { toolsCalled: ["word_replace_text"], failedWrites: 2 })!.text, /2 thao tác ghi của lượt này đều không thành công/);
+    assert.ok(warn("Đã sửa Điều 5.")!.text.includes("Đã sửa Điều 5"));
+  });
+
+  it("Nhận diện từng phần: độ mạnh của lời khẳng định, ý nhờ sửa của người dùng", () => {
+    assert.strictEqual(findWriteClaim("Tôi đã thêm khoản 8.3.").strength, "strong");
+    assert.strictEqual(findWriteClaim("Đã định dạng đoạn 3 thành chữ đậm.").strength, "medium");
+    assert.strictEqual(findWriteClaim("Điều 5 nói về phạt vi phạm.").strength, "none");
+    assert.strictEqual(findWriteClaim("Điều 5.3 đã được sửa.").strength, "medium");
+    assert.ok(hasEditIntent("soạn giúp tôi một công văn"));
+    assert.ok(hasEditIntent("Thêm một khoản sau 8.2"));
+    assert.ok(!hasEditIntent("Điều 5 nói gì?"));
+    assert.ok(REDO_WITH_TOOLS.includes("GỌI CÔNG CỤ"));
   });
 });

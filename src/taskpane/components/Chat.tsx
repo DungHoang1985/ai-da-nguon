@@ -44,6 +44,7 @@ import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, filesBase64Chars, readAttac
 import { clearAttachedFiles, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
+import { REDO_WITH_TOOLS, unverifiedWriteClaim } from "../../core/claims";
 import { RefTarget, findRefs } from "../../core/refs";
 import { parseMarkdownTable } from "../../core/table";
 import { HostName, INSERT_LABEL, insertAnswer, readSelection } from "../../office/host";
@@ -117,6 +118,19 @@ const useStyles = makeStyles({
   chip: { whiteSpace: "normal", textAlign: "left", height: "auto", minHeight: "28px" },
   muted: { color: tokens.colorNeutralForeground3 },
   err: { color: tokens.colorPaletteRedForeground1 },
+  /** Cảnh báo "AI nói đã sửa nhưng không ghi": phải nổi hơn chữ thường để không tin nhầm */
+  warnBox: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    alignItems: "flex-start",
+    padding: "6px 8px",
+    borderRadius: "4px",
+    borderLeft: `3px solid ${tokens.colorPaletteDarkOrangeBorder2}`,
+    backgroundColor: tokens.colorPaletteYellowBackground1,
+    color: tokens.colorNeutralForeground1,
+    fontWeight: 600,
+  },
   link: {
     color: tokens.colorBrandForegroundLink,
     textDecorationLine: "underline",
@@ -189,6 +203,8 @@ interface Item {
   skills?: string[];
   /** Số token của lượt (cộng mọi bước) */
   usage?: Usage;
+  /** AI nói đã thay đổi tài liệu nhưng lượt này không có thao tác ghi nào thành công (chỉ để hiện; không gửi cho model) */
+  claimWarning?: string;
 }
 
 interface Props {
@@ -607,6 +623,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     const key = storage.getKey(p.id);
     const instr = (settings.instructions || {})[host]?.trim();
     const log: UndoEntry[] = [];
+    /** Công cụ đã gọi trong lượt và số lệnh ghi không thành công — để nhận ra ca "nói đã sửa mà không ghi" */
+    const called: string[] = [];
+    let failedWrites = 0;
     let needSep = false;
     let retrying = false;
     const clearRetry = () => {
@@ -670,6 +689,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
             }));
           } else if (ev.type === "tool_end") {
             const isWrite = !!hostTools?.specs.some((t) => t.name === ev.call.name && t.write);
+            called.push(ev.call.name);
+            if (isWrite && ev.error) failedWrites++;
             patchLast((it) => ({
               ...it,
               wrote: it.wrote || (isWrite && !ev.error),
@@ -727,6 +748,12 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
               : info.text;
         const detail = `${info.detail}\nModel: ${modelId}\nPhiên bản: ${APP_VERSION_FULL}\nLúc: ${new Date().toLocaleString("vi-VN")}`;
         patchLast((it) => ({ ...it, error: msg, errorDetail: info.kind === "aborted" ? undefined : detail, errorReason: info.reason }));
+      } else if (useAgent && hostTools) {
+        // Lượt kết thúc bình thường: AI khẳng định đã thay đổi tài liệu mà không có thao tác ghi nào thành công → cảnh báo trên khung
+        patchLast((it) => {
+          const w = unverifiedWriteClaim({ userText: typed, answer: finalText(it), wrote: !!it.wrote, toolsCalled: called, failedWrites });
+          return w ? { ...it, claimWarning: w.text } : it;
+        });
       }
     } catch (e: any) {
       // runTurn không ném lỗi; tới đây là lỗi trong chính add-in
@@ -1000,6 +1027,21 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                   </Text>
                 ) : null}
                 {it.error && <Text className={s.err}>{it.error}</Text>}
+                {it.claimWarning && (
+                  <div className={s.warnBox} role="alert" data-claim-warning="1">
+                    <Text size={200}>⚠ {it.claimWarning}</Text>
+                    {!isLastBusy(i) && i === items.length - 1 && (
+                      <div className={s.row}>
+                        <Button size="small" appearance="primary" onClick={() => send(REDO_WITH_TOOLS)} disabled={busy || !!cat.blockReason}>
+                          Yêu cầu làm lại bằng công cụ
+                        </Button>
+                        <Button size="small" onClick={() => openPickerRef.current?.()}>
+                          Đổi model
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
                 {it.error && it.errorReason && !isLastBusy(i) && i === items.length - 1 && (
                   <div className={s.row}>
                     {available.length > 1 && (

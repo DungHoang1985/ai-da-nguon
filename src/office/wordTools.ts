@@ -851,6 +851,8 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     inverse: UndoStep[];
     /** Dùng khi công cụ không sinh sửa đổi được theo dõi nào (ví dụ đổi cấp đánh số) */
     fallback: UndoStep[];
+    /** Việc dọn luôn làm SAU khi đã từ chối các sửa đổi (ví dụ gỡ đoạn rỗng cạnh bảng mà Word để lại khi từ chối phần chèn) */
+    after?: UndoStep[];
     /** Định danh các đoạn công cụ đã đụng: để phân biệt sửa đổi của AI với sửa đổi trùng hệt người dùng tự làm ở đoạn khác */
     touched: string[];
   }
@@ -1909,6 +1911,8 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     word_reply_comment: "Gỡ câu trả lời nhận xét",
     word_resolve_comment: "Trả lại trạng thái nhận xét",
     word_set_page_format: "Trả lại khổ giấy và lề cũ",
+    // Gỡ thẳng các bảng và đoạn đã dựng theo định danh (không qua từ chối từng sửa đổi: phần chèn cạnh bảng để lại đoạn rỗng — đã đo)
+    word_create_admin_document: "Gỡ văn bản hành chính vừa dựng",
   };
 
   /** Chạy công cụ và ghi cách hoàn tác: sửa đổi được theo dõi nào xuất hiện thêm sau công cụ này là của AI — hoàn tác = từ chối đúng
@@ -1940,7 +1944,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
   }
 
   async function executeNow(name: string, a: any, ctx: { log: UndoEntry[] }): Promise<any> {
-    const u: Undo = { extra: [], inverse: [], fallback: [], touched: [] };
+    const u: Undo = { extra: [], inverse: [], fallback: [], touched: [], after: [] };
     if (!WRITE.has(name) || !supports("1.6")) return run(name, a, u);
     const diffable = name !== "word_review_revision" && !UNDO_LABEL[name];
     const before = diffable ? await changeSnaps().catch(() => null) : null;
@@ -1957,7 +1961,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
       const tangled = d.merged.length > 0 || d.removed > 0;
       const untracked = !wants.length && !tangled && u.fallback.length > 0;
       const blind = diffable && !before;
-      if (wants.length || tangled || u.extra.length || untracked || blind) {
+      if (wants.length || tangled || u.extra.length || untracked || blind || u.after?.length) {
         ctx.log.push({
           label: UNDO_LABEL[name] || `Hoàn tác ${name.replace(/^word_/, "")} (${d.added.length + d.merged.length} sửa đổi)`,
           undo: async () => {
@@ -1973,6 +1977,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             } else if (untracked) {
               for (const x of u.fallback.slice().reverse()) await x();
             }
+            for (const x of (u.after || []).slice().reverse()) await x();
             if (missing > 0 && !tangled) {
               throw new Error(`${missing} sửa đổi của bước này không còn nguyên (đã được chấp nhận, từ chối hoặc sửa tiếp) nên không gỡ được`);
             }
