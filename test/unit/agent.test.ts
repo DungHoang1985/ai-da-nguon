@@ -241,7 +241,7 @@ describe("Tác tử: đọc luồng trả về", () => {
     const seen = { n: 0 };
     await assert.rejects(
       callModelStep({ provider: P("gemini"), key: "K", model: "m", messages: HISTORY.slice(0, 2), tools: TOOLS, onText: () => {}, fetchFn: hang(seen), stallMs: 30 }),
-      (e: any) => /không nhận được phản hồi trong/.test(e.message) && e.status === 504,
+      (e: any) => /không nhận được phản hồi trong/.test(e.message) && e.status === undefined,
     );
     assert.strictEqual(seen.n, 1);
   });

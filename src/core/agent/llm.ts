@@ -629,7 +629,7 @@ async function callModelOnce(opts: CallModelOptions): Promise<StepResult> {
   });
   const fetchFn = opts.fetchFn || fetch;
   // Chó canh: nhà cung cấp nhận yêu cầu rồi im lặng (đo 16/11/2026 với Gemini lúc quá tải: khung treo vô hạn) thì hủy yêu cầu
-  // sau STALL_MS không có byte nào, báo lỗi 504 để vòng thử lại hoặc người dùng xử lý. Nút Dừng vẫn hủy ngay như cũ.
+  // sau STALL_MS không có byte nào, báo lỗi rõ cho người dùng. Nút Dừng vẫn hủy ngay như cũ.
   const ctl = new AbortController();
   const onUserAbort = () => ctl.abort();
   if (opts.signal?.aborted) ctl.abort();
@@ -664,9 +664,8 @@ async function callModelOnce(opts: CallModelOptions): Promise<StepResult> {
     }
   } catch (e: any) {
     if (stalled && !opts.signal?.aborted) {
-      const err: any = new Error(`${opts.provider.name}: không nhận được phản hồi trong ${Math.round(stallMs / 1000)} giây (máy chủ nhà cung cấp im lặng). Thử lại, hoặc đổi model / đổi nguồn.`);
-      err.status = 504;
-      throw err;
+      // ApiError không kèm mã trạng thái: hiện như lỗi của nhà cung cấp, và không thuộc nhóm tự gửi lại (tránh chờ thêm nhiều lần 150 giây)
+      throw new ApiError(`${opts.provider.name}: không nhận được phản hồi trong ${Math.round(stallMs / 1000)} giây (máy chủ nhà cung cấp im lặng). Thử lại, hoặc đổi model / đổi nguồn.`);
     }
     throw e;
   } finally {
