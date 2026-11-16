@@ -44,8 +44,8 @@ import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, filesBase64Chars, readAttac
 import { clearAttachedFiles, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
-import { REDO_WITH_TOOLS, unverifiedWriteClaim } from "../../core/claims";
-import { APPS, AppName, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, clearBeat, connectionLine, connections, describePayload, normalizeApp, reply, sweep, takeCommand } from "../../core/crossapp";
+import { REDO_WITH_TOOLS, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
+import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, clearBeat, connectionLine, connections, describePayload, normalizeApp, reply, sweep, takeCommand } from "../../core/crossapp";
 import { executeIncoming } from "../../office/crossExec";
 import { RefTarget, findRefs } from "../../core/refs";
 import { parseMarkdownTable } from "../../core/table";
@@ -449,7 +449,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       setLinks([]);
       return undefined;
     }
-    let ls: Storage;
+    let ls: typeof window.localStorage;
     try {
       ls = window.localStorage;
     } catch {
@@ -778,10 +778,12 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
           } else if (ev.type === "tool_end") {
             const isWrite = [...(hostTools?.specs || []), ...extraTools.specs].some((t) => t.name === ev.call.name && t.write);
             called.push(ev.call.name);
-            if (isWrite && ev.error) failedWrites++;
+            // Công cụ ghi báo lỗi, trả ok=false hoặc "thay 0 chỗ" thì tài liệu chưa đổi
+            const done = isWrite && writeSucceeded(ev.result, ev.error);
+            if (isWrite && !done) failedWrites++;
             patchLast((it) => ({
               ...it,
-              wrote: it.wrote || (isWrite && !ev.error),
+              wrote: it.wrote || done,
               segments: (it.segments || []).map((sg) =>
                 sg.type === "step" && sg.id === ev.call.id
                   ? { ...sg, status: ev.error ? "error" : "ok", detail: ev.error || ev.result?.message, brief: !ev.error && typeof ev.result?.brief === "string" ? ev.result.brief : undefined }

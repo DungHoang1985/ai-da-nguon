@@ -1,4 +1,4 @@
-# So sánh AI Đa Nguồn (v4.2.0) với add-in Claude chính thức
+# So sánh AI Đa Nguồn (v4.2.1) với add-in Claude chính thức
 
 Cập nhật 15/11/2026 (bước 9 Đợt 0A): sửa theo mục 7 của `tasks/ke-hoach-v4.md` sau khi đối chiếu lại 13 trang tài liệu chính thức (bản `.md`) và tệp `pivot.claude.ai/shortcuts.json` tải từ máy cùng ngày. Số dòng 1–55 giữ nguyên như bản 14/11; dòng 56–67 là khả năng mới của bản chính thức. Cập nhật 15/11/2026 buổi chiều (Đợt 0B, bản 3.7.0): sửa dòng 5, 9, 61, 66 và cột Bằng chứng của dòng 7, 8, 10, 13, 15, 22 sau khi kiểm bản 3.7.0 trong Office (bằng chứng: `tasks/dot-0b-bang-chung/`).
 
@@ -7,6 +7,8 @@ Cập nhật 15/11/2026 buổi tối (Đợt 1A, bản 4.0.0, đã phát hành c
 Cập nhật 15/11/2026 đêm (Đợt 1B, bản 4.1.0, đã phát hành cùng đêm và kiểm lại trên bản phát hành: Tự kiểm tra Word 34/34): sửa các dòng 4, 10, 34, 47, 48, 58, 60 theo kết quả kiểm trong Word thật bằng bản đóng gói cục bộ nạp vào khung add-in rồi bằng bản đã phát hành (`tasks/dot-1b.md`, bằng chứng `tasks/dot-1b-bang-chung/`): Tự kiểm tra Word 34/34, Chạy thật với Claude Haiku 5.5.
 
 Cập nhật 16/11/2026 (Đợt 2, bản 4.2.0 — đăng nhập và chi phí): sửa dòng 1 và 2 (`tasks/dot-2.md`, bằng chứng `tasks/dot-2-bang-chung/`). Đã kiểm trong Word thật bằng bản đóng gói cục bộ: hộp thoại đăng nhập của Office mở đúng trang OpenRouter với đúng tham số, đường về gửi mã về khung, lối dán mã nhận và từ chối đúng, thẻ hạn mức đọc được, thông báo hết tiền (Chạy thật với tài khoản Gemini hết tiền). Cùng ngày anh duyệt phát hành 4.2.0 và tự làm bốn việc ở máy trên bản đã phát hành: đăng nhập thật một lần bấm, dán mã thật, đăng xuất với khóa thật, nhận tín dụng API của gói Max — đều đạt.
+
+Cập nhật 16/11/2026 (phần A của Đợt 3, bản 4.2.1): sửa dòng 11 (18 kỹ năng, thêm soạn thảo văn bản hành chính — bản chính thức không có kỹ năng thể thức văn bản hành chính Việt Nam). Ngoài bảng: add-in có công cụ dựng trọn công văn, tờ trình, quyết định… đúng thể thức trong một lần gọi (Chạy thật: Claude Haiku 5.5 và Nemotron 3 Ultra free đều đạt 16/16 điểm đối chiếu) và cảnh báo khi AI nói đã sửa mà lượt đó không ghi gì (Chạy thật 3/3 ca). Chi tiết và bằng chứng: `tasks/dot-3.md`, `tasks/dot-3-bang-chung/`.
 
 ## Cách đọc cột "Bằng chứng"
 
@@ -35,7 +37,7 @@ Nguồn (viết tắt ở cột 2): [X] Excel · [W] Word · [P] PowerPoint · [
 | 8 | Lịch sử hội thoại lưu trên máy, xóa được | Có, 50 hội thoại gần nhất cho mỗi người dùng, mỗi tổ chức, mỗi ứng dụng [D] | **Có**, 60 hội thoại; thêm Sao lưu/Khôi phục ra tệp | Chạy thật 15/11: xóa một hội thoại, khôi phục lại từ tệp sao lưu; mở lại hội thoại cũ rồi hỏi tiếp, AI nhớ lượt trước (bản 3.7.0) | Trung bình |
 | 9 | Tự thu gọn hội thoại dài | Có [X] | **Có** — từ bản 3.7 ngưỡng theo sức chứa của từng model (60% sức chứa; token thực đo vượt 75% cũng tóm tắt); giữa hai lần tóm tắt lịch sử không bị sửa | Chạy thật 15/11 (Word, Claude Haiku 5.5): tóm tắt ở lượt 11, sau đó AI vẫn nhớ đúng việc và số liệu lượt đầu | Trung bình |
 | 10 | Tệp đính kèm làm nguồn | Có, kể cả ở chế độ third-party/gateway (ở chế độ đó tệp tải lên chỉ không dùng được cho chạy mã) [3P] | **Có** từ bản 4.1 — PDF có lớp chữ, DOCX, TXT/CSV/MD/JSON, ảnh; **PDF quét được gửi nguyên tệp cho model tự đọc** (Anthropic, Gemini, OpenRouter, OpenAI; tối đa 15 MB mỗi tệp); nguồn khác báo rõ không đọc được | Chạy thật (PDF chữ + DOCX; ảnh). PDF quét 3 trang: Chạy thật 15/11 với Claude Haiku 5.5, tóm tắt đúng, đủ 3 số liệu. Gemini (tài khoản hết tiền), OpenRouter, OpenAI: mới Kiểm thử máy | **Cao** — hồ sơ pháp lý phần lớn là bản quét |
-| 11 | Kỹ năng (Skills) tự áp dụng theo việc | Có [C] | **Có** — 17 kỹ năng dựng sẵn | Chạy thật (1 kỹ năng); còn lại Kiểm thử máy | Cao |
+| 11 | Kỹ năng (Skills) tự áp dụng theo việc | Có [C] | **Có** — 18 kỹ năng dựng sẵn; từ bản 4.2.1 có kỹ năng soạn thảo văn bản hành chính (tự nạp khi nhắc công văn, tờ trình…) | Chạy thật (2 kỹ năng: thiết kế biểu đồ, soạn thảo văn bản hành chính); còn lại Kiểm thử máy | Cao |
 | 12 | Gọi kỹ năng bằng "/", lọc theo ứng dụng | Có [C] | **Có** | Giao diện (Excel) | Trung bình |
 | 13 | Tải kỹ năng riêng lên, lưu trên máy | Có [D] | **Có** (SKILL.md, .zip, .skill, gói plugin) | Chạy thật 15/11 (bản 3.7.0): nhập một tệp SKILL.md, gọi bằng "/", xóa. Tệp .zip, .skill, gói plugin: Kiểm thử máy | Cao |
 | 14 | Connectors (S&P, LSEG, Daloopa, MCP tùy biến) | Có, nút "+" [C] | **Chưa** — với key Anthropic có thể làm một phần, cần thử kỹ thuật | — | Thấp |

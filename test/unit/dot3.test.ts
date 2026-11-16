@@ -188,7 +188,7 @@ describe("Đợt 3 · A1 · Kỹ năng soạn thảo văn bản hành chính", (
   });
 });
 
-import { REDO_WITH_TOOLS, findWriteClaim, hasEditIntent, unverifiedWriteClaim } from "../../src/core/claims";
+import { REDO_WITH_TOOLS, findWriteClaim, hasEditIntent, unverifiedWriteClaim, writeSucceeded } from "../../src/core/claims";
 
 describe("Đợt 3 · A2 · Cảnh báo 'nói đã sửa mà không ghi'", () => {
   const ask = "Sửa mức phạt ở Điều 5 từ 150% xuống 120%";
@@ -306,5 +306,121 @@ describe("Đợt 3 · A3 · Model miễn phí của OpenRouter", () => {
     assert.ok(toolReliabilityNote("openrouter", "baidu/ernie-5.5-flash-preview:free"));
     assert.strictEqual(toolReliabilityNote("openrouter", "nvidia/nemotron-3-ultra-550b-a55b:free"), null);
     assert.strictEqual(toolReliabilityNote("anthropic", "baidu/ernie-5.5-flash-preview:free"), null);
+  });
+});
+
+describe("Đợt 3 · A2 · Các ca từ lần soát mã độc lập (văn cảnh pháp lý)", () => {
+  const w = (userText: string, answer: string, toolsCalled: string[] = []) => unverifiedWriteClaim({ userText, answer, wrote: false, toolsCalled });
+  it("Không báo nhầm: người dùng nhắc 'chuyển nhượng', 'căn hộ', 'đặt cọc', 'ghi chú'; AI kể lịch sử văn bản", () => {
+    assert.strictEqual(w("Rà soát hợp đồng chuyển nhượng dự án", "Hợp đồng đã được sửa đổi, bổ sung năm 2024 bởi Phụ lục 02."), null);
+    assert.strictEqual(w("Tóm tắt hợp đồng mua căn hộ A1", "Điều 5 đã được chuyển sang Phụ lục 3 theo thỏa thuận."), null);
+    assert.strictEqual(w("Hợp đồng đặt cọc này có rủi ro gì?", "- Đã đặt cọc 500 triệu ngày 1/2."), null);
+    assert.strictEqual(w("Hợp đồng này có cần sửa gì không?", "Hợp đồng đã được cập nhật theo luật mới nên không cần sửa."), null);
+    assert.strictEqual(w("Sửa Điều 5 cho rõ hơn", "Điều 5 đã được sửa đổi nhiều lần nên tôi hỏi lại anh trước khi sửa."), null);
+    assert.strictEqual(w("Điều 5 đã được sửa chưa?", "Rồi, Điều 5 đã được sửa bởi đối tác ở bản ngày 3/11.", ["word_read_paragraphs"]), null);
+    assert.ok(!hasEditIntent("Rà soát hợp đồng chuyển nhượng dự án và các ghi chú về đặt cọc căn hộ"));
+  });
+  it("Không báo nhầm: 'tôi đã …' về việc đọc, ghi nhận, trình bày trong khung chat", () => {
+    for (const a of [
+      "Tôi đã ghi nhận 5 rủi ro chính.",
+      "Tôi đã căn cứ vào Điều 3 để kết luận.",
+      "Tôi đã lưu ý các điểm bất thường.",
+      "Tôi đã bỏ qua phần phụ lục vì quá dài.",
+      "Tôi đã tạo bảng tóm tắt bên dưới.",
+      "Tôi đã viết bản tóm tắt dưới đây.",
+      "Tôi đã chuyển sang đọc Điều 8.",
+      "Tôi không xác định được ai đã sửa đoạn này.",
+      "Khách hàng nói rằng chúng tôi đã sửa điều khoản thanh toán.",
+      "Tôi đã viết lại đoạn này như sau:",
+    ])
+      assert.strictEqual(w("Sửa giúp tôi các điểm chưa ổn", a), null, a);
+  });
+  it("Không bỏ sót: lời khẳng định đứng sau một vế dẫn, hoặc ở vế thứ hai", () => {
+    for (const a of [
+      "Sau khi kiểm tra, tôi đã sửa Điều 5.",
+      "Theo đề nghị của đối tác, tôi đã sửa Điều 5.",
+      "Vì cần gấp nên tôi đã sửa ngay Điều 5.",
+      "Tôi đã đề xuất và đã sửa Điều 5.",
+      "Tôi đã không thể sửa Điều 5 nhưng đã sửa Điều 6.",
+      "Bạn không cần làm gì thêm vì tôi đã sửa Điều 5.",
+      "Đã in đậm tiêu đề.",
+      "Đã nhập giá trị vào ô B3.",
+      "Điều 5 đã bị xóa.",
+      "Điều 5: đã sửa.",
+      "Mình đã hoàn thành việc sửa Điều 5.",
+    ])
+      assert.ok(w("Sửa Điều 5 và in đậm tiêu đề", a), a);
+  });
+  it("Công cụ ghi trả ok=false hoặc thay 0 chỗ thì không tính là đã ghi", () => {
+    assert.ok(writeSucceeded({ ok: true, message: "Đã thay 1 chỗ", replaced: 1 }));
+    assert.ok(!writeSucceeded({ ok: false, message: "Không tìm thấy" }));
+    assert.ok(!writeSucceeded({ ok: true, replaced: 0 }));
+    assert.ok(!writeSucceeded({ ok: true }, "lỗi"));
+    assert.ok(writeSucceeded(undefined));
+  });
+});
+
+import { asBool } from "../../src/office/wordAdmin";
+
+describe("Đợt 3 · Sửa theo lần soát mã độc lập (bản 4.2.1)", () => {
+  const word = BUILTIN_SKILLS.filter((s) => !s.hosts || s.hosts.includes("Word"));
+  const picked = (q: string) => autoSelectSkills(q, word).map((s) => s.name);
+  it("Kỹ năng hành chính không chen vào yêu cầu về hợp đồng có chữ 'nơi nhận', 'kính gửi', 'văn bản gửi', 'biên bản làm việc'", () => {
+    for (const q of [
+      "Soát hợp đồng đặt cọc, chú ý điều khoản nơi nhận tiền và thời hạn",
+      "Trong hợp đồng, nơi nhận thông báo của Bên B là ai? Tóm tắt giúp",
+      "Hợp đồng quy định bên nào phải kính gửi thông báo trước 30 ngày?",
+      "Điều khoản về văn bản gửi cho bên kia có hợp lý không?",
+      "Tóm tắt biên bản làm việc với Sở Xây dựng",
+    ])
+      assert.ok(!picked(q).includes("soan-thao-van-ban-hanh-chinh"), q);
+    for (const q of ["Viết thông báo vi phạm hợp đồng gửi nhà thầu", "Viết báo cáo rà soát pháp lý dự án cho lãnh đạo", "Lập biên bản làm việc với Sở Xây dựng"])
+      assert.ok(picked(q).includes("soan-thao-van-ban-hanh-chinh"), q);
+  });
+  it("Bản vẽ: loại có dấu, số có chữ 'Số', ngày ISO, chữ viết tắt có dấu chấm, họ 'Ông', dòng Lưu thiếu dấu hai chấm", () => {
+    const p = planAdminDocument({
+      doc_type: "Tờ trình",
+      org: "Công ty ABC",
+      number: "Số 12/TTr-ABC",
+      symbol: "TTr-ABC",
+      date: "2026-01-05",
+      place: "Hà Nội",
+      subject: "Phê duyệt phương án",
+      to: ["UBND TP.", "Công ty A Co., Ltd."],
+      body: ["Đoạn một.", "Đoạn hai."] as any,
+      signer_title: "Giám đốc",
+      signer_name: "TS. Ông Thị Mỹ",
+      recipients: ["Lưu VT, HS"],
+    });
+    assert.strictEqual(p.type, "to_trinh");
+    const all = p.blocks.flatMap((b) => (b.kind === "table" ? b.rows.flatMap((r) => [...r[0], ...r[1]]) : [b])).map((x) => x.text);
+    assert.ok(all.includes("Số: 12/TTr-ABC"), all.filter((t) => t.startsWith("Số")).join("|"));
+    assert.ok(all.includes("Hà Nội, ngày 05 tháng 01 năm 2026"));
+    assert.ok(all.includes("- UBND TP.;") && all.includes("- Công ty A Co., Ltd."), all.filter((t) => t.startsWith("- ")).join("|"));
+    assert.ok(all.includes("Ông Thị Mỹ"));
+    assert.deepStrictEqual(all.filter((t) => /^- Lưu/.test(t)), ["- Lưu: VT, HS."]);
+    assert.ok(all.includes("Đoạn một.") && all.includes("Đoạn hai./."));
+    assert.throws(() => planAdminDocument({ doc_type: "phương án", org: "ABC", body: "x" }), /cong_van, to_trinh/);
+  });
+  it("Dấu ./. không gắn sai chỗ: đoạn cuối là đề mục hoặc kết bằng dấu hai chấm thì không thêm", () => {
+    const texts = (body: string) => (planAdminDocument({ doc_type: "bao_cao", org: "ABC", subject: "x", body }).blocks.filter((b) => b.kind === "para") as ParaBlock[]).map((b) => b.text);
+    assert.ok(!texts("Nội dung một.\n## III. Kiến nghị").some((t) => /\.\/\.$/.test(t)));
+    assert.ok(!texts("Kính đề nghị Quý Sở:").some((t) => /\.\/\.$/.test(t)));
+    assert.ok(texts("Trân trọng.").includes("Trân trọng./."));
+    assert.strictEqual(texts("Đã có sẵn./.").filter((t) => /\.\/\.$/.test(t)).length, 1);
+  });
+  it("asBool nhận 'true', 1, 'false'; giá trị lạ là không rõ", () => {
+    assert.strictEqual(asBool("true"), true);
+    assert.strictEqual(asBool(1), true);
+    assert.strictEqual(asBool("false"), false);
+    assert.strictEqual(asBool(undefined), undefined);
+    assert.strictEqual(asBool("abc"), undefined);
+  });
+  it("Nhánh miễn phí không rơi vào bản Nemotron trả tiền khi không có model miễn phí", () => {
+    const paid = [
+      { id: "nvidia/nemotron-3-ultra-550b-a55b", name: "n", tools: true, created: 1 },
+      { id: "anthropic/claude-sonnet-5", name: "c", tools: true, created: 2 },
+    ];
+    assert.strictEqual(pickModel(paid, { providerId: "openrouter", agentOn: true, freeOnly: true }), "anthropic/claude-sonnet-5");
   });
 });

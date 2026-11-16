@@ -1,0 +1,81 @@
+{
+ "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "yeuCau": "Soạn một công văn của Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng (thuộc Tổng công ty Xây dựng Thăng Long) gửi Sở Xây dựng thành phố Hà Nội, đề nghị gia hạn tiến độ dự án Khu nhà ở Sông Hồng thêm 06 tháng vì chậm bàn giao mặt bằng đợt 2. Người ký: Giám đốc Nguyễn Văn Minh. Địa danh: Hà Nội.",
+ "giay": 18,
+ "daHoi": [
+  "AI muốn: Dựng văn bản hành chính đúng thể thức: Đề nghị gia hạn tiến độ dự án Khu nhà ở Sông Hồng | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "kyNangTuNap": "Kỹ năng áp dụng: soan-thao-van-ban-hanh-chinh",
+ "canhBaoNoiDaSua": false,
+ "buocCongCu": [
+  "Sửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt."
+ ],
+ "truoc": {
+  "soDoanCoChu": 0,
+  "trang": {
+   "tren": 25.4,
+   "duoi": 25.4,
+   "trai": 25.4,
+   "phai": 25.4,
+   "rong": 215.9,
+   "cao": 279.4,
+   "soTrangDauTrang": "",
+   "anTrangDau": false
+  }
+ },
+ "sau": {
+  "soDoanCoChu": 18,
+  "bang": 2,
+  "suaDoiDuocTheoDoi": 3,
+  "trang": {
+   "tren": 20,
+   "duoi": 20,
+   "trai": 30,
+   "phai": 20,
+   "rong": 210,
+   "cao": 297,
+   "soTrangDauTrang": "1",
+   "anTrangDau": true
+  }
+ },
+ "doiChieu": [
+  "Đạt · Quốc hiệu in hoa, đậm, cỡ 12–13, canh giữa — cỡ 13",
+  "Đạt · Tiêu ngữ đậm, cỡ 13–14, lớn hơn quốc hiệu 1 cỡ — cỡ 14",
+  "Đạt · Tên cơ quan ban hành in hoa, đậm, cỡ 12–13 — “TỔNG CÔNG TY XÂY DỰNG THĂNG LONG” thường 13 | “CÔNG TY CỔ PHẦN ĐẦU TƯ PHÁT TRIỂN ĐÔ THỊ SÔNG HỒNG” đậm 13",
+  "Đạt · Số và ký hiệu, cỡ 13 — “Số:      /…”",
+  "Đạt · Địa danh, ngày tháng: nghiêng, cỡ 13–14 — “Hà Nội, ngày      tháng      năm 2026”",
+  "Đạt · V/v dưới số ký hiệu, cỡ 12–13, đứng — “V/v Đề nghị gia hạn tiến độ dự án Khu nhà ở Sông Hồng”",
+  "Đạt · Kính gửi, cỡ 13–14 — “Kính gửi: Sở Xây dựng thành phố Hà Nội”",
+  "Đạt · Nội dung: cỡ 13–14, canh đều, thụt đầu dòng 10–12,7 mm, cách đoạn ≥ 6 pt — 4/4 đoạn dài đúng",
+  "Đạt · Kết thúc nội dung bằng “./.”",
+  "Đạt · “Nơi nhận:” cỡ 12, nghiêng, đậm",
+  "Đạt · Dòng “- Lưu: …” cỡ 11, kết bằng dấu chấm — “- Lưu: VT, ….”",
+  "Đạt · Phần ký: chức vụ in hoa đậm, họ tên đậm — GIÁM ĐỐC / Nguyễn Văn Minh",
+  "Đạt · Phông Times New Roman, chữ đen ở mọi đoạn — Times New Roman",
+  "Đạt · Đường kẻ dưới tên cơ quan, dưới tiêu ngữ — 2 đường kẻ",
+  "Đạt · Giấy A4, lề trên 20–25, dưới 20–25, trái 30–35, phải 15–20 mm — 210×297 mm; lề 20/20/30/20",
+  "Đạt · Số trang ở đầu trang, ẩn trang đầu — đầu trang: “1”"
+ ],
+ "dat": "16/16",
+ "vanBan": [
+  "▦ TỔNG CÔNG TY XÂY DỰNG THĂNG LONG",
+  "▦ CÔNG TY CỔ PHẦN ĐẦU TƯ PHÁT TRIỂN ĐÔ THỊ SÔNG HỒNG",
+  "▦ CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+  "▦ Độc lập - Tự do - Hạnh phúc",
+  "▦ Số:      /…",
+  "▦ Hà Nội, ngày      tháng      năm 2026",
+  "▦ V/v Đề nghị gia hạn tiến độ dự án Khu nhà ở Sông Hồng",
+  "Kính gửi: Sở Xây dựng thành phố Hà Nội",
+  "Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng (thuộc Tổng công ty Xây dựng Thăng Long) trân trọng gửi tới Quý Sở tình hình triển khai dự án Khu n",
+  "Trong quá trình triển khai, việc bàn giao mặt bằng đợt 2 của dự án bị chậm so với kế hoạch, làm ảnh hưởng trực tiếp đến tiến độ thi công và các công v",
+  "Để bảo đảm chất lượng công trình và hiệu quả đầu tư, Công ty kính đề nghị Sở Xây dựng xem xét, cho phép gia hạn tiến độ dự án Khu nhà ở Sông Hồng thêm",
+  "Công ty cam kết tiếp tục phối hợp với các cơ quan liên quan, đôn đốc các nhà thầu bảo đảm tiến độ sau khi được gia hạn và báo cáo kịp thời các vấn đề ",
+  "Trân trọng cảm ơn sự quan tâm, hỗ trợ của Quý Sở./.",
+  "▦ Nơi nhận:",
+  "▦ - Như trên;",
+  "▦ - Lưu: VT, ….",
+  "▦ GIÁM ĐỐC",
+  "▦ Nguyễn Văn Minh"
+ ],
+ "cuoiKhung": ": soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: Đề nghị gia hạn tiến độ dự án Khu nhà ở Sông Hồng — Đã dựng công văn đúng thể thức · còn 4 chỗ cần điền\n✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — đúng chuẩn\nĐã soạn xong công văn đề nghị gia hạn tiến độ dự án Khu nhà ở Sông Hồng, dựng theo thể thức hành chính và ghi bằng Theo dõi thay đổi để bạn duyệt.\n \nNội dung chính:\n• Phần đầu: Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng, thuộc Tổng công ty Xây dựng Thăng Long.\n• Trích yếu: \"Đề nghị gia hạn tiến độ dự án Khu nhà ở Sông Hồng\".\n• Kính gửi: Sở Xây dựng thành phố Hà Nội.\n• Lý do: việc bàn giao mặt bằng đợt 2 bị chậm so với kế hoạch, ảnh hưởng đến tiến độ thi công.\n• Đề nghị: gia hạn thêm 06 (sáu) tháng, kèm cam kết phối hợp và báo cáo các vấn đề phát sinh.\n• Người ký: Giám đốc Nguyễn Văn Minh; địa danh Hà Nội.\n \nCần điền trước khi ký:\n• Số văn bản (để văn thư cấp).\n• Ký hiệu văn bản.\n• Ngày tháng ban hành.\n• Đơn vị soạn thảo ở dòng \"Lưu\".\n \nNgoài ra, văn bản chưa có số liệu cụ thể về thời điểm chậm bàn giao hay tiến độ hiện hành. Nếu bạn cung cấp, tôi sẽ bổ sung vào phần lý do và phần đề nghị. Lề, khổ giấy, phông và cỡ chữ đã đạt chuẩn.\nToken: vào 65.427 · ra 3.057 · đọc từ bộ nhớ đệm 42.423 · ghi vào bộ nhớ đệm 22.996\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}

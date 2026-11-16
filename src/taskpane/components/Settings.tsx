@@ -171,16 +171,39 @@ const PermissionsCard: React.FC<Props> = ({ storage, onChanged }) => {
   );
 };
 
-const CrossAppCard: React.FC<Props> = ({ storage, onChanged }) => {
+const CrossAppCard: React.FC<Props> = ({ storage, onChanged, host }) => {
   const s = useStyles();
   const { st, set } = useSettingsState(storage, onChanged);
+  const others = ["Excel", "Word", "PowerPoint"].filter((a) => a !== host);
+  const apps = st.crossApps || {};
   return (
     <div className={s.card}>
       <Switch
-        label="Cho Excel, Word, PowerPoint đọc chéo nội dung đang mở của nhau"
+        label="Kết nối Excel, Word, PowerPoint với nhau (đọc nội dung đang mở của nhau, nhờ ghi sang nhau)"
         checked={st.shareContext}
         onChange={(_, d) => set({ shareContext: d.checked })}
       />
+      {st.shareContext && (
+        <>
+          {others.map((a) => (
+            <Switch
+              key={a}
+              label={`Kết nối với ${a}`}
+              checked={apps[a] !== false}
+              onChange={(_, d) => set({ crossApps: { ...apps, [a]: d.checked } })}
+            />
+          ))}
+          <Switch
+            label="Nhận ghi từ ứng dụng khác vào tài liệu này (AI ở ứng dụng kia luôn hỏi anh trước khi ghi; gỡ được bằng Hoàn tác ở khung này)"
+            checked={st.crossWrite !== false}
+            onChange={(_, d) => set({ crossWrite: d.checked })}
+          />
+          <Text size={100}>
+            Ghi sang ứng dụng khác chỉ THÊM nội dung mới: Word thêm đoạn ở cuối (có theo dõi thay đổi), Excel tạo sheet mới, PowerPoint thêm một slide. Khung AI Đa
+            Nguồn ở ứng dụng kia phải đang mở; đầu khung chat hiện ứng dụng nào đang kết nối (✓) hay chưa mở (—).
+          </Text>
+        </>
+      )}
     </div>
   );
 };

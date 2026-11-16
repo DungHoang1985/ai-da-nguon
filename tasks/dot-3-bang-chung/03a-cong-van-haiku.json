@@ -1,7 +1,7 @@
 {
  "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
  "yeuCau": "Soạn một công văn của Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng (thuộc Tổng công ty Xây dựng Thăng Long) gửi Sở Xây dựng thành phố Hà Nội, đề nghị gia hạn tiến độ dự án Khu nhà ở Sông Hồng thêm 06 tháng vì chậm bàn giao mặt bằng đợt 2. Người ký: Giám đốc Nguyễn Văn Minh. Địa danh: Hà Nội.",
- "giay": 17,
+ "giay": 16,
  "daHoi": [
   "AI muốn: Dựng văn bản hành chính đúng thể thức: Đề nghị gia hạn tiến độ Dự án Khu nhà ở Sông Hồng | Cho phép | Cho phép hết lần này | Bỏ qua → all"
  ],
@@ -24,7 +24,7 @@
   }
  },
  "sau": {
-  "soDoanCoChu": 20,
+  "soDoanCoChu": 18,
   "bang": 2,
   "suaDoiDuocTheoDoi": 3,
   "trang": {
@@ -46,7 +46,7 @@
   "Đạt · Địa danh, ngày tháng: nghiêng, cỡ 13–14 — “Hà Nội, ngày      tháng      năm 2026”",
   "Đạt · V/v dưới số ký hiệu, cỡ 12–13, đứng — “V/v Đề nghị gia hạn tiến độ Dự án Khu nhà ở Sông Hồng”",
   "Đạt · Kính gửi, cỡ 13–14 — “Kính gửi: Sở Xây dựng thành phố Hà Nội”",
-  "Đạt · Nội dung: cỡ 13–14, canh đều, thụt đầu dòng 10–12,7 mm, cách đoạn ≥ 6 pt — 7/7 đoạn dài đúng",
+  "Đạt · Nội dung: cỡ 13–14, canh đều, thụt đầu dòng 10–12,7 mm, cách đoạn ≥ 6 pt — 5/5 đoạn dài đúng",
   "Đạt · Kết thúc nội dung bằng “./.”",
   "Đạt · “Nơi nhận:” cỡ 12, nghiêng, đậm",
   "Đạt · Dòng “- Lưu: …” cỡ 11, kết bằng dấu chấm — “- Lưu: VT, ….”",
@@ -66,18 +66,16 @@
   "▦ Hà Nội, ngày      tháng      năm 2026",
   "▦ V/v Đề nghị gia hạn tiến độ Dự án Khu nhà ở Sông Hồng",
   "Kính gửi: Sở Xây dựng thành phố Hà Nội",
-  "Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng (sau đây gọi là Công ty) trân trọng kính đề nghị Sở Xây dựng xem xét, chấp thuận gia hạn tiến độ th",
-  "Lý do đề nghị: Việc bàn giao mặt bằng đợt 2 của dự án bị chậm so với kế hoạch, ảnh hưởng trực tiếp đến tiến độ thi công các hạng mục tiếp theo. Công t",
-  "Kính đề nghị Sở Xây dựng xem xét và chấp thuận các nội dung cụ thể sau:",
-  "1. Gia hạn tiến độ thực hiện Dự án Khu nhà ở Sông Hồng thêm 06 (sáu) tháng kể từ ngày có văn bản chấp thuận.",
-  "2. Công ty cam kết rà soát, điều chỉnh kế hoạch thi công phù hợp; bảo đảm chất lượng, an toàn lao động và trật tự xây dựng trong suốt thời gian thực h",
-  "3. Công ty báo cáo định kỳ tình hình thực hiện dự án về Sở Xây dựng theo quy định.",
-  "Công ty kính mong Sở Xây dựng xem xét, tạo điều kiện để dự án sớm được triển khai. Trân trọng cảm ơn./.",
+  "Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng (thuộc Tổng công ty Xây dựng Thăng Long) đang triển khai Dự án Khu nhà ở Sông Hồng.",
+  "Trong quá trình thực hiện, do việc bàn giao mặt bằng đợt 2 của dự án bị chậm so với kế hoạch, Công ty không thể bảo đảm tiến độ thi công theo tiến độ ",
+  "Để bảo đảm chất lượng và hiệu quả đầu tư của dự án, Công ty kính đề nghị Sở Xây dựng xem xét, cho phép gia hạn tiến độ thực hiện Dự án Khu nhà ở Sông ",
+  "Công ty cam kết tập trung nguồn lực, đẩy nhanh tiến độ thi công sau khi được bàn giao đủ mặt bằng, bảo đảm hoàn thành dự án trong thời gian được gia h",
+  "Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng trân trọng cảm ơn và rất mong nhận được sự xem xét, phối hợp của Quý Sở./.",
   "▦ Nơi nhận:",
   "▦ - Như trên;",
   "▦ - Lưu: VT, ….",
   "▦ GIÁM ĐỐC",
   "▦ Nguyễn Văn Minh"
  ],
- "cuoiKhung": " Xây dựng Thăng Long) gửi Sở Xây dựng thành phố Hà Nội, đề nghị gia hạn tiến độ dự án Khu nhà ở Sông Hồng thêm 06 tháng vì chậm bàn giao mặt bằng đợt 2. Người ký: Giám đốc Nguyễn Văn Minh. Địa danh: Hà Nội.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: Đề nghị gia hạn tiến độ Dự án Khu nhà ở Sông Hồng — Đã dựng công văn đúng thể thức · còn 4 chỗ cần điền\nĐã soạn xong công văn (ghi có theo dõi) gồm: quốc hiệu, tiêu ngữ, tên Công ty cổ phần Đầu tư Phát triển Đô thị Sông Hồng (trực thuộc Tổng công ty Xây dựng Thăng Long), trích yếu \"Đề nghị gia hạn tiến độ Dự án Khu nhà ở Sông Hồng\", kính gửi Sở Xây dựng thành phố Hà Nội, nội dung đề nghị gia hạn thêm 06 tháng với lý do chậm bàn giao mặt bằng đợt 2, các đề nghị cụ thể, và phần ký của Giám đốc Nguyễn Văn Minh.\n \nCác chỗ còn trống cần điền trước khi ký:\n• Số văn bản (để văn thư cấp)\n• Ký hiệu văn bản\n• Ngày tháng ban hành\n• Đơn vị soạn thảo ở dòng \"Lưu\"\n \nLưu ý: tôi chưa nêu mốc thời gian cụ thể của việc chậm bàn giao, và không có căn cứ pháp lý nào được đưa vào. Nếu có, bạn cho tôi biết để bổ sung. Trang đã đặt A4, lề theo chuẩn công văn; tôi có thể kiểm tra lại thể thức trang khi bạn cần.\nToken: vào 42.067 · ra 2.881 · đọc từ bộ nhớ đệm 34.895 · ghi vào bộ nhớ đệm 7.166\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+ "cuoiKhung": "yễn Văn Minh. Địa danh: Hà Nội.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: Đề nghị gia hạn tiến độ Dự án Khu nhà ở Sông Hồng — Đã dựng công văn đúng thể thức · còn 4 chỗ cần điền\n✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — đúng chuẩn\nĐã soạn xong công văn gửi Sở Xây dựng thành phố Hà Nội, ghi bằng Theo dõi thay đổi để anh/chị duyệt.\n \nNội dung chính:\n• Nêu việc Công ty đang triển khai Dự án Khu nhà ở Sông Hồng.\n• Lý do: việc bàn giao mặt bằng đợt 2 bị chậm, nên Công ty không bảo đảm được tiến độ đã phê duyệt.\n• Đề nghị Sở xem xét gia hạn tiến độ dự án thêm 06 (sáu) tháng.\n• Cam kết đẩy nhanh thi công sau khi bàn giao đủ mặt bằng.\n• Người ký: Giám đốc Nguyễn Văn Minh; địa danh Hà Nội.\n• Đầu công văn có \"Tổng công ty Xây dựng Thăng Long\" ở dòng trên tên Công ty.\n \nCần điền trước khi ký:\n1. Số văn bản (để văn thư cấp).\n2. Ký hiệu văn bản (chưa có chữ viết tắt của Công ty).\n3. Ngày tháng ban hành.\n4. Đơn vị soạn thảo ở dòng \"Lưu: VT, …\".\n \nThể thức trang đã đúng chuẩn: A4, lề và phông Times New Roman. Nếu cần, tôi có thể bổ sung căn cứ pháp lý hoặc nêu rõ tiến độ hiện hành và thời điểm bàn giao mặt bằng để công văn cụ thể hơn.\nToken: vào 42.520 · ra 2.645 · đọc từ bộ nhớ đệm 19.830 · ghi vào bộ nhớ đệm 22.684\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\nAnthropic · Claude Haiku 5.5"
 }

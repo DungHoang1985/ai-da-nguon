@@ -8,10 +8,10 @@ Viết ngày 16/11/2026, nhánh `claude/dot-3-b3b8f4` (gốc `origin/main` = `0b
 
 - [x] 0. Tệp này được commit trước khi viết mã (`66d7d16`)
 - [x] A1 kỹ năng soạn văn bản hành chính · [x] A2 cảnh báo "nói đã sửa mà không ghi" · [ ] A3 model miễn phí: mới có một phần (hết lượt miễn phí trong ngày của OpenRouter, xem "Kết quả phần A")
-- [x] Kiểm phần A trong Word (bản cục bộ) · [ ] hỏi anh phát hành 4.2.1 hay gộp 4.3.0
+- [x] Kiểm phần A trong Word (bản cục bộ) · [x] anh chọn phát hành 4.2.1 ngay · [x] soát mã độc lập phần A, đã sửa · [x] **đã phát hành 4.2.1**, đã kiểm bản phát hành
 
 **Trạng thái của khung trước khi thử (để trả lại khi xong):** nguồn đang chọn Anthropic · Claude Opus 5.5; model nhớ của OpenRouter: ERNIE 5.5 Flash free (theo ghi chú bàn giao Đợt 2); Groq: GPT OSS 20B; Cerebras: gpt-oss-120b. Bài thử đã chọn Haiku 5.5 (Anthropic), Nemotron 3 Ultra free (OpenRouter), GPT OSS 120B (Groq).
-- [ ] B1 thăm dò kho chung và kênh lệnh (bảng kết quả ở dưới) · [ ] B1 mã ghi chéo · [ ] B2 chỉ báo và công tắc
+- [x] B1 thăm dò kho chung và kênh lệnh (bảng kết quả ở dưới) · [ ] B1 mã ghi chéo (đang viết, nhánh `claude/dot-3-b-wip`) · [ ] B2 chỉ báo và công tắc
 - [ ] B3 PowerPoint phần chắc · [ ] B4 PowerPoint phần phải thử (bảng thăm dò ở dưới) · [ ] B5 hai việc tồn
 - [ ] Soát mã độc lập, sửa, chạy lại · [ ] Bảng nghiệm thu, HANDOFF, CLAUDE.md, bảng so sánh · [ ] Hỏi anh phát hành, kiểm bản phát hành, dọn dẹp
 
@@ -142,6 +142,14 @@ Bài: `kiem-thu/cdp-bai/tham-do-3-vbhc.js` và ba bài thăm dò nhỏ chạy tr
 | A-d | Kiểm thử chặn số hiệu văn bản pháp luật và tên công cụ trong kỹ năng | **Đạt** — `npm test` 383/383 | Kiểm thử máy |
 | A-e | Bảng Chạy thật so các model miễn phí; đổi mặc định sau khi anh chọn | **Chưa kiểm được đủ** — mới có: Nemotron 3 Ultra free gọi công cụ đúng 3/3 lần (Đợt 2) + 3 lần hôm nay; ERNIE 5.5 Flash free 1 lần nói "Đã sửa" mà không gọi công cụ (Đợt 2). Khảo sát các model miễn phí khác phải chờ lượt miễn phí có lại (7 giờ sáng) | `tasks/dot-2-bang-chung/09a`, `09b`; `03c` |
 | — | Tự kiểm tra Word (thêm 2 bước: dựng công văn và tờ trình rồi hoàn tác; đặt lề rồi hoàn tác, định dạng đoạn) | **Đạt 36/36** trong phiên Word mới | `02-tu-kiem-tra-word-phan-A.json` |
+
+### Soát mã độc lập và phát hành 4.2.1
+
+- Anh chọn 16/11/2026 (ô tích chọn): **phát hành 4.2.1 ngay**; model miễn phí: **ưu tiên Nemotron, cảnh báo ERNIE** (bật "Miễn phí" ở nguồn chưa từng chọn model thì chọn Nemotron 3 Ultra free; ERNIE 5.5 Flash free có dấu ⚠ trong bảng chọn model; model OpenRouter anh đang nhớ giữ nguyên). Bằng chứng dấu ⚠: `05-dau-canh-bao-model.json`, `.png`.
+- Soát mã độc lập: 2 cao, 8 trung bình, 6 thấp — đã sửa 15, để lại 1; báo cáo `soat-ma-doc-lap-phan-A.md`.
+- Sau khi sửa, chạy lại trên bản cục bộ 4.2.1: `npm test` **395/395**, tsc sạch, đóng gói đạt; Tự kiểm tra Word **36/36** (`02`), Excel **22/22** (`06`), PowerPoint 13/14 rồi **14/14** (`07a`, `07b`, lỗi bố cục cũ); công văn · Haiku 16/16 (`03a`), tờ trình · Haiku 17/17 (`03b`), cảnh báo 3/3 ca (`04`). Các tệp `03c`, `03d` (Nemotron free) là của bản dựng trước lần sửa theo soát mã (hết lượt miễn phí nên chưa chạy lại).
+- **Phát hành 4.2.1 xong (16/11/2026):** đẩy tiến thẳng `0ba6322..3e9bcb4` lên `main`; GitHub Actions đạt; `gh-pages` "Bản chạy thật v4.2.1 (main@3e9bcb4)"; Pages phục vụ `taskpane.0770303f.js` (trùng gói đóng cục bộ). Kiểm trên bản đã phát hành (khung tải từ GitHub Pages, đã tắt nạp bản cục bộ): đầu khung v4.2.1, Tự kiểm tra Word **36/36** (`10`), Chạy thật soạn công văn · Haiku 5.5 **16/16** (`11`). Đã dọn: xóa 21 hội thoại thử trong Lịch sử của Word (còn 4 hội thoại có từ trước), nguồn về Anthropic · Claude Opus 5.5, Groq về GPT OSS 20B, OpenRouter vẫn ERNIE như trước.
+- **Giới hạn đã biết của 4.2.1:** công cụ đặt thể thức trang chỉ xử lý 30 phần (section) đầu, số trang chỉ đặt ở phần đầu; chữ ký số, dấu, phụ lục, bản sao chưa có trong công cụ dựng; nội dung do model viết vẫn phải soát (model miễn phí có lần tự ghi số hiệu luật); cảnh báo "nói đã sửa" là nhận diện câu chữ nên có thể sót câu lạ.
 
 ### Phát hiện phụ khi làm phần A
 

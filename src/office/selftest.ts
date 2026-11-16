@@ -2,6 +2,8 @@
 /** Tự kiểm tra: chạy thật từng công cụ trên tài liệu đang mở rồi dọn sạch. Không cần API key. */
 import { HostToolSet, UndoEntry } from "../core/agent/types";
 import { runWordSelfTest } from "./selftestWord";
+import { APPS, AppName, CMD_PREFIX, beat, buildPayload, reply, sendCommand, takeCommand } from "../core/crossapp";
+import { cellAsText, executeIncoming } from "./crossExec";
 
 export interface TestStep {
   name: string;
@@ -425,6 +427,90 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
     });
   } else {
     steps.push({ name: "Ứng dụng", ok: null, detail: "Chỉ chạy được trong Excel, Word, PowerPoint" });
+  }
+  if (APPS.includes(tools.host as AppName)) {
+    await step("Ghi chéo ứng dụng: khung đích chưa mở → báo rõ, không treo; nhận lệnh ghi hộ → ghi đúng, có Hoàn tác; lệnh sai bị bỏ", async () => {
+      const self = tools.host as AppName;
+      const other = APPS.find((a) => a !== self)!;
+      // Kho giả trong bộ nhớ: bước này không đụng kho dùng chung thật, không gửi gì sang ứng dụng khác
+      const mem: Record<string, string> = {};
+      const kv = { getItem: (k: string) => (k in mem ? mem[k] : null), setItem: (k: string, v: string) => void (mem[k] = v), removeItem: (k: string) => void delete mem[k] };
+      const code = "AIDNCHEO" + Date.now().toString(36).slice(-5).toUpperCase();
+      const sample = (app: AppName): any =>
+        app === "Word"
+          ? { text: `Đoạn ghi chéo ${code}\nDòng hai ${code}` }
+          : app === "Excel"
+            ? { sheet_name: `KT ${code}`.slice(0, 28), values: [["Hạng mục", "Giá trị"], ["Móng", "100"], ["Công thức lạ", "=1+1"]] }
+            : { title: `Slide ghi chéo ${code}`, body: "Ý một\nÝ hai" };
+      // 1. Khung đích chưa mở: trả lời ngay, nêu cách mở
+      let t0 = Date.now();
+      const r0 = await sendCommand(kv, self, other, buildPayload(other, sample(other)), { timeoutMs: 1500 });
+      expect(!r0.ok && /chưa mở/.test(r0.error || ""), `Đích chưa mở mà không báo rõ: ${JSON.stringify(r0)}`);
+      expect(Date.now() - t0 < 800, "Đích chưa mở mà phải chờ");
+      // 2. Khung đích có nhịp sống nhưng không lấy lệnh: hết hạn thì rút lệnh, không treo
+      beat(kv, { host: other, accept: true, title: "tệp thử" });
+      t0 = Date.now();
+      const r1 = await sendCommand(kv, self, other, buildPayload(other, sample(other)), { timeoutMs: 1200, pollMs: 100 });
+      expect(!r1.ok && /rút lại/.test(r1.error || ""), `Hết hạn mà không rút lệnh: ${JSON.stringify(r1)}`);
+      expect(kv.getItem(CMD_PREFIX + other) === null && Date.now() - t0 < 3000, "Lệnh hết hạn còn nằm trong hộp thư");
+      // 3. Lệnh sai ứng dụng hoặc sai hình dạng bị bỏ
+      kv.setItem(CMD_PREFIX + self, JSON.stringify({ id: "saihinhdang1", from: other, to: self, at: Date.now(), payload: buildPayload(other, sample(other)) }));
+      expect(takeCommand(kv, self, { accept: true, seen: new Set() }) === null && kv.getItem(CMD_PREFIX + self) === null, "Lệnh dành cho ứng dụng khác không bị bỏ");
+      expect(cellAsText("=1+1") === "'=1+1" && cellAsText("-5") === "-5" && cellAsText("@x") === "'@x", "Ô bắt đầu bằng = hoặc @ phải được ghi thành chữ");
+      // 4. Nhận một lệnh gửi tới chính ứng dụng này và chạy bằng công cụ ghi thật
+      const count = async (): Promise<{ n: number; has: boolean; extra?: string }> => {
+        if (self === "Excel")
+          return Excel.run(async (ctx) => {
+            const ws = ctx.workbook.worksheets;
+            ws.load("items/name");
+            await ctx.sync();
+            const sh = ws.items.find((w) => w.name.includes(code));
+            if (!sh) return { n: ws.items.length, has: false };
+            const r = sh.getRange("A1:B3");
+            r.load("values,formulas");
+            await ctx.sync();
+            return { n: ws.items.length, has: true, extra: JSON.stringify(r.formulas) };
+          });
+        if (self === "Word")
+          return Word.run(async (ctx) => {
+            const ps = ctx.document.body.paragraphs;
+            ps.load("items");
+            await ctx.sync();
+            const ts = ps.items.map((p) => p.getReviewedText("Current"));
+            await ctx.sync();
+            return { n: ts.length, has: ts.some((t) => t.value.includes(`Đoạn ghi chéo ${code}`)) && ts.some((t) => t.value.includes(`Dòng hai ${code}`)) };
+          });
+        const ov = await run("ppt_get_overview");
+        return { n: ov.slide_count, has: JSON.stringify(ov.slides).includes(`Slide ghi chéo ${code}`) };
+      };
+      const before = await count();
+      beat(kv, { host: self, accept: true });
+      const pending = sendCommand(kv, other, self, buildPayload(self, sample(self)), { timeoutMs: 60000, pollMs: 100 });
+      await new Promise((r) => setTimeout(r, 200));
+      const seen = new Set<string>();
+      const cmd = takeCommand(kv, self, { accept: true, seen });
+      expect(!!cmd, "Khung nhận không lấy được lệnh hợp lệ");
+      const mine: UndoEntry[] = [];
+      let message = "";
+      try {
+        message = await executeIncoming(tools, cmd!.payload, mine);
+        reply(kv, cmd!.id, { ok: true, message });
+        const res = await pending;
+        expect(res.ok && !!res.message, `Khung gửi không nhận được kết quả: ${JSON.stringify(res)}`);
+        const mid = await count();
+        expect(mid.has, "Nội dung ghi chéo không có trong tài liệu");
+        if (self === "Excel") expect(/'?=1\+1/.test(mid.extra || "") && !/"2"|,2\]/.test(mid.extra || ""), `Công thức từ ứng dụng khác phải thành chữ: ${mid.extra}`);
+        expect(mine.length > 0, "Ghi chéo không để lại mục Hoàn tác");
+        // Lệnh đã chạy không chạy lại
+        kv.setItem(CMD_PREFIX + self, JSON.stringify(cmd));
+        expect(takeCommand(kv, self, { accept: true, seen }) === null, "Lệnh đã chạy bị chạy lại");
+      } finally {
+        for (const u of mine.slice().reverse()) await u.undo();
+      }
+      const after = await count();
+      expect(!after.has && after.n === before.n, `Hoàn tác ghi chéo chưa sạch: trước ${before.n}, sau ${after.n}, còn nội dung: ${after.has}`);
+      return `${other} chưa mở → “${(r0.error || "").slice(0, 60)}…”; hết hạn → rút lệnh; nhận lệnh → ${message.slice(0, 70)}; hoàn tác sạch`;
+    });
   }
   onProgress([...steps]);
   return steps;
