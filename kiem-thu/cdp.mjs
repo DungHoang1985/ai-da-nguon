@@ -7,6 +7,9 @@
 //   node kiem-thu/cdp.mjs shot <cổng> <tệp .png>                     chụp khung add-in
 //   node kiem-thu/cdp.mjs file <cổng> <bộ chọn CSS> <tệp> [tệp…]     đặt tệp vào ô chọn tệp (đính kèm, nhập kỹ năng)
 //   node kiem-thu/cdp.mjs reload <cổng>                              tải lại khung add-in, bỏ qua bộ nhớ tạm (như Ctrl+F5)
+//   node kiem-thu/cdp.mjs list <cổng>                                liệt kê các trang đang mở (khung add-in, hộp thoại đăng nhập); giá trị tham số nhạy cảm chỉ in độ dài
+//   node kiem-thu/cdp.mjs nav <cổng>#<đoạn địa chỉ> <địa chỉ>         đưa một trang (ví dụ hộp thoại đăng nhập) tới địa chỉ khác
+//   <cổng>#<đoạn địa chỉ> dùng được với eval, shot: chọn trang có địa chỉ chứa đoạn đó thay cho khung add-in (9229#dang-nhap, 9229#openrouter.ai)
 //   node kiem-thu/cdp.mjs serve <cổng> [thư mục dist]                nạp BẢN CỤC BỘ vào khung: chặn mọi yêu cầu tới địa chỉ add-in và trả tệp
 //                                                                    từ thư mục dist (sau npm run build), rồi tải lại khung. Chạy ở nền, giữ tới khi
 //                                                                    thử xong; tắt tiến trình rồi tải lại khung là về bản đã phát hành. Không đẩy gì lên mạng.
@@ -46,12 +49,35 @@ async function make(app, out) {
   console.log(`Đã tạo ${out} (add-in ${id}, bản manifest ${version})`);
 }
 
-/** port có thể kèm tên ứng dụng khi nhiều ứng dụng Office cùng mở: "9229/Excel", "9229/PowerPoint", "9229/Word" */
+/** Địa chỉ để in ra: giữ đường dẫn và tên tham số; giá trị chỉ in với tham số không nhạy cảm, còn lại in độ dài.
+ *  Không bao giờ in mã đăng nhập (code), state hay mã thách thức ra màn hình hoặc tệp bằng chứng. */
+const SHOW_PARAMS = new Set(["callback_url", "code_challenge_method", "key_label", "p"]);
+function safeUrl(raw) {
+  try {
+    const u = new URL(raw);
+    const qs = [...u.searchParams.entries()].map(([k, v]) => (SHOW_PARAMS.has(k) ? `${k}=${v}` : `${k}=<${v.length} ký tự>`));
+    return u.origin + u.pathname + (qs.length ? "?" + qs.join("&") : "") + (u.hash ? "#<…>" : "");
+  } catch {
+    return String(raw).slice(0, 80);
+  }
+}
+
+/** Liệt kê các trang đang mở trên cổng gỡ lỗi (khung add-in, hộp thoại đăng nhập…) */
+async function listTargets(port) {
+  const list = await (await fetch(`http://127.0.0.1:${String(port).split(/[/#]/)[0]}/json/list`)).json();
+  console.log(JSON.stringify(list.filter((x) => x.type === "page" || x.type === "webview").map((x) => ({ loai: x.type, diaChi: safeUrl(x.url) })), null, 1));
+}
+
+/** port có thể kèm tên ứng dụng khi nhiều ứng dụng Office cùng mở: "9229/Excel", "9229/PowerPoint", "9229/Word";
+ *  hoặc kèm một đoạn của địa chỉ để chọn trang khác khung add-in: "9229#dang-nhap", "9229#openrouter.ai" (hộp thoại đăng nhập) */
 async function connect(portAndHost) {
-  const [port, host] = String(portAndHost).split("/");
+  const [portHost, pick] = String(portAndHost).split("#");
+  const [port, host] = portHost.split("/");
   const list = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
-  const target = list.find((x) => x.type === "page" && /taskpane\.html/.test(x.url) && (!host || x.url.includes(`_host_Info=${host}`)));
-  if (!target) throw new Error("Không thấy khung add-in. Các trang đang có: " + list.map((x) => `${x.type} ${x.url}`).join(" | "));
+  const target = pick
+    ? list.find((x) => (x.type === "page" || x.type === "webview") && x.url.includes(pick))
+    : list.find((x) => x.type === "page" && /taskpane\.html/.test(x.url) && (!host || x.url.includes(`_host_Info=${host}`)));
+  if (!target) throw new Error((pick ? `Không thấy trang có "${pick}".` : "Không thấy khung add-in.") + " Các trang đang có: " + list.map((x) => `${x.type} ${safeUrl(x.url)}`).join(" | "));
   const ws = new WebSocket(target.webSocketDebuggerUrl);
   await new Promise((res, rej) => {
     ws.onopen = res;
@@ -134,6 +160,17 @@ async function reload(port) {
   }
 }
 
+/** Đưa một trang (chọn bằng "#<đoạn địa chỉ>") tới địa chỉ khác — dùng để giả lập bước nhà cung cấp chuyển về trang của add-in */
+async function navigate(port, url) {
+  const c = await connect(port);
+  try {
+    await c.send("Page.navigate", { url });
+    console.log(`Đã chuyển trang tới ${safeUrl(url)}`);
+  } finally {
+    c.close();
+  }
+}
+
 const MIME = { html: "text/html; charset=utf-8", js: "text/javascript; charset=utf-8", mjs: "text/javascript; charset=utf-8", css: "text/css; charset=utf-8", json: "application/json", map: "application/json", png: "image/png", svg: "image/svg+xml", ico: "image/x-icon", wasm: "application/wasm", woff2: "font/woff2", xml: "text/xml", txt: "text/plain; charset=utf-8" };
 
 /** Nạp bản cục bộ: trả tệp trong thư mục dist cho mọi yêu cầu tới địa chỉ add-in (cùng nguồn gốc nên kho lưu, key vẫn như cũ) */
@@ -173,6 +210,67 @@ async function serve(port, dir) {
   await c.send("Network.setCacheDisabled", { cacheDisabled: true });
   await c.send("Fetch.enable", { patterns: [{ urlPattern: prefix + "*" }] });
   await c.send("Page.reload", { ignoreCache: true });
+  // Trang mở sau đó (hộp thoại đăng nhập của Office là một trang riêng): tự gắn vào ngay khi nó được tạo, trước khi nó tải gì,
+  // để yêu cầu đầu tiên của nó cũng nhận bản cục bộ (dang-nhap.html chưa có trên bản đã phát hành).
+  try {
+    const [p] = String(port).split(/[/#]/);
+    const ver = await (await fetch(`http://127.0.0.1:${p}/json/version`)).json();
+    const b = new WebSocket(ver.webSocketDebuggerUrl);
+    await new Promise((res, rej) => {
+      b.onopen = res;
+      b.onerror = () => rej(new Error("không nối được kênh trình duyệt"));
+    });
+    let n = 0;
+    const bsend = (method, params = {}, sessionId) => b.send(JSON.stringify({ id: ++n, method, params, ...(sessionId ? { sessionId } : {}) }));
+    b.onmessage = (ev) => {
+      const m = JSON.parse(ev.data);
+      if (m.method === "Target.attachedToTarget") {
+        const { sessionId, targetInfo, waitingForDebugger } = m.params;
+        const isOther = targetInfo.type === "page" && !/taskpane\.html/.test(targetInfo.url);
+        if (isOther) {
+          bsend("Network.enable", {}, sessionId);
+          bsend("Network.setCacheDisabled", { cacheDisabled: true }, sessionId);
+          bsend("Fetch.enable", { patterns: [{ urlPattern: prefix + "*" }] }, sessionId);
+          console.log(`gắn vào trang mới: ${safeUrl(targetInfo.url) || "(trống)"}`);
+        }
+        if (waitingForDebugger) bsend("Runtime.runIfWaitingForDebugger", {}, sessionId);
+      } else if (m.method === "Fetch.requestPaused" && m.sessionId) {
+        const pr = m.params;
+        try {
+          const u = new URL(pr.request.url);
+          const rel = decodeURIComponent((u.origin + u.pathname).slice(prefix.length));
+          const file = path.join(base, rel);
+          if (rel && file.startsWith(base) && fs.existsSync(file) && fs.statSync(file).isFile()) {
+            const ext = path.extname(file).slice(1).toLowerCase();
+            bsend(
+              "Fetch.fulfillRequest",
+              {
+                requestId: pr.requestId,
+                responseCode: 200,
+                responseHeaders: [
+                  { name: "Content-Type", value: MIME[ext] || "application/octet-stream" },
+                  { name: "Cache-Control", value: "no-store" },
+                ],
+                body: fs.readFileSync(file).toString("base64"),
+              },
+              m.sessionId
+            );
+            served++;
+            console.log(`cục bộ  ${rel}  (trang mới)`);
+          } else {
+            bsend("Fetch.continueRequest", { requestId: pr.requestId }, m.sessionId);
+            console.log(`mạng    ${rel}  (trang mới)`);
+          }
+        } catch (e) {
+          console.error("LỖI khi trả tệp cho trang mới:", e.message);
+        }
+      }
+    };
+    bsend("Target.setAutoAttach", { autoAttach: true, waitForDebuggerOnStart: true, flatten: true });
+    c.closed.then(() => b.close());
+  } catch (e) {
+    console.log(`Không tự gắn được vào trang mở sau (hộp thoại): ${e.message}`);
+  }
   console.log(`Đang trả bản cục bộ từ ${base} cho ${prefix}* — giữ tiến trình này tới khi thử xong.`);
   await c.closed;
   console.log(`Khung đã đóng. Đã trả ${served} tệp cục bộ.`);
@@ -180,6 +278,8 @@ async function serve(port, dir) {
 
 try {
   if (cmd === "make") await make(a1, a2);
+  else if (cmd === "list") await listTargets(a1);
+  else if (cmd === "nav") await navigate(a1, a2);
   else if (cmd === "reload") await reload(a1);
   else if (cmd === "serve") await serve(a1, a2);
   else if (cmd === "file") await setFile(a1, a2, process.argv.slice(5));

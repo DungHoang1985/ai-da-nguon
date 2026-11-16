@@ -37,7 +37,7 @@ const useStyles = makeStyles({
   muted: { color: tokens.colorNeutralForeground3 },
 });
 
-type Status = { kind: "ok" | "err" | "busy"; text: string } | undefined;
+type Status = { kind: "ok" | "err" | "busy" | "info"; text: string } | undefined;
 
 /** Địa chỉ trang hộp thoại: cùng thư mục với taskpane.html */
 function dialogPageUrl(): string {
@@ -134,7 +134,7 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
     if (!session || !p.oauth) return;
     dialogRef.current?.close();
     dialogRef.current = null;
-    setStatus({ kind: "busy", text: `Đang mở cửa sổ đăng nhập ${p.name}… Đăng nhập (nếu được hỏi) rồi bấm Authorize trong cửa sổ đó.` });
+    setStatus({ kind: "info", text: `Đang mở cửa sổ đăng nhập ${p.name}… Đăng nhập (nếu được hỏi) rồi bấm Authorize trong cửa sổ đó.` });
     try {
       const handle = await openDialog(dialogStartUrl(dialogPageUrl(), p.id, session), {
         onMessage: (message) => {
@@ -146,7 +146,7 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
         },
         onClosed: (_why, text) => {
           dialogRef.current = null;
-          setStatus((cur) => (cur?.kind === "busy" ? { kind: "err", text } : cur));
+          setStatus((cur) => (cur?.kind === "info" ? { kind: "err", text } : cur));
         },
       });
       dialogRef.current = handle;
@@ -162,7 +162,7 @@ export function useSignIn(storage: Storage, p: Provider, onChanged: () => void) 
     const ok = openInBrowser(buildAuthUrl(p.oauth, { challenge: session.challenge }));
     setStatus(
       ok
-        ? { kind: "busy", text: `Đã mở trang ${p.name} trong trình duyệt. Bấm Authorize, chép mã trên trang rồi dán vào ô bên dưới (mã dùng trong 10 phút).` }
+        ? { kind: "info", text: `Đã mở trang ${p.name} trong trình duyệt. Bấm Authorize, chép mã trên trang rồi dán vào ô bên dưới (mã dùng trong 10 phút).` }
         : { kind: "err", text: "Không mở được trình duyệt. Dùng nút “Lấy key” rồi dán key theo cách cũ." }
     );
   };
