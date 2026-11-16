@@ -66,4 +66,7 @@ Những điều đã trả giá ở các dự án đó:
 
 ## Dọn dẹp
 
-Hội thoại thử trong khung AI Đa Nguồn đã xóa theo tiêu đề; nguồn trả về Anthropic · Claude Opus 5.5; công tắc Suy nghĩ kỹ tắt. Các hội thoại thử trong add-in Claude chính thức (5 bài, 2 lượt PDF) còn trong lịch sử tài khoản của anh — tôi không xóa. Tệp thử nằm ở thư mục tạm của phiên, không vào kho.
+- Hội thoại thử trong khung AI Đa Nguồn đã xóa theo tiêu đề; nguồn trả về Anthropic · Claude Opus 5.5; công tắc Suy nghĩ kỹ tắt; Word thử đã đóng, không lưu.
+- **Mất dữ liệu do bài thử:** lịch sử hội thoại của Word chỉ giữ 60 hội thoại mới nhất (`MAX_CONVERSATIONS`). Buổi thử tạo hơn 70 hội thoại liên tiếp nên các hội thoại có từ trước trong lịch sử Word (ghi chú Đợt 4 đếm được 4) đã bị đẩy ra khỏi lịch sử và không lấy lại được. Lịch sử của Excel và PowerPoint không bị đụng.
+- Các hội thoại thử trong add-in Claude chính thức (5 bài, 2 lượt PDF) còn trong lịch sử tài khoản của anh — tôi không xóa.
+- Tệp thử nằm ở thư mục tạm của phiên, không vào kho.
