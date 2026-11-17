@@ -50,7 +50,7 @@ Tiêu chí nghiệm thu:
 
 Theo `tasks/ke-hoach-v4.md`: bộ nhớ dài hạn giữa các hội thoại · tải bản ghi hội thoại · gợi ý gạch chân bấm để chấp nhận trong Word · điền mẫu qua ô điền sẵn · connectors (MCP) · công cụ chạy mã Office.js do AI viết · phím tắt mở khung · đọc một trang web cụ thể · Outlook · Sign in with Poe · hàm `=AI(…)` trong ô Excel.
 
-## Kết quả (17/11/2026, bản cục bộ trên nhánh `claude/so-song-song`, chưa phát hành)
+## Kết quả (17/11/2026, kiểm trên bản cục bộ; anh duyệt và đã phát hành bản 4.5.0 cùng ngày)
 
 Kiểm thử máy 504/504, kiểm kiểu sạch, đóng gói đạt. Mọi bước trong Office chạy trên desktop ẩn. Bằng chứng: `tasks/dot-5-bang-chung/`.
 
