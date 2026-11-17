@@ -96,3 +96,52 @@ Hai phép đo cho mỗi địa chỉ, giả làm trình duyệt (gửi kèm `Ori
 - https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock
 - https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry
 - https://docs.x.ai/developers/rest-api-reference/inference/legacy.md
+
+## Anh chọn (17/11/2026)
+
+OpenRouter kênh Claude · DeepSeek · MiniMax và Kimi · có mục nguồn tự khai · làm ngay. Anh dặn thêm: chú ý các kênh "ngon, bổ, rẻ" của Trung Quốc và hỏi vì sao có nguồn bị chặn.
+
+## Kết quả đo bằng trình duyệt thật (17/11/2026)
+
+Trình duyệt Edge chạy không cửa sổ, trang `https://example.com`, gọi `POST …/messages` với đúng bộ tiêu đề add-in sẽ gửi, không kèm key. "Đọc được" = trình duyệt cho đọc phản hồi (lỗi 401 vì không có key) nên add-in gọi được. Bằng chứng: `tasks/dot-6-bang-chung/do-cors-trinh-duyet.json`.
+
+| Nguồn | Kết quả | Ghi chú |
+|---|---|---|
+| OpenRouter kênh Claude | Đọc được (401) | đã thêm sẵn |
+| DeepSeek kiểu Anthropic | Đọc được (401) | đã thêm sẵn |
+| MiniMax | Đọc được (401) | đã thêm sẵn |
+| Kimi (cả địa chỉ liệt kê model) | Đọc được (401) | đã thêm sẵn |
+| SiliconFlow (nơi tổng hợp nhiều model Trung Quốc) | Đọc được (401) | dùng qua nguồn tự khai: `https://api.siliconflow.com` |
+| Qwen — DashScope nội địa | Đọc được (401) | địa chỉ chưa đối chiếu tài liệu chính thức |
+| ModelScope | Đọc được (400 sai tên model) | chưa đọc tài liệu |
+| StepFun · Novita · Bedrock | Đọc được (401) | chưa đọc tài liệu, trừ Bedrock |
+| Z.ai (GLM) | **Bị chặn** | máy chủ không trả tiêu đề cho phép ở bước dò trước |
+| Qwen — DashScope quốc tế | **Bị chặn** | bước dò trước trả 403 |
+| Volcengine Ark · BytePlus Ark · Vercel | **Bị chặn khi key sai** | bước dò trước được, nhưng lỗi 401 không kèm tiêu đề cho phép; với key đúng có thể gọi được — chưa đo |
+
+Vì sao có nguồn bị chặn: add-in chạy trong một khung trình duyệt của Office và gọi thẳng tới nhà cung cấp, không qua máy chủ riêng. Trình duyệt chỉ cho gọi khi máy chủ của nhà cung cấp tự khai là cho phép trang web gọi tới. Phần lớn nguồn Trung Quốc có khai; vài nguồn (Z.ai, DashScope quốc tế) thì không, vì họ làm kênh này cho công cụ chạy trên máy như Claude Code chứ không cho trang web.
+
+## Đã làm (mã trên nhánh cục bộ, chưa phát hành)
+
+- `src/core/providers.ts`: cấu hình `dialect` (cách gửi key, chỉ gửi tiêu đề tối thiểu, bộ nhớ đệm, suy nghĩ, PDF, tìm web, danh sách model), `keyFrom` (dùng chung key), nguồn tự khai (`CustomSource`, `normalizeBaseUrl`, `allProviders`). Bốn nguồn mới: `openrouter-claude`, `deepseek-anthropic`, `minimax`, `kimi`.
+- `src/core/models.ts`: `anthropicHeaders(key, provider)`, danh sách model cố định hoặc lấy kiểu OpenAI có lọc.
+- `src/core/agent/llm.ts`, `thinking.ts`: không gắn `cache_control` cho nguồn bỏ qua; `dialectThinkingParams`; PDF và tìm web theo phương ngữ.
+- `src/core/storage.ts`: key dùng chung chỉ tính ra, không lưu bản sao; lưu nguồn tự khai.
+- `Settings.tsx`: thẻ "Thêm nguồn tự khai (kiểu Anthropic)", nút "Gỡ nguồn", dòng liệt kê kênh dùng chung key.
+- `test/unit/dot6.test.ts`: 20 kiểm thử. `npm test` 524/524, kiểm kiểu sạch, đóng gói đạt.
+
+## Kết quả theo tiêu chí
+
+| # | Kết quả | Bằng chứng |
+|---|---|---|
+| 1 | Đạt | Kiểm thử máy: tiêu đề từng nguồn đúng bảng; yêu cầu của `api.anthropic.com` giữ nguyên |
+| 2–5 | Chưa kiểm được | Cần khung add-in trong Office (key nằm trong kho của khung). Ngày 17/11 anh đang mở Word ở màn hình chính nên không mở được Word thử |
+| 6 | Đổi | Không thêm Z.ai vào danh sách (bị chặn); ghi ở bảng trên |
+| 7 | Chưa kiểm được | Như dòng 2–5 |
+
+## Việc còn lại
+
+1. Khi anh đóng Word: mở Word thử trên desktop ẩn, nạp bản cục bộ, kiểm thẻ nguồn tự khai, Tự kiểm tra ba ứng dụng.
+2. Chạy thật: OpenRouter kênh Claude (cần tài khoản OpenRouter còn tiền), DeepSeek (cần key), MiniMax và Kimi (anh tạo key).
+3. Đọc tài liệu chính thức của SiliconFlow, Qwen, ModelScope, StepFun rồi mới thêm sẵn vào danh sách; trước đó dùng qua nguồn tự khai.
+4. Xin duyệt phát hành (đề xuất 4.6.0).

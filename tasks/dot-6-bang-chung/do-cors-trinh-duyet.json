@@ -1,0 +1,113 @@
+{
+ "nguonGoc": "https://example.com",
+ "ngay": "2026-11-17",
+ "ketQua": [
+  {
+   "ten": "OpenRouter kênh Claude",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 148,
+   "traLoi": "{\"type\":\"error\",\"error\":{\"type\":\"authentication_error\",\"message\":\"Missing Authentication header\",\"error_type\":"
+  },
+  {
+   "ten": "DeepSeek (x-api-key)",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 277,
+   "traLoi": "{\"type\":\"error\",\"error\":{\"type\":\"authentication_error\",\"message\":\"Authentication Fails, Your api key: ****-key"
+  },
+  {
+   "ten": "MiniMax",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 633,
+   "traLoi": "{\"type\":\"error\",\"error\":{\"type\":\"authentication_error\",\"message\":\"login fail: Please carry the API secret key "
+  },
+  {
+   "ten": "Kimi",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 743,
+   "traLoi": "{\"error\":{\"message\":\"Invalid Authentication\",\"type\":\"invalid_authentication_error\"}}"
+  },
+  {
+   "ten": "Kimi — liệt kê model",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 454,
+   "traLoi": "{\"error\":{\"message\":\"Invalid Authentication\",\"type\":\"invalid_authentication_error\"}}"
+  },
+  {
+   "ten": "Z.ai",
+   "ketQua": "bi-chan",
+   "ms": 504,
+   "loi": "TypeError: Failed to fetch"
+  },
+  {
+   "ten": "SiliconFlow",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 1987,
+   "traLoi": "{\"code\":30014,\"data\":null,\"message\":\"Token is invalid.\"}"
+  },
+  {
+   "ten": "Qwen (DashScope nội địa)",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 1852,
+   "traLoi": "{\"code\":\"InvalidApiKey\",\"message\":\"Invalid API-key provided.\",\"request_id\":\"d04dfed6-e79e-9d14-8e17-3760ab80be"
+  },
+  {
+   "ten": "Qwen (DashScope quốc tế)",
+   "ketQua": "bi-chan",
+   "ms": 140,
+   "loi": "TypeError: Failed to fetch"
+  },
+  {
+   "ten": "Volcengine Ark",
+   "ketQua": "bi-chan",
+   "ms": 3245,
+   "loi": "TypeError: Failed to fetch"
+  },
+  {
+   "ten": "BytePlus Ark",
+   "ketQua": "bi-chan",
+   "ms": 153,
+   "loi": "TypeError: Failed to fetch"
+  },
+  {
+   "ten": "ModelScope",
+   "ketQua": "doc-duoc",
+   "ma": 400,
+   "ms": 2164,
+   "traLoi": "{\"detail\":\"Error code: 400 - {'error': {'message': 'Invalid model id: x', 'request_id': 'bbed715f-1791-4625-ad"
+  },
+  {
+   "ten": "StepFun",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 2077,
+   "traLoi": "{\"error\":{\"message\":\"Incorrect API key provided\",\"type\":\"invalid_api_key\"}}"
+  },
+  {
+   "ten": "Novita",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 729,
+   "traLoi": "{\"code\":401,\"reason\":\"FAILED_TO_AUTH\",\"message\":\"failed to authenticate API key\",\"metadata\":{}} "
+  },
+  {
+   "ten": "Bedrock (us-east-1)",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 1755,
+   "traLoi": "{\"type\":\"error\",\"request_id\":\"req_qop3rtpqfgpqbjlp4hwv3nfopaee6rves3njck2gwpbvb34z7z3a\",\"error\":{\"type\":\"authe"
+  },
+  {
+   "ten": "Vercel AI Gateway",
+   "ketQua": "bi-chan",
+   "ms": 560,
+   "loi": "TypeError: Failed to fetch"
+  }
+ ]
+}
