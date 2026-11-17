@@ -217,8 +217,12 @@ export function takeWithinBudget<T>(items: T[], budget: number, shrink?: (x: T, 
 }
 
 /** Kết quả word_read_paragraphs: tính theo độ dài JSON thật; next_start và truncated đặt lên đầu. */
+/** Câu nhắc đi kèm kết quả đọc khi có đoạn đang chờ duyệt sửa đổi: AI phải nêu cả hai bản, không dẫn một bản như thể đã chốt */
+export const PENDING_NOTE =
+  "Đoạn có changed=true đang có sửa đổi được theo dõi CHƯA DUYỆT: text là chữ sau sửa, before là chữ gốc trước sửa, changed_by là người sửa. Khi dẫn hoặc trả lời dựa trên các đoạn này phải nêu cả chữ gốc lẫn chữ đang sửa và nói rõ sửa đổi còn chờ duyệt.";
+
 export function packParagraphs(
-  all: { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[] }[],
+  all: { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[]; before?: string; changed_by?: string }[],
   start: number,
   end: number,
   budget = RESULT_JSON_BUDGET
@@ -233,6 +237,9 @@ export function packParagraphs(
     style: String(p.style ?? ""),
     text: String(p.text ?? ""),
     ...(p.changed ? { changed: true } : {}),
+    // before = chữ gốc trước các sửa đổi chờ duyệt (chỉ có khi khác chữ hiện tại); changed_by = người sửa
+    ...(p.changed && p.before !== undefined && p.before !== String(p.text ?? "") ? { before: p.before } : {}),
+    ...(p.changed && p.changed_by ? { changed_by: p.changed_by } : {}),
     ...(p.deleted ? { deleted: true } : {}),
     // notes = chú thích cuối trang / cuối văn bản neo vào đoạn này
     ...(p.notes?.length ? { notes: p.notes } : {}),
@@ -250,6 +257,7 @@ export function packParagraphs(
     ...(truncated ? { truncated: true, note: `Kết quả dài nên dừng ở đoạn ${last}. Gọi lại với start = next_start để đọc tiếp.` } : {}),
     read_from: s0,
     read_to: last,
+    ...(picked.some((x: any) => x.before !== undefined) ? { pending_note: PENDING_NOTE } : {}),
     paragraphs: picked,
   };
 }

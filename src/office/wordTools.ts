@@ -98,7 +98,7 @@ export const WORD_SPECS: ToolSpec[] = [
   {
     name: "word_read_paragraphs",
     description:
-      "Read paragraphs by index range (0-based, end exclusive) with style and clause number `num`. Or read the current selection. Text is the CURRENT version (pending tracked deletions are not included); `changed` marks paragraphs with pending tracked changes. Long results stop early: when the result has next_start, call again with start=next_start; compare with total_paragraphs to be sure you read everything.",
+      "Read paragraphs by index range (0-based, end exclusive) with style and clause number `num`. Or read the current selection. Text is the CURRENT version (pending tracked deletions are not included); `changed` marks paragraphs with pending (not yet accepted) tracked changes; for those, `before` is the text before the changes and `changed_by` the author — when you quote or rely on such a paragraph, state both versions and that the change is still pending. Long results stop early: when the result has next_start, call again with start=next_start; compare with total_paragraphs to be sure you read everything.",
     parameters: {
       type: "object",
       properties: {
@@ -378,6 +378,25 @@ export const WORD_SPECS: ToolSpec[] = [
   // Đợt 3: dựng văn bản hành chính đúng thể thức, đặt thể thức trang (wordAdmin.ts)
   ...WORD_ADMIN_SPECS,
 ];
+
+/** Công cụ sửa nội dung Word nhận thêm `reason`: một câu lý do ngắn, hiện cạnh bước trên khung, trong hộp hỏi và ở mục Hoàn tác
+ *  (như thẻ đề xuất kèm lý do của add-in Claude chính thức). Lý do chỉ để hiển thị, không ghi vào tài liệu. */
+export const REASON_TOOLS = new Set(["word_replace_text", "word_set_paragraph_text", "word_insert_paragraphs", "word_insert_clause", "word_replace_selection", "word_delete_paragraphs", "word_fill_table"]);
+for (const sp of WORD_SPECS) {
+  if (REASON_TOOLS.has(sp.name)) {
+    (sp.parameters as any).properties.reason = {
+      type: "string",
+      description: "Why this change, in one short sentence in the user's language (shown to the user next to the edit). Always give it.",
+    };
+  }
+}
+
+/** Lý do AI nêu cho một lần sửa, gọn một dòng (rỗng nếu không nêu) */
+export function reasonOf(name: string, a: any): string {
+  if (!REASON_TOOLS.has(name)) return "";
+  const r = String(a?.reason ?? "").replace(/\s+/g, " ").trim();
+  return r.length > 160 ? r.slice(0, 159) + "…" : r;
+}
 /** Công cụ ghi chữ vào điều khoản: khi người dùng bật "Soát lập luận trước khi sửa", mỗi lần gọi được soát trước khi ghi */
 const REVIEWABLE = ["word_set_paragraph_text", "word_insert_clause", "word_replace_selection"];
 WORD_SPECS.forEach((sp) => {
@@ -733,6 +752,48 @@ async function rejectWanted(wants: Wanted[]): Promise<number> {
   }
 }
 
+type PendingRow = { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[]; before?: string; changed_by?: string };
+
+/** Đánh dấu các đoạn đang có sửa đổi chờ duyệt trong cửa sổ [start, end): changed, chữ gốc trước sửa (before), người sửa (changed_by).
+ *  original = người gọi muốn xem bản gốc: text thành chữ gốc, không kèm before. Cần WordApi 1.6; máy cũ thì chỉ biết đoạn có chữ bị xóa. */
+async function annotatePending(ctx: Word.RequestContext, loaded: { rows: any[]; paras: Word.ParagraphCollection }, all: PendingRow[], start: number, end: number, original = false) {
+  const { rows, paras } = loaded;
+  const s0 = Math.max(0, start);
+  const e0 = Math.min(rows.length, end);
+  if (!supports("1.6")) {
+    for (let i = s0; i < e0; i++) if (rows[i].deleted || noMarks(rows[i].markup) !== rows[i].text) all[i].changed = true;
+    return;
+  }
+  const win = paras.items.slice(s0, e0);
+  const tcs = win.map((p) => {
+    const t = p.getTrackedChanges();
+    t.load("items/type,items/author");
+    return t;
+  });
+  await ctx.sync();
+  const hit: number[] = [];
+  win.forEach((_, k) => {
+    const row = rows[s0 + k];
+    if (tcs[k].items.length || row.deleted || noMarks(row.markup) !== row.text) hit.push(k);
+  });
+  if (!hit.length) return;
+  const orig = hit.map((k) => win[k].getReviewedText("Original"));
+  await ctx.sync();
+  hit.forEach((k, j) => {
+    const row = all[s0 + k];
+    const before = noMarks(strip(orig[j].value));
+    row.changed = true;
+    if (original) {
+      row.text = before;
+      row.deleted = false;
+      return;
+    }
+    row.before = before;
+    const by = [...new Set(tcs[k].items.map((t) => String(t.author || "").trim()).filter(Boolean))];
+    if (by.length) row.changed_by = by.slice(0, 3).join(", ");
+  });
+}
+
 export function createWordTools(getSettings: () => WordSettings): HostToolSet {
   void getSettings;
   /** Luôn bật Theo dõi thay đổi trong lúc AI sửa, xong trả lại chế độ cũ. Word không có API theo dõi (dưới WordApi 1.4) → từ chối ghi. */
@@ -962,7 +1023,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
           if (!q) throw new Error("Thiếu chuỗi cần tìm.");
           // Tìm trên bản hiện tại của từng đoạn (không dùng search của Word: nó tìm cả trong chữ đã xóa có theo dõi
           // và không thấy cụm bị chữ đã xóa chen giữa — thăm dò 15/11/2026)
-          const { rows } = await loadRows(ctx, true);
+          const { rows, paras, hasChanges } = await loadRows(ctx, true);
           const outline = buildOutline(rows);
           const max = Math.min(100, Math.max(1, Math.floor(Number(a.max)) || 30));
           let res = searchRows(rows, q, { matchCase: !!a.match_case, wholeWord: !!a.whole_word });
@@ -1000,6 +1061,24 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             }
           }
           const { picked } = takeWithinBudget(hits.slice(0, max), RESULT_JSON_BUDGET - 600);
+          // Đoạn khớp đang có sửa đổi chờ duyệt: đánh dấu để AI đọc cả hai bản trước khi dẫn
+          let pendingHits = 0;
+          if (hasChanges && supports("1.6") && picked.length) {
+            const idx = [...new Set(picked.map((h) => h.i))];
+            const tcs = idx.map((i) => {
+              const t = paras.items[i].getTrackedChanges();
+              t.load("items/type");
+              return t;
+            });
+            await ctx.sync();
+            const set = new Set(idx.filter((_, k) => tcs[k].items.length > 0));
+            picked.forEach((h: any) => {
+              if (set.has(h.i)) {
+                h.changed = true;
+                pendingHits++;
+              }
+            });
+          }
           return {
             ok: true,
             found: res.total,
@@ -1007,6 +1086,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             shown: picked.length,
             ...(picked.length < hits.length ? { note: `Còn ${hits.length - picked.length} đoạn khớp chưa hiện: thu hẹp chuỗi tìm hoặc tăng max.` } : {}),
             ...(loose ? { ignoring_accents: true } : {}),
+            ...(pendingHits ? { pending_note: "Kết quả có changed=true nằm trong đoạn đang có sửa đổi được theo dõi CHƯA DUYỆT (text là chữ sau sửa). Trước khi dẫn, đọc đoạn đó bằng word_read_paragraphs hoặc word_read_clause để lấy cả chữ gốc (before), rồi nêu cả hai và nói rõ còn chờ duyệt." } : {}),
             ...(res.total
               ? {}
               : { message: `Không tìm thấy "${truncate(q, 80)}". Tìm kiếm theo đúng chữ: thử từ khóa khác hoặc ngắn hơn, hoặc xem mục lục bằng word_get_outline.` }),
@@ -1016,7 +1096,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
 
       case "word_read_clause":
         return Word.run(async (ctx) => {
-          const { rows } = await loadRows(ctx, true);
+          const { rows, paras, hasChanges } = await loadRows(ctx, true);
           const outline = buildOutline(rows);
           const matches = findClause(outline, String(a.number || ""));
           if (!matches.length) {
@@ -1042,7 +1122,9 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             };
           }
           const it = matches[0];
-          const r: any = packParagraphs(withNums(rows, outline), it.i, it.end + 1);
+          const all = withNums(rows, outline) as PendingRow[];
+          if (hasChanges) await annotatePending(ctx, { rows, paras }, all, it.i, Math.min(it.end + 1, it.i + 300));
+          const r: any = packParagraphs(all, it.i, it.end + 1);
           // next_start chỉ có nghĩa khi điều khoản chưa đọc hết
           if (r.read_to >= it.end) delete r.next_start;
           return { ...r, clause: it.num || it.title, title: it.title, from: it.i, to: it.end };
@@ -1066,24 +1148,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
           const start = Math.max(0, Number(a.start) || 0);
           // Không nạp sửa đổi cho quá 300 đoạn một lần: kết quả cũng chỉ trả vài chục tới vài trăm đoạn theo ngân sách
           const end = Math.min(rows.length, Number(a.end) || start + 200, start + 300);
-          if (hasChanges && supports("1.6")) {
-            const win = paras.items.slice(start, end);
-            const tcs = win.map((p) => {
-              const t = p.getTrackedChanges();
-              t.load("items/type");
-              return t;
-            });
-            const orig = a.view === "original" ? win.map((p) => p.getReviewedText("Original")) : null;
-            await ctx.sync();
-            win.forEach((_, k) => {
-              const row = all[start + k];
-              if (tcs[k].items.length || rows[start + k].deleted || noMarks(rows[start + k].markup) !== rows[start + k].text) row.changed = true;
-              if (orig) {
-                row.text = noMarks(strip(orig[k].value));
-                row.deleted = false;
-              }
-            });
-          }
+          if (hasChanges) await annotatePending(ctx, { rows, paras }, all, start, end, a.view === "original");
           const r = packParagraphs(all, start, end);
           return a.view === "original" ? { ...r, view: "original" } : r;
         });
@@ -1984,7 +2049,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
       const blind = diffable && !before;
       if (wants.length || tangled || u.extra.length || untracked || blind || u.after?.length) {
         ctx.log.push({
-          label: UNDO_LABEL[name] || `Hoàn tác ${name.replace(/^word_/, "")} (${d.added.length + d.merged.length} sửa đổi)`,
+          label: (UNDO_LABEL[name] || `Hoàn tác ${name.replace(/^word_/, "")} (${d.added.length + d.merged.length} sửa đổi)`) + (reasonOf(name, a) ? ` — lý do: ${reasonOf(name, a)}` : ""),
           undo: async () => {
             if (blind) throw new Error("không chụp được danh sách sửa đổi trước khi sửa nên không gỡ tự động được; xem thẻ Review của Word");
             for (const x of u.extra.slice().reverse()) await x();

@@ -251,7 +251,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         const { __images: _drop, ...rest } = result;
         void _drop;
         result = rest;
-        if (o.vision === false) result = { ...result, image_note: "Model đang dùng không nhận ảnh nên ảnh không được gửi: chỉ dùng được số đo bằng mã. Muốn AI tự nhìn slide, người dùng cần chọn model nhận ảnh." };
+        if (o.vision === false) result = { ...result, image_note: "Model đang dùng không nhận ảnh nên ảnh không được gửi: chỉ dùng được phần chữ và số đo bằng mã. Muốn AI tự nhìn ảnh (slide, trang quét), người dùng cần chọn model nhận ảnh. Không được đoán nội dung của ảnh." };
         else toolImages.push(...imgs);
       }
       o.onEvent({ type: "tool_end", call, result, error });

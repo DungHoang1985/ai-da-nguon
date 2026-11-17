@@ -1,6 +1,8 @@
 /** Đọc tệp đính kèm thành chữ (TXT/CSV/MD/JSON/HTML, PDF, DOCX) hoặc ảnh (base64) để gửi kèm câu hỏi.
  *  PDF quét (không có lớp chữ) được giữ nguyên tệp (kind "file") để gửi cho model tự đọc. */
 
+import { formatPages } from "./pdfPages";
+
 export interface Attachment {
   name: string;
   /** text = chữ ghép vào câu hỏi · image = ảnh gửi kèm · file = tệp gửi nguyên vẹn cho model đọc (PDF quét) */
@@ -12,7 +14,11 @@ export interface Attachment {
   note?: string;
   /** Số trang (PDF) */
   pages?: number;
+  /** PDF lẫn trang quét: các trang không có lớp chữ */
+  scanPages?: number[];
 }
+
+export const PDF_MIME = "application/pdf";
 
 /** Cỡ tối đa của một PDF gửi nguyên tệp. Anthropic nhận tối đa 32 MB cho cả yêu cầu (base64 làm tệp to thêm một phần ba). */
 export const MAX_PDF_FILE_BYTES = 15 * 1024 * 1024;
@@ -107,8 +113,13 @@ export async function readAttachment(file: File): Promise<Attachment> {
     }
     const clipped = clipText(t);
     // Tệp lẫn trang quét: nói rõ trang nào chưa đọc được, không bỏ im lặng
-    const scanNote = blank.length ? `${blank.length} trang không có lớp chữ (ảnh quét: trang ${blank.slice(0, 20).join(", ")}${blank.length > 20 ? "…" : ""}) nên CHƯA được đọc; cần đọc thì tách các trang đó thành tệp PDF riêng rồi đính kèm` : "";
-    return { name, kind: "text", pages, text: clipped.text, ...(clipped.note || scanNote ? { note: [clipped.note, scanNote].filter(Boolean).join(" ") } : {}) };
+    // Giữ bản gốc (trong bộ nhớ của phiên) để AI đọc các trang quét hoặc phần bị cắt bằng công cụ read_attachment_pages
+    const keep = (blank.length || clipped.note) && file.size <= MAX_PDF_FILE_BYTES ? { mime: PDF_MIME, data: toBase64(buf), scanPages: blank } : {};
+    const scanNote = blank.length
+      ? `${blank.length} trang không có lớp chữ (ảnh quét: trang ${formatPages(blank.slice(0, 60))}${blank.length > 60 ? "…" : ""}) nên CHƯA có trong phần chữ dưới đây` +
+        (keep.data ? "" : "; tệp quá lớn để giữ lại, cần đọc thì tách các trang đó thành tệp PDF riêng rồi đính kèm")
+      : "";
+    return { name, kind: "text", pages, text: clipped.text, ...keep, ...(clipped.note || scanNote ? { note: [clipped.note, scanNote].filter(Boolean).join(" ") } : {}) };
   }
   if (lower.endsWith(".docx")) {
     const JSZip = (await import("jszip")).default;
@@ -129,19 +140,28 @@ export async function readAttachment(file: File): Promise<Attachment> {
 }
 
 /** Ghép chữ của các tệp vào câu hỏi. opts.compare = đang ở Word, có công cụ so sánh phiên bản: ghi kèm cách gọi cho tệp .docx */
-export function withAttachments(question: string, atts: Attachment[], opts: { compare?: boolean } = {}): string {
+export function withAttachments(question: string, atts: Attachment[], opts: { compare?: boolean; pageTool?: boolean; byPages?: string[] } = {}): string {
   const texts = atts.filter((a) => a.kind === "text");
   const files = atts.filter((a) => a.kind === "file");
   if (!texts.length && !files.length) return question;
+  /** Tệp PDF quét không gửi nguyên tệp ở lượt này: AI đọc theo trang bằng công cụ */
+  const byPages = new Set(opts.byPages || []);
+  const viaTool = (a: Attachment) =>
+    `\n--- Tệp đính kèm: ${a.name} (PDF quét, ${a.pages ?? "?"} trang) — nội dung CHƯA được gửi kèm. Đọc bằng công cụ read_attachment_pages với file = "${a.name}" và pages (ví dụ "1-4"; mỗi lần tối đa 4 trang quét); đọc đủ các trang cần cho câu hỏi rồi mới trả lời ---`;
   return [
     question,
-    ...files.map((a) => `\n--- Tệp đính kèm: ${a.name} (${a.note || "gửi nguyên tệp"}) — tệp được gửi kèm tin nhắn này để bạn đọc trực tiếp, kể cả chữ trong ảnh quét ---`),
+    ...files.filter((a) => byPages.has(a.name)).map(viaTool),
+    ...files.filter((a) => !byPages.has(a.name)).map((a) => `\n--- Tệp đính kèm: ${a.name} (${a.note || "gửi nguyên tệp"}) — tệp được gửi kèm tin nhắn này để bạn đọc trực tiếp, kể cả chữ trong ảnh quét ---`),
     ...texts.map((a) => {
       const hint =
         opts.compare && a.mime === DOCX_MIME && a.data
           ? `\n(Muốn so tệp này với văn bản đang mở theo từng điều khoản: gọi word_compare_versions với file = "${a.name}"; đừng tự so bằng mắt.)`
           : "";
-      return `\n--- Tệp đính kèm: ${a.name}${a.note ? ` (${a.note})` : ""} ---${hint}\n${a.text}\n--- Hết tệp ${a.name} ---`;
+      const pageHint =
+        opts.pageTool && a.mime === PDF_MIME && a.data
+          ? `\n(Tệp có ${a.pages ?? "?"} trang. Phần chưa có ở đây — trang quét, phần bị cắt — đọc bằng công cụ read_attachment_pages với file = "${a.name}" và pages.)`
+          : "";
+      return `\n--- Tệp đính kèm: ${a.name}${a.note ? ` (${a.note})` : ""} ---${hint}${pageHint}\n${a.text}\n--- Hết tệp ${a.name} ---`;
     }),
   ].join("\n");
 }

@@ -1,4 +1,5 @@
-/** Kho tạm trong bộ nhớ cho bản gốc của các tệp .docx người dùng đính kèm trong phiên làm việc này, để công cụ Word so sánh
+/** Kho tạm trong bộ nhớ cho bản gốc của các tệp người dùng đính kèm (.docx để so sánh phiên bản, .pdf để đọc theo trang)
+ *  — trước đây chỉ .docx: trong phiên làm việc này, để công cụ Word so sánh
  *  phiên bản đọc được tệp. Không lưu xuống đĩa; tải lại khung add-in là mất (khi đó công cụ nhắc người dùng đính kèm lại). */
 
 export interface AttachedFile {
@@ -23,8 +24,11 @@ export function unregisterAttachedFile(name: string): void {
   if (at >= 0) files.splice(at, 1);
 }
 
-export function listAttachedFiles(): string[] {
-  return files.map((f) => f.name);
+/** ext (ví dụ ".pdf") = chỉ lấy tệp có đuôi đó */
+const ofExt = (ext?: string) => (ext ? files.filter((f) => f.name.toLowerCase().endsWith(ext)) : files);
+
+export function listAttachedFiles(ext?: string): string[] {
+  return ofExt(ext).map((f) => f.name);
 }
 
 const fold = (s: string) =>
@@ -34,7 +38,8 @@ const fold = (s: string) =>
     .toLowerCase();
 
 /** Tìm tệp theo tên (không phân biệt hoa thường; cho phép thiếu đuôi .docx). Không nêu tên thì lấy tệp đính kèm gần nhất. */
-export function findAttachedFile(name?: string): AttachedFile | null {
+export function findAttachedFile(name?: string, ext?: string): AttachedFile | null {
+  const files = ofExt(ext);
   if (!files.length) return null;
   const want = fold(name || "");
   if (!want) return files[files.length - 1];

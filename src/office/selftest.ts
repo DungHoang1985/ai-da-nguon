@@ -705,6 +705,29 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       return `${other} chưa mở → “${(r0.error || "").slice(0, 60)}…”; hết hạn → rút lệnh; nhận lệnh → ${message.slice(0, 70)}; hoàn tác sạch`;
     });
   }
+  // Dùng chung mọi ứng dụng: đọc tệp PDF đính kèm theo trang (không đụng tài liệu đang mở)
+  await step("Đọc tệp PDF đính kèm theo trang: trang có chữ ra chữ, trang quét ra ảnh", async () => {
+    const { registerAttachedFile, unregisterAttachedFile } = await import("../core/attachedFiles");
+    const { createCommonTools } = await import("./common");
+    const { testPdf } = await import("./selftestPdf");
+    const name = `aidn-tu-kiem-${Date.now().toString(36)}.pdf`;
+    registerAttachedFile(name, btoa(testPdf()));
+    try {
+      const t = createCommonTools({ host: tools.host, skills: [], shareContext: false });
+      const r = await t.execute("read_attachment_pages", { file: name, pages: "1-2" });
+      expect(r.total_pages === 2, `Đếm ra ${r.total_pages} trang, cần 2`);
+      const p1 = r.pages.find((x: any) => x.page === 1);
+      const p2 = r.pages.find((x: any) => x.page === 2);
+      expect(p1?.kind === "text" && /MOC-TU-KIEM/.test(p1.text), `Trang 1 không ra chữ: ${JSON.stringify(p1).slice(0, 160)}`);
+      expect(p2?.kind === "scan", `Trang 2 (không có lớp chữ) không được coi là trang quét: ${JSON.stringify(p2).slice(0, 160)}`);
+      const img = r.__images?.[0];
+      expect(img?.mime === "image/jpeg" && img.data.startsWith("/9j/") && img.data.length > 1000, "Ảnh trang quét không phải JPEG hợp lệ");
+      expect(typeof r.rules === "string" && r.rules.includes("[?]"), "Thiếu lời dặn chép nguyên văn");
+      return `2 trang: trang 1 ${p1.text.length} ký tự, trang 2 ảnh JPEG ${Math.round((img.data.length * 3) / 4 / 1024)} KB`;
+    } finally {
+      unregisterAttachedFile(name);
+    }
+  });
   onProgress([...steps]);
   return steps;
 }

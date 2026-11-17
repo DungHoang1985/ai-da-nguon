@@ -1,7 +1,7 @@
 /** Chọn bộ công cụ theo ứng dụng đang chạy + mô tả từng bước bằng tiếng Việt cho khung chat. */
 import { HostToolSet, ToolCall } from "../core/agent/types";
 import { excelTools } from "./excelTools";
-import { createWordTools } from "./wordTools";
+import { createWordTools, reasonOf } from "./wordTools";
 import { pptTools } from "./pptTools";
 import { HostName } from "./host";
 import { withAuditTrail } from "./excelTrail";
@@ -30,7 +30,13 @@ const CHART_VI: Record<string, string> = {
   stacked_bar: "thanh chồng",
 };
 
+/** Nhãn của một bước; công cụ sửa Word kèm lý do AI nêu */
 export function describeCall(call: ToolCall): string {
+  const why = reasonOf(call.name, call.args);
+  return describeBase(call) + (why ? ` — lý do: ${why}` : "");
+}
+
+function describeBase(call: ToolCall): string {
   const a = call.args || {};
   switch (call.name) {
     case "excel_get_overview":
@@ -219,6 +225,8 @@ export function describeCall(call: ToolCall): string {
       return `Đọc kỹ năng ${a.name}${a.file ? ` (${a.file})` : ""}`;
     case "read_other_app":
       return `Đọc nội dung đang mở ở ${a.app}`;
+    case "read_attachment_pages":
+      return `Đọc trang ${a.pages ?? "?"} của tệp đính kèm${a.file ? ` ${a.file}` : ""}`;
   }
   return call.name;
 }

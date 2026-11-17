@@ -150,7 +150,7 @@ describe("v3 · Xác nhận thao tác rủi ro và công cụ dùng chung", () =
     const extra = createCommonTools({ host: "Word", skills: BUILTIN_SKILLS, shareContext: true });
     assert.deepStrictEqual(
       extra.specs.map((s) => s.name),
-      ["use_skill", "read_other_app", "write_other_app"]
+      ["use_skill", "read_other_app", "write_other_app", "read_attachment_pages"]
     );
     assert.deepStrictEqual(extra.specs[1].parameters.properties.app.enum, ["Excel", "PowerPoint"]);
     await runAgent({

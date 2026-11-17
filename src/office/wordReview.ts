@@ -483,9 +483,9 @@ export function createWordReviewTools(deps: ReviewDeps) {
   }
 
   async function compareTool(a: any) {
-    const f = findAttachedFile(a.file);
+    const f = findAttachedFile(a.file, ".docx");
     if (!f) {
-      const have = listAttachedFiles();
+      const have = listAttachedFiles(".docx");
       throw new Error(
         have.length
           ? `Không thấy tệp đính kèm tên “${truncate(a.file, 80)}”. Các tệp .docx đã đính kèm trong phiên này: ${have.map((n) => `“${n}”`).join(", ")}.`

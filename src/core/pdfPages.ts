@@ -1,0 +1,95 @@
+/** Đọc tệp PDF đính kèm THEO TRANG (Đợt 5): chọn trang, phân loại trang quét / trang có lớp chữ, đường đi của PDF quét lúc gửi,
+ *  lời dặn chép nguyên văn, cảnh báo riêng tư. Phần này không đụng pdf.js hay DOM nên kiểm thử được bằng npm test;
+ *  phần dựng ảnh nằm ở pdfRender.ts. */
+
+/** Trang có ít hơn ngần này ký tự lớp chữ thì coi là trang quét (ngưỡng 300: trang quét có chữ ký số vẫn mang một dòng chữ) */
+export const SCAN_TEXT_MIN_CHARS = 300;
+/** Vòng lặp tác tử chỉ chuyển tối đa 4 ảnh cho một lần gọi công cụ */
+export const MAX_SCAN_PAGES_PER_CALL = 4;
+export const MAX_TEXT_PAGES_PER_CALL = 20;
+/** Chữ tối đa của một lần gọi (các trang có lớp chữ) */
+export const MAX_PAGE_TEXT_CHARS = 60000;
+/** PDF quét dài hơn ngần này trang thì không gửi nguyên tệp nữa (tệp nằm lại trong lịch sử, tốn token mọi lượt): AI đọc theo trang */
+export const WHOLE_PDF_MAX_PAGES = 5;
+
+export function isScanPage(textChars: number): boolean {
+  return textChars < SCAN_TEXT_MIN_CHARS;
+}
+
+/** "1-3, 5" → [1,2,3,5]. Bỏ trùng, giữ thứ tự tăng. Sai thì trả error (câu tiếng Việt để model sửa lời gọi). */
+export function parsePageSpec(spec: unknown, total: number): { pages: number[]; error?: string } {
+  const s = String(spec ?? "").trim();
+  if (!s) return { pages: [], error: "Thiếu pages. Ví dụ: \"1-4\" hoặc \"2, 5, 7\"." };
+  const set = new Set<number>();
+  for (const part of s.split(/[,;\s]+/).filter(Boolean)) {
+    const m = /^(\d+)(?:\s*[-–]\s*(\d+))?$/.exec(part);
+    if (!m) return { pages: [], error: `Không hiểu "${part}" trong pages. Ví dụ: "1-4" hoặc "2, 5, 7".` };
+    const a = Number(m[1]);
+    const b = m[2] ? Number(m[2]) : a;
+    if (a < 1 || b < a) return { pages: [], error: `Khoảng trang "${part}" không hợp lệ.` };
+    if (a > total) return { pages: [], error: `Tệp chỉ có ${total} trang (yêu cầu trang ${a}).` };
+    for (let i = a; i <= Math.min(b, total); i++) set.add(i);
+    if (set.size > 400) break;
+  }
+  return { pages: [...set].sort((x, y) => x - y) };
+}
+
+/** Rút gọn dãy trang để ghi vào kết quả: [1,2,3,5] → "1-3, 5" */
+export function formatPages(pages: number[]): string {
+  const out: string[] = [];
+  const p = [...pages].sort((a, b) => a - b);
+  for (let i = 0; i < p.length; i++) {
+    let j = i;
+    while (j + 1 < p.length && p[j + 1] === p[j] + 1) j++;
+    out.push(j > i ? `${p[i]}-${p[j]}` : String(p[i]));
+    i = j;
+  }
+  return out.join(", ");
+}
+
+/** Chia các trang được yêu cầu thành phần đưa ngay và phần để lần gọi sau: tối đa 4 trang quét và 20 trang chữ mỗi lần.
+ *  Dừng ở trang đầu tiên vượt trần để trang đưa ra luôn liền mạch theo thứ tự (không nhảy cóc qua trang quét). */
+export function planPages(wanted: number[], isScan: (page: number) => boolean): { now: number[]; later: number[] } {
+  const now: number[] = [];
+  let scans = 0;
+  let texts = 0;
+  let i = 0;
+  for (; i < wanted.length; i++) {
+    const scan = isScan(wanted[i]);
+    if (scan ? scans >= MAX_SCAN_PAGES_PER_CALL : texts >= MAX_TEXT_PAGES_PER_CALL) break;
+    if (scan) scans++;
+    else texts++;
+    now.push(wanted[i]);
+  }
+  return { now, later: wanted.slice(i) };
+}
+
+/** Lời dặn đi kèm mỗi lần đưa ảnh trang quét (nằm trong kết quả công cụ, không nằm trong lời nhắc hệ thống) */
+export const SCAN_RULES =
+  "Các trang quét được gửi dưới dạng ảnh ở tin nhắn ngay sau kết quả này. Khi đọc: chép ĐÚNG chữ in trên ảnh, kể cả khi chữ in có vẻ sai — không tự sửa cho hợp lý, không suy theo quy luật; " +
+  "chữ, số không đọc được thì ghi [?], không đoán; số tiền, ngày tháng, số hiệu chép đúng kiểu in; bảng giữ đúng hàng cột; ký hiệu điểm a), b) giữ nguyên, không đổi thành 1., 2. " +
+  "Mọi số liệu lấy từ trang quét phải ghi kèm số trang, và nói với người dùng một lần rằng nội dung đọc từ bản quét, cần đối chiếu bản gốc trước khi dùng làm căn cứ. " +
+  "Chưa đọc trang nào thì không được nói về trang đó: còn trang cần cho câu hỏi thì gọi tiếp read_attachment_pages.";
+
+export type ScanRoute = "whole" | "pages" | "none";
+
+/** PDF quét lúc gửi đi đường nào: nguyên tệp (như trước) · AI đọc theo trang bằng công cụ · không đọc được.
+ *  tools = lượt này model có công cụ (bật "AI tự thao tác" và model gọi được công cụ). */
+export function routeScanPdf(o: { pages: number; pdfCapable: boolean; vision: boolean; tools: boolean }): ScanRoute {
+  if (!o.vision) return "none";
+  if (o.pdfCapable && (o.pages <= WHOLE_PDF_MAX_PAGES || !o.tools)) return "whole";
+  if (o.tools) return "pages";
+  return o.pdfCapable ? "whole" : "none";
+}
+
+/** Dòng nhắc riêng tư khi tệp đính kèm sắp được gửi cho nguồn miễn phí hoặc qua nơi trung chuyển. Không phải thì trả "". */
+export function attachmentPrivacyNote(o: { providerId: string; providerName: string; modelId: string; free?: boolean }): string {
+  const freeModel = /:free$/i.test(o.modelId) || !!o.free;
+  if (o.providerId === "openrouter") {
+    return freeModel
+      ? `Tệp đính kèm được gửi qua OpenRouter tới một model miễn phí: nhà cung cấp model miễn phí thường được phép lưu và dùng nội dung để huấn luyện. Tài liệu thật, có thông tin mật thì nên dùng nguồn trả tiền.`
+      : `Tệp đính kèm được gửi qua OpenRouter (nơi trung chuyển) rồi tới nhà cung cấp model. Tài liệu có thông tin mật thì cân nhắc gửi thẳng tới nhà cung cấp.`;
+  }
+  if (freeModel) return `Tệp đính kèm được gửi tới ${o.providerName} theo gói miễn phí: gói miễn phí thường cho phép nhà cung cấp lưu và dùng nội dung để cải thiện model. Tài liệu thật, có thông tin mật thì nên dùng nguồn trả tiền.`;
+  return "";
+}

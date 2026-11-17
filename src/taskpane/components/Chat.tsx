@@ -40,7 +40,8 @@ import { getKV } from "../../core/db";
 import { ConversationMeta, ConversationStore, newConversationId, slimForStorage, titleFrom } from "../../core/conversations";
 import { Command, Skill, SkillStore, resolveSlash, skillCatalog } from "../../core/skills";
 import { CORE_GUIDES, autoSelectSkills } from "../../core/skillpack";
-import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, filesBase64Chars, readAttachment, withAttachments } from "../../core/attachments";
+import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, PDF_MIME, filesBase64Chars, readAttachment, withAttachments } from "../../core/attachments";
+import { attachmentPrivacyNote, routeScanPdf } from "../../core/pdfPages";
 import { clearAttachedFiles, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
@@ -649,6 +650,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         const att = await readAttachment(f);
         // Bản gốc của tệp .docx: để công cụ Word so sánh phiên bản đọc được (giữ trong bộ nhớ của phiên này)
         if (att.mime === DOCX_MIME && att.data) registerAttachedFile(att.name, att.data);
+        // PDF có trang quét (hoặc bị cắt): giữ bản gốc để AI đọc theo trang bằng read_attachment_pages
+        if (att.mime === PDF_MIME && att.data) registerAttachedFile(att.name, att.data);
         out.push(att);
       } catch (e: any) {
         errs.push(e?.message || `Không đọc được ${f.name}`);
@@ -682,8 +685,17 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       }
     }
     const atts = attachments;
+    const model = models.find((m) => m.id === modelId);
+    const vision = model?.vision ?? p.vision;
+    const useAgent = agentOn && !!hostTools && model?.tools !== false;
+    const auto = useAgent && !slash.label ? autoSelectSkills(typed, skills as any) : [];
+    // PDF quét đi đường nào: nguyên tệp (tệp ngắn, nguồn đọc được) · AI đọc theo trang bằng công cụ · không đọc được
+    const scans = atts.filter((a) => a.kind === "file" && a.data);
+    const routeOf = (a: Attachment) => routeScanPdf({ pages: a.pages ?? 1, pdfCapable: pdfCapable(p), vision: vision !== false, tools: useAgent });
+    const byPages = scans.filter((a) => routeOf(a) === "pages");
+    const whole = scans.filter((a) => routeOf(a) !== "pages");
     // Tệp gửi nguyên vẹn nằm lại trong lịch sử và được gửi lại ở mọi lượt: quá trần thì nhà cung cấp từ chối mọi lượt sau
-    const newFiles = atts.filter((a) => a.kind === "file" && a.data).reduce((n, a) => n + a.data!.length, 0);
+    const newFiles = whole.reduce((n, a) => n + a.data!.length, 0);
     if (newFiles && filesBase64Chars(historyRef.current as any) + newFiles > MAX_FILES_TOTAL_B64) {
       setNotice({
         text: "Các tệp PDF quét trong hội thoại này đã quá lớn để gửi tiếp (tệp được gửi lại ở mỗi lượt). Bấm “Hội thoại mới” rồi đính kèm lại tệp cần hỏi, hoặc tách tệp nhỏ hơn.",
@@ -691,23 +703,23 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       });
       return;
     }
-    // Bản gốc của tệp .docx: đăng ký (lại) lúc gửi để công cụ so sánh phiên bản của Word đọc được
-    atts.forEach((a) => a.mime === DOCX_MIME && a.data && registerAttachedFile(a.name, a.data));
-    content = withAttachments(content, atts, { compare: host === "Word" && agentOn });
+    // Bản gốc của tệp .docx và .pdf: đăng ký (lại) lúc gửi để công cụ so sánh phiên bản và công cụ đọc theo trang đọc được
+    atts.forEach((a) => (a.mime === DOCX_MIME || a.mime === PDF_MIME) && a.data && registerAttachedFile(a.name, a.data));
+    content = withAttachments(content, atts, { compare: host === "Word" && agentOn, pageTool: useAgent, byPages: byPages.map((a) => a.name) });
     const images = atts.filter((a) => a.kind === "image" && a.data).map((a) => ({ mime: a.mime || "image/png", data: a.data! }));
-    // PDF quét: gửi nguyên tệp cho model tự đọc; nguồn không đọc được thì báo rõ (và model cũng được báo trong tin nhắn)
-    const pdfs = atts.filter((a) => a.kind === "file" && a.data).map((a) => ({ mime: a.mime || "application/pdf", data: a.data!, name: a.name }));
+    // PDF quét gửi nguyên tệp cho model tự đọc; nguồn không đọc được thì báo rõ (và model cũng được báo trong tin nhắn)
+    const pdfs = whole.map((a) => ({ mime: a.mime || "application/pdf", data: a.data!, name: a.name }));
     if (pdfs.length && !pdfCapable(p)) {
       setNotice({
-        text: `${p.name} không đọc được PDF quét (${pdfs.map((f) => f.name).join(", ")}): tệp không được gửi đi. Đổi sang nguồn Anthropic hoặc Gemini rồi đính kèm lại.`,
+        text: `${p.name} không đọc được PDF quét (${pdfs.map((f) => f.name).join(", ")}): tệp không được gửi đi. ${vision !== false ? "Bật “AI tự thao tác” để AI đọc từng trang bằng ảnh, hoặc đổi" : "Đổi"} sang nguồn Anthropic hoặc Gemini rồi đính kèm lại.`,
         err: true,
       });
+    } else if (atts.length) {
+      // Nhắc riêng tư (không chặn): tệp đính kèm sắp tới nguồn miễn phí hoặc qua nơi trung chuyển
+      const priv = attachmentPrivacyNote({ providerId: p.id, providerName: p.name, modelId, free: model?.free });
+      if (priv) setNotice({ text: priv });
     }
 
-    const model = models.find((m) => m.id === modelId);
-    const vision = model?.vision ?? p.vision;
-    const useAgent = agentOn && !!hostTools && model?.tools !== false;
-    const auto = useAgent && !slash.label ? autoSelectSkills(typed, skills as any) : [];
 
     setItems((prev) => [
       ...prev,
