@@ -69,4 +69,6 @@ Kiểm thử máy 504/504, kiểm kiểu sạch, đóng gói đạt. Mọi bư�
 
 Chưa kiểm: PDF lẫn trang quét với tệp thật (mới có kiểm thử máy cho phần ghép câu hỏi); dòng nhắc riêng tư trên khung (mới có kiểm thử máy); đường công cụ với một nguồn không nhận PDF nhưng được ghi rõ là nhận ảnh (chưa có nguồn nào như vậy đang dùng được); mục Hoàn tác kèm lý do (mã có, chưa nhìn trên khung).
 
+Phát hành 4.5.0 (17/11/2026): `main@0c40ac7` → `gh-pages@35b174e`, gói `taskpane.b98efd63.js`; Tự kiểm tra trên bản phát hành ở desktop ẩn: Word 38/38, Excel 39/39, PowerPoint 22/22, đều có bước đọc PDF theo trang (`tasks/dot-5-bang-chung/phat-hanh-450-*.json`).
+
 Phát hiện phụ: PowerPoint thoát chậm hơn 20 giây sau lệnh đóng → `mo-office.ps1` nay chờ tới 45 giây.
