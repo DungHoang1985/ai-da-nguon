@@ -1,8 +1,8 @@
-# Đợt 6 — thêm nhà cung cấp nói cùng "tiếng" với Anthropic (kế hoạch, chờ anh duyệt)
+# Đợt 6 — thêm nhà cung cấp nói cùng "tiếng" với Anthropic (đã phát hành trong bản 4.6.0, 17/11/2026)
 
 Anh nêu ngày 17/11/2026: add-in dựng theo bản mẫu của Claude, nên bổ sung các nguồn nhận đúng kiểu yêu cầu của Anthropic (Messages API: `POST …/v1/messages`).
 
-Trạng thái: **mới là kế hoạch, chưa sửa mã.** Phần thăm dò dưới đây làm ngày 17/11/2026, không dùng key nào.
+Trạng thái: **đã làm và phát hành 4.6.0** (kết quả ở cuối tệp; phần đầu là kế hoạch ban đầu). Phần thăm dò dưới đây làm ngày 17/11/2026, không dùng key nào.
 
 ## Vì sao đáng làm
 
@@ -149,7 +149,7 @@ Dọn dẹp: sáu hội thoại thử đã xóa (lịch sử Word về 0), ngu�
 
 ## Việc buộc phải có anh
 
-1. Duyệt phát hành (đề xuất 4.6.0).
+1. (Xong) Anh đã duyệt phát hành 4.6.0.
 2. Nạp tiền DeepSeek nếu anh muốn dùng (tài khoản đang hết tiền) — cả kênh cũ lẫn kênh kiểu Anthropic dùng chung tài khoản này.
 3. Nạp OpenRouter từ 0,50 USD trở lên nếu muốn gửi PDF qua kênh Claude của OpenRouter.
 4. MiniMax, Kimi: tạo key ở trang của từng nơi, dán vào Cài đặt → "Thêm key nhà cung cấp khác".
