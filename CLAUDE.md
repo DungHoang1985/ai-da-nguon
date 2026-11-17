@@ -1,6 +1,6 @@
 # AI Đa Nguồn — add-in AI cho Word, Excel, PowerPoint
 
-Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v4.4.0** (Đợt 4, phát hành 16/11/2026: Excel và dấu vết soát lại — sheet "Nhật ký AI" và tô sáng ô vừa sửa, mặc định tắt; sửa biểu đồ và PivotTable có sẵn; chuẩn bị in; kiểm toán mô hình; giải ngược và bảng nhạy cảm; làm sạch dữ liệu; khóa ô công thức; hỏi trước công thức nguy hiểm). Bản trước: 4.3.1 (bản vá 16/11/2026: một nhiệm vụ ít lượt gọi AI hơn — gộp lệnh, chụp nhiều slide một lần, khung hiện số lần gọi; bản 4.3.0 là Đợt 3, phát hành cùng ngày: ghi chéo ứng dụng Excel – Word – PowerPoint luôn hỏi trước, chỉ báo kết nối, 7 công cụ PowerPoint mới, AI tự nhìn ảnh slide; việc kế tiếp anh nêu: giảm số lần gọi AI cho một nhiệm vụ — xem `tasks/HANDOFF.md`; bản 4.2.1 là phần A của Đợt 3: kỹ năng và công cụ soạn văn bản hành chính đúng thể thức, cảnh báo khi AI nói đã sửa mà lượt đó không ghi gì, ưu tiên model miễn phí gọi công cụ đáng tin; phát hành 16/11/2026; phần B của Đợt 3 — ghi chéo ứng dụng và 7 công cụ PowerPoint — là bản **4.3.0**, mã và nghiệm thu đã xong trên nhánh `claude/dot-3-b-wip`, trạng thái phát hành xem đầu `tasks/HANDOFF.md`; bản 4.2.0 của Đợt 2: đăng nhập OpenRouter một lần bấm trong hộp thoại của Office, lối dán mã, thẻ hạn mức, Đăng xuất, thông báo key sai / hết hạn / hết tiền kèm nút Đổi nguồn; phát hành 16/11/2026; bản 4.1.0 của Đợt 1B: Word soát và tra — soát nhất quán bằng mã, đọc chú thích và đầu/chân trang, so sánh phiên bản, thể thức trang, PDF quét, Suy nghĩ kỹ; bản 4.0.0 của Đợt 1A: Word đọc đúng số điều, sửa đúng chỗ, có Hoàn tác). Kế hoạch v4 (bản 2) đã duyệt ngày 15/11/2026; các đợt 0A → 4 đã làm xong, còn Đợt 5 là tùy chọn (làm khi anh cần) và các việc nợ — xem mục Bước tiếp theo của `tasks/HANDOFF.md`.
+Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác trên tài liệu như add-in Claude chính thức. Dùng cá nhân (anh Dũng, pháp lý – bất động sản). Đang chạy **v4.4.1** (bản vá 17/11/2026: Gemini hết bị từ chối trong Word — lược đồ công cụ chỉ còn enum chữ; khung hết treo khi nhà cung cấp im lặng — báo lỗi sau 150 giây; kết quả so song song với add-in Claude chính thức ở `tasks/so-song-song.md`). Bản trước: 4.4.0 (Đợt 4, phát hành 16/11/2026: Excel và dấu vết soát lại — sheet "Nhật ký AI" và tô sáng ô vừa sửa, mặc định tắt; sửa biểu đồ và PivotTable có sẵn; chuẩn bị in; kiểm toán mô hình; giải ngược và bảng nhạy cảm; làm sạch dữ liệu; khóa ô công thức; hỏi trước công thức nguy hiểm). Bản trước: 4.3.1 (bản vá 16/11/2026: một nhiệm vụ ít lượt gọi AI hơn — gộp lệnh, chụp nhiều slide một lần, khung hiện số lần gọi; bản 4.3.0 là Đợt 3, phát hành cùng ngày: ghi chéo ứng dụng Excel – Word – PowerPoint luôn hỏi trước, chỉ báo kết nối, 7 công cụ PowerPoint mới, AI tự nhìn ảnh slide; việc kế tiếp anh nêu: giảm số lần gọi AI cho một nhiệm vụ — xem `tasks/HANDOFF.md`; bản 4.2.1 là phần A của Đợt 3: kỹ năng và công cụ soạn văn bản hành chính đúng thể thức, cảnh báo khi AI nói đã sửa mà lượt đó không ghi gì, ưu tiên model miễn phí gọi công cụ đáng tin; phát hành 16/11/2026; phần B của Đợt 3 — ghi chéo ứng dụng và 7 công cụ PowerPoint — là bản **4.3.0**, mã và nghiệm thu đã xong trên nhánh `claude/dot-3-b-wip`, trạng thái phát hành xem đầu `tasks/HANDOFF.md`; bản 4.2.0 của Đợt 2: đăng nhập OpenRouter một lần bấm trong hộp thoại của Office, lối dán mã, thẻ hạn mức, Đăng xuất, thông báo key sai / hết hạn / hết tiền kèm nút Đổi nguồn; phát hành 16/11/2026; bản 4.1.0 của Đợt 1B: Word soát và tra — soát nhất quán bằng mã, đọc chú thích và đầu/chân trang, so sánh phiên bản, thể thức trang, PDF quét, Suy nghĩ kỹ; bản 4.0.0 của Đợt 1A: Word đọc đúng số điều, sửa đúng chỗ, có Hoàn tác). Kế hoạch v4 (bản 2) đã duyệt ngày 15/11/2026; các đợt 0A → 4 đã làm xong, còn Đợt 5 là tùy chọn (làm khi anh cần) và các việc nợ — xem mục Bước tiếp theo của `tasks/HANDOFF.md`.
 
 ## Đọc trước khi làm bất cứ việc gì
 
@@ -55,7 +55,7 @@ src/office/          công cụ Office.js: excel*, word*, ppt*, common, selftest
   dialog.ts          hộp thoại của Office (displayDialogAsync) và mở trình duyệt ngoài, dùng cho đăng nhập
 src/dialog/          dang-nhap.html + dang-nhap.ts: trang mở trong hộp thoại của Office khi đăng nhập (đóng gói thành dist/dang-nhap.html)
 src/taskpane/components/   App.tsx, Chat.tsx (điều phối + giao diện), Settings.tsx, SignInCard.tsx + useCredits.ts (thẻ OpenRouter: đăng nhập, dán mã, hạn mức, đăng xuất)
-test/unit/           mocha, 470 kiểm thử (dữ liệu mẫu ở test/fixtures/)
+test/unit/           mocha, 474 kiểm thử (dữ liệu mẫu ở test/fixtures/)
 cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry WEF\Developer)
 ```
 
@@ -63,7 +63,7 @@ cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry W
 
 ```
 npm ci                      # .npmrc phải trỏ registry.npmjs.org
-npm test                    # 470/470 phải đạt
+npm test                    # 474/474 phải đạt
 npx tsc --noEmit -p .       # không lỗi kiểu
 npm run build               # ra dist/, manifest tự đổi sang địa chỉ GitHub Pages
 ```
@@ -76,6 +76,7 @@ Kiểm trong Office bằng mã (không cần điều khiển màn hình, dùng �
 
 ## Quy tắc làm việc với anh Dũng
 
+- **Không chiếm màn hình của anh** (anh đặt 17/11/2026, áp dụng mọi dự án — bản đầy đủ ở chỉ dẫn chung của máy): kiểm thử hay thao tác phải bật cửa sổ, bật Office thì chạy không cửa sổ hoặc trên desktop riêng; không bật gì lên desktop anh đang làm, không dùng công cụ điều khiển màn hình khi chưa hỏi; không có cách tách thì dừng và hỏi.
 - Trả lời bằng tiếng Việt, kết luận trước, giải thích ngắn. Không kể lại các bước đã làm.
 - **Anh không gõ lệnh, không cài tay.** Mọi việc Claude tự làm và tự kiểm. Việc buộc phải có anh (đăng nhập GitHub, bấm xác nhận) thì gom lại, nói rõ từng cú bấm.
 - Mọi câu hỏi cần anh trả lời hoặc duyệt: dùng ô tích chọn, 2–4 phương án, phương án khuyến nghị đặt đầu và ghi "(Khuyến nghị)", ngôn ngữ dễ hiểu, tối đa 4 câu một lần. Điều tự kiểm được thì không hỏi.
