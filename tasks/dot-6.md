@@ -73,6 +73,8 @@ Hai phép đo cho mỗi địa chỉ, giả làm trình duyệt (gửi kèm `Ori
 | 6 | Nguồn bị chặn gọi từ add-in (Z.ai): hiện lý do ngay khi chọn, như SambaNova và NVIDIA | Tự kiểm bằng mã trong khung |
 | 7 | Tự kiểm tra Word, Excel, PowerPoint không thụt lùi | Tự kiểm tra |
 
+Phát hành 4.6.0 (17/11/2026): `main@01a6a13` → `gh-pages@0745fc6`, gói `taskpane.a5bf3f0e.js`; Tự kiểm tra trên bản phát hành ở desktop ẩn: Word 38/38, Excel 39/39, PowerPoint 22/22 (`tasks/dot-6-bang-chung/phat-hanh-460-*.json`).
+
 ## Việc buộc phải có anh ở máy
 
 - Tạo key (và nạp tiền nếu cần) ở từng nguồn anh chọn; dán key vào Cài đặt của add-in. Phiên không tạo key, không đăng nhập, không bấm đồng ý điều khoản thay anh.
