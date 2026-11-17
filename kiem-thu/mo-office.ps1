@@ -1,11 +1,41 @@
-# Mở Word, Excel hoặc PowerPoint với một tệp thử kèm cổng gỡ lỗi WebView2 (để kiem-thu/cdp.mjs điều khiển khung add-in).
+﻿# Mở Word, Excel hoặc PowerPoint với một tệp thử kèm cổng gỡ lỗi WebView2 (để kiem-thu/cdp.mjs điều khiển khung add-in).
+# Mặc định mở trên DESKTOP RIÊNG, không hiện lên màn hình đang làm việc; thêm -HienLen để mở trên desktop chính (phải hỏi anh trước).
 #   powershell -File kiem-thu/mo-office.ps1 -Tep <tệp thử> [-Cong 9229]      mở tệp (ứng dụng theo đuôi tệp: .docx, .xlsx, .pptx)
 #   powershell -File kiem-thu/mo-office.ps1 -Dong                            chỉ đóng các ứng dụng Office đang mở tệp thử (không lưu)
 # An toàn: nếu Word, Excel hoặc PowerPoint đang mở tài liệu KHÔNG phải tệp thử thì dừng, không đóng gì (hỏi người dùng trước).
 # Tệp thử = tệp có tên bắt đầu bằng "aidn-thu-" hoặc "tham-do-". Mọi ứng dụng Office phải đóng hết trước khi mở
 # (WebView2 chỉ nhận cổng gỡ lỗi lúc khởi động; ba ứng dụng dùng chung một cổng).
-param([string]$Tep = "", [int]$Cong = 9229, [switch]$Dong)
+param([string]$Tep = "", [int]$Cong = 9229, [switch]$Dong, [switch]$HienLen)
 $ErrorActionPreference = 'Stop'
+
+# MẶC ĐỊNH: Office thử chạy trên DESKTOP RIÊNG (desktop Win32 ẩn "aidn-thu", xem desktop-rieng.ps1) — không hiện cửa sổ lên màn hình anh Dũng,
+# không giành bàn phím, chuột (quy định 17/11/2026). Đã đo: khung add-in tải bình thường, hẹn giờ không bị bóp, Tự kiểm tra Word 37/37.
+# Cả phần đóng lẫn phần mở đều chạy BÊN TRONG desktop đó (lệnh COM từ desktop chính không với tới Office nằm ở desktop ẩn).
+# -HienLen: mở ngay trên desktop chính như trước — chỉ dùng khi anh đã đồng ý cho đúng lần đó (ví dụ cần điều khiển màn hình).
+if (-not $HienLen -and -not $env:AIDN_DESKTOP_AN) {
+  # Office chỉ chạy một bản mỗi phiên Windows: anh đang mở Office trên desktop chính thì không mở bản thử được, và không đụng gì của anh.
+  $cuaAnh = @(Get-Process winword, excel, powerpnt -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowHandle -ne 0 } | ForEach-Object { $_.ProcessName })
+  if ($cuaAnh.Count -gt 0) { Write-Output "DUNG: tren desktop chinh dang mo $($cuaAnh -join ', '). Office chi chay mot ban moi phien nen khong mo ban thu duoc. Khong dong gi."; exit 2 }
+  $log = Join-Path $env:TEMP ("aidn-mo-office-" + [Guid]::NewGuid().ToString('N') + ".log")
+  $lenh = "& '$PSCommandPath'"
+  if ($Tep) { $lenh += " -Tep '$((Resolve-Path $Tep).Path)'" }
+  $lenh += " -Cong $Cong"
+  if ($Dong) { $lenh += " -Dong" }
+  $lenh += " *> '$log'; ('MA=' + `$LASTEXITCODE) >> '$log'"
+  $env:AIDN_DESKTOP_AN = '1'
+  $ps = Join-Path $PSHOME 'powershell.exe'
+  & (Join-Path $PSScriptRoot 'desktop-rieng.ps1') -Lenh $ps -ThamSo "-NoProfile -ExecutionPolicy Bypass -Command `"$lenh`"" | Out-Null
+  $ma = 1
+  for ($i = 0; $i -lt 150; $i++) {
+    Start-Sleep -Seconds 1
+    if ((Test-Path $log) -and ((Get-Content $log -ErrorAction SilentlyContinue) -match '^MA=')) { break }
+  }
+  if (Test-Path $log) {
+    foreach ($l in (Get-Content $log)) { if ($l -match '^MA=(\d*)') { if ($Matches[1]) { $ma = [int]$Matches[1] } else { $ma = 0 } } elseif ($l) { Write-Output $l } }
+    Remove-Item $log -ErrorAction SilentlyContinue
+  } else { Write-Output "Khong thay ket qua tu desktop rieng." }
+  exit $ma
+}
 
 function La-Tep-Thu($name) { return ($name -match '^(aidn-thu-|tham-do-)') }
 function Cho-Thoat($proc) {
