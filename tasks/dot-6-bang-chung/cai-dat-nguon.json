@@ -1,0 +1,33 @@
+{
+ "phienBan": "v4.5",
+ "nguonCoKey": [
+  "openrouter = OpenRouter",
+  "gemini = Google Gemini",
+  "groq = Groq",
+  "anthropic = Anthropic (Claude)",
+  "openrouter-claude = OpenRouter · Claude (kiểu Anthropic)",
+  "deepseek-anthropic = DeepSeek (kiểu Anthropic)",
+  "openai = OpenAI",
+  "cerebras = Cerebras",
+  "deepseek = DeepSeek",
+  "cohere = Cohere"
+ ],
+ "dongChung": "Kênh kiểu Anthropic dùng chung key đã có (chọn ở nhãn model cạnh ô nhập): OpenRouter · Claude (kiểu Anthropic) · DeepSeek (kiểu Anthropic).",
+ "coNutTuKhai": true,
+ "theNhapKey": [
+  "Quay lại",
+  "Tài khoản và key",
+  "Google Gemini",
+  "Groq",
+  "Anthropic (Claude)",
+  "OpenAI",
+  "Cerebras",
+  "DeepSeek",
+  "Cohere",
+  "MiniMax",
+  "Kimi (Moonshot)",
+  "Mistral",
+  "SambaNova",
+  "NVIDIA NIM"
+ ]
+}

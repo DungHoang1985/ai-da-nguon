@@ -1,0 +1,13 @@
+{
+ "chon": {
+  "daChon": "Model đang dùng: DeepSeek (kiểu Anthropic) DeepSeek Flash. Bấm để đổi DeepSeek · DeepSeek Flash"
+ },
+ "soModel": 0,
+ "dsModel": [],
+ "truoc": "",
+ "sau": "",
+ "daHoi": [],
+ "daDung": false,
+ "giay": 2,
+ "khung": "AI Đa Nguồn\nv4.5\nExcel — · PowerPoint —\nThêm vào cuối văn bản một đoạn đúng nguyên văn: \"Bên A thanh toán trong 30 ngày kể từ ngày nhận hóa đơn.\" Rồi đọc lại văn bản và cho biết văn bản hiện có mấy đoạn.\nDeepSeek (kiểu Anthropic): tài khoản đã hết tiền (hết tín dụng) nên yêu cầu bị từ chối. Hội thoại vẫn còn nguyên: đổi sang nguồn khác ở nhãn model cạnh ô nhập rồi gửi lại, hoặc nạp thêm ở trang của DeepSeek (kiểu Anthropic). (Insufficient Balance (request_id: 177c0965-47ab-42d9-b8a2-476b7d80603d))\nĐổi nguồn\nMở Cài đặt\nChép chi tiết lỗi\nHỏi trước\nDeepSeek · DeepSeek Flash"
+}

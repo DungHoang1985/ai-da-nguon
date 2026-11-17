@@ -130,18 +130,31 @@ Vì sao có nguồn bị chặn: add-in chạy trong một khung trình duyệt 
 - `Settings.tsx`: thẻ "Thêm nguồn tự khai (kiểu Anthropic)", nút "Gỡ nguồn", dòng liệt kê kênh dùng chung key.
 - `test/unit/dot6.test.ts`: 20 kiểm thử. `npm test` 524/524, kiểm kiểu sạch, đóng gói đạt.
 
-## Kết quả theo tiêu chí
+## Kết quả theo tiêu chí (17/11/2026, bản cục bộ `taskpane.a69221fc.js`, Office trên desktop ẩn)
 
-| # | Kết quả | Bằng chứng |
-|---|---|---|
-| 1 | Đạt | Kiểm thử máy: tiêu đề từng nguồn đúng bảng; yêu cầu của `api.anthropic.com` giữ nguyên |
-| 2–5 | Chưa kiểm được | Cần khung add-in trong Office (key nằm trong kho của khung). Ngày 17/11 anh đang mở Word ở màn hình chính nên không mở được Word thử |
-| 6 | Đổi | Không thêm Z.ai vào danh sách (bị chặn); ghi ở bảng trên |
-| 7 | Chưa kiểm được | Như dòng 2–5 |
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| 1 | Tiêu đề từng nguồn đúng bảng; nguồn Anthropic gốc không đổi | Đạt | Kiểm thử máy 524/524 (`test/unit/dot6.test.ts`, 20 kiểm thử) |
+| 2 | Mỗi nguồn có key: một bài Word đọc rồi sửa có Track Changes | Đạt với OpenRouter kênh Claude · Chưa kiểm được với DeepSeek, MiniMax, Kimi | Chạy thật Claude Haiku 5.5 qua kênh Messages của OpenRouter: chèn đúng đoạn bằng Track Changes, đọc lại, 3 lần gọi AI, 8 giây — `chay-that-openrouter-claude.json`. DeepSeek: yêu cầu tới máy chủ, key được nhận, bị từ chối vì tài khoản hết tiền ("Insufficient Balance") — `chay-that-deepseek-flash.json`. MiniMax, Kimi: chưa có key |
+| 3 | Claude qua OpenRouter: bộ nhớ đệm, PDF quét, Suy nghĩ kỹ | Bộ nhớ đệm: Đạt · Suy nghĩ kỹ: Đạt · PDF quét: Chưa kiểm được | Bộ nhớ đệm: "đọc từ bộ nhớ đệm 35.256" ngay trong lượt đầu, 17.410 ở lượt sau. Suy nghĩ kỹ bật: trả lời đúng, không lỗi tham số — `nghi-ky-openrouter-claude.json`. PDF quét: OpenRouter từ chối vì tài khoản dưới 0,50 USD ("requires at least $0.50 in balance for files") — `pdf-quet-openrouter-claude.json` |
+| 4 | Nguồn không nhận PDF hoặc ảnh: báo rõ, không gửi | Chưa kiểm được | Mới có kiểm thử máy (`pdfCapable` theo phương ngữ); cần một nguồn nhóm 2 có tiền để chạy thật |
+| 5 | Key sai: câu lỗi tiếng Việt đúng loại, không lộ key | Đạt (một nguồn) | Nguồn tự khai trỏ tới kênh Anthropic của DeepSeek, key giả: "Key không đúng: … không nhận key này", key hiện dạng `****cdef` — `nguon-tu-khai.json` |
+| 6 | Nguồn bị chặn hiện lý do | Đổi | Không thêm Z.ai vào danh sách (bị chặn); ghi ở bảng đo |
+| 7 | Tự kiểm tra không thụt lùi | Đạt | Word 38/38, Excel 39/39, PowerPoint 22/22 — `tu-kiem-tra-*.json` |
+| — | Thẻ Cài đặt: nguồn dùng chung key, nguồn tự khai | Đạt | Bộ chọn nguồn có "OpenRouter · Claude (kiểu Anthropic)" và "DeepSeek (kiểu Anthropic)" mà không phải nhập key lại; thẻ MiniMax, Kimi có sẵn; địa chỉ `http` bị từ chối; dòng "Add-in sẽ gọi: …/v1/messages · key gửi tới …"; thêm, lưu key, gỡ nguồn đều chạy — `cai-dat-nguon.json`, `nguon-tu-khai.json` |
+
+Sửa thêm trong lúc kiểm: nguồn dùng danh sách model cố định trước ghi "Đã kết nối" dù key chưa hề được gửi đi; nay ghi "Đã lưu key · N model. Key chưa được kiểm: sai thì báo ở lượt gọi đầu."
+
+Dọn dẹp: sáu hội thoại thử đã xóa (lịch sử Word về 0), nguồn về Claude Opus 5.5, nguồn tự khai thử đã gỡ, Office thử đã đóng.
+
+## Việc buộc phải có anh
+
+1. Duyệt phát hành (đề xuất 4.6.0).
+2. Nạp tiền DeepSeek nếu anh muốn dùng (tài khoản đang hết tiền) — cả kênh cũ lẫn kênh kiểu Anthropic dùng chung tài khoản này.
+3. Nạp OpenRouter từ 0,50 USD trở lên nếu muốn gửi PDF qua kênh Claude của OpenRouter.
+4. MiniMax, Kimi: tạo key ở trang của từng nơi, dán vào Cài đặt → "Thêm key nhà cung cấp khác".
 
 ## Việc còn lại
 
-1. Khi anh đóng Word: mở Word thử trên desktop ẩn, nạp bản cục bộ, kiểm thẻ nguồn tự khai, Tự kiểm tra ba ứng dụng.
-2. Chạy thật: OpenRouter kênh Claude (cần tài khoản OpenRouter còn tiền), DeepSeek (cần key), MiniMax và Kimi (anh tạo key).
-3. Đọc tài liệu chính thức của SiliconFlow, Qwen, ModelScope, StepFun rồi mới thêm sẵn vào danh sách; trước đó dùng qua nguồn tự khai.
-4. Xin duyệt phát hành (đề xuất 4.6.0).
+1. Chạy thật DeepSeek, MiniMax, Kimi khi có key và tiền; PDF quét qua OpenRouter kênh Claude khi tài khoản đủ tiền.
+2. Đọc tài liệu chính thức của SiliconFlow, Qwen, ModelScope, StepFun rồi mới thêm sẵn vào danh sách; trước đó dùng qua nguồn tự khai.

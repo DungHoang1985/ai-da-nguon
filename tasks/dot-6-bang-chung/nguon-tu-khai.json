@@ -1,0 +1,17 @@
+{
+ "diaChiHttp": "Chỉ nhận địa chỉ https (key được gửi tới địa chỉ này).",
+ "dongSeGoi": "Add-in sẽ gọi: https://api.deepseek.com/anthropic/v1/messages · key gửi tới api.deepseek.com",
+ "the": [
+  "Thử tự khai",
+  "Gỡ nguồn",
+  "Nguồn tự khai, kiểu Anthropic · key được gửi tới api.deepseek.com"
+ ],
+ "sauLuu": "Đã lưu key · 1 model",
+ "coTrongBoChon": true,
+ "model": [
+  "deepseek-flash"
+ ],
+ "khungSauGui": "AI Đa Nguồn\nv4.5\nExcel — · PowerPoint —\nKhông dùng công cụ. Trả lời một chữ: xong.\nKey không đúng: Thử tự khai không nhận key này. Vào Cài đặt, dán lại key. (Authentication Fails, Your api key: ****cdef is invalid (request_id: 5df37441-5b94-483f-8d01-81e74a443bf1))\nĐổi nguồn\nMở Cài đặt\nChép chi tiết lỗi\nHỏi trước\nThử tự khai · deepseek-flash",
+ "loKey": false,
+ "conSauKhiGo": false
+}

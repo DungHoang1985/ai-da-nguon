@@ -51,7 +51,7 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
   const [key, setKey] = React.useState(storage.getKey(p.id));
   const cached = storage.getModelCache()[p.id];
   const [status, setStatus] = React.useState<Status>(
-    cached ? { kind: "ok", text: `Đã kết nối · ${cached.models.length} model` } : undefined
+    cached ? { kind: "ok", text: p.dialect && !p.dialect.modelsUrl ? `Đã lưu key · ${cached.models.length} model` : `Đã kết nối · ${cached.models.length} model` } : undefined
   );
 
   const save = async () => {
@@ -69,7 +69,9 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
     try {
       const models = await fetchModels(p, k);
       storage.setModels(p.id, models);
-      setStatus({ kind: "ok", text: `Đã kết nối · ${models.length} model` });
+      // Nguồn dùng danh sách model cố định: bước này không gọi tới nhà cung cấp nên key chưa được kiểm
+      const unchecked = !!p.dialect && !p.dialect.modelsUrl;
+      setStatus({ kind: "ok", text: unchecked ? `Đã lưu key · ${models.length} model. Key chưa được kiểm: sai thì báo ở lượt gọi đầu.` : `Đã kết nối · ${models.length} model` });
     } catch (e) {
       setStatus({ kind: "err", text: describeError(e, { provider: p }).text });
     }

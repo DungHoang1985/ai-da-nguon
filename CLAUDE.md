@@ -27,7 +27,7 @@ src/core/            lõi không phụ thuộc Office, kiểm thử được b�
   agent/thinking.ts  công tắc "Suy nghĩ kỹ": tham số suy nghĩ theo từng nguồn và đời model; nguồn nào đọc được PDF quét
   agent/prompt.ts    lời nhắc hệ thống cố định + quy tắc an toàn; trạng thái tài liệu đi trong tin nhắn của lượt
   agent/compaction.ts  tự tóm tắt hội thoại dài, ngưỡng theo sức chứa model
-  providers.ts models.ts storage.ts   nhà cung cấp (kèm cấu hình đăng nhập `oauth`), danh mục model, key lưu cục bộ
+  providers.ts models.ts storage.ts   nhà cung cấp (kèm cấu hình đăng nhập `oauth`; `dialect` cho nguồn nói kiểu Anthropic, `keyFrom` dùng chung key, nguồn tự khai — Đợt 6), danh mục model, key lưu cục bộ
   oauth.ts                            đăng nhập để nhận key (OAuth PKCE), khối dùng chung: mã kiểm / thách thức, địa chỉ, đọc mã dán, đổi mã lấy key
   credits.ts                          hạn mức của key OpenRouter (GET /key, /credits): dòng hiển thị và mức cảnh báo
   errors.ts                           lỗi → câu tiếng Việt; phân loại lỗi key và tiền theo nhà cung cấp; maskSecrets che key trong mọi thông báo
@@ -56,7 +56,7 @@ src/office/          công cụ Office.js: excel*, word*, ppt*, common, selftest
   dialog.ts          hộp thoại của Office (displayDialogAsync) và mở trình duyệt ngoài, dùng cho đăng nhập
 src/dialog/          dang-nhap.html + dang-nhap.ts: trang mở trong hộp thoại của Office khi đăng nhập (đóng gói thành dist/dang-nhap.html)
 src/taskpane/components/   App.tsx, Chat.tsx (điều phối + giao diện), Settings.tsx, SignInCard.tsx + useCredits.ts (thẻ OpenRouter: đăng nhập, dán mã, hạn mức, đăng xuất)
-test/unit/           mocha, 504 kiểm thử (dữ liệu mẫu ở test/fixtures/)
+test/unit/           mocha, 524 kiểm thử (dữ liệu mẫu ở test/fixtures/)
 cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry WEF\Developer)
 ```
 
@@ -64,7 +64,7 @@ cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry W
 
 ```
 npm ci                      # .npmrc phải trỏ registry.npmjs.org
-npm test                    # 504/504 phải đạt
+npm test                    # 524/524 phải đạt
 npx tsc --noEmit -p .       # không lỗi kiểu
 npm run build               # ra dist/, manifest tự đổi sang địa chỉ GitHub Pages
 ```
@@ -101,6 +101,7 @@ Kiểm trong Office bằng mã (không cần điều khiển màn hình, dùng �
 - Excel, Đợt 4, không làm trái (bảng thăm dò ở `tasks/dot-4.md`): nhật ký và tô sáng **mặc định tắt**, lúc bật phải có câu cảnh báo sheet đi theo tệp; mọi chữ ghi vào sheet "Nhật ký AI" phải qua `logText` (không bao giờ thành công thức); AI không ghi, sửa, đổi tên sheet nhật ký (lớp chặn so tên SAU khi làm sạch và tính cả lệnh không nêu sheet), chỉ được xóa cả sheet khi người dùng nhờ; nhật ký không vào lịch sử gửi model; bộ công cụ Excel chỉ dùng qua `getHostTools` (đã bọc `withAuditTrail`, gỡ `__trail` khỏi kết quả); `excel_what_if` luôn trả ô đầu vào về nội dung gốc và không tự ghi kết quả; `excel_protect` không bao giờ đặt mật khẩu; phép kiểm rủi ro của công cụ ghi phải chạy trên dữ liệu đã chuẩn hóa bằng đúng hàm công cụ dùng (`normalize2D`); Tự kiểm tra Excel chạy với nhật ký tắt và sheet nhật ký thử riêng.
 - Tệp đính kèm theo trang (Đợt 5, `tasks/dot-5.md`), không làm trái: ảnh trang quét chỉ gửi qua kênh ảnh công cụ (`__images`), tối đa 4 trang một lần gọi; lời dặn chép nguyên văn nằm trong kết quả công cụ, không vào lời nhắc hệ thống; nguồn không nhận PDF mà danh mục không ghi rõ model nhận ảnh thì KHÔNG gửi ảnh trang (`canSeePages` — gửi là bị từ chối cả lượt); PDF quét từ 5 trang trở xuống với nguồn đọc được nguyên tệp vẫn gửi nguyên tệp; `read_attachment_pages` luôn có trong bộ công cụ chung (không thêm bớt theo lượt).
 - Word, Đợt 5: kết quả đọc và tìm kiếm đưa chữ gốc (`before`) và người sửa (`changed_by`) cho đoạn có sửa đổi chờ duyệt kèm `pending_note`; tham số `reason` của công cụ sửa Word chỉ để hiển thị (nhãn bước, hộp hỏi, mục Hoàn tác), không ghi vào tài liệu.
+- Nguồn nói kiểu Anthropic (Đợt 6, `tasks/dot-6.md`), không làm trái: yêu cầu gửi `api.anthropic.com` không được đổi (có kiểm thử chặn); khác biệt của từng nguồn chỉ khai trong `dialect`, không rẽ nhánh theo mã nguồn trong `llm.ts`; nguồn `bare` chỉ gửi tiêu đề key và `content-type` (thêm `anthropic-version` là bị trình duyệt chặn ở MiniMax, Kimi, OpenRouter); nguồn `keyFrom` không lưu bản sao key; nguồn tự khai chỉ nhận `https`, mã phải có tiền tố `tuy-chinh-`, không đè được nguồn có sẵn, và thẻ phải hiện tên miền nhận key; thêm sẵn một nguồn mới chỉ sau khi đọc tài liệu chính thức và đo bằng trình duyệt thật (Edge `--headless=new`, cả bước dò trước với đúng bộ tiêu đề).
 - Kiểm toán mô hình (`modelaudit.ts`) và công thức cần hỏi (`formularisk.ts`) ưu tiên không báo nhầm: thêm mẫu phải kèm kiểm thử cho cả ca phải bắt và ca dễ báo nhầm (tham chiếu bảng `[2024]`, hàng số nhập tay xen công thức, gạch đầu dòng "- …").
 - `maskSecrets` che cả mã tổ chức / dự án của tài khoản (`org_…`, `proj_…`): bằng chứng và câu lỗi không được lộ.
 - Model mặc định và dấu ⚠ "đã thấy không gọi công cụ" (`catalog.ts`) chỉ đổi khi có bằng chứng Chạy thật và anh đã chọn.

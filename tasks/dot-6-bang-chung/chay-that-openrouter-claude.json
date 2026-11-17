@@ -1,0 +1,15 @@
+{
+ "chon": {
+  "daChon": "Model đang dùng: OpenRouter · Claude (kiểu Anthropic) Anthropic: Claude Haiku 5.5. Bấm để đổi OpenRouter · Claude · Anthropic: Claude Haiku 5.5"
+ },
+ "soModel": 0,
+ "dsModel": [],
+ "truoc": "",
+ "sau": "Bên A thanh toán trong 30 ngày kể từ ngày nhận hóa đơn.\r",
+ "daHoi": [
+  "AI muốn: Chèn nội dung (end) — lý do: Thêm đoạn theo yêu cầu vào cuối văn bản. | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 8,
+ "khung": "AI Đa Nguồn\nv4.5\nExcel — · PowerPoint —\nThêm vào cuối văn bản một đoạn đúng nguyên văn: \"Bên A thanh toán trong 30 ngày kể từ ngày nhận hóa đơn.\" Rồi đọc lại văn bản và cho biết văn bản hiện có mấy đoạn.\n✅ Chèn nội dung (end) — lý do: Thêm đoạn theo yêu cầu vào cuối văn bản.\n✅ Xem tổng quan văn bản\n✅ Đọc đoạn 0–\nĐã thêm đoạn \"Bên A thanh toán trong 30 ngày kể từ ngày nhận hóa đơn.\" vào cuối văn bản, dưới dạng sửa đổi theo dõi chờ duyệt.\n \nKhi đọc lại, văn bản hiện có 2 đoạn:\n• Đoạn 0: nội dung vừa thêm.\n• Đoạn 1: đoạn trống, vốn có sẵn trong văn bản trước khi thêm.\n \nNếu không cần đoạn trống này, bạn có thể xóa đi.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 53.670 · ra 645 · đọc từ bộ nhớ đệm 35.256 · ghi vào bộ nhớ đệm 18.406\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\nOpenRouter · Claude · Anthropic: Claude Haiku 5.5"
+}
