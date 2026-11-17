@@ -5,7 +5,7 @@ import { ApiError, ensureOk, explainApiError, fetchDiagnosed, isRetryable, maskS
 import { createSSEParser } from "../sse";
 import { AgentMessage, RawAssistant, StepResult, ToolCall, ToolSpec, Usage } from "./types";
 import { prepareHistory } from "./history";
-import { anthropicThinkingParams, geminiThinkingConfig, isThinkingParamError } from "./thinking";
+import { dialectThinkingParams, geminiThinkingConfig, isThinkingParamError } from "./thinking";
 
 const ID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 /** id 9 ký tự chữ-số: hợp lệ với mọi nhà cung cấp (Mistral bắt buộc đúng 9 ký tự) */
@@ -154,8 +154,11 @@ export function buildStepRequest(
     // Bộ nhớ đệm lời nhắc: một mốc ở cuối lời nhắc hệ thống (phủ cả danh sách công cụ, đứng trước trong thứ tự dựng),
     // một mốc ở khối cuối của tin nhắn cuối (phủ phần hội thoại đã có). Lịch sử chỉ thêm nên lượt sau đọc lại được phần đầu.
     const CACHE = { type: "ephemeral" };
+    const d = provider.dialect;
+    // Nguồn bỏ qua cache_control (ghi trong phương ngữ) thì không gắn mốc
+    const useCache = d?.cache !== false;
     const lastMsg = out[out.length - 1];
-    if (lastMsg?.content?.length) {
+    if (useCache && lastMsg?.content?.length) {
       const i = lastMsg.content.length - 1;
       lastMsg.content[i] = { ...lastMsg.content[i], cache_control: CACHE };
     }
@@ -167,10 +170,10 @@ export function buildStepRequest(
       messages: out,
     };
     // Tham số suy nghĩ nằm ngoài system / tools / messages: bật hay tắt không làm vỡ bộ nhớ đệm lời nhắc
-    const think = opts.plain ? {} : anthropicThinkingParams(model, !!opts.think, maxTokens);
+    const think = opts.plain ? {} : dialectThinkingParams(provider, model, !!opts.think, maxTokens);
     if (think.thinking) body.thinking = think.thinking;
     if (think.output_config) body.output_config = think.output_config;
-    if (system) body.system = [{ type: "text", text: system, cache_control: CACHE }];
+    if (system) body.system = [useCache ? { type: "text", text: system, cache_control: CACHE } : { type: "text", text: system }];
     if (tools.length) {
       body.tools = tools.map((t) => ({
         name: t.name,
@@ -178,12 +181,12 @@ export function buildStepRequest(
         input_schema: t.parameters || { type: "object", properties: {} },
       }));
     }
-    if (opts.webSearch) body.tools = [...(body.tools || []), { type: "web_search_20250305", name: "web_search", max_uses: 5 }];
+    if (opts.webSearch && (!d || d.webSearch)) body.tools = [...(body.tools || []), { type: "web_search_20250305", name: "web_search", max_uses: 5 }];
     return {
       url: `${provider.baseUrl}/messages`,
       init: {
         method: "POST",
-        headers: think.beta ? { ...anthropicHeaders(key), "anthropic-beta": think.beta } : anthropicHeaders(key),
+        headers: think.beta ? { ...anthropicHeaders(key, provider), "anthropic-beta": think.beta } : anthropicHeaders(key, provider),
         body: JSON.stringify(body),
       },
     };

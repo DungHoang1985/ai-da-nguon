@@ -1,6 +1,6 @@
 /** Nguồn + danh mục model + model đang chọn của khung chat. Logic nằm ở src/core/catalog.ts (có kiểm thử). */
 import * as React from "react";
-import { PROVIDERS, getProvider } from "../../core/providers";
+import { allProviders, getProvider } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { fetchModels, isStale } from "../../core/models";
 import { describeError, keyProblem } from "../../core/errors";
@@ -8,7 +8,7 @@ import { CatalogState, applyFailed, applyLoaded, filterModels, pickModel, sendBl
 
 export function useCatalog(storage: Storage, o: { agentOn: boolean; toolsOnly: boolean; version: number }) {
   const keys = storage.getKeys();
-  const available = PROVIDERS.filter((p) => keys[p.id]);
+  const available = allProviders().filter((p) => keys[p.id]);
   const firstPid = (() => {
     const sel = storage.getSelection();
     return sel.providerId && keys[sel.providerId] ? sel.providerId : available[0]?.id || "";
@@ -51,7 +51,7 @@ export function useCatalog(storage: Storage, o: { agentOn: boolean; toolsOnly: b
   // Mở khung / đổi cài đặt (thêm, xóa key): nạp lại nguồn đang chọn; nguồn mất key thì sang nguồn khác
   React.useEffect(() => {
     const ks = storage.getKeys();
-    const pid = providerId && ks[providerId] ? providerId : PROVIDERS.find((p) => ks[p.id])?.id || "";
+    const pid = providerId && ks[providerId] ? providerId : allProviders().find((p) => ks[p.id])?.id || "";
     if (pid !== providerId) setModelIdState(storage.getModelFor(pid));
     if (pid) load(pid, false);
   }, [o.version]); // eslint-disable-line react-hooks/exhaustive-deps

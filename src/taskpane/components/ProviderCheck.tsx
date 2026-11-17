@@ -1,7 +1,7 @@
 /** Thẻ "Kiểm tra nhà cung cấp" (trang Cài đặt): chạy thật với từng key đã lưu; bảng đổi nguồn mọi cặp, cả hai chiều. */
 import * as React from "react";
 import { Button, Spinner, Text, makeStyles, tokens } from "@fluentui/react-components";
-import { PROVIDERS } from "../../core/providers";
+import { allProviders } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { fetchModels, isStale } from "../../core/models";
 import { describeError } from "../../core/errors";
@@ -50,7 +50,7 @@ async function prepareTargets(storage: Storage): Promise<{ targets: CheckTarget[
   const keys = storage.getKeys();
   const targets: CheckTarget[] = [];
   const pre: Record<string, CheckResult> = {};
-  for (const p of PROVIDERS.filter((x) => keys[x.id])) {
+  for (const p of allProviders().filter((x) => keys[x.id])) {
     let cached = storage.getModelCache()[p.id];
     let loadErr = "";
     if (!cached || isStale(cached.at)) {
@@ -132,7 +132,7 @@ const ProviderCheckCard: React.FC<{ storage: Storage }> = ({ storage }) => {
   const ids = targets.map((t) => t.provider.id);
   const cellOf = (a: string, b: string) => cells.find((c) => c.from === a && c.to === b);
   const failed = cells.filter((c) => !c.ok);
-  const keyed = PROVIDERS.filter((p) => storage.getKeys()[p.id]);
+  const keyed = allProviders().filter((p) => storage.getKeys()[p.id]);
 
   return (
     <div className={s.card}>

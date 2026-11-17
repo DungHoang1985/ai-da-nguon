@@ -1,6 +1,7 @@
 /** Lưu cục bộ trên máy (localStorage của add-in). Không gửi đi đâu ngoài nhà cung cấp tương ứng. */
 import type { ModelInfo } from "./models";
 import { cleanKey } from "./errors";
+import { allProviders, CustomSource, setCustomSources as registerCustomSources } from "./providers";
 
 export interface KVStore {
   getItem(k: string): string | null;
@@ -109,8 +110,32 @@ export class Storage {
     }
   }
 
-  getKeys(): Record<string, string> {
+  /** Key đúng như đã lưu (không kèm key dùng chung) */
+  private rawKeys(): Record<string, string> {
     return this.read<Record<string, string>>("keys", {});
+  }
+
+  /** Key theo nguồn. Nguồn dùng chung key với nguồn khác (`keyFrom`) nhận key của nguồn đó — chỉ tính ra, không lưu thêm bản sao. */
+  getKeys(): Record<string, string> {
+    registerCustomSources(this.getCustomSources());
+    const keys = { ...this.rawKeys() };
+    for (const p of allProviders()) {
+      if (!p.keyFrom) continue;
+      if (keys[p.keyFrom]) keys[p.id] = keys[p.keyFrom];
+      else delete keys[p.id];
+    }
+    return keys;
+  }
+
+  /** Các nguồn kiểu Anthropic do người dùng tự khai */
+  getCustomSources(): CustomSource[] {
+    const list = this.read<CustomSource[]>("customSources", []);
+    return Array.isArray(list) ? list : [];
+  }
+
+  setCustomSources(list: CustomSource[]): void {
+    this.write("customSources", list);
+    registerCustomSources(list);
   }
 
   getKey(providerId: string): string {
@@ -119,13 +144,13 @@ export class Storage {
   }
 
   setKey(providerId: string, key: string): void {
-    const keys = this.getKeys();
+    const keys = this.rawKeys();
     keys[providerId] = cleanKey(key);
     this.write("keys", keys);
   }
 
   removeKey(providerId: string): void {
-    const keys = this.getKeys();
+    const keys = this.rawKeys();
     delete keys[providerId];
     this.write("keys", keys);
     const cache = this.getModelCache();

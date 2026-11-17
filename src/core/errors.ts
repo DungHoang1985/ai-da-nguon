@@ -147,7 +147,7 @@ export function messageForReason(reason: ErrorReason, p?: Provider, detail = "")
     case "no_credit":
       return (
         `${name}: tài khoản đã hết tiền (hết tín dụng) nên yêu cầu bị từ chối. ${keep}: ${swap}, hoặc nạp thêm ở trang của ${name}.` +
-        (p?.kind === "anthropic" ? " Nếu anh đang dùng tín dụng API kèm gói Claude thì tín dụng kỳ này đã hết, kỳ sau có lại." : "") +
+        (p?.kind === "anthropic" && !p.dialect ? " Nếu anh đang dùng tín dụng API kèm gói Claude thì tín dụng kỳ này đã hết, kỳ sau có lại." : "") +
         d
       );
     case "low_credit":

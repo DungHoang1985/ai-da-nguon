@@ -5,7 +5,7 @@ import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { HostName } from "../../office/host";
 import { getHostTools } from "../../office/tools";
 import { TestStep, runSelfTest } from "../../office/selftest";
-import { PROVIDERS, Provider } from "../../core/providers";
+import { CUSTOM_PREFIX, Provider, allProviders, normalizeBaseUrl } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { fetchModels } from "../../core/models";
 import { cleanKey, describeError, keyProblem, networkErrorMessage } from "../../core/errors";
@@ -83,13 +83,26 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
     onChanged();
   };
 
+  /** Nguồn tự khai: gỡ cả nguồn lẫn key của nó */
+  const removeSource = () => {
+    storage.removeKey(p.id);
+    storage.setCustomSources(storage.getCustomSources().filter((c) => c.id !== p.id));
+    onChanged();
+  };
+
   return (
     <div className={s.card}>
       <div className={s.row} style={{ justifyContent: "space-between" }}>
         <Text weight="semibold">{p.name}</Text>
-        <Link href={p.keyUrl} target="_blank">
-          Lấy key
-        </Link>
+        {p.custom ? (
+          <Button size="small" appearance="subtle" onClick={removeSource} title="Gỡ nguồn tự khai này và key của nó">
+            Gỡ nguồn
+          </Button>
+        ) : (
+          <Link href={p.keyUrl} target="_blank">
+            Lấy key
+          </Link>
+        )}
       </div>
       {p.note && <Text size={200} className={s.muted}>{p.note}</Text>}
       {p.blockedReason && (
@@ -115,6 +128,80 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
           {status.text}
         </Text>
       )}
+    </div>
+  );
+};
+
+/** Thêm một nguồn kiểu Anthropic do người dùng tự khai: tên, địa chỉ gốc, tên model. Key nhập ở thẻ của nguồn sau khi thêm. */
+const CustomSourceCard: React.FC<Props> = ({ storage, onChanged }) => {
+  const s = useStyles();
+  const [open, setOpen] = React.useState(false);
+  const [name, setName] = React.useState("");
+  const [url, setUrl] = React.useState("");
+  const [models, setModels] = React.useState("");
+  const [native, setNative] = React.useState(false);
+  const [err, setErr] = React.useState("");
+  const n = url.trim() ? normalizeBaseUrl(url) : undefined;
+
+  const add = () => {
+    const base = normalizeBaseUrl(url);
+    if (!base.url) return setErr(base.error || "Địa chỉ không hợp lệ.");
+    const list = models
+      .split(/[\n,;]+/)
+      .map((x) => x.trim())
+      .filter(Boolean);
+    if (!list.length) return setErr("Cần ít nhất một tên model (đúng như tài liệu của nguồn ghi).");
+    const all = storage.getCustomSources();
+    if (all.length >= 8) return setErr("Tối đa 8 nguồn tự khai.");
+    const id = CUSTOM_PREFIX + Date.now().toString(36);
+    storage.setCustomSources([...all, { id, name: name.trim() || base.host || id, baseUrl: base.url, models: list, anthropicHeaders: native }]);
+    setName("");
+    setUrl("");
+    setModels("");
+    setErr("");
+    setOpen(false);
+    onChanged();
+  };
+
+  if (!open)
+    return (
+      <Button size="small" appearance="subtle" onClick={() => setOpen(true)} style={{ marginBottom: 8 }}>
+        Thêm nguồn tự khai (kiểu Anthropic)
+      </Button>
+    );
+  return (
+    <div className={s.card}>
+      <Text weight="semibold">Nguồn tự khai (kiểu Anthropic)</Text>
+      <Text size={200} className={s.muted}>
+        Dùng cho nơi nhận đúng kiểu yêu cầu của Anthropic mà chưa có trong danh sách. Key của nguồn này sẽ được gửi tới đúng địa chỉ anh nhập — chỉ nhập
+        địa chỉ lấy từ tài liệu chính thức của nhà cung cấp.
+      </Text>
+      <Input placeholder="Tên hiển thị (ví dụ: SiliconFlow)" value={name} onChange={(_, d) => setName(d.value)} />
+      <Input placeholder="Địa chỉ gốc, ví dụ https://api.siliconflow.com" value={url} onChange={(_, d) => setUrl(d.value)} />
+      {n?.url && (
+        <Text size={200} className={s.muted}>
+          Add-in sẽ gọi: {n.url}/messages · key gửi tới {n.host}
+        </Text>
+      )}
+      <Textarea placeholder="Tên model, mỗi dòng một model" value={models} onChange={(_, d) => setModels(d.value)} rows={2} />
+      <Switch
+        checked={native}
+        onChange={(_, d) => setNative(d.checked)}
+        label="Gửi key kiểu Anthropic gốc (x-api-key). Để tắt nếu không chắc: phần lớn nguồn chỉ nhận Authorization."
+      />
+      {(err || n?.error) && (
+        <Text size={200} className={s.err}>
+          {err || n?.error}
+        </Text>
+      )}
+      <div className={s.row}>
+        <Button appearance="primary" size="small" onClick={add} disabled={!url.trim() || !models.trim()}>
+          Thêm nguồn
+        </Button>
+        <Button size="small" onClick={() => setOpen(false)}>
+          Thôi
+        </Button>
+      </div>
     </div>
   );
 };
@@ -540,9 +627,12 @@ const Settings: React.FC<Props> = (props) => {
   const s = useStyles();
   const keys = props.storage.getKeys();
   // Nguồn có đăng nhập (OpenRouter) luôn đứng đầu, có thẻ riêng: đăng nhập, hạn mức, đăng xuất
-  const signIns = PROVIDERS.filter((p) => p.oauth);
-  const keyed = PROVIDERS.filter((p) => keys[p.id] && !p.oauth);
-  const others = PROVIDERS.filter((p) => !keys[p.id] && !p.oauth);
+  // Nguồn dùng chung key với nguồn khác (keyFrom) không có thẻ nhập key riêng
+  const own = allProviders().filter((p) => !p.keyFrom);
+  const shared = allProviders().filter((p) => p.keyFrom && keys[p.id]);
+  const signIns = own.filter((p) => p.oauth);
+  const keyed = own.filter((p) => keys[p.id] && !p.oauth);
+  const others = own.filter((p) => !keys[p.id] && !p.oauth);
   const [showOthers, setShowOthers] = React.useState(keyed.length === 0 && !signIns.some((p) => keys[p.id]));
   /** Khôi phục xong thì dựng lại các thẻ để đọc dữ liệu mới */
   const [gen, setGen] = React.useState(0);
@@ -581,6 +671,12 @@ const Settings: React.FC<Props> = (props) => {
           </Button>
         )}
         {showOthers && others.map((p) => <ProviderCard key={p.id} p={p} {...props} />)}
+        {shared.length > 0 && (
+          <Text size={200} className={s.muted} block style={{ marginBottom: 8 }}>
+            Kênh kiểu Anthropic dùng chung key đã có (chọn ở nhãn model cạnh ô nhập): {shared.map((p) => p.name).join(" · ")}.
+          </Text>
+        )}
+        <CustomSourceCard {...props} />
 
         <div className={s.section}>Quyền và an toàn</div>
         <PermissionsCard {...props} />

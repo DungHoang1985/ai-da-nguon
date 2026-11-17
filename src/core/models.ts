@@ -40,7 +40,7 @@ export function normalizeModels(provider: Provider, json: any): ModelInfo[] {
         .filter((m) => !NON_CHAT.test(m.id))
     );
   }
-  if (provider.kind === "anthropic") {
+  if (provider.kind === "anthropic" && !provider.dialect) {
     const list: any[] = json?.data || [];
     return sortModels(
       list.map((m) => {
@@ -62,7 +62,8 @@ export function normalizeModels(provider: Provider, json: any): ModelInfo[] {
       json.models.map((m: any) => ({ id: m.name || m.id, name: m.name || m.id, context: m.context_length }))
     );
   }
-  const list: any[] = json?.data || [];
+  const only = provider.dialect?.modelFilter ? new RegExp(provider.dialect.modelFilter) : undefined;
+  const list: any[] = (json?.data || []).filter((m: any) => !only || only.test(String(m.id)));
   return sortModels(
     list
       .filter((m) => !NON_CHAT.test(String(m.id)))
@@ -71,7 +72,7 @@ export function normalizeModels(provider: Provider, json: any): ModelInfo[] {
         const id = String(m.id);
         const p = m.pricing;
         const free =
-          provider.id === "openrouter"
+          provider.id === "openrouter" || provider.id === "openrouter-claude"
             ? id.endsWith(":free") || (p && Number(p.prompt) === 0 && Number(p.completion) === 0)
             : undefined;
         const sp: any[] | undefined = Array.isArray(m.supported_parameters) ? m.supported_parameters : undefined;
@@ -97,19 +98,26 @@ export function modelsRequest(provider: Provider, key: string): { url: string; i
       init: { method: "GET", headers: { "x-goog-api-key": key } },
     };
   }
-  if (provider.kind === "anthropic") {
+  if (provider.kind === "anthropic" && !provider.dialect) {
     return {
       url: `${provider.baseUrl}/models?limit=1000`,
       init: { method: "GET", headers: anthropicHeaders(key) },
     };
   }
   return {
-    url: provider.modelsUrl || `${provider.baseUrl}/models`,
+    url: provider.dialect?.modelsUrl || provider.modelsUrl || `${provider.baseUrl}/models`,
     init: { method: "GET", headers: { Authorization: `Bearer ${key}` } },
   };
 }
 
-export function anthropicHeaders(key: string): Record<string, string> {
+/** Tiêu đề của một yêu cầu kiểu Anthropic. Nguồn có `dialect` gửi key theo cách của nguồn đó; `bare` = không kèm tiêu đề anthropic-*
+ *  (bước dò trước của trình duyệt ở nhiều nguồn chỉ cho Authorization và Content-Type — đo 17/11/2026). */
+export function anthropicHeaders(key: string, provider?: Provider): Record<string, string> {
+  const d = provider?.dialect;
+  if (d) {
+    const auth: Record<string, string> = d.auth === "bearer" ? { Authorization: `Bearer ${key}` } : { "x-api-key": key };
+    return d.bare ? { ...auth, "content-type": "application/json" } : { ...auth, "anthropic-version": "2023-06-01", "content-type": "application/json" };
+  }
   return {
     "x-api-key": key,
     "anthropic-version": "2023-06-01",
@@ -118,7 +126,39 @@ export function anthropicHeaders(key: string): Record<string, string> {
   };
 }
 
+/** Danh sách model cố định của một nguồn kiểu Anthropic (ghi theo tài liệu của nguồn, hoặc do người dùng tự khai) */
+export function staticModels(provider: Provider): ModelInfo[] {
+  return (provider.dialect?.models || []).map((m) => ({
+    id: m.id,
+    name: m.name || m.id,
+    ...(m.context ? { context: m.context } : {}),
+    ...(typeof m.vision === "boolean" ? { vision: m.vision } : {}),
+    tools: true,
+  }));
+}
+
 export async function fetchModels(provider: Provider, key: string, fetchFn: typeof fetch = fetch): Promise<ModelInfo[]> {
+  const d = provider.dialect;
+  if (d) {
+    const fixed = staticModels(provider);
+    // Không có địa chỉ liệt kê model: dùng danh sách cố định (key chưa được kiểm ở bước này — sai thì báo ở lượt gọi đầu)
+    if (!d.modelsUrl) {
+      if (!fixed.length) throw new Error("Nguồn này chưa khai tên model nào.");
+      return fixed;
+    }
+    try {
+      const { url, init } = modelsRequest(provider, key);
+      const res = await fetchDiagnosed(provider, url, init, fetchFn);
+      await ensureOk(res, provider);
+      const models = normalizeModels(provider, await res.json());
+      if (models.length) return models;
+    } catch (e) {
+      // Có danh sách cố định thì dùng tạm; không có thì báo lỗi thật
+      if (!fixed.length) throw e;
+    }
+    if (!fixed.length) throw new Error("Nhà cung cấp không trả về model chat nào.");
+    return fixed;
+  }
   const { url, init } = modelsRequest(provider, key);
   const res = await fetchDiagnosed(provider, url, init, fetchFn);
   await ensureOk(res, provider);

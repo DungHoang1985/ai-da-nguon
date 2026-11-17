@@ -58,6 +58,27 @@ export function anthropicThinkingParams(model: string, on: boolean, maxTokens: n
   return {};
 }
 
+/** Tham số suy nghĩ cho một nguồn kiểu Anthropic, có tính phương ngữ của nguồn (Đợt 6):
+ *  - nguồn gốc (không có dialect): như anthropicThinkingParams;
+ *  - "none": không gửi gì;
+ *  - "enabled": chỉ bật / tắt (DeepSeek: adaptive coi như enabled, budget_tokens bị bỏ qua — tài liệu 17/11/2026);
+ *  - "anthropic" + bare: theo đời model Claude nhưng không kèm tiêu đề beta, nên bỏ luôn block_binding (tham số cần tiêu đề đó). */
+export function dialectThinkingParams(provider: Provider, model: string, on: boolean, maxTokens: number): AnthropicThinkingParams {
+  const d = provider.dialect;
+  // Mã model của nơi trung chuyển có tiền tố nhà cung cấp (anthropic/claude-…): bỏ tiền tố trước khi xét đời model
+  const bareModel = String(model || "").replace(/^[^/]+\//, "").replace(/\./g, "-");
+  if (!d) return anthropicThinkingParams(model, on, maxTokens);
+  const mode = d.thinking || "anthropic";
+  if (mode === "none") return {};
+  if (mode === "enabled") return { thinking: { type: on ? "enabled" : "disabled" } };
+  const p = anthropicThinkingParams(bareModel, on, maxTokens);
+  if (!d.bare) return p;
+  const out: AnthropicThinkingParams = {};
+  if (p.thinking) out.thinking = p.thinking.block_binding ? { type: p.thinking.type } : p.thinking;
+  if (p.output_config) out.output_config = p.output_config;
+  return out;
+}
+
 /** generationConfig.thinkingConfig của Gemini khi bật công tắc; model không rõ thì không gửi gì */
 export function geminiThinkingConfig(model: string): any | undefined {
   const m = String(model || "").toLowerCase();
@@ -69,7 +90,12 @@ export function geminiThinkingConfig(model: string): any | undefined {
 
 /** Công tắc "Suy nghĩ kỹ" có tác dụng với nguồn và model này không (để khung chat ghi rõ) */
 export function thinkingToggleWorks(provider: Provider, model: string): boolean {
-  if (provider.kind === "anthropic") return anthropicThinkingKind(model) !== "none";
+  if (provider.kind === "anthropic") {
+    const mode = provider.dialect?.thinking || "anthropic";
+    if (mode === "none") return false;
+    if (mode === "enabled") return true;
+    return anthropicThinkingKind(String(model || "").replace(/^[^/]+\//, "").replace(/\./g, "-")) !== "none";
+  }
   if (provider.kind === "gemini") return !!geminiThinkingConfig(model);
   return provider.id === "openrouter" || provider.id === "openai";
 }
@@ -83,5 +109,6 @@ export function isThinkingParamError(e: any): boolean {
 
 /** Nguồn nhận nguyên tệp PDF để model tự đọc (PDF quét không có lớp chữ) */
 export function pdfCapable(provider: Provider): boolean {
-  return provider.kind === "anthropic" || provider.kind === "gemini" || provider.id === "openrouter" || provider.id === "openai";
+  if (provider.kind === "anthropic") return !provider.dialect || provider.dialect.pdf === true;
+  return provider.kind === "gemini" || provider.id === "openrouter" || provider.id === "openai";
 }

@@ -223,7 +223,8 @@ interface Props {
   onKeysChanged?: () => void;
 }
 
-const WEB_PROVIDERS = (p: { id: string; kind: string }) => p.id === "openrouter" || p.kind === "anthropic" || p.kind === "gemini";
+const WEB_PROVIDERS = (p: { id: string; kind: string; dialect?: { webSearch?: boolean } }) =>
+  p.id === "openrouter" || (p.kind === "anthropic" && (!p.dialect || !!p.dialect.webSearch)) || p.kind === "gemini";
 
 /** Chữ thường + liên kết bấm được tới ô/đoạn/slide */
 const Linked: React.FC<{ text: string; host: string; onNav: (r: RefTarget) => void; cls: string }> = ({ text, host, onNav, cls }) => (
