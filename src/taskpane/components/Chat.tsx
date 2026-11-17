@@ -41,7 +41,7 @@ import { ConversationMeta, ConversationStore, newConversationId, slimForStorage,
 import { Command, Skill, SkillStore, resolveSlash, skillCatalog } from "../../core/skills";
 import { CORE_GUIDES, autoSelectSkills } from "../../core/skillpack";
 import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, PDF_MIME, filesBase64Chars, readAttachment, withAttachments } from "../../core/attachments";
-import { attachmentPrivacyNote, routeScanPdf } from "../../core/pdfPages";
+import { attachmentPrivacyNote, canSeePages, routeScanPdf } from "../../core/pdfPages";
 import { clearAttachedFiles, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
@@ -691,7 +691,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     const auto = useAgent && !slash.label ? autoSelectSkills(typed, skills as any) : [];
     // PDF quét đi đường nào: nguyên tệp (tệp ngắn, nguồn đọc được) · AI đọc theo trang bằng công cụ · không đọc được
     const scans = atts.filter((a) => a.kind === "file" && a.data);
-    const routeOf = (a: Attachment) => routeScanPdf({ pages: a.pages ?? 1, pdfCapable: pdfCapable(p), vision: vision !== false, tools: useAgent });
+    const routeOf = (a: Attachment) => routeScanPdf({ pages: a.pages ?? 1, pdfCapable: pdfCapable(p), vision, tools: useAgent });
     const byPages = scans.filter((a) => routeOf(a) === "pages");
     const whole = scans.filter((a) => routeOf(a) !== "pages");
     // Tệp gửi nguyên vẹn nằm lại trong lịch sử và được gửi lại ở mọi lượt: quá trần thì nhà cung cấp từ chối mọi lượt sau
@@ -711,7 +711,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     const pdfs = whole.map((a) => ({ mime: a.mime || "application/pdf", data: a.data!, name: a.name }));
     if (pdfs.length && !pdfCapable(p)) {
       setNotice({
-        text: `${p.name} không đọc được PDF quét (${pdfs.map((f) => f.name).join(", ")}): tệp không được gửi đi. ${vision !== false ? "Bật “AI tự thao tác” để AI đọc từng trang bằng ảnh, hoặc đổi" : "Đổi"} sang nguồn Anthropic hoặc Gemini rồi đính kèm lại.`,
+        text: `${p.name} không đọc được PDF quét (${pdfs.map((f) => f.name).join(", ")}): tệp không được gửi đi. ${vision === true && !useAgent ? "Bật “AI tự thao tác” để AI đọc từng trang bằng ảnh, hoặc đổi" : "Đổi"} sang nguồn Anthropic hoặc Gemini rồi đính kèm lại.`,
         err: true,
       });
     } else if (atts.length) {
@@ -736,7 +736,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     const key = storage.getKey(p.id);
     const instr = (settings.instructions || {})[host]?.trim();
     const log: UndoEntry[] = [];
-    const extraTools = createCommonTools({ host, skills, shareContext: settings.shareContext, apps: linkedApps, signal: ac.signal });
+    const extraTools = createCommonTools({ host, skills, shareContext: settings.shareContext, apps: linkedApps, signal: ac.signal, seesPages: canSeePages({ pdfCapable: pdfCapable(p), vision }) });
     /** Công cụ đã gọi trong lượt và số lệnh ghi không thành công — để nhận ra ca "nói đã sửa mà không ghi" */
     const called: string[] = [];
     let failedWrites = 0;

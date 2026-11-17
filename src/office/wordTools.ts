@@ -12,6 +12,7 @@ import {
   planTableFill,
   overviewForPrompt,
   packParagraphs,
+  PENDING_NOTE,
   paragraphIndex,
   parseMarkdownLine,
   replaceLimit,
@@ -752,6 +753,34 @@ async function rejectWanted(wants: Wanted[]): Promise<number> {
   }
 }
 
+/** Kết quả tìm kiếm nằm trong đoạn đang có sửa đổi chờ duyệt: gắn changed, chữ gốc của cả đoạn (before, cắt gọn) và người sửa,
+ *  để AI nêu được cả hai bản mà không cần gọi thêm công cụ. Trả về số kết quả được gắn. */
+async function markPendingHits(ctx: Word.RequestContext, paras: Word.ParagraphCollection, hits: { i: number }[]): Promise<number> {
+  if (!supports("1.6") || !hits.length) return 0;
+  const idx = [...new Set(hits.map((h) => h.i))].filter((i) => paras.items[i]);
+  const tcs = idx.map((i) => {
+    const t = paras.items[i].getTrackedChanges();
+    t.load("items/type,items/author");
+    return t;
+  });
+  await ctx.sync();
+  const hot = idx.map((i, k) => ({ i, k })).filter((x) => tcs[x.k].items.length > 0);
+  if (!hot.length) return 0;
+  const orig = hot.map((x) => paras.items[x.i].getReviewedText("Original"));
+  await ctx.sync();
+  const info = new Map(hot.map((x, j) => [x.i, { before: truncate(noMarks(strip(orig[j].value)), 400), by: [...new Set(tcs[x.k].items.map((t) => String(t.author || "").trim()).filter(Boolean))].slice(0, 3).join(", ") }]));
+  let n = 0;
+  for (const h of hits as any[]) {
+    const x = info.get(h.i);
+    if (!x) continue;
+    h.changed = true;
+    h.before = x.before;
+    if (x.by) h.changed_by = x.by;
+    n++;
+  }
+  return n;
+}
+
 type PendingRow = { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[]; before?: string; changed_by?: string };
 
 /** Đánh dấu các đoạn đang có sửa đổi chờ duyệt trong cửa sổ [start, end): changed, chữ gốc trước sửa (before), người sửa (changed_by).
@@ -1049,6 +1078,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
                 text: truncate(h.sentence, 260),
               }));
               const { picked: some } = takeWithinBudget(list, RESULT_JSON_BUDGET - 600);
+              const pendingSome = hasChanges ? await markPendingHits(ctx, paras, some) : 0;
               return {
                 ok: true,
                 found: 0,
@@ -1056,29 +1086,13 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
                 note: `Không đoạn nào chứa nguyên cụm "${truncate(q, 60)}". Dưới đây là các đoạn chứa nhiều từ của cụm đó nhất (words = số từ có mặt), xếp từ khớp nhất.`,
                 paragraphs: w.hits.length,
                 shown: some.length,
+                ...(pendingSome ? { pending_note: PENDING_NOTE } : {}),
                 hits: some,
               };
             }
           }
           const { picked } = takeWithinBudget(hits.slice(0, max), RESULT_JSON_BUDGET - 600);
-          // Đoạn khớp đang có sửa đổi chờ duyệt: đánh dấu để AI đọc cả hai bản trước khi dẫn
-          let pendingHits = 0;
-          if (hasChanges && supports("1.6") && picked.length) {
-            const idx = [...new Set(picked.map((h) => h.i))];
-            const tcs = idx.map((i) => {
-              const t = paras.items[i].getTrackedChanges();
-              t.load("items/type");
-              return t;
-            });
-            await ctx.sync();
-            const set = new Set(idx.filter((_, k) => tcs[k].items.length > 0));
-            picked.forEach((h: any) => {
-              if (set.has(h.i)) {
-                h.changed = true;
-                pendingHits++;
-              }
-            });
-          }
+          const pendingHits = hasChanges ? await markPendingHits(ctx, paras, picked) : 0;
           return {
             ok: true,
             found: res.total,
@@ -1086,7 +1100,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             shown: picked.length,
             ...(picked.length < hits.length ? { note: `Còn ${hits.length - picked.length} đoạn khớp chưa hiện: thu hẹp chuỗi tìm hoặc tăng max.` } : {}),
             ...(loose ? { ignoring_accents: true } : {}),
-            ...(pendingHits ? { pending_note: "Kết quả có changed=true nằm trong đoạn đang có sửa đổi được theo dõi CHƯA DUYỆT (text là chữ sau sửa). Trước khi dẫn, đọc đoạn đó bằng word_read_paragraphs hoặc word_read_clause để lấy cả chữ gốc (before), rồi nêu cả hai và nói rõ còn chờ duyệt." } : {}),
+            ...(pendingHits ? { pending_note: PENDING_NOTE } : {}),
             ...(res.total
               ? {}
               : { message: `Không tìm thấy "${truncate(q, 80)}". Tìm kiếm theo đúng chữ: thử từ khóa khác hoặc ngắn hơn, hoặc xem mục lục bằng word_get_outline.` }),

@@ -50,6 +50,23 @@ Tiêu chí nghiệm thu:
 
 Theo `tasks/ke-hoach-v4.md`: bộ nhớ dài hạn giữa các hội thoại · tải bản ghi hội thoại · gợi ý gạch chân bấm để chấp nhận trong Word · điền mẫu qua ô điền sẵn · connectors (MCP) · công cụ chạy mã Office.js do AI viết · phím tắt mở khung · đọc một trang web cụ thể · Outlook · Sign in with Poe · hàm `=AI(…)` trong ô Excel.
 
-## Kết quả
+## Kết quả (17/11/2026, bản cục bộ trên nhánh `claude/so-song-song`, chưa phát hành)
 
-(điền khi làm xong từng phần)
+Kiểm thử máy 504/504, kiểm kiểu sạch, đóng gói đạt. Mọi bước trong Office chạy trên desktop ẩn. Bằng chứng: `tasks/dot-5-bang-chung/`.
+
+| # | Kết quả | Bằng chứng |
+|---|---|---|
+| A1 | Đạt | Kiểm thử máy `test/unit/dot5.test.ts` (34 kiểm thử mới) |
+| A2 | Đạt | Tự kiểm tra: Word 38/38, Excel 39/39, PowerPoint 22/22, đều có bước "Đọc tệp PDF đính kèm theo trang" (trang 1 ra 521 ký tự, trang 2 ra ảnh JPEG 13 KB) — `tu-kiem-tra-*.json` |
+| A3 | Đạt | Chạy thật Sonnet 5.5, PDF quét 7 trang (3 trang thật xen 4 trang trắng) đi đường công cụ: đúng 3/3 số liệu, dẫn đúng trang 2, 4, 7, tự nêu các trang 1, 3, 5, 6 trống và câu "đọc từ bản quét, cần đối chiếu bản gốc"; 11 giây — `pdf-sonnet55-7trang.json` |
+| A4 | Đạt | Chạy thật Sonnet 5.5, PDF quét 3 trang gửi nguyên tệp: đúng 3/3, 6 giây — `pdf-sonnet55-3trang.json` |
+| A5 | Đạt sau một lần sửa | Lần 1 (`pdf-cerebras-7trang.json`): Cerebras `gpt-oss-120b` bị gửi ảnh trang và từ chối 400 ("Content type 'image_url' is not supported") vì danh mục không ghi model này không nhận ảnh. Đã sửa: nguồn không nhận PDF mà không ghi rõ là nhận ảnh thì không gửi ảnh trang. Lần 2 (`pdf-cerebras-7trang-lan2.json`): báo rõ không đọc được bản quét, gợi ý Anthropic / Gemini, 3 giây, không bịa số |
+| B1 | Chưa kiểm được | Gemini 3.8 Flash: sáng 17/11 trả lời đúng một bài trên bản phát hành 4.4.1; chiều hết hạn mức (429) |
+| B2 | Chưa kiểm được | `pdf-gemini-3trang.json`: 429 hết hạn mức; `pdf-gemini-7trang.json`: máy chủ im lặng, khung báo lỗi sau 150 giây (hạn chờ im lặng chạy đúng). Suy nghĩ kỹ: chưa chạy |
+| B3 | Đạt | Excel và PowerPoint trên desktop ẩn: khung mở sau 1–2 giây, hẹn giờ 30 nhịp / 3 giây, 181 khung hình; Tự kiểm tra Excel 39/39, PowerPoint 22/22 (có bước chụp ảnh slide) |
+| C1 | Đạt | Chạy thật Sonnet 5.5, bài "lãi chậm thanh toán": nêu Điều 6.4 có sửa đổi của "Đối tác" chưa duyệt, bản gốc 45 ngày, bản đang sửa 90 ngày — `c1-lan3-tom.json`. (Lần đầu chưa đạt vì AI chỉ dùng `word_find`; đã cho kết quả tìm kiếm kèm chữ gốc của đoạn.) |
+| C2 | Đạt | Chạy thật Sonnet 5.5, bài thêm khoản sau Điều 8.2: dòng bước "Chèn điều khoản mới sau [¶44] — lý do: Bổ sung khoản mới về hồ sơ bàn giao theo yêu cầu." — `c2-nhan.json` |
+
+Chưa kiểm: PDF lẫn trang quét với tệp thật (mới có kiểm thử máy cho phần ghép câu hỏi); dòng nhắc riêng tư trên khung (mới có kiểm thử máy); đường công cụ với một nguồn không nhận PDF nhưng được ghi rõ là nhận ảnh (chưa có nguồn nào như vậy đang dùng được); mục Hoàn tác kèm lý do (mã có, chưa nhìn trên khung).
+
+Phát hiện phụ: PowerPoint thoát chậm hơn 20 giây sau lệnh đóng → `mo-office.ps1` nay chờ tới 45 giây.

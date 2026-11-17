@@ -1,0 +1,28 @@
+{
+ "bai": "pdf",
+ "phienBan": "v4.4.1",
+ "model": "Model đang dùng: Cerebras gpt-oss-120b. Bấm để đổi Cerebras · gpt-oss-120b",
+ "cauHoi": "Tệp đính kèm là bản quét. Trả lời đúng ba số liệu, mỗi số kèm số trang lấy ra: (1) Giá trị hợp đồng; (2) Diện tích sàn bàn giao; (3) Số tiền giữ lại bảo hành.",
+ "tepDinhKem": [
+  "📑 aidn-thu-quet-7.pdf"
+ ],
+ "giay": 3,
+ "daHoi": [],
+ "soBuocCongCu": 0,
+ "cacBuoc": [],
+ "token": "Token: vào 9.848 · ra 272 · đọc từ bộ nhớ đệm 9.728",
+ "vanBanTruoc": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanSau": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "📎 aidn-thu-quet-7.pdf\nXin lỗi, tệp PDF được đính kèm là bản quét và không có lớp văn bản có thể đọc được. Vì mô hình hiện tại không thể trích xuất nội dung từ các hình ảnh trong PDF, nên tôi không thể truy xuất được các số liệu “Giá trị hợp đồng”, “Diện tích sàn bàn giao” và “Số tiền giữ lại bảo hành” cũng như số trang của chúng.\nBạn có thể chuyển tệp này sang một dịch vụ hoặc mô hình hỗ trợ nhận dạng ký tự quét (OCR) như Anthropic, Gemini hoặc các công cụ OCR khác, sau đó cung cấp lại văn bản (hoặc hình ảnh đã được chuyển sang dạng văn bản) để tôi có thể trích xuất và trả lời yêu cầu. Nếu có bất kỳ tài liệu văn bản nào khác (định dạng .docx, .txt, …) tôi đều sẵn sàng hỗ trợ ngay.\nChèn vào chỗ con trỏ\nSao chép\nCerebras không đọc được PDF quét (aidn-thu-quet-7.pdf): tệp không được gửi đi. Đổi sang nguồn Anthropic hoặc Gemini rồi đính kèm lại.\nCerebras · gpt-oss-120b"
+}

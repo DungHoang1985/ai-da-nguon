@@ -65,6 +65,10 @@ export function planPages(wanted: number[], isScan: (page: number) => boolean): 
 }
 
 /** Lời dặn đi kèm mỗi lần đưa ảnh trang quét (nằm trong kết quả công cụ, không nằm trong lời nhắc hệ thống) */
+/** Ghi vào kết quả công cụ khi model không (chắc) xem được ảnh: không gửi ảnh trang quét, không để model đoán */
+export const NO_VISION_NOTE =
+  "Các trang quét KHÔNG được gửi: model đang dùng không nhận ảnh (hoặc danh mục không ghi rõ là nhận ảnh). Không được đoán nội dung các trang này; hãy nói rõ với người dùng và gợi ý chọn một model nhận ảnh (ví dụ nguồn Anthropic hoặc Gemini) rồi hỏi lại.";
+
 export const SCAN_RULES =
   "Các trang quét được gửi dưới dạng ảnh ở tin nhắn ngay sau kết quả này. Khi đọc: chép ĐÚNG chữ in trên ảnh, kể cả khi chữ in có vẻ sai — không tự sửa cho hợp lý, không suy theo quy luật; " +
   "chữ, số không đọc được thì ghi [?], không đoán; số tiền, ngày tháng, số hiệu chép đúng kiểu in; bảng giữ đúng hàng cột; ký hiệu điểm a), b) giữ nguyên, không đổi thành 1., 2. " +
@@ -73,13 +77,19 @@ export const SCAN_RULES =
 
 export type ScanRoute = "whole" | "pages" | "none";
 
+/** Model có chắc xem được ảnh trang không. vision = điều danh mục biết về model (undefined = không rõ).
+ *  Nguồn đọc được nguyên tệp PDF thì model không rõ vẫn coi là xem được (như trước); nguồn khác phải được ghi rõ là nhận ảnh —
+ *  gửi ảnh cho model chỉ đọc chữ là bị từ chối cả lượt (Cerebras: "Content type 'image_url' is not supported", đo 17/11/2026). */
+export function canSeePages(o: { pdfCapable: boolean; vision?: boolean }): boolean {
+  return o.vision === true || (o.vision === undefined && o.pdfCapable);
+}
+
 /** PDF quét lúc gửi đi đường nào: nguyên tệp (như trước) · AI đọc theo trang bằng công cụ · không đọc được.
  *  tools = lượt này model có công cụ (bật "AI tự thao tác" và model gọi được công cụ). */
-export function routeScanPdf(o: { pages: number; pdfCapable: boolean; vision: boolean; tools: boolean }): ScanRoute {
-  if (!o.vision) return "none";
-  if (o.pdfCapable && (o.pages <= WHOLE_PDF_MAX_PAGES || !o.tools)) return "whole";
-  if (o.tools) return "pages";
-  return o.pdfCapable ? "whole" : "none";
+export function routeScanPdf(o: { pages: number; pdfCapable: boolean; vision?: boolean; tools: boolean }): ScanRoute {
+  if (o.vision === false) return "none";
+  if (o.pdfCapable) return o.pages <= WHOLE_PDF_MAX_PAGES || !o.tools ? "whole" : "pages";
+  return o.tools && canSeePages(o) ? "pages" : "none";
 }
 
 /** Dòng nhắc riêng tư khi tệp đính kèm sắp được gửi cho nguồn miễn phí hoặc qua nơi trung chuyển. Không phải thì trả "". */

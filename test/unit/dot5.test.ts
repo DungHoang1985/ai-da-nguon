@@ -4,7 +4,9 @@ import {
   MAX_SCAN_PAGES_PER_CALL,
   SCAN_RULES,
   WHOLE_PDF_MAX_PAGES,
+  NO_VISION_NOTE,
   attachmentPrivacyNote,
+  canSeePages,
   formatPages,
   isScanPage,
   parsePageSpec,
@@ -70,6 +72,13 @@ describe("Đợt 5 — đường đi của PDF quét lúc gửi", () => {
   it("không có công cụ: nguồn đọc được thì gửi nguyên tệp dù dài; nguồn không đọc được thì chịu", () => {
     assert.strictEqual(routeScanPdf({ pages: 40, pdfCapable: true, vision: true, tools: false }), "whole");
     assert.strictEqual(routeScanPdf({ pages: 2, pdfCapable: false, vision: true, tools: false }), "none");
+  });
+  it("nguồn không nhận PDF mà danh mục không ghi rõ model nhận ảnh (Cerebras…): không gửi ảnh trang, kẻo bị từ chối cả lượt", () => {
+    assert.strictEqual(routeScanPdf({ pages: 7, pdfCapable: false, vision: undefined, tools: true }), "none");
+    assert.strictEqual(canSeePages({ pdfCapable: false, vision: undefined }), false);
+    assert.strictEqual(canSeePages({ pdfCapable: false, vision: true }), true);
+    assert.strictEqual(canSeePages({ pdfCapable: true, vision: undefined }), true, "nguồn đọc được PDF: model không rõ vẫn coi là xem được, như trước");
+    assert.strictEqual(canSeePages({ pdfCapable: true, vision: false }), false);
   });
   it("model không nhận ảnh: không đọc được, dù có công cụ", () => {
     assert.strictEqual(routeScanPdf({ pages: 2, pdfCapable: true, vision: false, tools: true }), "none");
@@ -157,6 +166,17 @@ describe("Đợt 5 — công cụ read_attachment_pages", () => {
     assert.strictEqual(r.rules, SCAN_RULES);
     assert.match(r.rules, /\[\?\]/);
     assert.match(r.rules, /số trang/);
+  });
+  it("model không chắc xem được ảnh: trang quét không dựng, không gửi; kết quả dặn không đoán; trang chữ vẫn đọc", async () => {
+    registerAttachedFile("hd.pdf", "DATA");
+    const t = createCommonTools({ host: "Word", skills: [], shareContext: false, pdf, seesPages: false });
+    const r = await t.execute("read_attachment_pages", { pages: "2-4" });
+    assert.deepStrictEqual(rendered, []);
+    assert.strictEqual(r.__images, undefined);
+    assert.strictEqual(r.image_note, NO_VISION_NOTE);
+    assert.match(r.image_note, /Không được đoán/);
+    assert.strictEqual(r.pages[0].text, "Chữ trang 2");
+    assert.strictEqual(r.pages[1].kind, "scan");
   });
   it("chỉ trang có chữ: không ảnh, không lời dặn về ảnh", async () => {
     registerAttachedFile("hd.pdf", "DATA");

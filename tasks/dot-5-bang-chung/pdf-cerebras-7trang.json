@@ -1,0 +1,30 @@
+{
+ "bai": "pdf",
+ "phienBan": "v4.4.1",
+ "model": "Model đang dùng: Cerebras gpt-oss-120b. Bấm để đổi Cerebras · gpt-oss-120b",
+ "cauHoi": "Tệp đính kèm là bản quét. Trả lời đúng ba số liệu, mỗi số kèm số trang lấy ra: (1) Giá trị hợp đồng; (2) Diện tích sàn bàn giao; (3) Số tiền giữ lại bảo hành.",
+ "tepDinhKem": [
+  "📑 aidn-thu-quet-7.pdf"
+ ],
+ "giay": 29,
+ "daHoi": [],
+ "soBuocCongCu": 1,
+ "cacBuoc": [
+  "✅ Đọc trang 1-4 của tệp đính kèm aidn-thu-quet-7.pdf — đã đọc trang 1-4 của aidn-thu-quet-7.pdf (4 trang quét)"
+ ],
+ "token": "Token: vào 9.808 · ra 97",
+ "vanBanTruoc": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanSau": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "📎 aidn-thu-quet-7.pdf\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 9.808 · ra 97\nLỗi 400 (Content type 'image_url' is not supported by selected model. Only 'text' content type can be used.)\nChép chi tiết lỗi\nHết hạn mức tạm thời: đang thử lại lần 3/3 sau 15 giây… Bấm Dừng để hủy.\nCerebras · gpt-oss-120b"
+}

@@ -219,7 +219,7 @@ export function takeWithinBudget<T>(items: T[], budget: number, shrink?: (x: T, 
 /** Kết quả word_read_paragraphs: tính theo độ dài JSON thật; next_start và truncated đặt lên đầu. */
 /** Câu nhắc đi kèm kết quả đọc khi có đoạn đang chờ duyệt sửa đổi: AI phải nêu cả hai bản, không dẫn một bản như thể đã chốt */
 export const PENDING_NOTE =
-  "Đoạn có changed=true đang có sửa đổi được theo dõi CHƯA DUYỆT: text là chữ sau sửa, before là chữ gốc trước sửa, changed_by là người sửa. Khi dẫn hoặc trả lời dựa trên các đoạn này phải nêu cả chữ gốc lẫn chữ đang sửa và nói rõ sửa đổi còn chờ duyệt.";
+  "Mục có changed=true nằm trong đoạn đang có sửa đổi được theo dõi CHƯA DUYỆT: text là chữ sau sửa, before là chữ gốc của đoạn trước sửa, changed_by là người sửa. Khi dẫn hoặc trả lời dựa trên các đoạn này phải nêu cả chữ gốc lẫn chữ đang sửa và nói rõ sửa đổi còn chờ duyệt.";
 
 export function packParagraphs(
   all: { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[]; before?: string; changed_by?: string }[],

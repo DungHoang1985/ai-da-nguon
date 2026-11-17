@@ -1,0 +1,18 @@
+{
+ "model": "Model đang dùng: Anthropic (Claude) Claude Sonnet 5.5. Bấm để đổi Anthropic · Claude Sonnet 5.5",
+ "phienBan": "v4.4.1",
+ "bai": {
+  "b": {
+   "giay": 9,
+   "daHoi": 0,
+   "buocDat": 3,
+   "buocLoi": [],
+   "dongDem": "1 nhiệm vụ · 3 lần gọi AI · Token: vào 61.230 · ra 534 · đọc từ bộ nhớ đệm 58.794 · ghi vào bộ nhớ đệm 2.428",
+   "canhBao": [],
+   "cham": {
+    "dung": true
+   },
+   "traLoi": "Lãi chậm thanh toán nằm ở Điều 6.3 [¶35] (Điều 6 – Thanh toán). Mức lãi là 0,05% mỗi ngày trên số tiền chậm trả. Lãi tính từ ngày đến hạn đến ngày Bên Thuê trả đủ.\nVăn bản không có điều khoản nào khác quy định lãi suất.\nĐiều 6.4 [¶36] liên quan đến việc chậm thanh toán. Đoạn này đang có sửa đổi của \"Đối tác\" chưa được duyệt:\n• Bản gốc: chậm thanh toán quá 45 ngày là vi phạm nghiêm trọng, và Bên Cho Thuê có quyền chấm dứt hợp đồng theo Điều 22.\n• Bản đang sửa: ngưỡng được nâng lên 90 ngày.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 61.230 · ra 534 · đọc từ bộ nhớ đệm 58.794 · ghi vào bộ nhớ đệm 2.428\nAnthropic · Claude Sonnet 5.5"
+  }
+ }
+}

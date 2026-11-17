@@ -6,7 +6,7 @@ import { readOtherApp } from "../core/share";
 import { AppName, OP_OF, blockReason, buildPayload, describePayload, liveOf, normalizeApp, sendCommand } from "../core/crossapp";
 import { KVStore } from "../core/storage";
 import { findAttachedFile, listAttachedFiles } from "../core/attachedFiles";
-import { MAX_PAGE_TEXT_CHARS, MAX_SCAN_PAGES_PER_CALL, SCAN_RULES, formatPages, parsePageSpec, planPages } from "../core/pdfPages";
+import { MAX_PAGE_TEXT_CHARS, MAX_SCAN_PAGES_PER_CALL, NO_VISION_NOTE, SCAN_RULES, formatPages, parsePageSpec, planPages } from "../core/pdfPages";
 
 /** Phần đọc PDF (pdf.js + canvas) — tách ra để kiểm thử thay được */
 export interface PdfReader {
@@ -29,6 +29,8 @@ export interface CommonToolsOptions {
   sendTimeoutMs?: number;
   /** Bộ đọc PDF (mặc định pdfRender.ts, nạp khi cần) — truyền vào khi kiểm thử */
   pdf?: PdfReader;
+  /** Model của lượt này có chắc xem được ảnh trang quét không (mặc định có). Không thì công cụ không dựng, không gửi ảnh. */
+  seesPages?: boolean;
 }
 
 const sharedStore = (s?: KVStore): KVStore | null => {
@@ -151,7 +153,9 @@ export function createCommonTools(o: CommonToolsOptions): ExtraTools {
         const cut: number[] = [];
         for (const n of plan.now) {
           const pg = info.find((x) => x.page === n)!;
-          if (pg.scan) {
+          if (pg.scan && o.seesPages === false) {
+            pages.push({ page: n, kind: "scan", note: "không gửi được ảnh trang", ...(pg.text ? { text_layer: pg.text } : {}) });
+          } else if (pg.scan) {
             const img = await pdf.renderPdfPage(f.name, f.data, n);
             images.push({ ...img, label: `trang ${n} của ${f.name}` });
             pages.push({ page: n, kind: "scan", note: "ảnh trang gửi ở tin nhắn sau", ...(pg.text ? { text_layer: pg.text } : {}) });
@@ -172,6 +176,7 @@ export function createCommonTools(o: CommonToolsOptions): ExtraTools {
           ...(later.length ? { pages_not_returned: formatPages(later), next: `Gọi lại read_attachment_pages với pages = "${formatPages(later)}" để đọc tiếp.` } : {}),
           pages,
           ...(images.length ? { rules: SCAN_RULES, __images: images } : {}),
+          ...(o.seesPages === false && pages.some((x) => x.kind === "scan") ? { image_note: NO_VISION_NOTE } : {}),
           brief: `đã đọc trang ${formatPages(given)} của ${f.name}${images.length ? ` (${images.length} trang quét)` : ""}`,
         };
       }

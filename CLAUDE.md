@@ -6,7 +6,7 @@ Add-in Office dùng API key của nhiều nhà cung cấp, AI tự thao tác tr�
 
 1. `tasks/HANDOFF.md` — trạng thái, quyết định, vấn đề mở, bài học.
 2. `tasks/ke-hoach-v4.md` — hiện trạng đã kiểm, phương án đăng nhập, kế hoạch theo đợt (0A, 0B, 1A, 1B, 2, 3, 4) và tiêu chí nghiệm thu. Bằng chứng rà soát: `tasks/ra-soat-2026-11-15/DOC-TRUOC.md`.
-3. `tasks/dot-4.md` — Đợt 4 (Excel và dấu vết soát lại): tiêu chí, bảng thăm dò Excel, bảng nghiệm thu, bảng soát mã (đã sửa / để lại); `tasks/dot-3.md` — Đợt 3: tiêu chí, bảng thăm dò Word / kênh lệnh chéo ứng dụng / PowerPoint, bảng nghiệm thu phần A; `tasks/dot-2.md` — Đợt 2 (đăng nhập và chi phí): bảng đối chiếu tài liệu chính thức, bảng nghiệm thu, và mục "Việc buộc phải có anh ở máy" ghi từng cú bấm; `tasks/dot-1b.md` — việc, bảng thăm dò Word và kết quả của Đợt 1B; `tasks/dot-1a.md` — Đợt 1A (Đợt 0A: `tasks/dot-0.md`, Đợt 0B: `tasks/dot-0b.md`, đã xong). Đợt kế tiếp là 5 (tùy chọn): hỏi anh chọn việc, viết `tasks/dot-5.md` trước khi làm.
+3. `tasks/dot-5.md` — Đợt 5 (anh chọn 17/11/2026: đọc tài liệu quét theo trang, kiểm nốt, hai việc nhỏ từ buổi so song song; mã xong trên nhánh `claude/so-song-song`, trạng thái phát hành xem đầu `tasks/HANDOFF.md`); `tasks/dot-4.md` — Đợt 4 (Excel và dấu vết soát lại): tiêu chí, bảng thăm dò Excel, bảng nghiệm thu, bảng soát mã (đã sửa / để lại); `tasks/dot-3.md` — Đợt 3: tiêu chí, bảng thăm dò Word / kênh lệnh chéo ứng dụng / PowerPoint, bảng nghiệm thu phần A; `tasks/dot-2.md` — Đợt 2 (đăng nhập và chi phí): bảng đối chiếu tài liệu chính thức, bảng nghiệm thu, và mục "Việc buộc phải có anh ở máy" ghi từng cú bấm; `tasks/dot-1b.md` — việc, bảng thăm dò Word và kết quả của Đợt 1B; `tasks/dot-1a.md` — Đợt 1A (Đợt 0A: `tasks/dot-0.md`, Đợt 0B: `tasks/dot-0b.md`, đã xong). Đợt kế tiếp là 5 (tùy chọn): hỏi anh chọn việc, viết `tasks/dot-5.md` trước khi làm.
 4. `docs/so-sanh-claude-chinh-thuc.md` — bảng so sánh 67 khả năng với bản chính thức.
 
 ## Nguồn mã
@@ -43,7 +43,8 @@ src/core/            lõi không phụ thuộc Office, kiểm thử được b�
   worddiff.ts                         so khác mức từ, kế hoạch sửa một đoạn Word, chống sửa nhầm đoạn, Hoàn tác Word
   consistency.ts                      soát nhất quán bằng mã: đánh số, dẫn chiếu, thuật ngữ, tên các bên, chỗ trống, số lệch chữ
   compare.ts pageformat.ts            so hai phiên bản theo điều khoản; kiểm lề, khổ giấy, phông, cỡ chữ
-  attachedFiles.ts                    bản gốc tệp .docx đính kèm trong phiên (cho công cụ so sánh phiên bản)
+  attachedFiles.ts                    bản gốc tệp .docx và .pdf đính kèm trong phiên (cho công cụ so sánh phiên bản và đọc theo trang)
+  pdfPages.ts pdfRender.ts            đọc PDF đính kèm theo trang (Đợt 5): chọn trang, trang quét / trang chữ, đường đi của PDF quét, lời dặn chép nguyên văn; dựng ảnh trang bằng pdf.js
   conversations.ts db.ts share.ts attachments.ts refs.ts
 src/office/          công cụ Office.js: excel*, word*, ppt*, common, selftest (nút Tự kiểm tra; Word ở selftestWord.ts, chạy trong vùng cô lập)
   excelModel.ts      9 công cụ Excel của Đợt 4: liệt kê và sửa biểu đồ / Pivot có sẵn, chuẩn bị in, tên vùng, kiểm toán mô hình, giải ngược, làm sạch, bảo vệ
@@ -55,7 +56,7 @@ src/office/          công cụ Office.js: excel*, word*, ppt*, common, selftest
   dialog.ts          hộp thoại của Office (displayDialogAsync) và mở trình duyệt ngoài, dùng cho đăng nhập
 src/dialog/          dang-nhap.html + dang-nhap.ts: trang mở trong hộp thoại của Office khi đăng nhập (đóng gói thành dist/dang-nhap.html)
 src/taskpane/components/   App.tsx, Chat.tsx (điều phối + giao diện), Settings.tsx, SignInCard.tsx + useCredits.ts (thẻ OpenRouter: đăng nhập, dán mã, hạn mức, đăng xuất)
-test/unit/           mocha, 474 kiểm thử (dữ liệu mẫu ở test/fixtures/)
+test/unit/           mocha, 504 kiểm thử (dữ liệu mẫu ở test/fixtures/)
 cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry WEF\Developer)
 ```
 
@@ -63,7 +64,7 @@ cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry W
 
 ```
 npm ci                      # .npmrc phải trỏ registry.npmjs.org
-npm test                    # 474/474 phải đạt
+npm test                    # 504/504 phải đạt
 npx tsc --noEmit -p .       # không lỗi kiểu
 npm run build               # ra dist/, manifest tự đổi sang địa chỉ GitHub Pages
 ```
@@ -98,6 +99,8 @@ Kiểm trong Office bằng mã (không cần điều khiển màn hình, dùng �
 - Ảnh do công cụ chụp (`__images` trong kết quả công cụ) được vòng lặp tách ra, gửi ở một tin nhắn user riêng có cờ `fromTool` và câu "không phải yêu cầu mới của người dùng"; không nhét ảnh vào kết quả dạng chữ, không lưu ảnh xuống kho.
 - PowerPoint, đã thăm dò ở Đợt 3 (bảng ở `tasks/dot-3.md`): không có API cho ghi chú diễn giả, số liệu của biểu đồ đã có, phông chủ đề (đọc từ gói của slide xuất ra), xóa bố cục; hình trùng tên phải chỉ bằng số thứ tự; số đo đưa cho AI phải sát với cái mắt thấy (so vùng chữ, không so khung rỗng).
 - Excel, Đợt 4, không làm trái (bảng thăm dò ở `tasks/dot-4.md`): nhật ký và tô sáng **mặc định tắt**, lúc bật phải có câu cảnh báo sheet đi theo tệp; mọi chữ ghi vào sheet "Nhật ký AI" phải qua `logText` (không bao giờ thành công thức); AI không ghi, sửa, đổi tên sheet nhật ký (lớp chặn so tên SAU khi làm sạch và tính cả lệnh không nêu sheet), chỉ được xóa cả sheet khi người dùng nhờ; nhật ký không vào lịch sử gửi model; bộ công cụ Excel chỉ dùng qua `getHostTools` (đã bọc `withAuditTrail`, gỡ `__trail` khỏi kết quả); `excel_what_if` luôn trả ô đầu vào về nội dung gốc và không tự ghi kết quả; `excel_protect` không bao giờ đặt mật khẩu; phép kiểm rủi ro của công cụ ghi phải chạy trên dữ liệu đã chuẩn hóa bằng đúng hàm công cụ dùng (`normalize2D`); Tự kiểm tra Excel chạy với nhật ký tắt và sheet nhật ký thử riêng.
+- Tệp đính kèm theo trang (Đợt 5, `tasks/dot-5.md`), không làm trái: ảnh trang quét chỉ gửi qua kênh ảnh công cụ (`__images`), tối đa 4 trang một lần gọi; lời dặn chép nguyên văn nằm trong kết quả công cụ, không vào lời nhắc hệ thống; nguồn không nhận PDF mà danh mục không ghi rõ model nhận ảnh thì KHÔNG gửi ảnh trang (`canSeePages` — gửi là bị từ chối cả lượt); PDF quét từ 5 trang trở xuống với nguồn đọc được nguyên tệp vẫn gửi nguyên tệp; `read_attachment_pages` luôn có trong bộ công cụ chung (không thêm bớt theo lượt).
+- Word, Đợt 5: kết quả đọc và tìm kiếm đưa chữ gốc (`before`) và người sửa (`changed_by`) cho đoạn có sửa đổi chờ duyệt kèm `pending_note`; tham số `reason` của công cụ sửa Word chỉ để hiển thị (nhãn bước, hộp hỏi, mục Hoàn tác), không ghi vào tài liệu.
 - Kiểm toán mô hình (`modelaudit.ts`) và công thức cần hỏi (`formularisk.ts`) ưu tiên không báo nhầm: thêm mẫu phải kèm kiểm thử cho cả ca phải bắt và ca dễ báo nhầm (tham chiếu bảng `[2024]`, hàng số nhập tay xen công thức, gạch đầu dòng "- …").
 - `maskSecrets` che cả mã tổ chức / dự án của tài khoản (`org_…`, `proj_…`): bằng chứng và câu lỗi không được lộ.
 - Model mặc định và dấu ⚠ "đã thấy không gọi công cụ" (`catalog.ts`) chỉ đổi khi có bằng chứng Chạy thật và anh đã chọn.

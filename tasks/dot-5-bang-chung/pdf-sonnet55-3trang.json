@@ -1,0 +1,28 @@
+{
+ "bai": "pdf",
+ "phienBan": "v4.4.1",
+ "model": "Model đang dùng: Anthropic (Claude) Claude Sonnet 5.5. Bấm để đổi Anthropic · Claude Sonnet 5.5",
+ "cauHoi": "Tệp đính kèm là bản quét. Trả lời đúng ba số liệu, mỗi số kèm số trang lấy ra: (1) Giá trị hợp đồng; (2) Diện tích sàn bàn giao; (3) Số tiền giữ lại bảo hành.",
+ "tepDinhKem": [
+  "📑 aidn-thu-quet.pdf"
+ ],
+ "giay": 6,
+ "daHoi": [],
+ "soBuocCongCu": 0,
+ "cacBuoc": [],
+ "token": "Token: vào 23.797 · ra 365 · đọc từ bộ nhớ đệm 16.918 · ghi vào bộ nhớ đệm 6.875",
+ "vanBanTruoc": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanSau": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "📎 aidn-thu-quet.pdf\nBa số liệu lấy từ bản quét:\n1. Giá trị hợp đồng: 48.750.000.000 đồng, đã gồm thuế giá trị gia tăng. Số này nằm ở trang 1, mục 5.\n2. Diện tích sàn bàn giao: 12.860 m², gồm xưởng sản xuất và kho. Số này nằm ở trang 2, mục 2 phần \"Nội dung nghiệm thu\".\n3. Số tiền giữ lại bảo hành: 2.437.500.000 đồng, bằng 5% giá trị hợp đồng. Số này nằm ở trang 3, mục 2 phần \"Thanh toán và bảo hành\".\nSố tiền giữ lại khớp với 5% của giá trị hợp đồng (48.750.000.000 × 5% = 2.437.500.000).\nBản quét này là biên bản nghiệm thu công trình, không phải hợp đồng thuê đang mở trong Word. Tôi không sửa gì trong văn bản.\nChèn vào chỗ con trỏ\nSao chép\nAnthropic · Claude Sonnet 5.5"
+}

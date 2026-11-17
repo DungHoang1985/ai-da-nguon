@@ -39,7 +39,7 @@ if (-not $HienLen -and -not $env:AIDN_DESKTOP_AN) {
 
 function La-Tep-Thu($name) { return ($name -match '^(aidn-thu-|tham-do-)') }
 function Cho-Thoat($proc) {
-  for ($i = 0; $i -lt 40 -and (Get-Process $proc -ErrorAction SilentlyContinue); $i++) { Start-Sleep -Milliseconds 500 }
+  for ($i = 0; $i -lt 90 -and (Get-Process $proc -ErrorAction SilentlyContinue); $i++) { Start-Sleep -Milliseconds 500 }
   return -not (Get-Process $proc -ErrorAction SilentlyContinue)
 }
 

@@ -1,0 +1,28 @@
+{
+ "bai": "pdf",
+ "phienBan": "v4.4.1",
+ "model": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi Google Gemini · Gemini 3.8 Flash",
+ "cauHoi": "Tệp đính kèm là bản quét. Trả lời đúng ba số liệu, mỗi số kèm số trang lấy ra: (1) Giá trị hợp đồng; (2) Diện tích sàn bàn giao; (3) Số tiền giữ lại bảo hành.",
+ "tepDinhKem": [
+  "📑 aidn-thu-quet-7.pdf"
+ ],
+ "giay": 154,
+ "daHoi": [],
+ "soBuocCongCu": 0,
+ "cacBuoc": [],
+ "token": "",
+ "vanBanTruoc": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanSau": {
+  "soDoan": 165,
+  "soSuaDoi": 30,
+  "soNhanXet": 5,
+  "bamChu": 634678511
+ },
+ "vanBanKhongDoi": true,
+ "traLoi": "📎 aidn-thu-quet-7.pdf\nGoogle Gemini: không nhận được phản hồi trong 150 giây (máy chủ nhà cung cấp im lặng). Thử lại, hoặc đổi model / đổi nguồn.\nChép chi tiết lỗi\nHết hạn mức tạm thời: đang thử lại lần 1/3 sau 2 giây… Bấm Dừng để hủy.\nGoogle Gemini · Gemini 3.8 Flash"
+}

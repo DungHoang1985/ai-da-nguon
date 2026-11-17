@@ -1,0 +1,87 @@
+{
+ "model": "Model đang dùng: Anthropic (Claude) Claude Sonnet 5.5. Bấm để đổi Anthropic · Claude Sonnet 5.5",
+ "phienBan": "v4.4.1",
+ "bai": {
+  "b": {
+   "giay": 9,
+   "daHoi": 0,
+   "buocDat": 2,
+   "buocLoi": [],
+   "dongDem": "1 nhiệm vụ · 3 lần gọi AI · Token: vào 59.626 · ra 562 · đọc từ bộ nhớ đệm 39.058 · ghi vào bộ nhớ đệm 20.560",
+   "canhBao": [],
+   "cham": {
+    "dung": true
+   },
+   "traLoi": "Lãi chậm thanh toán được quy định tại Điều 6.3 [¶35] (Điều 6 – Thanh toán).\n• Mức lãi: 0,05% mỗi ngày trên số tiền chậm trả.\n• Thời gian tính: từ ngày đến hạn đến ngày trả đủ.\n• Người phải trả: Bên Thuê.\nĐiều 6.4 [¶36] có quy định liên quan. Chậm thanh toán quá 90 ngày được coi là vi phạm nghiêm trọng, và Bên Cho Thuê có quyền chấm dứt hợp đồng theo Điều 22.\nTôi tìm từ \"lãi\" trong toàn văn bản. Ngoài Điều 6.3, từ này chỉ xuất hiện ở Điều 5.2 [¶27], nơi quy định tiền đặt cọc không tính lãi. Tôi không đọc riêng Điều 23 (Phạt vi phạm và bồi thường), nên chưa kiểm tra điều đó có quy định chồng lên mức lãi này hay không.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 59.626 · ra 562 · đọc từ bộ nhớ đệm 39.058 · ghi vào bộ nhớ đệm 20.560\nAnthropic · Claude Sonnet 5.5"
+  },
+  "e": {
+   "giay": 13,
+   "daHoi": 1,
+   "buocDat": 3,
+   "buocLoi": [],
+   "dongDem": "1 nhiệm vụ · 4 lần gọi AI · Token: vào 88.634 · ra 736 · đọc từ bộ nhớ đệm 82.002 · ghi vào bộ nhớ đệm 6.622",
+   "canhBao": [],
+   "cham": {},
+   "traLoi": "Tôi đã thêm khoản mới 8.3 [¶45] ngay sau Điều 8.2, với nội dung: “Bên Cho Thuê bàn giao kèm hồ sơ hoàn công và bản vẽ hiện trạng của Khu Nhà Xưởng.” Khoản này được ghi bằng Theo dõi thay đổi để bạn duyệt.\n• Đánh số lại: khoản cũ 8.3 (phạt miễn Tiền Thuê khi chậm bàn giao quá 30 ngày) nay thành 8.4 [¶46]. Khoản này đang có sửa đổi chưa duyệt của “Đối tác”, đổi “gấp đôi” thành “gấp ba” số ngày chậm. Tôi không động vào sửa đổi đó.\n• Dẫn chiếu: tôi đã tìm các chỗ dẫn chiếu tới Điều 8. Chỉ có Điều 1.2 [¶9] nhắc tới “Điều 8” chung, không trỏ vào khoản nào nên không bị ảnh hưởng.\n1 nhiệm vụ · 4 lần gọi AI · Token: vào 88.634 · ra 736 · đọc từ bộ nhớ đệm 82.002 · ghi vào bộ nhớ đệm 6.622\nAnthropic · Claude Sonnet 5.5",
+   "vanBan": {
+    "soDoan": 166,
+    "suaDoiDoiTac": 30,
+    "suaDoiKhac": 1,
+    "suaDoiKhacMau": [
+     "Added \"\\rBên Cho Thuê bàn giao kèm hồ sơ hoàn cô\""
+    ],
+    "nhanXet": [
+     {
+      "nd": "Đề nghị giảm đơn giá thuê xuống 420.000 đồng cho m",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị giảm tiền đặt cọc còn 02 tháng Tiền Thuê.",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị sửa “ngay lập tức” thành “trong vòng 05 Ng",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị kéo dài thời hạn bảo mật thành 05 năm.",
+      "traLoi": [],
+      "daXuLy": false
+     },
+     {
+      "nd": "Đề nghị rút thời hạn thương lượng xuống 20 ngày.",
+      "traLoi": [],
+      "daXuLy": false
+     }
+    ],
+    "namDoan": [
+     "Đơn giá thuê là 450.000 đồng cho mỗi mét vuông mỗi tháng, chưa gồm thuế giá trị gia tăng, áp dụng cố định trong ba năm đầu. Chi ph",
+     "Bên Thuê đặt cọc cho Bên Cho Thuê một khoản tiền bằng 03 tháng Tiền Thuê trong vòng 20 Ngày Làm Việc kể từ ngày ký hợp đồng. Các b",
+     "Bên bị vi phạm gửi thông báo bằng văn bản nêu rõ hành vi vi phạm và yêu cầu khắc phục ngay lập tức. Định kỳ hằng năm, hai bên rà s",
+     "Mỗi bên giữ bí mật nội dung hợp đồng và thông tin kinh doanh của bên kia trong thời hạn thuê và 03 năm sau đó. Hai bên ghi nhận rằ",
+     "Mọi tranh chấp trước hết được giải quyết bằng thương lượng trong vòng 30 ngày kể từ ngày một bên gửi thông báo tranh chấp. Việc th"
+    ],
+    "dungYeuCau": [
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "dieu8": [
+     "Điều 8. | Heading 1 | Bàn giao mặt bằng",
+     "8.1. | Heading 2 | Bên Cho Thuê bàn giao Khu Nhà Xưởng cho ",
+     "8.2. | Heading 2 | Tại thời điểm bàn giao, hai bên lập biên",
+     "8.3. | Heading 2 | Bên Cho Thuê bàn giao kèm hồ sơ hoàn côn",
+     "8.4. | Heading 2 | Nếu Bên Cho Thuê chậm bàn giao quá 30 ng"
+    ],
+    "khoanMoi": "8.3.",
+    "khoanCu": "8.4.",
+    "cungKieu": true
+   }
+  }
+ }
+}
