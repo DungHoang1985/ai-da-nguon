@@ -1,0 +1,23 @@
+﻿{
+ "phienBan": "v4.6",
+ "model": "e) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cheDoThu": true,
+ "dinhKem": [],
+ "giay": 20,
+ "daHoi": [
+  "AI muốn: ppt_add_slides | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "lanGoiAI": 6,
+ "buoc": [
+  "✅ ppt_add_slides",
+  "✅ Chèn biểu đồ cột (slide mới)",
+  "✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 2, 3, 4 · số đo: không thấy tràn, chồng",
+  "✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 2 điểm cần xem: 2 phông lệch mẫu",
+  "✅ Định dạng chữ ở slide 3",
+  "✅ Định dạng chữ ở slide 4",
+  "✅ Sửa hình \"Chart 0\" ở slide 4",
+  "✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 4 · số đo: không thấy tràn, chồng"
+ ],
+ "theLamTiep": null,
+ "khung": "AI Đa Nguồn\nv4.6\nchế độ thử — không lưu lịch sử\nExcel — · Word —\nTạo giúp tôi 3 slide báo cáo doanh thu năm 2026 theo quý của dự án (số liệu bịa để thử): Quý 1: 120 tỷ, Quý 2: 150 tỷ, Quý 3: 135 tỷ, Quý 4: 180 tỷ. Slide 1: tổng quan (tổng doanh thu, quý cao nhất, quý thấp nhất). Slide 2: nhận xét xu hướng, 3 ý ngắn. Slide 3: biểu đồ cột doanh thu theo quý. Thêm vào cuối bài.\nKỹ năng áp dụng: thiet-ke-bieu-do\n✅ ppt_add_slides\n✅ Chèn biểu đồ cột (slide mới)\n✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 2, 3, 4 · số đo: không thấy tràn, chồng\n✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 2 điểm cần xem: 2 phông lệch mẫu\n✅ Định dạng chữ ở slide 3\n✅ Định dạng chữ ở slide 4\n✅ Sửa hình \"Chart 0\" ở slide 4\n✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 4 · số đo: không thấy tràn, chồng\nĐã thêm 3 slide vào cuối bài:\n \n• Slide 2: Tổng quan doanh thu năm 2026. Tổng 585 tỷ đồng, quý cao nhất là Quý 4 (180 tỷ), quý thấp nhất là Quý 1 (120 tỷ).\n• Slide 3: Nhận xét xu hướng. Quý 2 tăng 25%, Quý 3 giảm 10%, Quý 4 tăng 33% và đạt mức cao nhất năm.\n• Slide 4: Biểu đồ cột doanh thu theo quý (tỷ đồng). Đây là biểu đồ gốc, sửa được số liệu bằng Edit Data.\n \nTôi đã chỉnh phông tiêu đề slide 3 và 4 về Calibri Light cho khớp mẫu, và hạ biểu đồ ở slide 4 để không chạm tiêu đề. Ảnh chụp cho thấy cả ba slide không bị tràn chữ.\n \nSlide 1 là slide trống có sẵn của bài, tôi để nguyên. Nếu bạn muốn bỏ nó, tôi có thể xóa.\n1 nhiệm vụ · 6 lần gọi AI · Token: vào 105.228 · ra 3.303 · đọc từ bộ nhớ đệm 96.070 · ghi vào bộ nhớ đệm 9.140\nHoàn tác thay đổi (5)\nChèn vào slide\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}

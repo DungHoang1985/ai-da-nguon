@@ -1,0 +1,18 @@
+﻿{
+ "phienBan": "v4.6",
+ "model": "e) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cheDoThu": true,
+ "dinhKem": [
+  "📑 aidn-thu-quet.pdf ✕"
+ ],
+ "giay": 7,
+ "daHoi": [],
+ "lanGoiAI": 2,
+ "buoc": [
+  "✅ Dựng văn bản hành chính đúng thể thức: điều chỉnh tiến độ thực hiện dự án khu nhà ở thươn — Đã dựng công văn đúng thể thức · còn 1 chỗ cần điền",
+  "✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — đúng chuẩn",
+  "✅ Đọc trang 1-3 của tệp đính kèm aidn-thu-quet.pdf — đã đọc trang 1-3 của aidn-thu-quet.pdf (3 trang quét)"
+ ],
+ "theLamTiep": null,
+ "khung": "g Giám đốc Nguyễn Văn An. Số 128/HP-PL, ngày 18 tháng 11 năm 2026, tại Hà Nội.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: điều chỉnh tiến độ thực hiện dự án khu nhà ở thươn — Đã dựng công văn đúng thể thức · còn 1 chỗ cần điền\n✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — đúng chuẩn\nĐã soạn xong công văn số 128/HP-PL (ghi dưới dạng Theo dõi thay đổi để bạn duyệt), gồm:\n \n• Quốc hiệu, tiêu ngữ, tên Công ty, số 128/HP-PL, địa danh và ngày 18 tháng 11 năm 2026 (Hà Nội).\n• Trích yếu: V/v điều chỉnh tiến độ thực hiện dự án khu nhà ở thương mại tại phường Tân Hòa.\n• Kính gửi: Sở Xây dựng tỉnh.\n• Nội dung: nêu ngắn gọn lý do tiến độ bị chậm do công tác giải phóng mặt bằng chưa hoàn thành; đề nghị Sở hướng dẫn (a) thủ tục, trình tự điều chỉnh tiến độ, (b) thành phần hồ sơ, (c) thời hạn giải quyết; cam kết phối hợp và kết thúc bằng \"Trân trọng cảm ơn./.\".\n• Phần ký: Tổng Giám đốc, Nguyễn Văn An.\n• Thể thức: A4 đứng, lề trên/dưới 20 mm, trái 30 mm, phải 20 mm, Times New Roman, cỡ 13–14; đã đạt chuẩn.\n \nCòn 1 chỗ trống cần điền trước khi ký: dòng \"Lưu: VT, …\" chưa có tên đơn vị soạn thảo. Bạn cho tôi tên phòng/ban soạn thảo (ví dụ \"KH\") để tôi điền.\n \nLưu ý: tôi chưa viện dẫn căn cứ pháp lý cụ thể (văn bản quy định về điều chỉnh tiến độ dự án) vì chưa có tài liệu nguồn; nếu cần, bạn cung cấp để bổ sung, hoặc đối chiếu văn bản gốc trước khi gửi.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 46.079 · ra 2.935 · đọc từ bộ nhớ đệm 21.616 · ghi vào bộ nhớ đệm 24.457\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nTệp đính kèm là bản quét. Hãy gọi công cụ read_attachment_pages với pages = \"1 - 3\" để đọc từng trang, rồi cho biết ba số liệu, mỗi số kèm số trang: giá trị hợp đồng, diện tích sàn bàn giao, số tiền giữ lại bảo hành.\n📎 aidn-thu-quet.pdf\n✅ Đọc trang 1-3 của tệp đính kèm aidn-thu-quet.pdf — đã đọc trang 1-3 của aidn-thu-quet.pdf (3 trang quét)\nBa số liệu đọc từ bản quét:\n \n• Giá trị hợp đồng: 48.750.000.000 đồng (đã gồm thuế giá trị gia tăng), trang 1, mục 5.\n• Diện tích sàn bàn giao: 12.860 m2, gồm xưởng sản xuất và kho, trang 2, mục 2.\n• Số tiền giữ lại bảo hành: 2.437.500.000 đồng (bằng 5% giá trị hợp đồng), trang 3, mục 2.\n \nNội dung này đọc từ bản quét, cần đối chiếu với bản gốc trước khi dùng làm căn cứ.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 69.832 · ra 645 · đọc từ bộ nhớ đệm 55.332 · ghi vào bộ nhớ đệm 14.492\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}

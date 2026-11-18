@@ -1,0 +1,84 @@
+﻿{
+ "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "yeuCau": "Soạn giúp tôi một công văn của Công ty Cổ phần Đầu tư Hưng Phát (bịa để thử) gửi Sở Xây dựng tỉnh, đề nghị hướng dẫn thủ tục điều chỉnh tiến độ thực hiện dự án khu nhà ở thương mại tại phường Tân Hòa. Nêu ngắn gọn lý do là vướng giải phóng mặt bằng, đề nghị hướng dẫn hồ sơ và thời hạn giải quyết. Người ký: Tổng Giám đốc Nguyễn Văn An. Số 128/HP-PL, ngày 18 tháng 11 năm 2026, tại Hà Nội.",
+ "giay": 16,
+ "lanGoiAI": 2,
+ "daHoi": [
+  "AI muốn: Dựng văn bản hành chính đúng thể thức: điều chỉnh tiến độ thực hiện dự án khu nhà ở thươn | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "kyNangTuNap": "Kỹ năng áp dụng: soan-thao-van-ban-hanh-chinh",
+ "canhBaoNoiDaSua": false,
+ "buocCongCu": [
+  "Sửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt."
+ ],
+ "truoc": {
+  "soDoanCoChu": 0,
+  "trang": {
+   "tren": 25.4,
+   "duoi": 25.4,
+   "trai": 25.4,
+   "phai": 25.4,
+   "rong": 215.9,
+   "cao": 279.4,
+   "soTrangDauTrang": "",
+   "anTrangDau": false
+  }
+ },
+ "sau": {
+  "soDoanCoChu": 20,
+  "bang": 2,
+  "suaDoiDuocTheoDoi": 3,
+  "trang": {
+   "tren": 20,
+   "duoi": 20,
+   "trai": 30,
+   "phai": 20,
+   "rong": 210,
+   "cao": 297,
+   "soTrangDauTrang": "1",
+   "anTrangDau": true
+  }
+ },
+ "doiChieu": [
+  "Đạt · Quốc hiệu in hoa, đậm, cỡ 12–13, canh giữa — cỡ 13",
+  "Đạt · Tiêu ngữ đậm, cỡ 13–14, lớn hơn quốc hiệu 1 cỡ — cỡ 14",
+  "Đạt · Tên cơ quan ban hành in hoa, đậm, cỡ 12–13 — “CÔNG TY CỔ PHẦN ĐẦU TƯ HƯNG PHÁT” đậm 13 | “TỔNG GIÁM ĐỐC” đậm 14",
+  "Đạt · Số và ký hiệu, cỡ 13 — “Số: 128/HP-PL”",
+  "Đạt · Địa danh, ngày tháng: nghiêng, cỡ 13–14 — “Hà Nội, ngày 18 tháng 11 năm 2026”",
+  "Đạt · V/v dưới số ký hiệu, cỡ 12–13, đứng — “V/v điều chỉnh tiến độ thực hiện dự án khu nhà ở thương mại tại phường Tân Hòa”",
+  "Đạt · Kính gửi, cỡ 13–14 — “Kính gửi: Sở Xây dựng tỉnh”",
+  "Đạt · Nội dung: cỡ 13–14, canh đều, thụt đầu dòng 10–12,7 mm, cách đoạn ≥ 6 pt — 5/5 đoạn dài đúng",
+  "Đạt · Kết thúc nội dung bằng “./.”",
+  "Đạt · “Nơi nhận:” cỡ 12, nghiêng, đậm",
+  "Đạt · Dòng “- Lưu: …” cỡ 11, kết bằng dấu chấm — “- Lưu: VT, ….”",
+  "Đạt · Phần ký: chức vụ in hoa đậm, họ tên đậm — TỔNG GIÁM ĐỐC / Nguyễn Văn An",
+  "Đạt · Phông Times New Roman, chữ đen ở mọi đoạn — Times New Roman",
+  "Đạt · Đường kẻ dưới tên cơ quan, dưới tiêu ngữ — 2 đường kẻ",
+  "Đạt · Giấy A4, lề trên 20–25, dưới 20–25, trái 30–35, phải 15–20 mm — 210×297 mm; lề 20/20/30/20",
+  "Đạt · Số trang ở đầu trang, ẩn trang đầu — đầu trang: “1”"
+ ],
+ "dat": "16/16",
+ "vanBan": [
+  "▦ CÔNG TY CỔ PHẦN ĐẦU TƯ HƯNG PHÁT",
+  "▦ CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+  "▦ Độc lập - Tự do - Hạnh phúc",
+  "▦ Số: 128/HP-PL",
+  "▦ Hà Nội, ngày 18 tháng 11 năm 2026",
+  "▦ V/v điều chỉnh tiến độ thực hiện dự án khu nhà ở thương mại tại phường Tân Hòa",
+  "Kính gửi: Sở Xây dựng tỉnh",
+  "Công ty Cổ phần Đầu tư Hưng Phát (sau đây gọi là Công ty) đang triển khai dự án khu nhà ở thương mại tại phường Tân Hòa.",
+  "Trong quá trình thực hiện, tiến độ dự án bị ảnh hưởng do công tác giải phóng mặt bằng chưa hoàn thành theo kế hoạch, làm chậm việc triển khai các hạng",
+  "Để việc điều chỉnh tiến độ được thực hiện đúng quy định, Công ty kính đề nghị Quý Sở hướng dẫn cụ thể:",
+  "a) Thủ tục và trình tự điều chỉnh tiến độ thực hiện dự án;",
+  "b) Thành phần hồ sơ cần chuẩn bị và các yêu cầu kèm theo;",
+  "c) Thời hạn giải quyết hồ sơ của cơ quan có thẩm quyền.",
+  "Công ty xin cam kết phối hợp đầy đủ và cung cấp kịp thời các thông tin, tài liệu liên quan theo yêu cầu của Quý Sở.",
+  "Rất mong nhận được sự hướng dẫn của Quý Sở. Trân trọng cảm ơn./.",
+  "▦ Nơi nhận:",
+  "▦ - Như trên;",
+  "▦ - Lưu: VT, ….",
+  "▦ TỔNG GIÁM ĐỐC",
+  "▦ Nguyễn Văn An"
+ ],
+ "cuoiKhung": "thể thức · còn 1 chỗ cần điền\n✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — đúng chuẩn\nĐã soạn xong công văn số 128/HP-PL (ghi dưới dạng Theo dõi thay đổi để bạn duyệt), gồm:\n \n• Quốc hiệu, tiêu ngữ, tên Công ty, số 128/HP-PL, địa danh và ngày 18 tháng 11 năm 2026 (Hà Nội).\n• Trích yếu: V/v điều chỉnh tiến độ thực hiện dự án khu nhà ở thương mại tại phường Tân Hòa.\n• Kính gửi: Sở Xây dựng tỉnh.\n• Nội dung: nêu ngắn gọn lý do tiến độ bị chậm do công tác giải phóng mặt bằng chưa hoàn thành; đề nghị Sở hướng dẫn (a) thủ tục, trình tự điều chỉnh tiến độ, (b) thành phần hồ sơ, (c) thời hạn giải quyết; cam kết phối hợp và kết thúc bằng \"Trân trọng cảm ơn./.\".\n• Phần ký: Tổng Giám đốc, Nguyễn Văn An.\n• Thể thức: A4 đứng, lề trên/dưới 20 mm, trái 30 mm, phải 20 mm, Times New Roman, cỡ 13–14; đã đạt chuẩn.\n \nCòn 1 chỗ trống cần điền trước khi ký: dòng \"Lưu: VT, …\" chưa có tên đơn vị soạn thảo. Bạn cho tôi tên phòng/ban soạn thảo (ví dụ \"KH\") để tôi điền.\n \nLưu ý: tôi chưa viện dẫn căn cứ pháp lý cụ thể (văn bản quy định về điều chỉnh tiến độ dự án) vì chưa có tài liệu nguồn; nếu cần, bạn cung cấp để bổ sung, hoặc đối chiếu văn bản gốc trước khi gửi.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 46.079 · ra 2.935 · đọc từ bộ nhớ đệm 21.616 · ghi vào bộ nhớ đệm 24.457\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}

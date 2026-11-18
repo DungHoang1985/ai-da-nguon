@@ -1,0 +1,25 @@
+﻿{
+ "phienBan": "v4.6",
+ "model": "e) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cheDoThu": true,
+ "dinhKem": [
+  "🖼 aidn-thu-so-do.png ✕"
+ ],
+ "giay": 8,
+ "daHoi": [
+  "AI muốn: Sửa hình \"Content Placeholder 2\" ở slide 2 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "lanGoiAI": 3,
+ "buoc": [
+  "✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 2 điểm cần xem: 2 phông lệch mẫu",
+  "✅ Định dạng chữ ở slide 3",
+  "✅ Định dạng chữ ở slide 4",
+  "✅ Sửa hình \"Chart 0\" ở slide 4",
+  "✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 4 · số đo: không thấy tràn, chồng",
+  "✅ Sửa hình \"Content Placeholder 2\" ở slide 2",
+  "✅ ppt_insert_image",
+  "✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 2 · số đo: không thấy tràn, chồng"
+ ],
+ "theLamTiep": null,
+ "khung": "ấy tràn, chồng\n✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 2 điểm cần xem: 2 phông lệch mẫu\n✅ Định dạng chữ ở slide 3\n✅ Định dạng chữ ở slide 4\n✅ Sửa hình \"Chart 0\" ở slide 4\n✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 4 · số đo: không thấy tràn, chồng\nĐã thêm 3 slide vào cuối bài:\n \n• Slide 2: Tổng quan doanh thu năm 2026. Tổng 585 tỷ đồng, quý cao nhất là Quý 4 (180 tỷ), quý thấp nhất là Quý 1 (120 tỷ).\n• Slide 3: Nhận xét xu hướng. Quý 2 tăng 25%, Quý 3 giảm 10%, Quý 4 tăng 33% và đạt mức cao nhất năm.\n• Slide 4: Biểu đồ cột doanh thu theo quý (tỷ đồng). Đây là biểu đồ gốc, sửa được số liệu bằng Edit Data.\n \nTôi đã chỉnh phông tiêu đề slide 3 và 4 về Calibri Light cho khớp mẫu, và hạ biểu đồ ở slide 4 để không chạm tiêu đề. Ảnh chụp cho thấy cả ba slide không bị tràn chữ.\n \nSlide 1 là slide trống có sẵn của bài, tôi để nguyên. Nếu bạn muốn bỏ nó, tôi có thể xóa.\n1 nhiệm vụ · 6 lần gọi AI · Token: vào 105.228 · ra 3.303 · đọc từ bộ nhớ đệm 96.070 · ghi vào bộ nhớ đệm 9.140\nHoàn tác thay đổi (5)\nChèn vào slide\nSao chép\nĐặt ảnh tôi vừa đính kèm vào slide 2, nằm bên phải, không đè lên tiêu đề.\n📎 aidn-thu-so-do.png\n✅ Sửa hình \"Content Placeholder 2\" ở slide 2\n✅ ppt_insert_image\n✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 2 · số đo: không thấy tràn, chồng\nĐã đặt ảnh \"aidn-thu-so-do.png\" vào bên phải slide 2, cách tiêu đề nên không bị đè. Để có chỗ, tôi thu hẹp khung nội dung bên trái (ba ý tổng quan) và vẫn giữ nguyên cỡ chữ.\n \nẢnh có tỷ lệ 2:1 nên tôi đặt rộng 400 điểm, cao 200 điểm. Nếu bạn muốn ảnh to hơn hoặc nằm ở vị trí khác, tôi chỉnh được.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 70.490 · ra 814 · đọc từ bộ nhớ đệm 66.419 · ghi vào bộ nhớ đệm 4.061\nHoàn tác thay đổi (2)\nChèn vào slide\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}

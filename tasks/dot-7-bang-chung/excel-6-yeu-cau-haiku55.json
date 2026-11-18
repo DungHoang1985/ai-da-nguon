@@ -1,0 +1,155 @@
+﻿{
+ "modelTruoc": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "modelThu": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "phienBan": "v4.6",
+ "giay": 16,
+ "daHoi": [
+  "AI muốn: Ghi dữ liệu vào 'Tiến độ'!F1:F13 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "lanGoiAI": 4,
+ "hoanTac": null,
+ "soTruocHoanTac": null,
+ "khung": "AI Đa Nguồn\nv4.6\nchế độ thử — không lưu lịch sử\nWord — · PowerPoint —\nỞ sheet Tiến độ: (1) chuẩn hóa bảng: dòng tiêu đề đậm, nền xanh nhạt, kẻ viền cả bảng, cột Kế hoạch và Thực tế định dạng 0%, tự giãn cột; (2) thêm cột F tên Chênh lệch = Thực tế − Kế hoạch, cũng định dạng 0%; (3) cố định dòng tiêu đề; (4) tô đỏ nhạt các ô Chênh lệch nhỏ hơn -10%; (5) tạo PivotTable ở sheet mới: trung bình Kế hoạch và Thực tế theo Nhóm; (6) vẽ biểu đồ cột so Kế hoạch với Thực tế của từng hạng mục, tiêu đề 'Tiến độ theo hạng mục'.\nKỹ năng áp dụng: thiet-ke-bieu-do, chuan-hoa-bang-tinh\n✅ Đọc 'Tiến độ'!A1:E13\n✅ Ghi dữ liệu vào 'Tiến độ'!F1:F13\n✅ Định dạng 'Tiến độ'!A1:F1\n✅ Định dạng 'Tiến độ'!A1:F13\n✅ Định dạng 'Tiến độ'!C2:D13,F2:F13\n✅ Cố định 1 dòng đầu\n✅ Tạo PivotTable từ 'Tiến độ'!A1:F13\n✅ Vẽ biểu đồ cột từ 'Tiến độ'!A1:A13,C1:D13\n✅ Định dạng có điều kiện 'Tiến độ'!F2:F13\n✅ Quét lỗi công thức cả sổ tính\nĐã xong cả 6 việc trên sheet Tiến độ:\n \n1. Chuẩn hóa bảng: dòng tiêu đề A1:F1 đậm, nền xanh nhạt (#DDEBF7); kẻ viền toàn bảng A1:F13; cột tự giãn.\n2. Cột Chênh lệch (F): F1 là tiêu đề, F2:F13 là công thức `=D2-C2` (Thực tế − Kế hoạch). Cột C2:D13 và F2:F13 định dạng 0%.\n3. Cố định dòng tiêu đề: dòng 1 luôn hiển thị khi cuộn.\n4. Tô đỏ nhạt: các ô F2:F13 nhỏ hơn -10% được tô đỏ nhạt, chữ đỏ đậm. Hiện có 4 ô: F4 (Cấp thoát nước), F5 (Điện chiếu sáng), F6 (Móng khối A, -5%, không tô... xem lại), F7 (Thân khối A), F9 (Thân khối B). Lưu ý F6 có giá trị -5% nên không tô; các ô đúng bằng -10% (F8, F10, F12) cũng không tô vì điều kiện là \"nhỏ hơn\".\n5. PivotTable trên sheet mới PivotTienDo: hàng là Nhóm, giá trị là trung bình Kế hoạch và trung bình Thực tế.\n6. Biểu đồ cột Kế hoạch so với Thực tế theo từng hạng mục, tiêu đề \"Tiến độ theo hạng mục\", đặt bên phải dữ liệu.\n \nKhông có lỗi công thức nào.\n1 nhiệm vụ · 4 lần gọi AI · Token: vào 77.753 · ra 2.510 · đọc từ bộ nhớ đệm 56.707 · ghi vào bộ nhớ đệm 21.036\nHoàn tác thay đổi (9)\nGhi vào ô đang chọn\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5",
+ "so": {
+  "sheets": [
+   {
+    "ten": "Sheet1",
+    "vung": null,
+    "bieuDo": [],
+    "pivot": [],
+    "in": {
+     "huong": "Portrait",
+     "kho": null,
+     "vuaNgang": null,
+     "vuaDoc": null,
+     "vungIn": null,
+     "tieuDeLap": null
+    },
+    "baoVe": false
+   },
+   {
+    "ten": "Tiến độ",
+    "vung": "'Tiến độ'!A1:F13",
+    "bieuDo": [
+     "Chart 1|ColumnClustered|Tiến độ theo hạng mục"
+    ],
+    "pivot": [],
+    "in": {
+     "huong": "Portrait",
+     "kho": null,
+     "vuaNgang": null,
+     "vuaDoc": null,
+     "vungIn": null,
+     "tieuDeLap": null
+    },
+    "baoVe": false
+   },
+   {
+    "ten": "Mô hình",
+    "vung": "'Mô hình'!A1:F13",
+    "bieuDo": [],
+    "pivot": [],
+    "in": {
+     "huong": "Portrait",
+     "kho": null,
+     "vuaNgang": null,
+     "vuaDoc": null,
+     "vungIn": null,
+     "tieuDeLap": null
+    },
+    "baoVe": false
+   },
+   {
+    "ten": "Hồ sơ",
+    "vung": "'Hồ sơ'!A1:D8",
+    "bieuDo": [],
+    "pivot": [],
+    "in": {
+     "huong": "Portrait",
+     "kho": null,
+     "vuaNgang": null,
+     "vuaDoc": null,
+     "vungIn": null,
+     "tieuDeLap": null
+    },
+    "baoVe": false
+   },
+   {
+    "ten": "PivotTienDo",
+    "vung": "PivotTienDo!A3:C8",
+    "bieuDo": [],
+    "pivot": [
+     "PivotTienDo"
+    ],
+    "in": {
+     "huong": "Portrait",
+     "kho": null,
+     "vuaNgang": null,
+     "vuaDoc": null,
+     "vungIn": null,
+     "tieuDeLap": null
+    },
+    "baoVe": false
+   }
+  ],
+  "tenVung": [],
+  "doc": {
+   "Tiến độ!A1:F3": {
+    "values": [
+     [
+      "Hạng mục",
+      "Nhóm",
+      "Kế hoạch",
+      "Thực tế",
+      "Ghi chú",
+      "Chênh lệch"
+     ],
+     [
+      "San nền",
+      "Hạ tầng",
+      1,
+      1,
+      "Xong tháng 6",
+      0
+     ],
+     [
+      "Đường nội bộ",
+      "Hạ tầng",
+      0.8,
+      0.62,
+      "Chậm do mưa",
+      -0.18
+     ]
+    ],
+    "formulas": [
+     [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     [
+      null,
+      null,
+      null,
+      null,
+      null,
+      "=D2-C2"
+     ],
+     [
+      null,
+      null,
+      null,
+      null,
+      null,
+      "=D3-C3"
+     ]
+    ],
+    "nen": null,
+    "dam": null
+   }
+  }
+ }
+}

@@ -1,0 +1,17 @@
+﻿{
+ "phienBan": "v4.6",
+ "model": "e) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cheDoThu": true,
+ "dinhKem": [],
+ "giay": 10,
+ "daHoi": [],
+ "lanGoiAI": 3,
+ "buoc": [
+  "✅ Tìm \"45 ngày\" trong văn bản",
+  "✅ Tìm \"bốn mươi lăm\" trong văn bản",
+  "✅ Đọc các sửa đổi được theo dõi",
+  "✅ Tìm \"45\" trong văn bản"
+ ],
+ "theLamTiep": null,
+ "khung": "AI Đa Nguồn\nv4.6\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nTrong hợp đồng này có chỗ nào quy định thời hạn “45 ngày” không? Nếu có thì ở điều nào và hiện trạng ra sao?\n✅ Tìm \"45 ngày\" trong văn bản\n✅ Tìm \"bốn mươi lăm\" trong văn bản\nTìm trong chữ hiện tại không ra. Vì văn bản còn 30 sửa đổi chờ duyệt, tôi kiểm tra thêm các sửa đổi và chữ gốc.\n✅ Đọc các sửa đổi được theo dõi\n✅ Tìm \"45\" trong văn bản\nCó, nhưng chỉ có một chỗ quy định thời hạn 45 ngày, và nó đang bị đối tác sửa bằng sửa đổi chờ duyệt.\n \n• Điều 6.4 [¶36]: Bản gốc quy định \"Chậm thanh toán quá 45 ngày được coi là vi phạm nghiêm trọng và Bên Cho Thuê có quyền chấm dứt hợp đồng theo Điều 22.\" Đối tác (sửa đổi chưa duyệt, ngày 10/11/2026) đã đổi thành \"quá 90 ngày\". Chữ hiện tại trong văn bản là 90 ngày; nếu chấp nhận sửa đổi thì ngưỡng chấm dứt do chậm thanh toán tăng từ 45 lên 90 ngày.\n \nCụm \"45 ngày\" không còn trong chữ hiện tại, nên tìm kiếm thông thường không thấy. Số \"45\" còn xuất hiện ở Điều 4.2 [¶22], nhưng đó là đơn giá thuê (\"«45»0.000 đồng cho mỗi mét vuông mỗi tháng\"), không phải thời hạn. Chỗ này có định dạng \"«45»\" bất thường, nên có thể cần kiểm tra lại số tiền.\n \nNếu muốn giữ mốc 45 ngày, bạn có thể từ chối sửa đổi này; tôi chưa thay đổi gì trong văn bản.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 66.102 · ra 1.194 · đọc từ bộ nhớ đệm 55.774 · ghi vào bộ nhớ đệm 10.320\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}

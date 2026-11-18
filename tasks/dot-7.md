@@ -1,6 +1,6 @@
-# Đợt 7 — bản 4.7.0 "trả nợ kỹ thuật" (mã xong trên nhánh `claude/dot-7`, CHƯA phát hành, kiểm trong Office còn dở)
+# Đợt 7 — bản 4.7.0 "trả nợ kỹ thuật" (mã và nghiệm thu xong trên nhánh `claude/dot-7`, CHƯA phát hành — chờ anh duyệt)
 
-> Trạng thái 18/11/2026: anh duyệt kế hoạch theo ba đề xuất mặc định. Mã của cả sáu việc đã viết và commit trên nhánh `claude/dot-7` (chưa đẩy `main`). Kiểm thử máy 560/560. Tự kiểm tra trên bản cục bộ: PowerPoint 23/23, Excel 40/40; **Word chưa chạy** vì anh mở Word giữa buổi (Office chỉ chạy một bản mỗi phiên). Bảng kết quả và việc còn lại ở cuối tệp.
+> Trạng thái 18/11/2026: anh duyệt kế hoạch theo ba đề xuất mặc định. Mã của cả sáu việc đã viết và commit trên nhánh `claude/dot-7` (chưa đẩy `main`). Kiểm thử máy 560/560. Tự kiểm tra trên bản cục bộ: Word 38/38, Excel 40/40, PowerPoint 23/23. Chạy thật (Haiku 5.5) đạt các bài trừ B2 (3 slide + 1 biểu đồ còn 6 lần gọi AI, mốc đặt ra ≤ 4) và G3 (Gemini im lặng). Bảng kết quả và việc còn lại ở cuối tệp.
 
 Viết ngày 18/11/2026, gốc `origin/main` = `cb400ba`, bản đang chạy 4.6.0. Việc lấy từ mục "Việc kỹ thuật chưa làm" của `tasks/HANDOFF.md`. Đợt này không thêm tính năng lớn: làm nốt các việc đã hứa ở Đợt 3, 4 và vá chỗ bài thử từng gây hại.
 
@@ -135,26 +135,31 @@ Lượt soát Đợt 6 xác nhận: không có ca nào đưa key của nguồn n
 |---|---|---|
 | A1 | Đạt | Kiểm thử máy `dot7.test.ts` (6 kiểm thử nhóm A) |
 | A2 | Đạt, làm trong **Excel** thay vì Word (anh mở Word giữa buổi) | Chạy thật Haiku 5.5, bài ghi 16 ô mỗi lệnh một ô: thẻ "AI đã làm 12 bước (hết một lượt), đã ghi 12 thao tác… Làm tiếp?", 12 ô đã ghi; bấm Làm tiếp → đủ 16 ô, "1 nhiệm vụ · 17 lần gọi AI" — `lam-tiep-excel-haiku55-lan3.json`. Hai lần chạy đầu (`…haiku55.json`, `…lan2.json`) lộ lỗi model nhận ghi chú dừng là lời mình; đã sửa. Chưa bấm thử nút "Dừng ở đây". Nút Hoàn tác vẫn theo từng lượt (12 rồi 4), không gộp |
-| A3 | Chưa kiểm được | Cần Word và Excel thử; dừng khi anh mở Word |
+| A3 | Đạt | Chạy thật Haiku 5.5: soạn công văn **2 lần gọi AI** (mốc ≤ 3), 16 điểm thể thức đạt — `cong-van-haiku55.json`; việc Excel 6 yêu cầu **4 lần gọi** (mốc ≤ 4), 10 lệnh, 0 lỗi, công thức, Pivot và biểu đồ đọc lại đúng — `excel-6-yeu-cau-haiku55.json`; không bài nào chạm trần |
 | B1 | Đạt | Tự kiểm tra PowerPoint 23/23, bước "Đợt 7 · Thêm 3 slide…" — `tu-kiem-tra-powerpoint.json` |
-| B2 | Chưa kiểm được | Chưa Chạy thật bài "3 slide + 1 biểu đồ" trên mã mới |
+| B2 | **Không đạt mốc** | Chạy thật Haiku 5.5, bài 3 slide + 1 biểu đồ (số liệu cho sẵn trong câu hỏi, không đọc từ Excel): nội dung đúng, AI dùng `ppt_add_slides` một lệnh cho các slide chữ, nhưng cả nhiệm vụ vẫn **6 lần gọi AI** (mốc đặt ra ≤ 4; mốc cũ 6–8). Ba lượt thừa là tự chụp ảnh kiểm, `ppt_check_deck` báo "2 phông lệch mẫu" ở tiêu đề slide 3 và 4, rồi sửa phông và dời biểu đồ — `ppt-3-slide-bieu-do-haiku55.json`. Chưa tìm vì sao tiêu đề slide mới bị báo lệch phông |
 | C1 | Đạt | Cùng bước Tự kiểm tra: ảnh 400×200 đặt 430×215 ở nửa phải, đúng tỷ lệ, Hoàn tác gỡ được; ảnh không có thì báo rõ |
-| C2 | Chưa kiểm được | Chưa Chạy thật đính ảnh rồi nhờ AI đặt vào slide |
-| C3 | Một phần | Câu báo "không thấy ảnh đính kèm" có trong Tự kiểm tra; chưa Chạy thật với model |
+| C2 | Đạt | Chạy thật Haiku 5.5: đính `aidn-thu-so-do.png` (800×400), nhờ đặt vào slide 2 bên phải → hình "Ảnh aidn-thu-so-do.png" tại (520, 160) cỡ 400×200, đúng tỷ lệ 2:1, dưới tiêu đề (mép dưới tiêu đề 133); AI tự thu hẹp ô nội dung bên trái; 3 lần gọi — `ppt-dat-anh-haiku55.json`, `ppt-bai-sau-khi-thu.json` |
+| C3 | Đạt | Chạy thật Haiku 5.5, chưa đính ảnh: AI gọi công cụ, nhận câu báo chưa có ảnh, trả lời "chưa thấy ảnh… vui lòng đính kèm lại", không bịa — `ppt-khong-co-anh-haiku55.json`. Ca "đã tải lại khung" chưa thử riêng (cùng đường mã) |
 | D1 | Đạt | Kiểm thử máy (5 ô, 300 ô, công thức thành chữ) + Tự kiểm tra Excel 40/40, bước "Đợt 7 · Nhật ký…": thay 3 ô → 3 dòng W2, W4, W6 có cũ / mới; xóa trùng có giá trị cũ; Hoàn tác trả đủ — `tu-kiem-tra-excel.json` |
 | D2 | Đạt | Cùng bước: sheet mặc định không hỏi; có ô mở khóa riêng thì hỏi; bố trí cũ còn nguyên sau khi chỉ hỏi |
 | E1 | Đạt | Kiểm thử máy + trong khung: đầu khung hiện dòng chế độ thử; số hội thoại trong chỉ mục trước và sau ba lần chạy bài Chạy thật không đổi (0 → 0) |
 | E2 | Một phần | Kiểm thử máy `nextToDrop` đạt; dòng báo trên khung chưa nhìn trong Office |
 | F1 | Đạt | Ba báo cáo trong `tasks/dot-7-bang-chung/`; bảng "đã sửa và để lại" ở trên; 17 kiểm thử cho các chỗ sửa |
-| G1 | Một phần | PowerPoint 23/23, Excel 40/40 trên bản cục bộ. **Word chưa chạy** — các chỗ sửa trong `word_find`, công cụ đọc PDF theo trang và đường đính kèm PDF mới chỉ có kiểm thử máy |
+| G1 | Đạt | Bản cục bộ, desktop ẩn: **Word 38/38**, **Excel 40/40** (thêm 1 bước), **PowerPoint 23/23** (thêm 1 bước) — `tu-kiem-tra-word.json`, `tu-kiem-tra-excel.json`, `tu-kiem-tra-powerpoint.json`. Hai chỗ sửa theo soát mã đã Chạy thật trong Word: tìm "45 ngày" trên hợp đồng 54 trang có 30 sửa đổi chờ duyệt → AI nêu đúng Điều 6.4, bản gốc 45 ngày, đối tác đang sửa thành 90 ngày — `tim-45-ngay-haiku55.json`; đọc PDF quét 3 trang bằng `read_attachment_pages` với pages = "1 - 3" → đúng 3/3 số liệu, có dẫn trang và câu "cần đối chiếu bản gốc" — `pdf-theo-trang-haiku55.json` |
 | G2 | Đạt | `npm test` 560/560, kiểm kiểu sạch, đóng gói đạt |
-| G3 | Chưa kiểm được | Chưa chạy bài nào với Gemini trên mã mới |
+| G3 | Chưa kiểm được | Gemini 3.8 Flash trong PowerPoint: máy chủ im lặng, khung báo lỗi sau 150 giây (hạn chờ im lặng chạy đúng trên bản cục bộ) — `ppt-gemini-2-slide.json`. Model Gemini đang nhớ trên máy là "Gemini 2.5 Flash", Google báo không còn cấp cho người dùng mới; đã trả về đúng model đó như lúc đầu, anh nên chọn lại 3.8 Flash |
 
 Dọn dẹp: sheet thử đã xóa, model trả về Anthropic · Claude Opus 5.5, Excel và PowerPoint thử đã đóng (Excel thử phải tắt bằng lệnh kết thúc tiến trình vì kịch bản đóng không chạy khi anh đang mở Word), chế độ thử tự mất khi Office đóng.
 
-## Việc còn lại trước khi xin phát hành 4.7.0
+Sửa thêm sau các bài Chạy thật: nhãn bước của hai công cụ mới (trước hiện tên thô `ppt_add_slides`, `ppt_insert_image`).
 
-1. Khi anh đã đóng Word: Tự kiểm tra Word trên bản cục bộ (mốc 38/38).
-2. Chạy thật: A3 (soạn công văn ≤ 3 lần gọi, việc Excel 6 yêu cầu ≤ 4), B2 (3 slide + 1 biểu đồ ≤ 4 lần gọi, xem ảnh slide), C2 và C3 (đính ảnh rồi nhờ đặt vào slide; không có ảnh), một bài tìm trong Word khi có sửa đổi chờ duyệt (chỗ sửa theo soát mã), một bài đọc PDF theo trang (không thụt lùi sau khi hạ trần chữ), một bài với Gemini.
-3. Nhìn dòng báo "lịch sử đầy" trên khung (dựng chỉ mục giả 60 mục trong kho của nguồn gốc thử, không đụng kho thật).
-4. Nâng `package.json` lên 4.7.0, cập nhật bảng so sánh, xin anh duyệt phát hành, rồi Tự kiểm tra lại trên bản phát hành.
+Dọn dẹp sau buổi thứ hai: mọi bài chạy ở chế độ thử (không lưu lịch sử); model trả về Anthropic · Claude Opus 5.5 và Gemini · Gemini 2.5 Flash như lúc đầu; Word, PowerPoint, Excel thử đã đóng không lưu.
+
+## Việc còn lại
+
+1. Anh duyệt phát hành 4.7.0 → nâng `package.json`, đẩy `main`, Tự kiểm tra lại ba ứng dụng trên bản phát hành, cập nhật bảng so sánh.
+2. B2 chưa đạt mốc ≤ 4 lần gọi: tìm vì sao `ppt_check_deck` báo lệch phông ở tiêu đề slide vừa thêm (nếu là báo nhầm thì bớt được 2–3 lượt).
+3. E2: nhìn dòng báo "lịch sử đầy" trên khung (mới có kiểm thử máy). A2: bấm thử nút "Dừng ở đây".
+4. G3: chạy lại một bài công cụ mới với Gemini khi máy chủ Gemini trả lời.
+5. Các mục soát mã để lại (bảng ở trên).

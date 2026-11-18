@@ -96,6 +96,13 @@ function describeBase(call: ToolCall): string {
       return "Xem tổng quan bài trình chiếu";
     case "ppt_add_slide":
       return `Thêm slide "${String(a.title || a.layout || "").slice(0, 50)}"`;
+    case "ppt_add_slides": {
+      const n = Array.isArray(a.slides) ? a.slides.length : 0;
+      const first = Array.isArray(a.slides) ? String(a.slides[0]?.title || "").slice(0, 40) : "";
+      return `Thêm ${n || "nhiều"} slide${first ? ` (từ "${first}")` : ""}`;
+    }
+    case "ppt_insert_image":
+      return `Đặt ảnh đính kèm${a.image ? ` "${String(a.image).slice(0, 40)}"` : ""} vào slide ${a.slide}`;
     case "ppt_set_shape_text":
       return `Sửa chữ slide ${a.slide} (${a.shape})`;
     case "ppt_add_textbox":

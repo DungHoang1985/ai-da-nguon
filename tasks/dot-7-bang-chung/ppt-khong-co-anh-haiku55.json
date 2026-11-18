@@ -1,0 +1,14 @@
+﻿{
+ "phienBan": "v4.6",
+ "model": "e) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cheDoThu": true,
+ "dinhKem": [],
+ "giay": 8,
+ "daHoi": [
+  "AI muốn: ppt_insert_image | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "lanGoiAI": 2,
+ "buoc": [],
+ "theLamTiep": null,
+ "khung": "AI Đa Nguồn\nv4.6\nchế độ thử — không lưu lịch sử\nExcel — · Word —\nĐặt ảnh sơ đồ mặt bằng tôi đã đính kèm vào slide 1.\n⚠️ ppt_insert_image — Chưa có ảnh đính kèm nào trong phiên này (ảnh đính kèm mất khi tải lại khung hoặc mở hội thoại mới). Hãy nói người dùng đính kèm ảnh rồi gửi lại yêu cầu; không dùng được ảnh từ địa chỉ web.\nTôi chưa thấy ảnh sơ đồ mặt bằng nào trong phiên này, nên chưa thể đặt vào slide 1. Bạn vui lòng đính kèm lại ảnh rồi gửi lại yêu cầu nhé.\n \nHiện slide 1 đang trống, dùng bố cục \"Title Slide\". Khi có ảnh, tôi sẽ đặt vào slide 1 và giữ đúng tỷ lệ khung hình.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 24.071 · ra 361 · đọc từ bộ nhớ đệm 11.871 · ghi vào bộ nhớ đệm 12.194\nChèn vào slide\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}
