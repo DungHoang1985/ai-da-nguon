@@ -98,8 +98,114 @@ describe("Đợt 7 · F: lõi tác tử", () => {
     const last = hist[hist.length - 1];
     const toolMsgs = last.filter((m) => m.role === "tool");
     assert.strictEqual(toolMsgs.length, 2);
-    assert.match(toolMsgs[0].content as string, /bấm Dừng khi bước này đang chạy/);
+    // Từ 4.7.2: thao tác đang chạy xong trong hạn chờ thêm (LATE_WAIT_MS) → ghi kết quả thật
+    assert.match(toolMsgs[0].content as string, /"ok":true/);
     assert.match(toolMsgs[1].content as string, /Chưa thực hiện/);
+  });
+  it("Dừng giữa bước, thao tác chạy quá hạn chờ thêm: ghi rõ 'bấm Dừng khi bước này đang chạy'", async () => {
+    const ac = new AbortController();
+    const hist: AgentMessage[][] = [];
+    const tools: HostToolSet = {
+      host: "Word",
+      specs: [{ name: "cham", description: "", parameters: { type: "object", properties: {} }, write: true }],
+      overview: async () => ({}),
+      systemPrompt: () => "S",
+      execute: () => new Promise((r) => setTimeout(() => r({ ok: true }), 1500)),
+    };
+    setTimeout(() => ac.abort(), 30);
+    await assert.rejects(
+      runAgent({
+        provider: P("groq"),
+        key: "K",
+        model: "m",
+        system: "S",
+        messages: [{ role: "user", content: "x" }],
+        log: [],
+        tools,
+        signal: ac.signal,
+        lateWaitMs: 50,
+        onEvent: () => {},
+        onHistory: (h) => hist.push([...h]),
+        fetchFn: (async () => sse([{ choices: [{ delta: { tool_calls: [{ index: 0, id: "c1", function: { name: "cham", arguments: "{}" } }] }, finish_reason: "tool_calls" }] }])) as any,
+      } as any),
+      (e: any) => e.name === "AbortError"
+    );
+    const toolMsgs = hist[hist.length - 1].filter((m) => m.role === "tool");
+    assert.match(toolMsgs[0].content as string, /bấm Dừng khi bước này đang chạy/);
+  });
+  it("Bấm Dừng lúc lệnh GHI đang chạy: khi lượt trả về, mục Hoàn tác của lệnh đó đã có (soát mã Đợt 7, #1)", async () => {
+    const ac = new AbortController();
+    const log: any[] = [];
+    const tools: HostToolSet = {
+      host: "Excel",
+      specs: [{ name: "ghi", description: "", parameters: { type: "object", properties: {} }, write: true }],
+      overview: async () => ({}),
+      systemPrompt: () => "S",
+      execute: (_n, _a, ctx: any) =>
+        new Promise((r) =>
+          setTimeout(() => {
+            ctx.log.push({ label: "Ghi vùng", undo: async () => {} });
+            r({ ok: true });
+          }, 300)
+        ),
+    };
+    setTimeout(() => ac.abort(), 30);
+    await assert.rejects(
+      runAgent({
+        provider: P("groq"),
+        key: "K",
+        model: "m",
+        system: "S",
+        messages: [{ role: "user", content: "x" }],
+        log,
+        tools,
+        signal: ac.signal,
+        onEvent: () => {},
+        fetchFn: (async () => sse([{ choices: [{ delta: { tool_calls: [{ index: 0, id: "c1", function: { name: "ghi", arguments: "{}" } }] }, finish_reason: "tool_calls" }] }])) as any,
+      }),
+      (e: any) => e.name === "AbortError"
+    );
+    assert.strictEqual(log.length, 1);
+  });
+  it("Bấm Dừng lúc đang chờ người dùng duyệt: lệnh không chạy (soát mã Đợt 7, #2)", async () => {
+    const ac = new AbortController();
+    let ran = 0;
+    const tools: HostToolSet = {
+      host: "Word",
+      specs: [{ name: "xoa", description: "", parameters: { type: "object", properties: {} }, write: true }],
+      overview: async () => ({}),
+      systemPrompt: () => "S",
+      execute: async () => {
+        ran++;
+        return { ok: true };
+      },
+    };
+    await assert.rejects(
+      runAgent({
+        provider: P("groq"),
+        key: "K",
+        model: "m",
+        system: "S",
+        messages: [{ role: "user", content: "x" }],
+        log: [],
+        tools,
+        signal: ac.signal,
+        askBeforeWrite: true,
+        approve: async () => {
+          ac.abort();
+          return true;
+        },
+        onEvent: () => {},
+        fetchFn: (async () => sse([{ choices: [{ delta: { tool_calls: [{ index: 0, id: "c1", function: { name: "xoa", arguments: "{}" } }] }, finish_reason: "tool_calls" }] }])) as any,
+      } as any),
+      (e: any) => e.name === "AbortError"
+    );
+    assert.strictEqual(ran, 0);
+  });
+  it("withTimeout với tín hiệu Dừng đã bật sẵn: báo đúng câu dừng, không lỗi biến chưa khai báo (soát mã Đợt 7, #2)", async () => {
+    const ac = new AbortController();
+    ac.abort();
+    await assert.rejects(withTimeout(new Promise(() => {}), 1000, "x", ac.signal), /bấm Dừng khi bước này đang chạy/);
   });
   it("Kết quả công cụ không đóng gói được (vòng tham chiếu, BigInt) không làm hỏng lượt", () => {
     const loop: any = { a: 1 };

@@ -8,6 +8,8 @@ import { AgentEvent, AgentMessage, ExtraTools, HostToolSet, StepResult, ToolCall
 export const MAX_TOOL_RESULT_CHARS = 30000;
 /** Hạn chờ mặc định cho một bước công cụ (bản chính thức: 5 phút mỗi bước, 30 giây cho một sửa chữ ở Word). */
 export const TOOL_TIMEOUT_MS = 120000;
+/** Bấm Dừng lúc thao tác Office đang chạy: chờ thêm tối đa bấy nhiêu cho thao tác xong (để kịp có mục Hoàn tác) rồi mới kết thúc lượt */
+export const LATE_WAIT_MS = 10000;
 /** Câu trả lời bị cắt vì quá dài mấy lần liên tiếp thì dừng lượt, không để model lặp vô ích. */
 export const MAX_TRUNCATED_IN_A_ROW = 2;
 
@@ -49,6 +51,8 @@ export function clip(s: string, max: number): string {
 export function withTimeout<T>(p: Promise<T>, ms: number, what: string, signal?: AbortSignal): Promise<T> {
   if ((!Number.isFinite(ms) || ms <= 0) && !signal) return p;
   return new Promise<T>((resolve, reject) => {
+    // Khai báo trước onAbort: tín hiệu Dừng đã bật sẵn thì onAbort chạy ngay (trước đây dùng t lúc chưa khai báo — soát mã Đợt 7, #2)
+    let t: any;
     // Bấm Dừng lúc công cụ đang chạy: thôi chờ ngay (không hủy được thao tác Office đang chạy), không bắt người dùng đợi hết hạn chờ
     const onAbort = () => {
       clearTimeout(t);
@@ -57,7 +61,7 @@ export function withTimeout<T>(p: Promise<T>, ms: number, what: string, signal?:
     if (signal?.aborted) return onAbort();
     signal?.addEventListener("abort", onAbort, { once: true });
     const done = () => signal?.removeEventListener("abort", onAbort);
-    const t: any = !Number.isFinite(ms) || ms <= 0 ? undefined : setTimeout(
+    t = !Number.isFinite(ms) || ms <= 0 ? undefined : setTimeout(
       () =>
         (done(),
         reject(
@@ -113,6 +117,8 @@ export interface RunAgentOptions {
   maxOutput?: number;
   /** Hạn chờ cho mỗi bước công cụ (mili giây); 0 = không giới hạn */
   toolTimeoutMs?: number;
+  /** Thay LATE_WAIT_MS (kiểm thử) */
+  lateWaitMs?: number;
   /** Công tắc "Suy nghĩ kỹ" */
   think?: boolean;
   /** Soát lập luận của một lệnh ghi vào điều khoản trước khi chạy (công cụ có reviewable). ok = false thì lệnh không chạy,
@@ -270,6 +276,8 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       o.onEvent({ type: "tool_start", call });
       let result: any;
       let error: string | undefined;
+      let running: Promise<any> | undefined;
+      let notRun = false;
       try {
         const spec = specMap.get(call.name);
         if (!spec) throw new Error(`Không có công cụ tên "${call.name}".`);
@@ -282,16 +290,46 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
             throw new Error("Người dùng không cho phép thao tác này. Đừng thử lại; hỏi người dùng muốn làm gì khác.");
           }
         }
+        // Bấm Dừng trong lúc kiểm rủi ro hoặc chờ duyệt: không chạy lệnh (soát mã Đợt 7, #2)
+        if (aborted()) {
+          notRun = true;
+          throw new Error(NOT_RUN_STOPPED);
+        }
         // Hạn chờ chỉ tính lúc công cụ chạy, không tính lúc chờ người dùng duyệt
         const run = extraNames.has(call.name)
           ? o.extra!.execute(call.name, call.args || {})
           : o.tools.execute(call.name, call.args || {}, { log: o.log, said: res.text, request: o.request });
-        result = await withTimeout(Promise.resolve(run), spec.timeoutMs ?? o.toolTimeoutMs ?? TOOL_TIMEOUT_MS, call.name, o.signal);
+        running = Promise.resolve(run);
+        result = await withTimeout(running, spec.timeoutMs ?? o.toolTimeoutMs ?? TOOL_TIMEOUT_MS, call.name, o.signal);
       } catch (e: any) {
         error = e?.message || String(e);
         if (e?.code && !String(error).includes(e.code)) error += ` [${e.code}]`;
         if (e?.debugInfo?.errorLocation) error += ` (${e.debugInfo.errorLocation})`;
         result = { ok: false, error };
+      }
+      if (notRun) {
+        o.onEvent({ type: "tool_end", call, result, error });
+        for (const rest of res.toolCalls.slice(i)) push(toolMsg(rest, { ok: false, error: NOT_RUN_STOPPED }));
+        markStopped();
+        throw stopError();
+      }
+      // Bấm Dừng lúc thao tác Office đang chạy: thao tác không hủy được và sẽ tự thêm mục Hoàn tác khi xong. Chờ thêm một hạn
+      // ngắn để lượt chỉ kết thúc khi mục Hoàn tác đã có (khung gắn nút Hoàn tác lúc lượt kết thúc) — soát mã Đợt 7, #1.
+      if (error === STOPPED_MID_TOOL && running) {
+        const settled = await Promise.race<{ v?: any; e?: any } | null>([
+          running.then(
+            (v) => ({ v }),
+            (e) => ({ e })
+          ),
+          new Promise<null>((r) => setTimeout(() => r(null), o.lateWaitMs ?? LATE_WAIT_MS)),
+        ]);
+        if (settled && "v" in settled) {
+          result = settled.v;
+          error = undefined;
+        } else if (settled) {
+          error = settled.e?.message || String(settled.e);
+          result = { ok: false, error };
+        }
       }
       // Ảnh không nằm trong kết quả dạng chữ: tách ra, gửi kèm ở tin nhắn sau (model không nhận ảnh thì báo rõ, không gửi)
       if (result && typeof result === "object" && Array.isArray(result.__images)) {
