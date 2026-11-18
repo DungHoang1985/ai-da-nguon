@@ -1,0 +1,212 @@
+[
+ {
+  "slide": 1,
+  "boCuc": "Title Slide",
+  "hinh": [
+   {
+    "ten": "Title 1",
+    "rong": true
+   },
+   {
+    "ten": "Subtitle 2",
+    "rong": true
+   }
+  ]
+ },
+ {
+  "slide": 2,
+  "boCuc": "Title and Content",
+  "hinh": [
+   {
+    "ten": "Title 1",
+    "phongCaKhung": "Calibri Light",
+    "co": 44,
+    "doan": [
+     {
+      "chu": "Tổng quan doanh thu năm 2026",
+      "phong": "Calibri Light",
+      "co": 44
+     }
+    ]
+   },
+   {
+    "ten": "Content Placeholder 2",
+    "phongCaKhung": "Calibri",
+    "co": 28,
+    "doan": [
+     {
+      "chu": "Tổng doanh thu cả năm: 585 tỷ ",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý cao nhất: Quý 4, 180 tỷ đồ",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý thấp nhất: Quý 1, 120 tỷ đ",
+      "phong": "Calibri",
+      "co": 28
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 3,
+  "boCuc": "Title and Content",
+  "hinh": [
+   {
+    "ten": "Title 1",
+    "phongCaKhung": "Calibri Light",
+    "co": 44,
+    "doan": [
+     {
+      "chu": "Doanh thu tăng qua các quý, tr",
+      "phong": "Calibri Light",
+      "co": 44
+     }
+    ]
+   },
+   {
+    "ten": "Content Placeholder 2",
+    "phongCaKhung": "Calibri",
+    "co": 28,
+    "doan": [
+     {
+      "chu": "Quý 2 tăng 25% so với Quý 1 (1",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý 3 giảm 10% so với Quý 2 (1",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý 4 tăng 33% so với Quý 3, đ",
+      "phong": "Calibri",
+      "co": 28
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 4,
+  "boCuc": "Title Only",
+  "hinh": [
+   {
+    "ten": "Text 0",
+    "phongCaKhung": "Calibri Light",
+    "co": 44,
+    "doan": [
+     {
+      "chu": "Doanh thu 2026 theo quý (tỷ đồ",
+      "phong": "Calibri Light",
+      "co": 44
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 5,
+  "boCuc": "Title and Content",
+  "hinh": [
+   {
+    "ten": "Title 1",
+    "phongCaKhung": "Calibri Light",
+    "co": 44,
+    "doan": [
+     {
+      "chu": "Tổng quan doanh thu năm 2026",
+      "phong": "Calibri Light",
+      "co": 44
+     }
+    ]
+   },
+   {
+    "ten": "Content Placeholder 2",
+    "phongCaKhung": "Calibri",
+    "co": 28,
+    "doan": [
+     {
+      "chu": "Tổng doanh thu cả năm: 585 tỷ ",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý cao nhất: Quý 4, 180 tỷ đồ",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý thấp nhất: Quý 1, 120 tỷ đ",
+      "phong": "Calibri",
+      "co": 28
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 6,
+  "boCuc": "Title and Content",
+  "hinh": [
+   {
+    "ten": "Title 1",
+    "phongCaKhung": null,
+    "co": 44,
+    "doan": [
+     {
+      "chu": "Xu hướng doanh thu 2026 theo q",
+      "phong": "Calibri Light",
+      "co": 44
+     }
+    ]
+   },
+   {
+    "ten": "Content Placeholder 2",
+    "phongCaKhung": "Calibri",
+    "co": 28,
+    "doan": [
+     {
+      "chu": "Quý 2 tăng 25% so với Quý 1, đ",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý 3 giảm 10% so với Quý 2, c",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý 4 tăng 33% so với Quý 3, đ",
+      "phong": "Calibri",
+      "co": 28
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 7,
+  "boCuc": "Title Only",
+  "hinh": [
+   {
+    "ten": "Text 0",
+    "phongCaKhung": "Calibri Light",
+    "co": 44,
+    "doan": [
+     {
+      "chu": "Quý 4 đạt đỉnh 180 tỷ đồng, Qu",
+      "phong": "Calibri Light",
+      "co": 44
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -306,7 +306,10 @@ export async function buildChartPptx(a: any, size: { w: number; h: number }, lay
   const s = pptx.addSlide({ masterName: layoutName });
   let top = m;
   if (a.title) {
-    s.addText(String(a.title), { placeholder: "title", lang: "vi-VN" } as any);
+    // KHÔNG gắn lang "vi-VN": chủ đề Office có phông riêng cho chữ tiếng Việt (<a:font script="Viet" typeface="Times New Roman"/>
+    // trong majorFont / minorFont) nên chữ gắn vi-VN ra Times New Roman thay cho phông tiêu đề của mẫu, và Office.js đặt lại
+    // đúng tên phông chủ đề thì PowerPoint bỏ qua (đo 18/11/2026, tham-do-8-phong-bieu-do.js). Mặc định en-US: theo phông của mẫu.
+    s.addText(String(a.title), { placeholder: "title" } as any);
     top = titleBox.y + titleBox.h + 0.15;
   }
   const kind = String(a.chart_type || "column");
@@ -564,8 +567,19 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
             if (mine && model) {
               const f = model.textFrame.textRange.font;
               f.load("name");
+              mine.load("left,top,width,height");
+              model.load("left,top,width,height");
               await ctx.sync();
               await restoreFont(ctx, mine, f.name);
+              // Ô tiêu đề để trống vị trí (thừa hưởng từ bố cục) thì Office.js báo toạ độ 0, 0, 0, 0 và AI tốn một lượt "đặt lại"
+              // (đo 18/11/2026, tham-do-8-toa-do-b.js). Ghi rõ vị trí của ô tiêu đề trên bố cục: trên slide trông y như cũ.
+              if (!(mine.width > 0 && mine.height > 0) && model.width > 0 && model.height > 0) {
+                mine.left = model.left;
+                mine.top = model.top;
+                mine.width = model.width;
+                mine.height = model.height;
+                await ctx.sync();
+              }
             }
           } catch {
             /* không đọc được phông của bố cục: giữ như PowerPoint đã chèn */

@@ -351,6 +351,9 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       const n2 = await layoutCount();
       // Điều người dùng thấy: slide biểu đồ phải dùng một bố cục CÓ SẴN của mẫu (không lệch mẫu).
       expect(before.includes(String(sl?.layout)), `Slide biểu đồ dùng bố cục lạ "${sl?.layout}" (mẫu có: ${before.join(", ")})`);
+      // Tổng quan phải báo vị trí thật của ô tiêu đề (trước 4.7.2 báo 0, 0, 0, 0 nên AI tốn một lượt đặt lại)
+      const tt = (sl?.shapes || []).find((x: any) => /AIDN biểu đồ/.test(String(x.text || "")));
+      expect(tt && tt.box[2] > 0 && tt.box[3] > 0, `Ô tiêu đề slide biểu đồ báo toạ độ ${JSON.stringify(tt?.box)}`);
       // PowerPoint có lần tự thêm một bố cục khi chèn (lần đầu trên bài mới); add-in không xóa được bố cục (không có API) nên chỉ ghi nhận.
       return `${r.message} (${parts}; slide dùng bố cục có sẵn "${sl?.layout}"${n2 === nLayouts ? ", mẫu không bị thêm bố cục" : `; LƯU Ý: PowerPoint đã thêm ${n2 - nLayouts} bố cục không dùng vào mẫu (${nLayouts} → ${n2}), add-in không xóa được`})`;
     });

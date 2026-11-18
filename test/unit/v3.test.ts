@@ -328,6 +328,8 @@ describe("v3 · Biểu đồ gốc PowerPoint (pptxgenjs)", () => {
     const titleSp = slide.slice(0, slide.indexOf("</p:sp>"));
     assert.ok(titleSp.includes("<p:spPr/>"), "tiêu đề còn tự đặt vị trí/kiểu");
     assert.ok(slide.includes("Tăng trưởng đều"));
+    // Chữ tiêu đề không gắn vi-VN: chủ đề Office ánh xạ chữ tiếng Việt sang Times New Roman (script="Viet") — đo 18/11/2026
+    assert.ok(!/lang="vi-VN"/.test(titleSp), "tiêu đề còn gắn lang vi-VN (ra Times New Roman thay cho phông của mẫu)");
     const rels = await zip.file("ppt/slides/_rels/slide1.xml.rels")!.async("string");
     const layoutFile = /slideLayouts\/(slideLayout\d+\.xml)/.exec(rels)![1];
     const layoutXml = await zip.file("ppt/slideLayouts/" + layoutFile)!.async("string");

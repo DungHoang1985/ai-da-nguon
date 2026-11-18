@@ -1,0 +1,31 @@
+{
+ "phienBan": "v4.7.1",
+ "giay": 7,
+ "tongKet": "1 lỗi · 23/24 bước đạt",
+ "buoc": [
+  "✅ Xem tổng quan bài trình chiếu — 10 slide, 4 bố cục",
+  "✅ Thêm slide có tiêu đề + nội dung — Không có bố cục \"Title and Content\", đã dùng bố cục khác. Đã thêm slide 11 (bố cục \"Tiêu đề và nội dung\")",
+  "✅ Sửa chữ trong hình — Đã đổi tiêu đề",
+  "✅ Thêm ô chữ — Đã thêm ô chữ ở slide 11",
+  "✅ Thêm hình — Đã thêm hình rounded_rectangle ở slide 11",
+  "✅ Thêm bảng — Đã thêm bảng 2×2 ở slide 11",
+  "✅ Biểu đồ gốc (sửa được dữ liệu) — Đã chèn biểu đồ gốc (sửa được dữ liệu) ở slide 12, bố cục \"Title Only\" của mẫu (1 biểu đồ, 1 bảng dữ liệu nhúng; slide dùng bố cục có sẵn \"Title Only\", mẫu không bị thêm bố cục)",
+  "✅ Sơ đồ quy trình tự dàn trang — Đã vẽ sơ đồ chevron 4 bước ở slide 11 (đã nhóm)",
+  "✅ Sửa vị trí, màu, chữ của hình — Dời 60 → 90 điểm, đổi màu nền, cỡ chữ 12",
+  "✅ Nhân bản và di chuyển slide — Bản sao ở slide 12 → chuyển xuống cuối (slide 13)",
+  "✅ Xóa hình (hỏi trước, có hoàn tác) — Cảnh báo: \"Xóa hình \"TextBox 3\" trên slide 11 (có thể Hoàn tác).\" → đã xóa",
+  "✅ Xóa slide (hỏi trước, có hoàn tác) — Đã xóa slide 13",
+  "✅ Chuyển tới slide — Đã chuyển tới slide 11",
+  "✅ Hoàn tác toàn bộ — Hoàn tác 12 thao tác, bài trình chiếu trở lại như cũ",
+  "✅ Đọc mẫu: màu chủ đề, phông, bố cục và ô giữ chỗ — mẫu “Office Theme”: 4 bố cục, phông Georgia / Verdana; Accent1 #4472C4; slide 720×405",
+  "✅ Slide mới dùng đúng bố cục và màu của mẫu — Slide 11: bố cục “Tiêu đề và nội dung”, khối màu #4472C4 = Accent1 của mẫu",
+  "✅ Kiểm bài theo mẫu: cài 5 lỗi (2 phông lạ, 1 slide thiếu tiêu đề, 2 chỗ chữ dưới 12 pt) → tìm đủ 5, không báo nhầm — Tìm đủ 5/5: 5 điểm cần xem: 2 phông lệch mẫu, 2 chữ quá nhỏ, 1 slide thiếu tiêu đề; phông mẫu Georgia, Verdana",
+  "✅ Định dạng chữ theo đoạn (có Hoàn tác); sửa bảng có sẵn; đổi bố cục; đọc vùng chọn — Đoạn 2 đậm cỡ 22 rồi hoàn tác; bảng: ô (1,1) = 120, thêm hàng “Thân”; Slide 15: bố cục \"Tiêu đề và nội dung\" → \"Title Only\"; vùng chọn: slide 15",
+  "✅ Ảnh slide cho AI tự nhìn; chữ cố ý tràn khung được đo ra, sửa xong thì hết — Ảnh PNG 28 KB; đo ra tràn khung → giảm cỡ chữ và nới khung → hết tràn",
+  "✅ Đợt 7 · Thêm 3 slide trong một lệnh (Hoàn tác gỡ cả lô); đặt ảnh đính kèm vào slide đúng tỷ lệ, có Hoàn tác — 3 slide (17, 18, 19) trong một lệnh, một mục Hoàn tác; ảnh 400×200 đặt 310×155 tại (370, 151), đúng tỷ lệ, nửa phải; Hoàn tác gỡ ảnh rồi gỡ cả 3 slide",
+  "❌ Đợt 7 · Chữ có “ư” trong tiêu đề, nội dung và tiêu đề slide biểu đồ vẫn theo phông của mẫu (không thành Times New Roman) — Tiêu đề slide biểu đồ mang Times New Roman: [{\"shape\":\"Text 0\",\"fonts\":[\"Times New Roman\"]}]",
+  "✅ Dọn các slide thử của Đợt 3 — Bài trở lại 10 slide",
+  "✅ Ghi chéo ứng dụng: khung đích chưa mở → báo rõ, không treo; nhận lệnh ghi hộ → ghi đúng, có Hoàn tác; lệnh sai bị bỏ — Excel chưa mở → “Chưa ghi được sang Excel: khung AI Đa Nguồn ở Excel chưa mở …”; hết hạn → rút lệnh; nhận lệnh → Đã thêm slide 11 (bố cục \"Tiêu đề và nội dung\"); hoàn tác sạch",
+  "✅ Đọc tệp PDF đính kèm theo trang: trang có chữ ra chữ, trang quét ra ảnh — 2 trang: trang 1 521 ký tự, trang 2 ảnh JPEG 13 KB"
+ ]
+}

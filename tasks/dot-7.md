@@ -178,10 +178,31 @@ Không phải `ppt_check_deck` báo nhầm. Hai lỗi thật, đều làm chữ 
 Phát hành 4.7.1 (18/11/2026, anh duyệt): `main@c53ae08` → `gh-pages@abdaca9`, lượt Actions 44237244641 xanh, GitHub Pages trả gói `taskpane.8c26cca5.js`. Tự kiểm tra trên bản phát hành ở desktop ẩn (đầu khung hiện v4.7.1): Word 38/38, Excel 40/40, PowerPoint 24/24 — `tasks/dot-7-bang-chung/phat-hanh-471-*.json`. Bài Chạy thật 3 slide + 1 biểu đồ đo trên bản cục bộ cùng mã, chưa chạy lại trên bản phát hành.
 
 Chưa sửa: lượt thừa còn lại ở bài này là AI đặt lại vị trí ô tiêu đề của slide biểu đồ, vì tổng quan báo ô đó ở toạ độ 0, 0, 0, 0 (ô giữ chỗ thừa hưởng vị trí từ bố cục). Các chỗ ghi chữ khác của PowerPoint (`ppt_add_textbox`, `ppt_add_shape`, `ppt_edit_table`, sơ đồ quy trình) chưa đo với chữ có “ư”.
+## Sau phát hành 4.7.1 — toạ độ 0, 0, 0, 0 của ô tiêu đề slide biểu đồ (18/11/2026; nhánh `claude/ppt-toa-do-tieu-de`, chưa phát hành)
+
+| Điều đo (PowerPoint thử trên desktop ẩn) | Kết quả | Bài thăm dò |
+|---|---|---|
+| Chèn slide biểu đồ dựng bằng đúng `buildChartPptx`, đọc vị trí ô tiêu đề | Office.js báo **0, 0, 0, 0** (cả khi nạp theo danh sách lẫn `getItem` theo id); ô tiêu đề của bố cục "Title Only" ở 36; 21,6; 648; 64,8. Ô tiêu đề trong tệp để `<p:spPr/>` (thừa hưởng vị trí từ bố cục) | `kiem-thu/cdp-bai/tham-do-8-toa-do-a.js`, `-b.js` |
+| Đặt `left/top/width/height` của ô bằng vị trí ô tiêu đề của bố cục rồi đọc lại | Đọc ra đúng 36; 21,6; 648; 64,8; trên slide trông như cũ | `tham-do-8-toa-do-b.js` |
+| Slide thêm bằng `slides.add({ layoutId })` (cách `ppt_add_slide` làm), mọi bố cục | Toạ độ ô giữ chỗ đọc đúng → chỉ slide biểu đồ (chèn từ tệp) bị | `tham-do-8-toa-do-c.js` |
+| Tự kiểm tra PowerPoint trên bài thử dựng bằng `kiem-thu/ppt-thu.mjs` (phông chủ đề Georgia / Verdana), **bản 4.7.1 đã phát hành** | **23/24**: tiêu đề slide biểu đồ vẫn Times New Roman (ảnh slide xác nhận) — lỗi 4.7.1 chỉ sửa được trên mẫu Calibri | `sau-471-tu-kiem-tra-powerpoint-ban-471-cung-bai.json`, `sau-471-slide-bieu-do-georgia-truoc-sua.png` |
+| Vì sao: đặt tên phông "Georgia" cho tiêu đề bằng Office.js (cả dòng, từng ký tự, cả khung) | **Không có tác dụng** (vẫn đọc ra Times New Roman); đặt "Arial" thì ăn. Chủ đề Office (cả mẫu mặc định lẫn pptxgenjs) có `<a:font script="Viet" typeface="Times New Roman"/>` trong `majorFont` / `minorFont`; chữ tiêu đề gắn `lang="vi-VN"` (do `buildChartPptx` đặt) nên phông tiêu đề của chủ đề ra Times New Roman, còn đặt lại đúng tên phông chủ đề thì PowerPoint coi là "theo chủ đề" và bỏ qua. Ghi `+mj-lt` vào tệp: vẫn Times New Roman. Ghi tên phông tường minh, hoặc bỏ `lang="vi-VN"`: ra Georgia, kể cả tiêu đề có “ư” | `tham-do-8-phong-bo-cuc.js`, `tham-do-8-phong-bieu-do.js` |
+
+Đã sửa (`src/office/pptAdvanced.ts`): `ppt_add_chart` ghi rõ vị trí cho ô tiêu đề khi Office.js báo kích thước 0 (lấy vị trí ô tiêu đề của bố cục); `buildChartPptx` không gắn `lang: "vi-VN"` cho tiêu đề nữa. Tự kiểm tra bước "Biểu đồ gốc" kiểm thêm ô tiêu đề có toạ độ thật; kiểm thử máy kiểm tiêu đề không còn `lang="vi-VN"`.
+
+| Kiểm | Kết quả | Bằng chứng |
+|---|---|---|
+| Kiểm thử máy, kiểm kiểu, đóng gói | 560/560, sạch, đạt | — |
+| Tự kiểm tra PowerPoint, bản cục bộ đã sửa, bài Georgia | **24/24**; tiêu đề slide biểu đồ Georgia | `sau-471-tu-kiem-tra-powerpoint-georgia-sau-sua.json` (lần chạy giữa chừng, mới sửa toạ độ: 23/24 — `sau-471-tu-kiem-tra-powerpoint-toa-do.json`) |
+| Tự kiểm tra PowerPoint, bản cục bộ đã sửa, mẫu mặc định (Calibri) | **24/24**; tiêu đề slide biểu đồ Calibri Light | `sau-471-tu-kiem-tra-powerpoint-mac-dinh-sau-sua.json` |
+| Chạy thật bài 3 slide + 1 biểu đồ (Haiku 5.5, chế độ thử), hai lần | **3 lần gọi AI** cả hai lần (4.7.1: 4–5; mốc B2: ≤ 4); AI không còn đặt lại vị trí tiêu đề; không chữ nào Times New Roman | `sau-471-ppt-3-slide-bieu-do-lan1.json`, `…lan2.json`, `sau-471-ppt-phong-sau-2-lan.json` |
+
+Dọn dẹp: model trả về Anthropic · Claude Opus 5.5 như lúc đầu; PowerPoint thử đã đóng không lưu.
+
 ## Việc còn lại
 
 1. Cập nhật bảng so sánh `docs/so-sanh-claude-chinh-thuc.md` theo bản 4.7.0 (chưa làm).
-2. Ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0 (còn làm AI tốn một lượt); đo chữ có “ư” ở ô chữ, hình, bảng, sơ đồ.
+2. ~~Ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0~~ đã sửa (mục ngay trên, chưa phát hành). Còn: đo chữ có “ư” ở ô chữ, hình, bảng, sơ đồ (nguyên nhân giờ đã rõ là `script="Viet"` của chủ đề — xem các công cụ này có ghi chữ gắn vi-VN không).
 3. E2: nhìn dòng báo "lịch sử đầy" trên khung (mới có kiểm thử máy). A2: bấm thử nút "Dừng ở đây".
 4. G3: chạy lại một bài công cụ mới với Gemini khi máy chủ Gemini trả lời.
 5. Các mục soát mã để lại (bảng ở trên).
