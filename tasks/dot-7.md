@@ -158,7 +158,7 @@ Dọn dẹp sau buổi thứ hai: mọi bài chạy ở chế độ thử (khôn
 
 Phát hành 4.7.0 (18/11/2026, anh duyệt): `main@dea9bc7` → `gh-pages@8c61ba1`, lượt Actions 44233555510 xanh, GitHub Pages trả gói `taskpane.5d421d5a.js`. Tự kiểm tra trên bản phát hành ở desktop ẩn (đầu khung hiện v4.7): Word 38/38, Excel 40/40, PowerPoint 23/23 — `tasks/dot-7-bang-chung/phat-hanh-470-*.json`.
 
-## Sau phát hành 4.7.0 — tìm nguyên nhân bài slide "phông lệch mẫu" (18/11/2026; đã sửa trên nhánh `claude/dot-7`, CHƯA phát hành)
+## Sau phát hành 4.7.0 — tìm nguyên nhân bài slide "phông lệch mẫu" (18/11/2026; đã phát hành trong bản vá 4.7.1)
 
 Không phải `ppt_check_deck` báo nhầm. Hai lỗi thật, đều làm chữ trên slide mang Times New Roman thay cho phông của mẫu:
 
@@ -175,11 +175,13 @@ Không phải `ppt_check_deck` báo nhầm. Hai lỗi thật, đều làm chữ 
 | Tự kiểm tra PowerPoint trên bản cục bộ đã sửa | **24/24**; bước mới: tiêu đề và nội dung có “ư” ra Calibri Light / Calibri, sau `ppt_set_shape_text` vẫn vậy, tiêu đề slide biểu đồ Calibri Light | `tu-kiem-tra-powerpoint-sau-sua-phong.json` |
 | Chạy thật bài 3 slide + 1 biểu đồ (Haiku 5.5), hai lần | **5 lần gọi** rồi **4 lần gọi** (trước khi sửa: 6); mọi tiêu đề và nội dung đúng phông mẫu, AI không còn sửa phông | `ppt-3-slide-bieu-do-sau-sua-phong-lan1.json`, `…lan2.json`, `ppt-phong-sau-sua-lan1.json`, `…lan2.json` |
 
-Chưa kiểm: Tự kiểm tra Word và Excel trên bản đã sửa (mã đổi chỉ nằm trong các tệp PowerPoint). Chưa sửa: lượt thừa còn lại ở bài này là AI đặt lại vị trí ô tiêu đề của slide biểu đồ, vì tổng quan báo ô đó ở toạ độ 0, 0, 0, 0 (ô giữ chỗ thừa hưởng vị trí từ bố cục). Các chỗ ghi chữ khác của PowerPoint (`ppt_add_textbox`, `ppt_add_shape`, `ppt_edit_table`, sơ đồ quy trình) chưa đo với chữ có “ư”.
+Phát hành 4.7.1 (18/11/2026, anh duyệt): `main@c53ae08` → `gh-pages@abdaca9`, lượt Actions 44237244641 xanh, GitHub Pages trả gói `taskpane.8c26cca5.js`. Tự kiểm tra trên bản phát hành ở desktop ẩn (đầu khung hiện v4.7.1): Word 38/38, Excel 40/40, PowerPoint 24/24 — `tasks/dot-7-bang-chung/phat-hanh-471-*.json`. Bài Chạy thật 3 slide + 1 biểu đồ đo trên bản cục bộ cùng mã, chưa chạy lại trên bản phát hành.
+
+Chưa sửa: lượt thừa còn lại ở bài này là AI đặt lại vị trí ô tiêu đề của slide biểu đồ, vì tổng quan báo ô đó ở toạ độ 0, 0, 0, 0 (ô giữ chỗ thừa hưởng vị trí từ bố cục). Các chỗ ghi chữ khác của PowerPoint (`ppt_add_textbox`, `ppt_add_shape`, `ppt_edit_table`, sơ đồ quy trình) chưa đo với chữ có “ư”.
 ## Việc còn lại
 
 1. Cập nhật bảng so sánh `docs/so-sanh-claude-chinh-thuc.md` theo bản 4.7.0 (chưa làm).
-2. Phát hành bản vá phông (4.7.1) khi anh duyệt. Sau đó: ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0 (còn làm AI tốn một lượt); đo chữ có “ư” ở ô chữ, hình, bảng, sơ đồ.
+2. Ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0 (còn làm AI tốn một lượt); đo chữ có “ư” ở ô chữ, hình, bảng, sơ đồ.
 3. E2: nhìn dòng báo "lịch sử đầy" trên khung (mới có kiểm thử máy). A2: bấm thử nút "Dừng ở đây".
 4. G3: chạy lại một bài công cụ mới với Gemini khi máy chủ Gemini trả lời.
 5. Các mục soát mã để lại (bảng ở trên).

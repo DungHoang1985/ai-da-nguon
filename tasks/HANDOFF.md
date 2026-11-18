@@ -1,6 +1,6 @@
 # Bàn giao – Add-in AI đa nguồn cho Office
 
-**Phiên bản đang chạy: v4.7.0** (Đợt 7, phát hành 18/11/2026, `main@dea9bc7` → `gh-pages@8c61ba1`, gói `taskpane.5d421d5a.js`). Bản trước: v4.6.0 (17/11/2026, `main@01a6a13`) · **Cập nhật:** 18/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`)
+**Phiên bản đang chạy: v4.7.1** (bản vá phông PowerPoint, phát hành 18/11/2026, `main@c53ae08` → `gh-pages@abdaca9`, gói `taskpane.8c26cca5.js`). Bản trước: v4.7.0 (Đợt 7, 18/11/2026, `main@dea9bc7`). Bản trước: v4.6.0 (17/11/2026, `main@01a6a13`) · **Cập nhật:** 18/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`)
 
 > Tệp này được viết gọn lại ngày 18/11/2026. Bản đầy đủ tới hết 17/11 (diễn biến từng phiên, các mục "Bước tiếp theo" cũ) lưu ở `tasks/luu/HANDOFF-den-2026-11-17.md`. Chi tiết từng đợt — việc, bảng thăm dò, bảng nghiệm thu, bảng soát mã — nằm ở `tasks/dot-*.md`; bằng chứng ở `tasks/dot-*-bang-chung/`. Mục Quyết định và mục Bài học giữ nguyên văn.
 >
@@ -21,14 +21,15 @@
     | 4 | 4.4.0 | 16/11 | Excel thêm 9 công cụ (nay 29): sửa biểu đồ / Pivot có sẵn, chuẩn bị in, kiểm toán mô hình, giải ngược, làm sạch dữ liệu, khóa ô; sheet "Nhật ký AI" và tô sáng (mặc định tắt); câu gợi ý "mở lại cửa sổ Word"; Groq 413 thành câu tiếng Việt | `tasks/dot-4.md` |
     | So song song | 4.4.1 | 16–17/11 | So với add-in Claude chính thức: ngang ở 4 bài, gọn hơn ở bài xử lý 5 nhận xét. Sửa: Gemini bị 400 trong Word (enum số), khung treo khi nhà cung cấp im lặng → hạn chờ 150 giây | `tasks/so-song-song.md` |
     | 5 | 4.5.0 | 17/11 | `read_attachment_pages` đọc PDF đính kèm theo trang (trang chữ ra chữ, trang quét ra ảnh); đoạn chờ duyệt đưa cả chữ gốc lẫn chữ đang sửa; công cụ sửa Word nhận `reason`; dòng nhắc riêng tư | `tasks/dot-5.md` |
+    | Bản vá | 4.7.1 | 18/11 | PowerPoint: chữ có “ư” ghi vào ô giữ chỗ và tiêu đề slide biểu đồ giữ phông của mẫu (trước thành Times New Roman); bài 3 slide + 1 biểu đồ từ 6 xuống 4–5 lần gọi AI | `tasks/dot-7.md`, mục "Sau phát hành 4.7.0" |
     | 7 | 4.7.0 | 18/11 | Nút Làm tiếp khi chạm trần số bước (Word 12, Excel 12, PowerPoint 20), dừng sớm khi công cụ lặp cùng lỗi; `ppt_add_slides`, `ppt_insert_image`; nhật ký Excel ghi giá trị cũ / mới cho thao tác hàng loạt, hỏi trước khi thay bố trí khóa ô; chế độ thử không lưu lịch sử, báo khi lịch sử đầy; sửa theo ba lượt soát mã độc lập (lõi tác tử, Đợt 5, Đợt 6) | `tasks/dot-7.md` |
     | 6 | 4.6.0 | 17/11 | Nguồn nói cùng kiểu Anthropic (`dialect`): OpenRouter kênh Claude, DeepSeek kiểu Anthropic (dùng chung key), MiniMax, Kimi, nguồn tự khai | `tasks/dot-6.md` |
 
-  - Số đo trên bản 4.7.0 đã phát hành (desktop ẩn, 18/11): Tự kiểm tra Word 38/38, Excel 40/40, PowerPoint 23/23; kiểm thử máy 560/560, kiểm kiểu sạch.
+  - Số đo trên bản 4.7.1 đã phát hành (desktop ẩn, 18/11): Tự kiểm tra Word 38/38, Excel 40/40, PowerPoint 24/24; kiểm thử máy 560/560, kiểm kiểu sạch.
   - Soát mã độc lập đã chạy cho các đợt 1A, 1B, 2, 3 (A và B), 4, và ở Đợt 7 cho lõi tác tử (thay cho Đợt 0B), Đợt 5, Đợt 6; báo cáo `soat-ma-*.md` trong thư mục bằng chứng của từng đợt. Mã của chính Đợt 7 chưa có lượt soát độc lập.
   - Kiểm Office không chiếm màn hình của anh: `kiem-thu/mo-office.ps1` mặc định mở Office trên desktop ẩn (`kiem-thu/desktop-rieng.ps1`), điều khiển khung bằng `kiem-thu/cdp.mjs`. Đã đạt với Word, Excel, PowerPoint mở riêng từng ứng dụng.
   - Bảng so sánh với bản chính thức: `docs/so-sanh-claude-chinh-thuc.md`.
-- **Đang làm:** bản vá phông PowerPoint trên nhánh `claude/dot-7`, **đã sửa và kiểm trên bản cục bộ, CHƯA phát hành** (chờ anh duyệt 4.7.1): chữ có “ư” ghi vào ô giữ chỗ và tiêu đề slide biểu đồ không còn thành Times New Roman. Tự kiểm tra PowerPoint 24/24; bài 3 slide + 1 biểu đồ từ 6 xuống 4–5 lần gọi AI. Chi tiết: mục "Sau phát hành 4.7.0" của `tasks/dot-7.md`.
+- **Đang làm:** không có việc dở. Đợt 7 (4.7.0) và bản vá phông PowerPoint (4.7.1) đã phát hành 18/11/2026; phần chưa đạt và chưa kiểm được ghi ở Vấn đề mở.
 - **Quyết định và lý do:**
   - AI sửa thẳng vào tài liệu + Hoàn tác; Word luôn ghi Track Changes; thao tác rủi ro luôn hỏi kèm lý do, "Cho phép hết lần này" không áp dụng cho thao tác rủi ro. Lý do: tự động tối đa nhưng an toàn như bản chính thức.
   - Kỹ năng chính thức được chuyển thể, không chép nguyên văn; không ghi số hiệu văn bản pháp luật trong kỹ năng (có kiểm thử chặn).
@@ -101,7 +102,7 @@
     - Bảy worktree của các đợt cũ đã xóa 18/11 (anh duyệt), các nhánh cục bộ đã gộp vào `main` cũng đã xóa. Còn hai thư mục **rỗng** `dot-0a-office-addon-compare-47836b` và `dot-4-a4b5e7` trong `D:\ADD IN\.claude\worktrees\` bị một tiến trình giữ, không xóa được lúc đó; xóa sau khi khởi động lại ứng dụng Claude.
 - **Bước tiếp theo (đề xuất 18/11/2026, chờ anh duyệt từng bước):**
   1. ~~Kéo `D:\ADD IN` lên `origin/main`, viết gọn tệp này~~ xong 18/11.
-  2. ~~Bản 4.7.0 "trả nợ kỹ thuật"~~ đã phát hành 18/11. Việc nối tiếp, theo thứ tự nên làm: (a) phát hành bản vá phông 4.7.1 (đã sửa trên nhánh `claude/dot-7`, chờ anh duyệt); (b) ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0; (c) soát mã độc lập cho mã của Đợt 7; (d) cập nhật bảng so sánh; (e) các mục soát mã để lại (bảng ở `tasks/dot-7.md`).
+  2. ~~Bản 4.7.0 "trả nợ kỹ thuật"~~ và ~~bản vá phông 4.7.1~~ đã phát hành 18/11. Việc nối tiếp, theo thứ tự nên làm: (a) ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0 (AI còn tốn một lượt đặt lại vị trí); (b) đo chữ có “ư” ở ô chữ, hình, bảng, sơ đồ quy trình của PowerPoint; (c) soát mã độc lập cho mã của Đợt 7 và bản vá; (d) cập nhật bảng so sánh; (e) các mục soát mã để lại (bảng ở `tasks/dot-7.md`).
   3. **Một buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được vì thiếu tiền hoặc key" trong một lượt. Anh chỉ cần nạp những nguồn anh định dùng.
   4. **Anh chọn việc ở mục D.** Gợi ý cho việc pháp lý – BĐS: "điền mẫu qua ô điền sẵn" và "bộ nhớ dài hạn giữa các hội thoại" trước; connectors và Outlook là việc lớn, để sau.
   - Câu mở đầu phiên sau: `Đọc tasks/HANDOFF.md mục Bước tiếp theo rồi hỏi tôi muốn làm việc nào.`
