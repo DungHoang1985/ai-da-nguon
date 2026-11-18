@@ -1,0 +1,145 @@
+{
+ "sets": {
+  "1.3": true,
+  "1.4": true,
+  "1.5": true,
+  "1.6": true,
+  "1.7": true,
+  "1.8": true,
+  "1.9": true,
+  "1.10": false
+ },
+ "ca": {
+  "0 liệt kê ô": {
+   "o": [
+    "so_hd [PlainText] \"HĐĐC-THU-01\" goiY=undefined khoaND=true khoaXoa=true ph=\"null\"",
+    "ben_a [PlainText] \"\" goiY=undefined khoaND=false khoaXoa=false ph=\"null\"",
+    "dia_chi_a [RichText] \"\" goiY=undefined khoaND=false khoaXoa=false ph=\"null\"",
+    "la_ca_nhan [CheckBox] \"☐\" goiY=undefined khoaND=false khoaXoa=false ph=\"null\"",
+    "la_to_chuc [CheckBox] \"☐\" goiY=undefined khoaND=false khoaXoa=false ph=\"null\"",
+    "thanh_toan [DropDownList] \"\" goiY=undefined khoaND=false khoaXoa=false ph=\"null\"",
+    "loai_ts [ComboBox] \"\" goiY=undefined khoaND=false khoaXoa=false ph=\"null\"",
+    "ngay_ky [DatePicker] \"\" goiY=undefined khoaND=false khoaXoa=false ph=\"null\""
+   ],
+   "ms": 11
+  },
+  "1 bật Track Changes": {
+   "cu": "Off",
+   "suaDoi": 0,
+   "ms": 86
+  },
+  "2 ô chữ thường (PlainText) insertText Replace": {
+   "sau": {
+    "text": "Công ty TNHH Thử Nghiệm Hưng Thịnh",
+    "type": "PlainText"
+   },
+   "suaDoi": 1,
+   "ms": 62
+  },
+  "3 ô chữ định dạng (RichText) insertText Replace": {
+   "sau": {
+    "text": "Số 1 phố Thử, phường Hoàn Kiếm, Hà Nội",
+    "type": "RichText"
+   },
+   "suaDoi": 2,
+   "ms": 60
+  },
+  "4 ô đánh dấu (CheckBox) isChecked": {
+   "isChecked": true,
+   "sau": {
+    "text": "☒☐",
+    "type": "CheckBox"
+   },
+   "suaDoi": 4,
+   "ms": 57
+  },
+  "5 ô chọn (DropDownList): danh sách + chọn mục": {
+   "LOI": "c.dropDownListContentControl.getListItemsOrNullObject is not a function",
+   "ms": 0
+  },
+  "5b ô chọn (DropDownList): insertText chữ ngoài danh sách": {
+   "LOI": "GeneralException",
+   "ma": "GeneralException",
+   "o": "ContentControl.insertText",
+   "ms": 8
+  },
+  "6 ô chọn hoặc nhập (ComboBox): insertText chữ tự do": {
+   "LOI": "GeneralException",
+   "ma": "GeneralException",
+   "o": "ContentControl.insertText",
+   "ms": 7
+  },
+  "7 ô ngày (DatePicker): insertText": {
+   "LOI": "GeneralException",
+   "ma": "GeneralException",
+   "o": "ContentControl.insertText",
+   "ms": 6
+  },
+  "8 ô khóa nội dung: insertText": {
+   "LOI": "GeneralException",
+   "ma": "GeneralException",
+   "o": "ContentControl.insertText",
+   "ms": 7
+  },
+  "9 chỗ trống '……' trong đoạn: search rồi thay": {
+   "timThay": 1,
+   "sau": "Họ và tên người đại diện Bên B: Nguyễn Văn Thử……………………………………",
+   "suaDoi": 6,
+   "ms": 52
+  },
+  "9b '[●]' hai chỗ trong một đoạn: thay chỗ thứ hai": {
+   "timThay": 2,
+   "sau": "Số tiền đặt cọc: [●] đồng (bằng chữ: năm trăm triệu[●] đồng).",
+   "ms": 46
+  },
+  "10 ô bảng trống: điền": {
+   "sau": [
+    [
+     "Thông tin",
+     "Nội dung"
+    ],
+    [
+     "Diện tích (m²)",
+     "85,5"
+    ],
+    [
+     "Giá bán",
+     ""
+    ],
+    [
+     "Mã căn",
+     ""
+    ]
+   ],
+   "suaDoi": 9,
+   "ms": 44
+  },
+  "11 Hoàn tác: từ chối mọi sửa đổi đã thêm, đọc lại các ô": {
+   "daTuChoi": 9,
+   "cacLoai": [
+    "Added",
+    "Deleted"
+   ],
+   "o": [
+    "so_hd \"HĐĐC-THU-01\" goiY=undefined",
+    "ben_a \"\" goiY=undefined",
+    "dia_chi_a \"\" goiY=undefined",
+    "la_ca_nhan \"☐\" goiY=undefined",
+    "la_to_chuc \"☐\" goiY=undefined",
+    "thanh_toan \"\" goiY=undefined",
+    "loai_ts \"\" goiY=undefined",
+    "ngay_ky \"\" goiY=undefined"
+   ],
+   "oDanhDauSauHoanTac": false,
+   "doan": [
+    "Họ và tên người đại diện Bên B: ……………………………………",
+    "Số tiền đặt cọc: [●] đồng (bằng chữ: [●] đồng)."
+   ],
+   "ms": 69
+  },
+  "12 trả chế độ theo dõi": {
+   "ok": true,
+   "ms": 6
+  }
+ }
+}

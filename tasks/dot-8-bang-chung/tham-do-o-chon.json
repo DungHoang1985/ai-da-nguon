@@ -1,0 +1,81 @@
+{
+ "ca": {
+  "A thuộc tính con của ô chọn": {
+   "khoa": [
+    "appearance",
+    "cannotDelete",
+    "cannotEdit",
+    "color",
+    "id",
+    "placeholderText",
+    "removeWhenEdited",
+    "style",
+    "styleBuiltIn",
+    "subtype",
+    "tag",
+    "text",
+    "title",
+    "type"
+   ]
+  },
+  "chế độ TrackAll": {
+   "ok": true
+  },
+  "B thanh_toan: getRange(\"Content\").insertText, có theo dõi": {
+   "LOI": "GeneralException",
+   "ma": "GeneralException",
+   "o": "Range.insertText"
+  },
+  "C thanh_toan: getRange(\"Whole\") search chữ gợi ý rồi thay, có theo dõi": {
+   "chuTrongVung": ""
+  },
+  "B loai_ts: getRange(\"Content\").insertText, có theo dõi": {
+   "sau": "Căn hộ chung cư"
+  },
+  "C loai_ts: getRange(\"Whole\") search chữ gợi ý rồi thay, có theo dõi": {
+   "chuTrongVung": "Căn hộ chung cư"
+  },
+  "B ngay_ky: getRange(\"Content\").insertText, có theo dõi": {
+   "sau": "18/11/2026"
+  },
+  "C ngay_ky: getRange(\"Whole\") search chữ gợi ý rồi thay, có theo dõi": {
+   "chuTrongVung": "18/11/2026"
+  },
+  "chế độ Off": {
+   "ok": true
+  },
+  "D thanh_toan: insertText Replace, TẮT theo dõi": {
+   "LOI": "GeneralException",
+   "ma": "GeneralException",
+   "o": "ContentControl.insertText"
+  },
+  "D loai_ts: insertText Replace, TẮT theo dõi": {
+   "LOI": "GeneralException",
+   "ma": "GeneralException",
+   "o": "ContentControl.insertText"
+  },
+  "D ngay_ky: insertText Replace, TẮT theo dõi": {
+   "LOI": "GeneralException",
+   "ma": "GeneralException",
+   "o": "ContentControl.insertText"
+  },
+  "E dãy chấm: tìm đúng trọn dãy từ chữ của đoạn": {
+   "day": 14,
+   "timThay": 1,
+   "sau": "Họ và tên người đại diện Bên B: Nguyễn Văn Thử……………………………………"
+  },
+  "F trả lại: từ chối sửa đổi có theo dõi, tắt theo dõi": {
+   "tuChoi": 4,
+   "o": [
+    "so_hd \"HĐĐC-THU-01\"",
+    "ben_a \"\"",
+    "dia_chi_a \"\"",
+    "la_ca_nhan \"☐\"",
+    "la_to_chuc \"☐\"",
+    "thanh_toan \"\"",
+    "loai_ts \"\"",
+    "ngay_ky \"\""
+   ]
+  }
+ }
+}

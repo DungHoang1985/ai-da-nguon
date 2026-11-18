@@ -1,0 +1,37 @@
+{
+ "ca": {
+  "A đọc OOXML của ô chọn": {
+   "doDai": 51216,
+   "muc": [
+    "Chuyển khoản",
+    "Tiền mặt",
+    "Kết hợp"
+   ],
+   "coSdt": true
+  },
+  "B chọn 'Chuyển khoản' bằng insertOoxml (có theo dõi)": {
+   "o": [
+    "thanh_toan [DropDownList] \"Chuyển khoản\"",
+    "thanh_toan [DropDownList] \"\""
+   ],
+   "soO": 9,
+   "suaDoi": [
+    "Added: Chuyển khoản",
+    "Deleted: "
+   ]
+  },
+  "C từ chối sửa đổi, đọc lại": {
+   "tuChoi": 2,
+   "o": [
+    "so_hd [PlainText] \"HĐĐC-THU-01\"",
+    "ben_a [PlainText] \"\"",
+    "dia_chi_a [RichText] \"\"",
+    "la_ca_nhan [CheckBox] \"☐\"",
+    "la_to_chuc [CheckBox] \"☐\"",
+    "thanh_toan [DropDownList] \"\"",
+    "loai_ts [ComboBox] \"\"",
+    "ngay_ky [DatePicker] \"\""
+   ]
+  }
+ }
+}
