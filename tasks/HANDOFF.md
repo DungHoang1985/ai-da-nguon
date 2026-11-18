@@ -99,13 +99,14 @@
     - Chọn việc ở mục D của `tasks/dot-5.md`: bộ nhớ dài hạn giữa các hội thoại · tải bản ghi hội thoại · gợi ý gạch chân bấm để chấp nhận trong Word · điền mẫu qua ô điền sẵn · connectors (MCP) · công cụ chạy mã Office.js do AI viết · phím tắt mở khung · đọc một trang web cụ thể · Outlook · Sign in with Poe · hàm `=AI(…)` trong ô Excel.
     - Xóa các khóa "AI Da Nguon (Office)" thừa ở `openrouter.ai/settings/keys` (add-in dùng khóa cấp sau cùng).
     - Model đang nhớ của nguồn Gemini đã bị bài thử đổi (hiện là một model Flash); anh chọn lại nếu cần.
-    - Dọn các worktree của đợt cũ trong `D:\ADD IN\.claude\worktrees\` (danh sách ở báo cáo phiên 18/11; xóa phải có anh duyệt).
+    - Duyệt kế hoạch `tasks/dot-7.md` và trả lời 3 câu ở mục "Chờ anh chọn" của tệp đó.
+    - Bảy worktree của các đợt cũ đã xóa 18/11 (anh duyệt), các nhánh cục bộ đã gộp vào `main` cũng đã xóa. Còn hai thư mục **rỗng** `dot-0a-office-addon-compare-47836b` và `dot-4-a4b5e7` trong `D:\ADD IN\.claude\worktrees\` bị một tiến trình giữ, không xóa được lúc đó; xóa sau khi khởi động lại ứng dụng Claude.
 - **Bước tiếp theo (đề xuất 18/11/2026, chờ anh duyệt từng bước):**
   1. ~~Kéo `D:\ADD IN` lên `origin/main`, viết gọn tệp này~~ xong 18/11.
-  2. **Bản 4.7.0 "trả nợ kỹ thuật"**: viết `tasks/dot-7.md` (việc + tiêu chí nghiệm thu) rồi làm: trần số bước kèm "làm tiếp?"; thêm nhiều slide một lệnh; công cụ chèn ảnh vào slide; hai mục nhật ký Excel đáng làm nhất; cờ không lưu lịch sử cho bài thử; soát mã độc lập Đợt 0B, 5, 6. Kiểm trên desktop ẩn, xin anh duyệt phát hành.
+  2. **Bản 4.7.0 "trả nợ kỹ thuật"**: kế hoạch đã viết ở `tasks/dot-7.md` (18/11), **chờ anh duyệt**, chưa sửa mã: nút "Làm tiếp" khi chạm trần số bước; thêm nhiều slide một lệnh; công cụ chèn ảnh vào slide; nhật ký Excel ghi giá trị cũ / mới và hỏi trước khi thay bố trí khóa ô; chế độ thử không lưu lịch sử; soát mã độc lập Đợt 0B, 5, 6. Kiểm trên desktop ẩn, xin anh duyệt phát hành.
   3. **Một buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được vì thiếu tiền hoặc key" trong một lượt. Anh chỉ cần nạp những nguồn anh định dùng.
   4. **Anh chọn việc ở mục D.** Gợi ý cho việc pháp lý – BĐS: "điền mẫu qua ô điền sẵn" và "bộ nhớ dài hạn giữa các hội thoại" trước; connectors và Outlook là việc lớn, để sau.
-  - Câu mở đầu phiên sau: `Viết tasks/dot-7.md cho bản 4.7.0 theo mục Bước tiếp theo của tasks/HANDOFF.md rồi làm.` — phải là phiên **trên máy**; anh đang mở Office thì chưa mở được Office thử.
+  - Câu mở đầu phiên sau: `Làm Đợt 7 theo tasks/dot-7.md.` (sau khi anh đã duyệt kế hoạch và trả lời 3 câu) — phải là phiên **trên máy**; anh đang mở Office thì chưa mở được Office thử.
 - **Bài học:**
   - **Bài thử làm mất hội thoại cũ của anh (16/11/2026):** lịch sử mỗi ứng dụng chỉ giữ 60 hội thoại (`MAX_CONVERSATIONS`); một buổi thử tạo hơn 70 hội thoại đã đẩy 4 hội thoại có từ trước của Word ra khỏi lịch sử, không lấy lại được. Từ nay: trước khi chạy loạt bài, đếm lịch sử; **xóa hội thoại thử ngay sau mỗi model** (không để dồn), và dừng nếu số hội thoại sắp chạm 60. Nên cân nhắc cho bài thử một cờ "không lưu lịch sử".
   - **Khung add-in bị che thì hẹn giờ đứng:** khi khung Claude chính thức nằm trên khung AI Đa Nguồn (cùng một ngăn, đổi bằng thẻ), `setTimeout` trong khung bị che không chạy → `cdp.mjs eval` có `sleep` treo vô hạn. Đưa khung cần điều khiển lên trước (bấm nút "Mở AI Đa Nguồn" / "Claude" bằng UI Automation) rồi mới chạy. Khác với cửa sổ Word thu nhỏ (đã đo: hẹn giờ vẫn chạy).
