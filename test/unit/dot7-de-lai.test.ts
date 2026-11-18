@@ -3,6 +3,7 @@ import * as assert from "assert";
 import { customProvider, getProvider } from "../../src/core/providers";
 import { ApiError, ensureOk, fetchDiagnosed, isRetryable } from "../../src/core/errors";
 import { callModelStep } from "../../src/core/agent/llm";
+import { normalizeSlideList } from "../../src/office/pptTools";
 
 const res = (status: number, body: any) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 const thrown = async (p: Promise<any>) => {
@@ -102,5 +103,16 @@ describe("Tự thử lại: lỗi tạm và hết hạn mức theo ngày", () =>
       const e: any = await thrown(ensureOk(res(429, body), getProvider(id as any)));
       assert.ok(isRetryable(e), `${id}: hạn mức theo phút bị coi là theo ngày`);
     }
+  });
+});
+
+describe("ppt_add_slides: đếm phần dư đúng (soát mã Đợt 7, #8)", () => {
+  it("Phần tử rỗng không tính vào phần dư; chuỗi JSON quá 10 slide được tính", () => {
+    const eleven = Array.from({ length: 11 }, (_, i) => ({ title: `S${i + 1}` }));
+    const withEmpty = [...Array.from({ length: 10 }, (_, i) => ({ title: `S${i + 1}` })), {}, null];
+    assert.strictEqual(normalizeSlideList(eleven, Infinity).length - normalizeSlideList(eleven).length, 1);
+    assert.strictEqual(normalizeSlideList(withEmpty, Infinity).length - normalizeSlideList(withEmpty).length, 0);
+    const s = JSON.stringify(eleven);
+    assert.strictEqual(normalizeSlideList(s, Infinity).length - normalizeSlideList(s).length, 1);
   });
 });

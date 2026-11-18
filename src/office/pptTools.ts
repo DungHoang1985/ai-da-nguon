@@ -290,7 +290,7 @@ async function loadImageForSlide(name: string, data: string): Promise<{ w: numbe
 export const MAX_SLIDES_PER_CALL = 10;
 
 /** Chuẩn hóa danh sách slide của ppt_add_slides: nhận mảng hoặc chuỗi JSON, bỏ phần tử rỗng, tối đa MAX_SLIDES_PER_CALL */
-export function normalizeSlideList(v: any): { layout?: string; title?: string; body?: string }[] {
+export function normalizeSlideList(v: any, max: number = MAX_SLIDES_PER_CALL): { layout?: string; title?: string; body?: string }[] {
   let list = v;
   if (typeof list === "string") {
     try {
@@ -302,7 +302,7 @@ export function normalizeSlideList(v: any): { layout?: string; title?: string; b
   if (!Array.isArray(list)) return [];
   return list
     .filter((x) => x && typeof x === "object" && (String(x.title ?? "").trim() || String(x.body ?? "").trim() || String(x.layout ?? "").trim()))
-    .slice(0, MAX_SLIDES_PER_CALL)
+    .slice(0, max)
     .map((x) => ({ layout: x.layout === undefined ? undefined : String(x.layout), title: x.title === undefined ? undefined : String(x.title), body: x.body === undefined ? undefined : String(x.body) }));
 }
 
@@ -334,6 +334,7 @@ async function addOneSlide(a: any, log: UndoEntry[], select: boolean): Promise<{
         await ctx.sync();
         const slide = slides.items[slides.items.length - 1];
         const slideId = slide.id;
+        try {
         if (a.after_slide && supports("1.8")) {
           const target = Math.min(Math.max(Number(a.after_slide), 0), slides.items.length - 1);
           (slide as any).moveTo(target);
@@ -343,7 +344,9 @@ async function addOneSlide(a: any, log: UndoEntry[], select: boolean): Promise<{
         if (a.title) {
           if (title) await setTextKeepFont(ctx, title, String(a.title));
           else {
-            const tb = slide.shapes.addTextBox(String(a.title), { left: 40, top: 30, width: 880, height: 70 });
+            // Ô rỗng rồi ghi giữ phông: đưa chữ có “ư” thẳng vào addTextBox thì ra Arial (đo 18/11/2026)
+            const tb = slide.shapes.addTextBox("", { left: 40, top: 30, width: 880, height: 70 });
+            await setTextKeepFont(ctx, tb, String(a.title));
             tb.textFrame.textRange.font.size = 32;
             tb.textFrame.textRange.font.bold = true;
           }
@@ -356,11 +359,22 @@ async function addOneSlide(a: any, log: UndoEntry[], select: boolean): Promise<{
             .join("\n");
           if (body) await setTextKeepFont(ctx, body, text);
           else {
-            const tb = slide.shapes.addTextBox(text, { left: 40, top: 120, width: 880, height: 380 });
+            const tb = slide.shapes.addTextBox("", { left: 40, top: 120, width: 880, height: 380 });
+            await setTextKeepFont(ctx, tb, text);
             tb.textFrame.textRange.font.size = 20;
           }
         }
         await ctx.sync();
+        } catch (e) {
+          // Slide đã tạo mà ghi chữ / dời chỗ lỗi: gỡ slide dở rồi mới báo lỗi, không để slide thừa ngoài Hoàn tác (soát mã Đợt 7, #4)
+          try {
+            ctx.presentation.slides.getItem(slideId).delete();
+            await ctx.sync();
+          } catch {
+            /* không gỡ được: lỗi gốc vẫn được báo */
+          }
+          throw e;
+        }
         if (select && supports("1.5")) {
           try {
             ctx.presentation.setSelectedSlides([slideId]);
@@ -391,6 +405,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
 
     case "ppt_add_slides": {
       const list = normalizeSlideList(a.slides);
+      const overflow = normalizeSlideList(a.slides, Infinity).length - list.length;
       if (!list.length) throw new Error("Thiếu danh sách slides (mỗi phần tử gồm layout, title, body).");
       // Mỗi slide ghi mục Hoàn tác riêng vào sổ tạm; cả lô gộp thành MỘT mục Hoàn tác (gỡ từ slide cuối lên)
       const batch: UndoEntry[] = [];
@@ -408,7 +423,16 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         log.push({
           label: `Thêm ${batch.length} slide`,
           undo: async () => {
-            for (const u of batch.slice().reverse()) await u.undo();
+            // Gỡ hết từng slide, slide nào lỗi thì vẫn gỡ tiếp các slide còn lại rồi mới báo (soát mã Đợt 7, #4)
+            const errs: string[] = [];
+            for (const u of batch.slice().reverse()) {
+              try {
+                await u.undo();
+              } catch (e: any) {
+                errs.push(`${u.label}: ${e?.message || e}`);
+              }
+            }
+            if (errs.length) throw new Error(`Không gỡ được ${errs.length} slide — ${errs.join("; ")}`);
           },
         });
       }
@@ -418,7 +442,8 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         ok: !failed,
         message: `Đã thêm ${done.length}/${list.length} slide: ${nums.join(", ")}${failed ? `. Dừng ở slide thứ ${done.length + 1} vì lỗi: ${failed}` : ""}`,
         slides: done.map((d) => ({ slide: d.slide, slide_id: d.slide_id, layout: d.layout, ...(d.note ? { note: d.note } : {}) })),
-        ...(Array.isArray(a.slides) && a.slides.length > list.length ? { note: `Chỉ nhận ${MAX_SLIDES_PER_CALL} slide mỗi lần gọi; ${a.slides.length - list.length} slide còn lại chưa thêm.` } : {}),
+        // Đếm phần dư trên danh sách đã lọc (bỏ phần tử rỗng, nhận cả chuỗi JSON) — soát mã Đợt 7, #8
+        ...(overflow > 0 ? { note: `Chỉ nhận ${MAX_SLIDES_PER_CALL} slide mỗi lần gọi; ${overflow} slide còn lại chưa thêm.` } : {}),
       };
     }
 
@@ -500,8 +525,10 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           label: `Sửa chữ ${shape.name}`,
           undo: () =>
             PowerPoint.run(async (c) => {
-              const t = (await findShape(c, slideId, shapeId, shapeName)).textFrame.textRange;
-              t.text = old.text;
+              const shp = await findShape(c, slideId, shapeId, shapeName);
+              // Ghi lại chữ cũ cũng giữ phông: chữ cũ có “ư” thì ghi thẳng làm dòng đó đổi phông (soát mã Đợt 7, #3)
+              await setTextKeepFont(c, shp, old.text);
+              const t = shp.textFrame.textRange;
               if (old.size) t.font.size = old.size;
               if (old.bold !== null && old.bold !== undefined) t.font.bold = old.bold;
               if (old.color) t.font.color = old.color;
