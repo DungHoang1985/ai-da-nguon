@@ -217,6 +217,36 @@ Bằng chứng: `kiem-thu/cdp-bai/tham-do-8-chu-u.js`, `sau-471-chu-u-mac-dinh.j
 | Tự kiểm tra PowerPoint, bản cục bộ đã sửa, mẫu Georgia | **25/25**; 13 đoạn chữ đều Verdana | `sau-471-tu-kiem-tra-powerpoint-georgia-chu-u.json` |
 | Kiểm ngược: bỏ tạm phần sửa, giữ bước kiểm mới | 24/25 — bước mới trượt đúng ở ô chữ, hình, sơ đồ chevron (Arial) | `sau-471-tu-kiem-tra-chu-u-khi-bo-sua.json` |
 
+### Soát mã độc lập cho mã Đợt 7 và các bản vá (việc 2c của HANDOFF, 18/11/2026)
+
+Báo cáo: `tasks/dot-7-bang-chung/soat-ma-dot-7-va-ban-va.md` (phạm vi `git diff 01a6a13..HEAD -- src`). Kết quả: **1 cao · 3 trung bình · 12 thấp**; không có lỗi bảo mật mới; không thấy lệnh nào chạy hai lần quanh trần số bước và nút Làm tiếp.
+
+| # | Mức | Đã sửa | Kiểm thử máy |
+|---|---|---|---|
+| 1 | Cao | Bấm Dừng lúc lệnh ghi đang chạy: lượt chờ thêm tối đa 10 giây (`LATE_WAIT_MS`) cho thao tác Office xong, lấy kết quả thật, nên mục Hoàn tác đã có khi lượt kết thúc | `dot7-soat.test.ts` (3 ca) |
+| 2 | TB | `withTimeout` hết lỗi dùng biến trước khi khai báo; bấm Dừng lúc kiểm rủi ro / chờ duyệt thì lệnh không chạy | `dot7-soat.test.ts` (2 ca) |
+| 3 | TB | Hoàn tác của `ppt_set_shape_text` ghi lại chữ cũ có giữ phông | — (đường mã giống `setTextKeepFont` đã đo) |
+| 4 | TB | `ppt_add_slides`: slide tạo xong mà ghi chữ lỗi thì gỡ slide dở rồi mới báo; Hoàn tác của lô gỡ hết dù một slide lỗi. Thêm: nhánh bố cục không có ô tiêu đề / nội dung ghi chữ giữ phông | — |
+| 5 | Thấp | Lượt Làm tiếp ghi yêu cầu gốc của người dùng vào cột "Yêu cầu của lượt" | — (giao diện) |
+| 6 | Thấp | Dò lỗi lặp tính cả kết quả `{ok:false}` (Word "không tìm thấy"); người dùng từ chối không tính là lỗi lặp | `dot7-de-lai.test.ts` (2 ca) |
+| 8 | Thấp | Ghi chú "chỉ nhận 10 slide" đếm đúng (bỏ phần tử rỗng, tính cả chuỗi JSON) | `dot7-de-lai.test.ts` |
+| 9 | Thấp | Ảnh `.jfif`, `.jpe`, `.bmp` đặt được vào slide; `image="1"` ưu tiên ảnh tên `1.png` | `dot7-de-lai.test.ts` |
+| 13 | Thấp | Khóa ô công thức trên sheet có bố trí khóa riêng: luôn hỏi (`alwaysAsk`), kể cả khi tắt công tắc hỏi rủi ro | — |
+| 14 | Thấp | Bấm Làm tiếp không xóa chữ đang gõ, không gửi tệp đang chờ | — (giao diện) |
+| 15 | Thấp | Ô tiêu đề slide biểu đồ không khớp nhầm Subtitle | — |
+
+Để lại, lý do:
+
+| # | Việc | Lý do |
+|---|---|---|
+| 6 (một phần) | Lỗi có chèn tham số đổi mỗi lần không khớp nhau; lệnh ghi "thay 0 chỗ" vẫn đếm là đã ghi | Gộp lỗi theo mẫu dễ dừng nhầm; đếm "đã ghi" cần mỗi công cụ báo số chỗ đổi — thẻ chỉ là thông tin, Hoàn tác không phụ thuộc |
+| 7 | Dòng báo lịch sử đầy hiện sau khi gửi; chỉ mục dùng chung ba ứng dụng nên tên báo có thể thuộc ứng dụng khác | Cần thiết kế lại chỗ báo (lúc bấm Hội thoại mới) và lịch sử theo ứng dụng; đi cùng việc E2 còn mở |
+| 10 | Công cụ không tham số bị coi là "cắt dở" nếu nguồn không gửi lý do kết thúc | Chưa thấy nguồn thật nào bỏ lý do kết thúc; đổi luật cắt dở có thể làm chạy lệnh dở dang |
+| 11 | Gemini / kiểu OpenAI có nhiều lượt người dùng liền nhau sau Làm tiếp | Gemini hiện hành nhận; chưa thấy nguồn từ chối |
+| 12 | `restoreFont` ghi tên phông cụ thể, đổi phông chủ đề sau này thì dòng có “ư” giữ phông cũ | Đo 18/11: đặt lại đúng tên phông chủ đề có lúc bị PowerPoint bỏ qua, ghi `+mj-lt` không ra phông mẫu với chữ tiếng Việt; chưa có cách giữ liên kết chủ đề |
+| 16 | Bản tóm tắt bị cắt thì bỏ, lượt sau gọi tóm tắt lại | Chưa thấy xảy ra; cần đo với model trần đầu ra nhỏ |
+| 9 (một phần) | Hai ảnh trùng tên thì ảnh sau đè ảnh trước | Hiếm; người dùng đổi tên tệp được |
+
 ## Việc còn lại
 
 1. Cập nhật bảng so sánh `docs/so-sanh-claude-chinh-thuc.md` theo bản 4.7.0 (chưa làm).
