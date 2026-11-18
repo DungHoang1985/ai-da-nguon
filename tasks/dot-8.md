@@ -2,7 +2,7 @@
 
 Viết ngày 18/11/2026, gốc `main@f8c5a01`, bản đang chạy 4.7.2. Anh chọn việc này ở mục D (`tasks/dot-5.md`) ngày 18/11/2026.
 
-Trạng thái (18/11/2026): **anh duyệt kế hoạch theo ba đề xuất** (làm cả chỗ trống gõ tay; thử trên mẫu tự dựng; ghi đè ô đã có chữ thì hỏi trước). Mã, kiểm và soát mã độc lập đã xong trên nhánh `claude/dot-8-dien-mau`, **chưa phát hành** (sẽ là 4.8.0). Kết quả ở cuối tệp.
+Trạng thái (18/11/2026): **anh duyệt kế hoạch theo ba đề xuất** (làm cả chỗ trống gõ tay; thử trên mẫu tự dựng; ghi đè ô đã có chữ thì hỏi trước). **Đã phát hành trong bản 4.8.0** (18/11/2026). Kết quả ở cuối tệp.
 
 Mọi bước kiểm trong Office chạy trên desktop ẩn (`kiem-thu/mo-office.ps1`). Anh đang mở Word thì phiên dừng và hỏi, không mở bản thử.
 
@@ -140,3 +140,5 @@ Báo cáo: `tasks/dot-8-bang-chung/soat-ma-dot-8.md` — **1 cao · 7 trung bìn
 Ghi chú riêng tư: câu trả lời của AI có lúc nhắc tên tác giả sửa đổi trong Word (tên tài khoản Office trên máy); mọi tệp bằng chứng đã che tên này trước khi commit.
 
 Dọn dẹp: model trả về Anthropic · Claude Opus 5.5, Gemini nhớ 2.5 Flash như lúc đầu; Word, Excel, PowerPoint thử đã đóng không lưu.
+
+Phát hành 4.8.0 (18/11/2026, anh duyệt): `main@504d1d5` → `gh-pages@40771d8`, lượt Actions 44276142725 xanh, GitHub Pages trả gói `taskpane.4bc176ad.js`. Tự kiểm tra trên bản phát hành ở desktop ẩn (đầu khung hiện v4.8): Word 39/39, Excel 40/40, PowerPoint 25/25 — `phat-hanh-480-*.json`.
