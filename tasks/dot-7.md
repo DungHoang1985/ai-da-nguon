@@ -1,4 +1,6 @@
-# Đợt 7 — bản 4.7.0 "trả nợ kỹ thuật" (kế hoạch, CHƯA làm)
+# Đợt 7 — bản 4.7.0 "trả nợ kỹ thuật" (mã xong trên nhánh `claude/dot-7`, CHƯA phát hành, kiểm trong Office còn dở)
+
+> Trạng thái 18/11/2026: anh duyệt kế hoạch theo ba đề xuất mặc định. Mã của cả sáu việc đã viết và commit trên nhánh `claude/dot-7` (chưa đẩy `main`). Kiểm thử máy 560/560. Tự kiểm tra trên bản cục bộ: PowerPoint 23/23, Excel 40/40; **Word chưa chạy** vì anh mở Word giữa buổi (Office chỉ chạy một bản mỗi phiên). Bảng kết quả và việc còn lại ở cuối tệp.
 
 Viết ngày 18/11/2026, gốc `origin/main` = `cb400ba`, bản đang chạy 4.6.0. Việc lấy từ mục "Việc kỹ thuật chưa làm" của `tasks/HANDOFF.md`. Đợt này không thêm tính năng lớn: làm nốt các việc đã hứa ở Đợt 3, 4 và vá chỗ bài thử từng gây hại.
 
@@ -102,3 +104,57 @@ Commit sau mỗi chặng trên nhánh riêng; chỉ đẩy `main` (tức phát h
 - Trả lời 3 câu trên và duyệt kế hoạch.
 - Đóng Word / Excel / PowerPoint khi phiên cần mở Office thử (phiên sẽ hỏi trước).
 - Duyệt phát hành 4.7.0.
+
+## Anh chọn (18/11/2026)
+
+Duyệt kế hoạch theo ba đề xuất mặc định: trần Word 12 · Excel 12 · PowerPoint 20; làm E2 (báo khi lịch sử đầy); Chạy thật bằng Claude Haiku 5.5 qua key Anthropic.
+
+## Đã làm (nhánh `claude/dot-7`, 4 commit từ `cb400ba`; chưa đẩy `main`)
+
+- **A.** `src/core/agent/loop.ts`: `stepCapFor` (Word 12, Excel 12, PowerPoint 20); sự kiện `limit` kèm số lệnh ghi thành công; dừng sớm `stuck` khi một công cụ báo cùng một lỗi (y nguyên tham số: 2 bước; tham số có đổi: 3 bước). `Chat.tsx`: thẻ "AI đã làm N bước… Làm tiếp?" với nút Làm tiếp / Dừng ở đây; số lần gọi AI cộng dồn qua các lượt Làm tiếp. Ghi chú "add-in dừng lượt" nằm ở tin của add-in, không ở vai trợ lý (xem Bài học trong HANDOFF).
+- **B.** `ppt_add_slides` (tối đa 10 slide một lệnh, một mục Hoàn tác cho cả lô); `ppt_add_slide` dùng chung hàm.
+- **C.** `ppt_insert_image` + `src/core/imagefit.ts` (vị trí content / left / right / center / full hoặc left, top, width, height; giữ tỷ lệ; không ra ngoài slide; GIF, WebP và ảnh quá lớn được vẽ lại thành PNG). Ảnh đính kèm ở PowerPoint được giữ trong bộ nhớ của phiên và nêu tên trong tin nhắn.
+- **D.** Nhật ký Excel: thay hàng loạt, xóa trùng, tự điền, xóa vùng ghi giá trị cũ / mới từng ô, tối đa 200 ô + một dòng tổng; định dạng nhiều vùng ghi đủ các vùng. `excel_protect` hỏi trước khi sheet đã có bố trí khóa riêng.
+- **E.** Chế độ thử (`sessionStorage["aidn-che-do-thu"]`): không lưu lịch sử, đầu khung hiện "chế độ thử — không lưu lịch sử"; `cdp.mjs thu <cổng> on|off`, và `cdp.mjs eval` trên khung add-in tự bật (thêm `--luu` để không bật). Lịch sử đầy: dòng báo hội thoại cũ nhất bị xóa.
+- **F.** Ba lượt soát mã độc lập (báo cáo trong `tasks/dot-7-bang-chung/soat-ma-*.md`) và các chỗ sửa — bảng dưới.
+- Kiểm thử máy mới: `test/unit/dot7.test.ts` (19), `test/unit/dot7-soat.test.ts` (17). Tự kiểm tra thêm 1 bước PowerPoint, 1 bước Excel.
+
+## Soát mã độc lập: đã sửa và để lại
+
+| Lượt | Phát hiện | Đã sửa | Để lại |
+|---|---|---|---|
+| Lõi tác tử (trạng thái hiện tại) | 1 cao · 5 trung bình · 12 thấp | Cao: bản tóm tắt rỗng hoặc bị cắt cụt không còn thay hội thoại cũ. Trung bình: bản ghi đưa đi tóm tắt giữ phần cuối tin người dùng; Dừng hủy được lúc công cụ đang chạy; lệnh công cụ đứt luồng chưa có tham số không chạy với `{}`; trả lời rỗng hiện một dòng nói rõ; `model_context_window_exceeded` coi là bị cắt; cắt tóm tắt không rơi vào tin ảnh công cụ. Thấp: kết quả công cụ không đóng gói được; che đúng giá trị key đang dùng | Các mục thấp còn lại: 429 hết hạn mức theo ngày vẫn thử lại 3 lần; 408 và lỗi mạng tạm không thử lại; vài câu lỗi 400 / 401 / 403 báo sai loại; từ 10 lệnh song song thì mốc bộ nhớ đệm cũ ra ngoài tầm (chưa đo bằng API thật); `maskSecrets` che thừa ở vài câu thường |
+| Đợt 5 | 3 cao · 6 trung bình · 9 thấp | Cao: trần chữ của `read_attachment_pages` hạ xuống 20.000 (dưới trần kết quả công cụ), trang quá dài bị cắt có ghi rõ, lời dặn đứng trước nội dung trang; PDF mà từ nửa số trang trở lên gần như không có chữ (bản quét mang dấu chữ ký số) được giữ tệp và ghi chú để AI đọc bằng ảnh; ảnh công cụ trong lịch sử có trần 16, cắt theo lô 8. Trung bình: nhắc riêng tư ở kênh Claude của OpenRouter; tham số `as_image`; kết quả tìm Word gắn chữ gốc trước khi tính ngân sách, chữ gốc trích quanh chỗ sửa; câu "không tìm thấy" nhắc có sửa đổi chờ duyệt; chỉ rút chữ 24 trang đầu của yêu cầu. Thấp: "1 - 3" được nhận | #4 phần còn lại: cờ "gói miễn phí" cho Groq, Cerebras, Gemini chưa có. #6 phần còn lại: chưa tìm thẳng trên chữ gốc (mới nhắc cách đọc bản gốc). Thấp #10, #12–#18 (trang chữ ngắn bị gọi là "scan" khi model không nhận ảnh; trần 15 MB cho bản quét đi đường công cụ; kho tệp đính kèm dùng chung giữa các hội thoại; lỗi pdf.js tiếng Anh…) |
+| Đợt 6 | 0 cao · 2 trung bình · 9 thấp | Trung bình: nguồn có danh sách model cố định (Kimi) không còn hiện "Đã kết nối" khi key bị từ chối 401 / 403; key dạng JWT hoặc hex không tiền tố được che theo đúng giá trị đang dùng | 9 mục thấp: khối suy nghĩ cũ gửi lại cho nguồn nhóm 2 (có vòng gửi lại chế độ thường); câu lỗi "dán lại key" ở kênh dùng chung key; `max_tokens` của Claude 3.5 qua OpenRouter; nguồn tự khai luôn gửi `cache_control`; thẻ nguồn tự khai ẩn sau "xem thêm"; khôi phục gộp không gộp nguồn tự khai; cảnh báo số dư ở kênh Claude của OpenRouter; chuyển hướng mang `x-api-key`; nhận địa chỉ IP nội bộ |
+
+Lượt soát Đợt 6 xác nhận: không có ca nào đưa key của nguồn này tới địa chỉ của nguồn khác; nguồn Anthropic gốc không đổi byte nào.
+
+## Kết quả theo tiêu chí (18/11/2026, bản cục bộ, Office trên desktop ẩn)
+
+| # | Kết quả | Bằng chứng |
+|---|---|---|
+| A1 | Đạt | Kiểm thử máy `dot7.test.ts` (6 kiểm thử nhóm A) |
+| A2 | Đạt, làm trong **Excel** thay vì Word (anh mở Word giữa buổi) | Chạy thật Haiku 5.5, bài ghi 16 ô mỗi lệnh một ô: thẻ "AI đã làm 12 bước (hết một lượt), đã ghi 12 thao tác… Làm tiếp?", 12 ô đã ghi; bấm Làm tiếp → đủ 16 ô, "1 nhiệm vụ · 17 lần gọi AI" — `lam-tiep-excel-haiku55-lan3.json`. Hai lần chạy đầu (`…haiku55.json`, `…lan2.json`) lộ lỗi model nhận ghi chú dừng là lời mình; đã sửa. Chưa bấm thử nút "Dừng ở đây". Nút Hoàn tác vẫn theo từng lượt (12 rồi 4), không gộp |
+| A3 | Chưa kiểm được | Cần Word và Excel thử; dừng khi anh mở Word |
+| B1 | Đạt | Tự kiểm tra PowerPoint 23/23, bước "Đợt 7 · Thêm 3 slide…" — `tu-kiem-tra-powerpoint.json` |
+| B2 | Chưa kiểm được | Chưa Chạy thật bài "3 slide + 1 biểu đồ" trên mã mới |
+| C1 | Đạt | Cùng bước Tự kiểm tra: ảnh 400×200 đặt 430×215 ở nửa phải, đúng tỷ lệ, Hoàn tác gỡ được; ảnh không có thì báo rõ |
+| C2 | Chưa kiểm được | Chưa Chạy thật đính ảnh rồi nhờ AI đặt vào slide |
+| C3 | Một phần | Câu báo "không thấy ảnh đính kèm" có trong Tự kiểm tra; chưa Chạy thật với model |
+| D1 | Đạt | Kiểm thử máy (5 ô, 300 ô, công thức thành chữ) + Tự kiểm tra Excel 40/40, bước "Đợt 7 · Nhật ký…": thay 3 ô → 3 dòng W2, W4, W6 có cũ / mới; xóa trùng có giá trị cũ; Hoàn tác trả đủ — `tu-kiem-tra-excel.json` |
+| D2 | Đạt | Cùng bước: sheet mặc định không hỏi; có ô mở khóa riêng thì hỏi; bố trí cũ còn nguyên sau khi chỉ hỏi |
+| E1 | Đạt | Kiểm thử máy + trong khung: đầu khung hiện dòng chế độ thử; số hội thoại trong chỉ mục trước và sau ba lần chạy bài Chạy thật không đổi (0 → 0) |
+| E2 | Một phần | Kiểm thử máy `nextToDrop` đạt; dòng báo trên khung chưa nhìn trong Office |
+| F1 | Đạt | Ba báo cáo trong `tasks/dot-7-bang-chung/`; bảng "đã sửa và để lại" ở trên; 17 kiểm thử cho các chỗ sửa |
+| G1 | Một phần | PowerPoint 23/23, Excel 40/40 trên bản cục bộ. **Word chưa chạy** — các chỗ sửa trong `word_find`, công cụ đọc PDF theo trang và đường đính kèm PDF mới chỉ có kiểm thử máy |
+| G2 | Đạt | `npm test` 560/560, kiểm kiểu sạch, đóng gói đạt |
+| G3 | Chưa kiểm được | Chưa chạy bài nào với Gemini trên mã mới |
+
+Dọn dẹp: sheet thử đã xóa, model trả về Anthropic · Claude Opus 5.5, Excel và PowerPoint thử đã đóng (Excel thử phải tắt bằng lệnh kết thúc tiến trình vì kịch bản đóng không chạy khi anh đang mở Word), chế độ thử tự mất khi Office đóng.
+
+## Việc còn lại trước khi xin phát hành 4.7.0
+
+1. Khi anh đã đóng Word: Tự kiểm tra Word trên bản cục bộ (mốc 38/38).
+2. Chạy thật: A3 (soạn công văn ≤ 3 lần gọi, việc Excel 6 yêu cầu ≤ 4), B2 (3 slide + 1 biểu đồ ≤ 4 lần gọi, xem ảnh slide), C2 và C3 (đính ảnh rồi nhờ đặt vào slide; không có ảnh), một bài tìm trong Word khi có sửa đổi chờ duyệt (chỗ sửa theo soát mã), một bài đọc PDF theo trang (không thụt lùi sau khi hạ trần chữ), một bài với Gemini.
+3. Nhìn dòng báo "lịch sử đầy" trên khung (dựng chỉ mục giả 60 mục trong kho của nguồn gốc thử, không đụng kho thật).
+4. Nâng `package.json` lên 4.7.0, cập nhật bảng so sánh, xin anh duyệt phát hành, rồi Tự kiểm tra lại trên bản phát hành.
