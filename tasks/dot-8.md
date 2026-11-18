@@ -2,7 +2,7 @@
 
 Viết ngày 18/11/2026, gốc `main@f8c5a01`, bản đang chạy 4.7.2. Anh chọn việc này ở mục D (`tasks/dot-5.md`) ngày 18/11/2026.
 
-Trạng thái: **chờ anh duyệt kế hoạch và trả lời các câu ở mục "Chờ anh chọn"**. Chưa sửa dòng mã nào; đã thăm dò Office.js trong Word thật (desktop ẩn).
+Trạng thái (18/11/2026): **anh duyệt kế hoạch theo ba đề xuất** (làm cả chỗ trống gõ tay; thử trên mẫu tự dựng; ghi đè ô đã có chữ thì hỏi trước). Mã, kiểm và soát mã độc lập đã xong trên nhánh `claude/dot-8-dien-mau`, **chưa phát hành** (sẽ là 4.8.0). Kết quả ở cuối tệp.
 
 Mọi bước kiểm trong Office chạy trên desktop ẩn (`kiem-thu/mo-office.ps1`). Anh đang mở Word thì phiên dừng và hỏi, không mở bản thử.
 
@@ -78,3 +78,65 @@ Thêm Chạy thật với một model Gemini (luật "công cụ mới phải ch
 1. **Chỗ trống gõ tay ("……", "[●]", "____")**: làm cùng ô điền mẫu (đề xuất — mẫu hợp đồng, tờ khai ở Việt Nam phần lớn dùng dấu chấm, ít dùng ô điền mẫu), hay chỉ làm ô điền mẫu?
 2. **Mẫu thật để thử**: anh có mẫu hay dùng (đã bỏ thông tin thật) muốn em thử trên đó không? Nếu không, em dùng mẫu thử tự dựng (`kiem-thu/mau-thu.mjs`, hợp đồng đặt cọc bịa).
 3. **Ghi đè ô đã có chữ**: hỏi trước (đề xuất) hay cứ điền?
+
+Anh trả lời 18/11/2026: duyệt theo cả ba đề xuất.
+
+## Đã làm (18/11/2026)
+
+- `src/core/formfill.ts` (thuần, kiểm thử máy): nhận diện chỗ trống kèm nhãn và lần xuất hiện; đọc danh sách mục, định dạng ngày từ OOXML; **dựng lại OOXML của cả ô** với giá trị mới (`fillControlOoxml`) và lý do không nên ghi đè (`controlRefusal`).
+- `src/office/wordForm.ts`: `word_list_form_fields` (chỉ đọc) và `word_fill_form` (ghi). Tách hai công cụ thay cho một công cụ hai việc như kế hoạch: ở chế độ "Hỏi trước", công cụ ghi bị hỏi cả khi chỉ liệt kê.
+- Kỹ năng `dien-mau` (tự nạp theo "điền mẫu", "điền giúp", "điền hợp đồng"…), một dòng trong lời nhắc hệ thống của Word.
+- Tự kiểm tra Word thêm bước "Đợt 8 · Điền mẫu".
+
+### Thăm dò thêm khi làm (đo, không đoán)
+
+| Điều đo | Kết quả | Bằng chứng |
+|---|---|---|
+| Ghi chữ vào ô điền mẫu (`insertText`) rồi Hoàn tác (từ chối sửa đổi), rồi ghi lại | Ô bị để lại 5 dấu cách thay chữ gợi ý; **Word từ chối mọi lệnh ghi sau** (`GeneralException`); ô đánh dấu lệch (w14:checked = 1 mà hiện ☐) → AI báo "không điền được" ở lần hai | `chay-that-dien-mau-haiku55-lan3.json`, `tham-do-sau-hoan-tac.json` |
+| Ghi đè **cả ô** bằng `insertOoxml` rồi Hoàn tác, rồi ghi lại | Trả nguyên ô cũ, ghi lại được → mọi loại ô đi đường này | `tu-kiem-tra-word-sau-soat.json` |
+| Sau Hoàn tác, nội dung ô có thể thành `<w:sdtContent/>` tự đóng | Hàm dựng phải nhận dạng này | Tự kiểm tra lần 1 trượt vòng hai, đã sửa |
+| Mã ô điền mẫu do Word cấp | Có thể **âm** (`c-672413777`) | `tu-kiem-tra-word-lan1.json` |
+| Thay một ô chọn để lại ô cũ "chờ xóa" cạnh ô mới, cùng tên | Đọc cả hai thì ô cũ trông như còn trống → soát nhất quán báo nhầm, AI tốn 2 lượt kiểm lại | `chay-that-dien-mau-haiku55.json` (5 lần gọi) |
+| Hai chỗ "[●]" cùng đoạn điền trong một lệnh | Phải đọc lại chữ hiện tại của đoạn trước mỗi chỗ (điền từ cuối lên) | `chay-that-sau-soat.json` (6 lần gọi), kiểm ngược `tu-kiem-tra-word-kiem-nguoc.json` |
+
+### Soát mã độc lập (C7)
+
+Báo cáo: `tasks/dot-8-bang-chung/soat-ma-dot-8.md` — **1 cao · 7 trung bình · 16 thấp**.
+
+| # | Mức | Đã sửa | Kiểm |
+|---|---|---|---|
+| 1 | Cao | Điền chỗ trống và ô bảng TRƯỚC ô điền mẫu (thay ô chứa đoạn để lại đoạn cũ chờ xóa làm lệch số đoạn); `label` bắt buộc, sai nhãn thì bỏ | Tự kiểm tra (ô chứa đoạn đặt trước chỗ trống) + kiểm thử máy |
+| 2 | TB | Nhãn của ô không tên = chữ đứng trước ô trong đoạn; kiểm nhãn với mọi ô | Tự kiểm tra (ô không tên) |
+| 3 | TB | Bỏ kết quả tìm nằm trong chữ đã xóa chờ duyệt; đọc lại chữ hiện tại của đoạn trước mỗi chỗ | Tự kiểm tra (lệnh điền thứ hai; hai "[●]" trong một lệnh), kiểm ngược |
+| 4 | TB | Chỗ trống nằm trong chữ gợi ý của ô: không liệt kê thành chỗ trống, điền thì từ chối và chỉ mã ô | — (đường mã) |
+| 5 | TB | Bỏ dấu vết sửa định dạng chờ duyệt trước khi dựng OOXML (hết hở thẻ) | Kiểm thử máy |
+| 6 | TB | Ô chứa bảng, hình, công thức: không ghi đè, báo sửa tay | Kiểm thử máy |
+| 7 | TB | Ô khóa không cho xóa: liệt kê là khóa, không điền | — |
+| 8, 9 | Thấp | Nhận thêm "năm 20……", "…/…/20…", "Họ và tên.........."; bỏ dẫn mục lục, "(…)", "“…”", cả dòng gạch — dùng chung cho soát nhất quán | Kiểm thử máy |
+| 10 | Thấp | Chuỗi tìm giữ dấu cách không ngắt | Kiểm thử máy |
+| 11, 12 | Thấp | Trạng thái ô đánh dấu đọc từ Word, ký hiệu dùng phông của trạng thái; bỏ đánh dấu ô đang đánh dấu thì hỏi | Kiểm thử máy |
+| 13, 15, 16, 17 | Thấp | Bỏ kiểu chữ gợi ý theo mọi ngôn ngữ; định dạng ngày lạ viết dd/MM/yyyy; ký tự điều khiển, tab; ô cấp ô bảng / hàng bảng từ chối, `<w:p/>`, `<w:sdtPr/>` | Kiểm thử máy |
+| 14 | Thấp | Ô gắn dữ liệu (data binding): không ghi đè | Kiểm thử máy |
+| 18 | Thấp | Chỉ ẩn ô chờ xóa khi còn ô sống cùng tên | — |
+| 19, 20, 21 | Thấp | Bảng đọc theo bản hiện tại; nhãn ô bảng lấy ô có chữ gần nhất bên trái + tên cột; không điền cột đầu | Kiểm thử máy |
+| 24 | Thấp | Kỹ năng: sửa số lệch chữ bằng `word_replace_text`; số và chữ do người dùng đưa lệch nhau thì hỏi lại | — |
+
+Để lại: **#22** (dòng có "chữ ký" bỏ qua cả chỗ tên trên dòng đó — thà bỏ sót còn hơn điền vào chỗ ký); **#23** (mỗi chỗ 2 lượt đồng bộ, nạp OOXML cho ô chọn / ô ngày — mẫu 20–30 chỗ chạy dưới 2 giây, đo lại khi gặp mẫu lớn).
+
+### Kết quả theo tiêu chí
+
+| # | Kết quả | Bằng chứng |
+|---|---|---|
+| C1 | Đạt — mẫu thử: 8 ô điền mẫu (6 loại, 1 ô khóa), 8 chỗ trống, 3 ô bảng; không nhận dòng ký tên | `chay-that-*.json` (bước liệt kê), kiểm thử máy `dot8*.test.ts` |
+| C2 | Đạt — Tự kiểm tra Word **39/39**: 5 loại ô + ô chứa đoạn + ô không tên + chỗ trống điền trong một lệnh, một mục Hoàn tác, hoàn tác về y cũ, điền lại vòng hai rồi hoàn tác vẫn đúng | `tu-kiem-tra-word-sau-soat.json` |
+| C3 | Đạt — mã sai, mục ngoài danh sách, thiếu nhãn, ô khóa: bỏ qua có lý do | như trên |
+| C4 | Đạt — ghi đè ô đã có chữ thì hỏi; ô trống không hỏi | như trên |
+| C5 | Đạt — Chạy thật Haiku 5.5 trên bản cuối: **3 lần gọi AI** cả hai lần (14/14, rồi bấm Hoàn tác, điền lại 15/15); thiếu CCCD thì để trống và kê lại; bản in đúng phông, không xám | `chay-that-sau-soat-1.json`, `-2.json`, `ban-in-mau-da-dien.png` |
+| C6 | Đạt — thông tin Bên B lấy từ tệp .docx đính kèm: 18/18 chỗ, 4 lần gọi AI, AI chỉ ra hai thông tin trong tệp mà mẫu không có chỗ | `chay-that-tep-dinh-kem.json` |
+| C7 | Đạt — báo cáo và bảng trên | `soat-ma-dot-8.md` |
+| C8 | Đạt — kiểm thử máy **609/609**, Tự kiểm tra Excel 40/40, PowerPoint 25/25 (bản cục bộ trước lượt sửa theo soát mã; lượt sửa chỉ đụng mã Word và phần thuần) | `tu-kiem-tra-excel.json`, `tu-kiem-tra-powerpoint.json` |
+| Gemini | **Chưa kiểm được** — Gemini 3.8 Flash nhận bộ công cụ mới (không lỗi lược đồ), gọi đúng `word_list_form_fields`; lượt điền thì máy chủ im lặng 150 giây | `chay-that-gemini.json` |
+
+Ghi chú riêng tư: câu trả lời của AI có lúc nhắc tên tác giả sửa đổi trong Word (tên tài khoản Office trên máy); mọi tệp bằng chứng đã che tên này trước khi commit.
+
+Dọn dẹp: model trả về Anthropic · Claude Opus 5.5, Gemini nhớ 2.5 Flash như lúc đầu; Word, Excel, PowerPoint thử đã đóng không lưu.
