@@ -4,6 +4,7 @@ import { customProvider, getProvider } from "../../src/core/providers";
 import { ApiError, ensureOk, fetchDiagnosed, isRetryable } from "../../src/core/errors";
 import { callModelStep } from "../../src/core/agent/llm";
 import { normalizeSlideList } from "../../src/office/pptTools";
+import { runAgent } from "../../src/core/agent/loop";
 
 const res = (status: number, body: any) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 const thrown = async (p: Promise<any>) => {
@@ -114,5 +115,44 @@ describe("ppt_add_slides: đếm phần dư đúng (soát mã Đợt 7, #8)", ()
     assert.strictEqual(normalizeSlideList(withEmpty, Infinity).length - normalizeSlideList(withEmpty).length, 0);
     const s = JSON.stringify(eleven);
     assert.strictEqual(normalizeSlideList(s, Infinity).length - normalizeSlideList(s).length, 1);
+  });
+});
+
+describe("Dò lỗi lặp (soát mã Đợt 7, #6)", () => {
+  const sseCall = (id: string, name: string, args: string) =>
+    new Response(`data: ${JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id, function: { name, arguments: args } }] }, finish_reason: "tool_calls" }] })}\n\n`, { status: 200 });
+  const tools = (execute: any): any => ({
+    host: "Word",
+    specs: [{ name: "thay", description: "", parameters: { type: "object", properties: {} }, write: true }],
+    overview: async () => ({}),
+    systemPrompt: () => "S",
+    execute,
+  });
+  const run = async (o: any) => {
+    const events: any[] = [];
+    let n = 0;
+    await runAgent({
+      provider: getProvider("groq")!,
+      key: "K",
+      model: "m",
+      system: "S",
+      messages: [{ role: "user", content: "x" }],
+      log: [],
+      maxSteps: 6,
+      onEvent: (e: any) => events.push(e),
+      fetchFn: (async () => sseCall(`c${++n}`, "thay", '{"find":"abc"}')) as any,
+      ...o,
+    } as any).catch(() => undefined);
+    return events;
+  };
+  it("Công cụ trả {ok:false, message} y nguyên tham số 2 bước liền: dừng sớm", async () => {
+    const ev = await run({ tools: tools(async () => ({ ok: false, found: 0, message: 'Không tìm thấy "abc"' })) });
+    const stuck = ev.find((e) => e.type === "stuck");
+    assert.ok(stuck, "không dừng sớm");
+    assert.match(stuck.error, /Không tìm thấy/);
+  });
+  it("Người dùng từ chối cùng thao tác nhiều lần: không tính là lỗi lặp", async () => {
+    const ev = await run({ tools: tools(async () => ({ ok: true })), askBeforeWrite: true, approve: async () => false });
+    assert.ok(!ev.some((e) => e.type === "stuck"), "từ chối bị tính là lỗi lặp");
   });
 });

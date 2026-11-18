@@ -225,6 +225,8 @@ export async function exportSlide(ctx: PowerPoint.RequestContext, slide: PowerPo
 
 // ---------- Biểu đồ gốc ----------
 
+/** Kiểu ô giữ chỗ là tiêu đề (không tính Subtitle — soát mã Đợt 7, #15) */
+const TITLE_PH = /^(Title|CenterTitle|VerticalTitle)$/;
 const THEME_COLORS = ["accent1", "accent2", "accent3", "accent4", "accent5", "accent6"];
 
 export interface ChartLayout {
@@ -549,7 +551,7 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
                   x.textFrame.textRange.load("text");
                 });
                 await ctx.sync();
-                holders.filter((x) => !/Title/.test(String(x.placeholderFormat.type)) && !x.textFrame.textRange.text.trim()).forEach((x) => x.delete());
+                holders.filter((x) => !TITLE_PH.test(String(x.placeholderFormat.type)) && !x.textFrame.textRange.text.trim()).forEach((x) => x.delete());
                 await ctx.sync();
                 usedLayout = want.name;
                 layoutNote = " (PowerPoint không ghép được bố cục khi chèn nên slide đã được chuyển về bố cục này của mẫu)";
@@ -571,7 +573,7 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
               const hs = list.filter((x) => String(x.type) === "Placeholder");
               hs.forEach((x) => x.placeholderFormat.load("type"));
               await ctx.sync();
-              return hs.find((x) => /Title/.test(String(x.placeholderFormat.type)));
+              return hs.find((x) => TITLE_PH.test(String(x.placeholderFormat.type)));
             };
             const mine = await isTitle(sl.shapes.items);
             const model = await isTitle(sl.layout.shapes.items);

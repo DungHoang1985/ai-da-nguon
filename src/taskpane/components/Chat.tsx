@@ -358,6 +358,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
   const [showHistory, setShowHistory] = React.useState(false);
   const abortRef = React.useRef<AbortController | null>(null);
   const historyRef = React.useRef<AgentMessage[]>([]);
+  /** Yêu cầu gần nhất người dùng gõ (không tính "Làm tiếp"): cột "Yêu cầu của lượt" của Nhật ký AI */
+  const lastRequestRef = React.useRef<string>("");
   const allowAllRef = React.useRef(false);
   const listRef = React.useRef<HTMLDivElement>(null);
   const fileRef = React.useRef<HTMLInputElement>(null);
@@ -699,7 +701,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         setNotice({ text: "Không đọc được nội dung đang chọn: " + networkErrorMessage(e), err: true });
       }
     }
-    const atts = attachments;
+    // Bấm "Làm tiếp": không gửi tệp đang chờ, không xóa chữ đang gõ dở (soát mã Đợt 7, #14)
+    const atts = opts?.continueTask ? [] : attachments;
+    // Yêu cầu thật của người dùng cho cột "Yêu cầu của lượt" trong Nhật ký AI: lượt Làm tiếp dùng lại yêu cầu gốc (soát mã Đợt 7, #5)
+    const request = opts?.continueTask ? lastRequestRef.current || typed : typed;
+    if (!opts?.continueTask) lastRequestRef.current = typed;
     const model = models.find((m) => m.id === modelId);
     const vision = model?.vision ?? p.vision;
     const useAgent = agentOn && !!hostTools && model?.tools !== false;
@@ -759,8 +765,10 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         .then((d) => setHistWarn(d ? `Lịch sử đã đầy (${MAX_CONVERSATIONS} hội thoại): hội thoại cũ nhất “${d.title}” bị xóa để lấy chỗ. Muốn giữ hội thoại nào thì xóa bớt hội thoại khác trong Lịch sử.` : ""))
         .catch(() => undefined);
     }
-    setInput("");
-    setAttachments([]);
+    if (!opts?.continueTask) {
+      setInput("");
+      setAttachments([]);
+    }
     setShowHistory(false);
     setBusy(true);
     allowAllRef.current = false;
@@ -792,7 +800,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         host,
         history: historyRef.current,
         text: content,
-        request: typed,
+        request,
         images: images.length ? images : undefined,
         files: pdfs.length ? pdfs : undefined,
         think: !!settings.deepThink,
@@ -965,6 +973,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     clearAttachedFiles();
     setItems([]);
     historyRef.current = [];
+    lastRequestRef.current = "";
     lastInputRef.current = undefined;
     setConv("");
     setHistWarn("");

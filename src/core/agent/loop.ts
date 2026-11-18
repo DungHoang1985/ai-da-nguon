@@ -16,6 +16,7 @@ export const MAX_TRUNCATED_IN_A_ROW = 2;
 export const STOP_NOTE = "[Người dùng đã bấm Dừng ở đây. Các bước ở trên có kết quả thành công thì đã được thực hiện trong tài liệu.]";
 export const STOPPED_MID_TOOL =
   "Người dùng bấm Dừng khi bước này đang chạy: add-in thôi chờ. Thao tác có thể đã xong, đang chạy tiếp hoặc chưa làm trong tài liệu — lượt sau hãy đọc lại trạng thái tài liệu trước khi làm tiếp.";
+export const USER_DENIED = "Người dùng không cho phép thao tác này.";
 export const NOT_RUN_STOPPED = "Chưa thực hiện: người dùng đã bấm Dừng trước bước này.";
 /** Bước soát lập luận chặn tối đa bấy nhiêu lần trong một lượt; sau đó lệnh ghi được chạy thẳng (tránh vòng lặp và tốn token) */
 export const MAX_REVIEW_BLOCKS = 2;
@@ -287,7 +288,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         if ((o.confirmRisky || spec.alwaysAsk) && spec.risky) reason = await spec.risky(call.args || {});
         if (reason || (spec.write && o.askBeforeWrite)) {
           if (!o.approve || !(await o.approve(call, reason || undefined))) {
-            throw new Error("Người dùng không cho phép thao tác này. Đừng thử lại; hỏi người dùng muốn làm gì khác.");
+            throw new Error(USER_DENIED + " Đừng thử lại; hỏi người dùng muốn làm gì khác.");
           }
         }
         // Bấm Dừng trong lúc kiểm rủi ro hoặc chờ duyệt: không chạy lệnh (soát mã Đợt 7, #2)
@@ -342,8 +343,19 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       }
       o.onEvent({ type: "tool_end", call, result, error });
       push(toolMsg(call, result));
-      if (error) {
-        const sig = `${call.name}|${error}`;
+      // Lỗi để dò "lặp cùng lỗi": cả lỗi ném ra lẫn kết quả {ok:false, error} (Word "không tìm thấy"…); người dùng từ chối
+      // thì không tính — đó là quyết định của người dùng, không phải công cụ hỏng (soát mã Đợt 7, #6a, #6c)
+      const failText =
+        error ??
+        (result && typeof result === "object" && result.ok === false
+          ? typeof result.error === "string"
+            ? result.error
+            : typeof result.message === "string"
+              ? result.message
+              : undefined
+          : undefined);
+      if (failText && !failText.startsWith(USER_DENIED)) {
+        const sig = `${call.name}|${failText}`;
         let args = "";
         try {
           args = JSON.stringify(call.args ?? {});
@@ -354,7 +366,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         const now = { run: (before?.run || 0) + 1, sameArgs: before && before.args === args ? before.sameArgs + 1 : 1, args };
         // Cùng lỗi lặp trong một bước chỉ tính một lần cho bước đó
         if (!stepFails.has(sig)) stepFails.set(sig, now);
-        if (!stuck && (now.sameArgs >= STUCK_SAME_ARGS || now.run >= STUCK_SAME_ERROR)) stuck = { tool: call.name, error, times: now.run };
+        if (!stuck && (now.sameArgs >= STUCK_SAME_ARGS || now.run >= STUCK_SAME_ERROR)) stuck = { tool: call.name, error: failText, times: now.run };
       } else if (specMap.get(call.name)?.write && !(result && typeof result === "object" && result.ok === false)) {
         writes++;
       }
