@@ -446,7 +446,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
    - Ngày: dd/MM/yyyy (công cụ tự viết theo định dạng của ô). Chỗ trống "ngày   tháng   năm" thay cả cụm, ví dụ "ngày 18 tháng 11 năm".
    - Số tiền: điền cả bằng số và bằng chữ, hai chỗ phải khớp nhau; số viết kiểu Việt Nam (1.250.000.000). Tên riêng giữ đúng chữ hoa như nguồn.
    - Chỗ trống chỉ là chỗ để ký, đóng dấu: không điền.
-7. Kết quả của word_fill_form đã kèm amount_check (soát số tiền bằng số và bằng chữ): có chỗ lệch thì sửa ngay chỗ đó; không cần gọi thêm công cụ soát hay đọc lại văn bản để kiểm.
+7. Kết quả của word_fill_form đã kèm amount_check (soát số tiền bằng số và bằng chữ); không cần gọi thêm công cụ soát hay đọc lại văn bản để kiểm. Có chỗ lệch: nếu do bạn viết chữ sai thì sửa đúng cụm đó bằng word_replace_text (mã chỗ điền cũ không dùng được nữa sau khi điền); nếu chính thông tin người dùng đưa có số và chữ lệch nhau thì KHÔNG tự chọn — hỏi lại người dùng.
 8. Trả lời ngắn: (a) đã điền bao nhiêu chỗ, (b) chỗ bỏ qua và lý do công cụ trả, (c) chỗ còn trống vì thiếu thông tin — kê theo nhãn để người dùng bổ sung.`,
   },
 ];

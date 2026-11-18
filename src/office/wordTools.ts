@@ -1015,7 +1015,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
   });
 
   const admin = createWordAdminTools({ supports, tracked, resolvePara });
-  const form = createWordFormTools({ supports, tracked, loadRows: (ctx) => loadRows(ctx) });
+  const form = createWordFormTools({ supports, tracked, loadRows: (ctx) => loadRows(ctx), tableValues: (ctx, t, v) => currentTableValues(ctx, t, v) });
 
   async function run(name: string, a: any, u: Undo): Promise<any> {
     const extra = u.extra;

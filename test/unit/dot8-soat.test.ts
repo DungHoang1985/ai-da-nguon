@@ -92,3 +92,26 @@ describe("Đợt 8 · soát mã — dựng OOXML của ô", () => {
     assert.strictEqual(formatDate({ d: 5, m: 3, y: 2027 }, "d.M.yyyy"), "5.3.2027");
   });
 });
+
+import { cellLabel, emptyCells, parseFieldId as pid } from "../../src/office/wordForm";
+import { WORD_SPECS as SPECS } from "../../src/office/wordTools";
+
+describe("Đợt 8 · soát mã — ô bảng, nhãn bắt buộc", () => {
+  it("#20 Bảng nhiều cột: ô trống nhận nhãn từ ô có chữ gần nhất bên trái + tên cột; #21 không lấy cột đầu", () => {
+    const v = [
+      ["Hạng mục", "Diện tích", "Đơn giá", "Thành tiền"],
+      ["Căn A", "", "", ""],
+      ["", "", "", ""],
+    ];
+    assert.deepStrictEqual(
+      emptyCells(v).map((x) => `${x.r}.${x.c} ${x.label}`),
+      ["1.1 Căn A — Diện tích", "1.2 Căn A — Đơn giá", "1.3 Căn A — Thành tiền"]
+    );
+    assert.strictEqual(cellLabel(v, 2, 1), null, "hàng trống hết không có nhãn");
+  });
+  it("#1 label là tham số bắt buộc của word_fill_form", () => {
+    const sp = SPECS.find((x) => x.name === "word_fill_form")!;
+    assert.deepStrictEqual((sp.parameters as any).properties.fields.items.required, ["id", "value", "label"]);
+    assert.ok(pid("b3.0"));
+  });
+});

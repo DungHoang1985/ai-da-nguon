@@ -882,7 +882,9 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     if (!sup("1.6")) throw new Skip("Cần WordApi 1.6 (Hoàn tác theo danh sách sửa đổi)");
     const K = `DIENMAU${code}`;
     const P = {
+      block: `Khối ${K}: KHOI`,
       cc: `Ô ${K}: OCHON`,
+      untitled: `Tên viết tắt ${K}: VIETTAT`,
       name: `Họ và tên người đại diện ${K}: ……………………`,
       money: `Số tiền ${K}: [●] đồng (bằng chữ: [●] đồng).`,
     };
@@ -902,7 +904,11 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       '<pkg:part pkg:name="/word/document.xml" pkg:contentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"><pkg:xmlData><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"><w:body><w:p>' +
       sdts +
       "</w:p></w:body></w:document></pkg:xmlData></pkg:part></pkg:package>";
-    await addTemp([P.cc, P.name, P.money]);
+    // Ô chứa cả đoạn (đặt TRƯỚC các chỗ trống: thay nó để lại đoạn cũ chờ xóa, không được làm lệch số đoạn của chỗ trống — soát mã #1)
+    const blockPkg = pkg.replace(/<w:body><w:p>[\s\S]*<\/w:p><\/w:body>/, () => `<w:body><w:sdt>${pr(`Khối ${code}`, "aidn_dien_khoi", "<w:showingPlcHdr/>")}<w:sdtContent><w:p>${r("Bấm để nhập đoạn")}</w:p></w:sdtContent></w:sdt></w:body>`);
+    // Ô không tên: nhãn lấy từ chữ đứng trước ô (soát mã #2)
+    const untitledPkg = pkg.replace(/<w:body><w:p>[\s\S]*<\/w:p><\/w:body>/, () => `<w:body><w:p><w:sdt><w:sdtPr><w:tag w:val="aidn_dien_vt"/><w:showingPlcHdr/><w:text/></w:sdtPr><w:sdtContent>${r("Nhập")}</w:sdtContent></w:sdt></w:p></w:body>`);
+    await addTemp([P.block, P.cc, P.untitled, P.name, P.money]);
     const mark = log.length;
     try {
       await untracked(async (ctx) => {
@@ -914,6 +920,13 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
         w.load("items");
         await ctx.sync();
         w.items[0].insertOoxml(pkg, "Replace");
+        const pu = ps.items.find((x) => x.text === P.untitled) as Word.Paragraph;
+        const u = pu.search("VIETTAT", { matchCase: true });
+        u.load("items");
+        await ctx.sync();
+        u.items[0].insertOoxml(untitledPkg, "Replace");
+        const pb = ps.items.find((x) => x.text === P.block) as Word.Paragraph;
+        pb.getRange("Whole").insertOoxml(blockPkg, "Replace");
         await ctx.sync();
       });
       const iName = await need(`người đại diện ${K}`);
@@ -922,16 +935,17 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
         const l = await run("word_list_form_fields", {});
         const f = l.fields || [];
         const by = (title: string) => f.find((x: any) => x.kind === "control" && x.label === title);
-        return { l, name: f.find((x: any) => x.kind === "blank" && x.i === iName), money: f.filter((x: any) => x.kind === "blank" && x.i === iMoney), ten: by(T.ten), hop: by(T.hop), tt: by(T.tt), loai: by(T.loai), ngay: by(T.ngay) };
+        const vt = f.find((x: any) => x.kind === "control" && /^Tên viết tắt DIENMAU/.test(x.label));
+        return { l, name: f.find((x: any) => x.kind === "blank" && x.i === iName), money: f.filter((x: any) => x.kind === "blank" && x.i === iMoney), ten: by(T.ten), hop: by(T.hop), tt: by(T.tt), loai: by(T.loai), ngay: by(T.ngay), khoi: by(`Khối ${code}`), vt };
       };
-      const vals = (m: any) => [m.ten?.value, m.hop?.value, m.tt?.value, m.loai?.value, m.ngay?.value].join(" | ");
+      const vals = (m: any) => [m.ten?.value, m.hop?.value, m.tt?.value, m.loai?.value, m.ngay?.value, m.khoi?.value, m.vt?.value].join(" | ");
       const m0 = await listMine();
-      expect(m0.ten && m0.hop && m0.tt && m0.loai && m0.ngay, `Không thấy đủ 5 ô điền mẫu vừa tạo: ${JSON.stringify(m0.l.fields?.filter((x: any) => x.kind === "control"))}`);
+      expect(m0.ten && m0.hop && m0.tt && m0.loai && m0.ngay && m0.khoi && m0.vt, `Không thấy đủ 7 ô điền mẫu vừa tạo (có ô chứa đoạn, ô không tên): ${JSON.stringify(m0.l.fields?.filter((x: any) => x.kind === "control"))}`);
       expect(m0.tt.items?.join(",") === "Chuyển khoản,Tiền mặt" && m0.ngay.date_format === "dd/MM/yyyy", `Danh sách mục / định dạng ngày đọc sai: ${JSON.stringify([m0.tt, m0.ngay])}`);
       expect(m0.name?.blank === "……………………" && m0.money.length === 2, `Chỗ trống đọc sai: ${JSON.stringify([m0.name, m0.money])}`);
       const empty0 = vals(m0);
       /** Một vòng: điền mọi chỗ trong một lệnh rồi kiểm */
-      const round = async (m: any, v: { ten: string; tt: string; loai: string; ngay: string; ngayDoc: string; name: string; so: string; chu: string }) => {
+      const round = async (m: any, v: { ten: string; tt: string; loai: string; ngay: string; ngayDoc: string; name: string; so: string; chu: string; khoi: string; vt: string }) => {
         const fields = [
           { id: m.ten.id, value: v.ten, label: m.ten.label },
           { id: m.hop.id, value: "true", label: m.hop.label },
@@ -940,7 +954,8 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
           { id: m.ngay.id, value: v.ngay, label: m.ngay.label },
           { id: m.name.id, value: v.name, label: m.name.label },
           { id: m.money[0].id, value: v.so, label: m.money[0].label },
-          { id: m.money[1].id, value: v.chu, label: m.money[1].label },
+          { id: m.khoi.id, value: v.khoi, label: m.khoi.label },
+          { id: m.vt.id, value: v.vt, label: m.vt.label },
         ];
         expect((await riskOf("word_fill_form", { fields })) === null, "Điền chỗ còn trống mà vẫn hỏi");
         const before = log.length;
@@ -948,9 +963,19 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
         expect(res.filled?.length === fields.length, `Điền ${res.filled?.length}/${fields.length}: ${JSON.stringify(res.skipped)}`);
         expect(log.length === before + 1, `Một lệnh điền phải có đúng một mục Hoàn tác, thấy ${log.length - before}`);
         const m2 = await listMine();
-        expect(vals(m2) === [v.ten, "true", v.tt, v.loai, v.ngayDoc].join(" | "), `Ô điền mẫu sau khi điền: ${vals(m2)}`);
-        expect((await inspect(iName)).current === `Họ và tên người đại diện ${K}: ${v.name}`, `Đoạn họ tên sau khi điền: “${(await inspect(iName)).current}”`);
-        expect((await inspect(iMoney)).current === `Số tiền ${K}: ${v.so} đồng (bằng chữ: ${v.chu} đồng).`, `Đoạn số tiền sau khi điền: “${(await inspect(iMoney)).current}”`);
+        expect(vals(m2) === [v.ten, "true", v.tt, v.loai, v.ngayDoc, v.khoi, v.vt].join(" | "), `Ô điền mẫu sau khi điền: ${vals(m2)}`);
+        // Số đoạn đọc lại SAU khi điền: thay ô chứa đoạn có thể để lại đoạn cũ chờ xóa phía trên
+        const jName = await need(`người đại diện ${K}`);
+        const jMoney = await need(`Số tiền ${K}`);
+        expect((await inspect(jName)).current === `Họ và tên người đại diện ${K}: ${v.name}`, `Đoạn họ tên sau khi điền: “${(await inspect(jName)).current}”`);
+        expect((await inspect(jMoney)).current === `Số tiền ${K}: ${v.so} đồng (bằng chữ: [●] đồng).`, `Đoạn số tiền sau khi điền: “${(await inspect(jMoney)).current}”`);
+        // Lần điền thứ hai khi lần đầu còn chờ duyệt trong cùng đoạn (soát mã #3): chỗ “[●]” còn lại vẫn điền được
+        const m2b = await listMine();
+        const again = (m2b.l.fields || []).filter((x: any) => x.kind === "blank" && x.i === jMoney && x.blank === "[●]");
+        expect(again.length === 1, `Sau lần điền đầu phải còn đúng 1 chỗ “[●]”: ${JSON.stringify(again)}`);
+        const r2 = await run("word_fill_form", { fields: [{ id: again[0].id, value: v.chu, label: again[0].label }] });
+        expect(r2.filled?.length === 1, `Lần điền thứ hai: ${JSON.stringify(r2.skipped)}`);
+        expect((await inspect(jMoney)).current === `Số tiền ${K}: ${v.so} đồng (bằng chữ: ${v.chu} đồng).`, `Đoạn số tiền sau lần điền thứ hai: “${(await inspect(jMoney)).current}”`);
         return m2;
       };
       /** Hoàn tác mọi thao tác của bước rồi kiểm về y cũ */
@@ -959,20 +984,20 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
         log.length = mark;
         const m3 = await listMine();
         expect(vals(m3) === empty0, `Ô điền mẫu sau hoàn tác: ${vals(m3)} (đúng phải là ${empty0})`);
-        expect((await inspect(iName)).current === P.name && (await inspect(iMoney)).current === P.money, "Chỗ trống sau hoàn tác không về như cũ");
+        expect((await inspect(await need(`người đại diện ${K}`))).current === P.name && (await inspect(await need(`Số tiền ${K}`))).current === P.money, "Chỗ trống sau hoàn tác không về như cũ");
         return m3;
       };
-      const filled = await round(m0, { ten: "Công ty TNHH Thử Hưng Thịnh", tt: "Tiền mặt", loai: "Đất nền", ngay: "05/03/2027", ngayDoc: "05/03/2027", name: "Nguyễn Văn Thử", so: "500.000.000", chu: "năm trăm triệu" });
+      const filled = await round(m0, { ten: "Công ty TNHH Thử Hưng Thịnh", tt: "Tiền mặt", loai: "Đất nền", ngay: "05/03/2027", ngayDoc: "05/03/2027", name: "Nguyễn Văn Thử", so: "500.000.000", chu: "năm trăm triệu", khoi: "Điều khoản thử điền vào ô chứa đoạn", vt: "HTTN" });
       // Ghi đè ô đã có chữ: hỏi trước. Mã sai, mục ngoài danh sách: bỏ qua có lý do
       const warn = await riskOf("word_fill_form", { fields: [{ id: filled.ten.id, value: "Công ty khác" }] });
       expect(warn && /Ghi đè 1 chỗ/.test(warn), `Ghi đè ô đã có chữ mà không hỏi: ${warn}`);
-      const bad = await run("word_fill_form", { fields: [{ id: "b99999.0", value: "x" }, { id: filled.tt.id, value: "Trả góp" }] });
-      expect(!bad.ok && bad.skipped?.length === 2 && bad.skipped.some((x: any) => /danh sách/.test(x.reason)), `Mã sai / mục ngoài danh sách phải bị bỏ qua: ${JSON.stringify(bad)}`);
+      const bad = await run("word_fill_form", { fields: [{ id: "b99999.0", value: "x", label: "x" }, { id: filled.tt.id, value: "Trả góp", label: filled.tt.label }, { id: filled.ten.id, value: "y" }] });
+      expect(!bad.ok && bad.skipped?.length === 3 && bad.skipped.some((x: any) => /danh sách/.test(x.reason)) && bad.skipped.some((x: any) => /thiếu label/.test(x.reason)), `Mã sai / mục ngoài danh sách / thiếu nhãn phải bị bỏ qua: ${JSON.stringify(bad)}`);
       const m1 = await undoAll();
       // Điền lại sau khi hoàn tác (trước đây Word khóa ô sau khi hoàn tác) rồi hoàn tác lần nữa
-      await round(m1, { ten: "Công ty Thử Lần Hai", tt: "Chuyển khoản", loai: "Nhà xưởng", ngay: "2027-12-31", ngayDoc: "31/12/2027", name: "Trần Thị Thử", so: "1.000.000", chu: "một triệu" });
+      await round(m1, { ten: "Công ty Thử Lần Hai", tt: "Chuyển khoản", loai: "Nhà xưởng", ngay: "2027-12-31", ngayDoc: "31/12/2027", name: "Trần Thị Thử", so: "1.000.000", chu: "một triệu", khoi: "Ô chứa đoạn lần hai", vt: "TTLH" });
       await undoAll();
-      return `${m0.l.brief}; 5 loại ô (chữ, đánh dấu, chọn, chọn hoặc nhập, ngày) + “……” + hai “[●]” điền trong một lệnh, một mục Hoàn tác; ghi đè thì hỏi; mã sai, mục ngoài danh sách bị bỏ qua; hoàn tác về y cũ, điền lại lần hai rồi hoàn tác vẫn đúng`;
+      return `${m0.l.brief}; 5 loại ô + ô chứa đoạn + ô không tên + “……” + “[●]” điền trong một lệnh, “[●]” còn lại điền ở lệnh thứ hai khi lệnh đầu còn chờ duyệt; ghi đè thì hỏi; mã sai, mục ngoài danh sách, thiếu nhãn bị bỏ qua; hoàn tác về y cũ, điền lại vòng hai rồi hoàn tác vẫn đúng`;
     } finally {
       for (const u of log.slice(mark).reverse()) await u.undo().catch(() => undefined);
       log.length = mark;
@@ -981,6 +1006,12 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
         all.load("items/tag");
         await ctx.sync();
         all.items.filter((c) => /^aidn_dien_/.test(c.tag)).forEach((c) => c.delete(false));
+        await ctx.sync();
+        // Ô chứa đoạn để lại đoạn rỗng / chữ gợi ý sau khi gỡ ô: gỡ các đoạn còn sót của bước
+        const ps = ctx.document.body.paragraphs;
+        ps.load("items/text");
+        await ctx.sync();
+        ps.items.filter((p) => p.text.includes(K) || p.text === "Bấm để nhập đoạn").forEach((p) => p.delete());
         await ctx.sync();
       }).catch(() => undefined);
       await removeTemp([K]);
