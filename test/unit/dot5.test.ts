@@ -95,7 +95,10 @@ describe("Đợt 5 — nhắc riêng tư khi gửi tệp đính kèm", () => {
   });
   it("nguồn gửi thẳng, model trả tiền: không nhắc (không báo thừa)", () => {
     assert.strictEqual(attachmentPrivacyNote({ providerId: "anthropic", providerName: "Anthropic", modelId: "claude-sonnet-5-5" }), "");
-    assert.strictEqual(attachmentPrivacyNote({ providerId: "gemini", providerName: "Google Gemini", modelId: "gemini-3.8-flash" }), "");
+    assert.strictEqual(attachmentPrivacyNote({ providerId: "openai", providerName: "OpenAI", modelId: "gpt-5" }), "");
+  });
+  it("nguồn có gói miễn phí dùng chung loại key (Gemini, Groq, Cerebras, Mistral): nhắc có điều kiện (từ 4.7.2)", () => {
+    for (const id of ["gemini", "groq", "cerebras", "mistral"]) assert.match(attachmentPrivacyNote({ providerId: id, providerName: id, modelId: "m" }), /^Nếu key .* gói miễn phí/);
   });
   it("model được danh mục đánh dấu miễn phí: nhắc", () => {
     assert.match(attachmentPrivacyNote({ providerId: "khac", providerName: "Nguồn X", modelId: "m", free: true }), /Nguồn X.*miễn phí/);

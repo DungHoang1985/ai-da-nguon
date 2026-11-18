@@ -95,6 +95,9 @@ export function routeScanPdf(o: { pages: number; pdfCapable: boolean; vision?: b
 }
 
 /** Dòng nhắc riêng tư khi tệp đính kèm sắp được gửi cho nguồn miễn phí hoặc qua nơi trung chuyển. Không phải thì trả "". */
+/** Nguồn có gói miễn phí phổ biến, key không cho biết thuộc gói nào */
+const FREE_TIER_PROVIDERS = new Set(["gemini", "groq", "cerebras", "mistral"]);
+
 export function attachmentPrivacyNote(o: { providerId: string; providerName: string; modelId: string; free?: boolean }): string {
   const freeModel = /:free$/i.test(o.modelId) || !!o.free;
   // Mọi kênh đi qua OpenRouter (kể cả kênh Claude kiểu Anthropic) đều là nơi trung chuyển
@@ -104,5 +107,9 @@ export function attachmentPrivacyNote(o: { providerId: string; providerName: str
       : `Tệp đính kèm được gửi qua OpenRouter (nơi trung chuyển) rồi tới nhà cung cấp model. Tài liệu có thông tin mật thì cân nhắc gửi thẳng tới nhà cung cấp.`;
   }
   if (freeModel) return `Tệp đính kèm được gửi tới ${o.providerName} theo gói miễn phí: gói miễn phí thường cho phép nhà cung cấp lưu và dùng nội dung để cải thiện model. Tài liệu thật, có thông tin mật thì nên dùng nguồn trả tiền.`;
+  // Nguồn có gói miễn phí dùng chung một loại key với gói trả tiền: add-in không biết key thuộc gói nào → nhắc có điều kiện
+  // (soát mã Đợt 5, mục 4)
+  if (FREE_TIER_PROVIDERS.has(o.providerId))
+    return `Nếu key ${o.providerName} của bạn thuộc gói miễn phí: điều khoản gói miễn phí có thể cho phép nhà cung cấp lưu và dùng nội dung tệp để cải thiện model (xem điều khoản của nhà cung cấp). Tài liệu có thông tin mật thì nên dùng gói trả tiền.`;
   return "";
 }
