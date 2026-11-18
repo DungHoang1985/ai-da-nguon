@@ -124,6 +124,10 @@ export interface RunAgentOptions {
   sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
 }
 
+/** Ghi chú của add-in trong lịch sử (dừng vì chạm trần, vì lỗi lặp). Đặt ở vai người dùng có cờ fromTool, KHÔNG đặt ở vai trợ lý:
+ *  model đọc lại sẽ coi chữ ở vai trợ lý là lời mình đã nói và "đính chính" sai với người dùng (Chạy thật 18/11/2026). */
+const addinNote = (content: string): AgentMessage => ({ role: "user", content, fromTool: true }) as AgentMessage;
+
 const stopError = () => new DOMException("Đã dừng", "AbortError");
 
 /** Trả về toàn bộ hội thoại sau lần chạy (không gồm system). Khi bị dừng hoặc lỗi, phần đã làm vẫn nằm trong
@@ -329,14 +333,11 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
     if (stuck) {
       // Dừng sau khi mọi lệnh của bước đã có kết quả (lịch sử vẫn hợp lệ)
       o.onEvent({ type: "stuck", tool: stuck.tool, error: stuck.error, times: stuck.times, step, writes });
-      push({
-        role: "assistant",
-        content: `[Add-in dừng lượt: công cụ ${stuck.tool} báo cùng một lỗi ${stuck.times} bước liên tiếp (“${clip(stuck.error, 300)}”). Chờ người dùng quyết định làm tiếp theo cách khác hay thôi.]`,
-      });
+      push(addinNote(`[Add-in dừng lượt: công cụ ${stuck.tool} báo cùng một lỗi ${stuck.times} bước liên tiếp (“${clip(stuck.error, 300)}”). Chờ người dùng quyết định làm tiếp theo cách khác hay thôi.]`));
       return msgs;
     }
   }
   o.onEvent({ type: "limit", maxSteps, writes });
-  push({ role: "assistant", content: `[Đã đạt giới hạn ${maxSteps} bước của một lượt; chờ người dùng bảo làm tiếp.]` });
+  push(addinNote(`[Add-in dừng lượt này vì đã đạt giới hạn ${maxSteps} bước của một lượt; nhiệm vụ có thể chưa xong. Chờ người dùng bảo làm tiếp.]`));
   return msgs;
 }

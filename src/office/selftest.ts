@@ -610,6 +610,71 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         return `Ảnh PNG ${Math.round((img.data.length * 3) / 4 / 1024)} KB; đo ra tràn khung → giảm cỡ chữ và nới khung → hết tràn`;
       });
 
+      await step("Đợt 7 · Thêm 3 slide trong một lệnh (Hoàn tác gỡ cả lô); đặt ảnh đính kèm vào slide đúng tỷ lệ, có Hoàn tác", async () => {
+        const lay = theme.layouts.find((l: any) => l.placeholders.some((p: string) => p === "Title")) || theme.layouts[0];
+        const before = await countSlides();
+        const mark = mine.length;
+        const r = await go("ppt_add_slides", {
+          slides: [
+            { layout: lay.name, title: `Slide F1 ${tag}`, body: "Ý một\nÝ hai" },
+            { layout: lay.name, title: `Slide F2 ${tag}` },
+            { layout: lay.name, title: `Slide F3 ${tag}` },
+          ],
+        });
+        expect(r.ok && r.slides?.length === 3 && r.slides.map((x: any) => x.slide).join() === [before + 1, before + 2, before + 3].join(), `Thêm 3 slide: ${JSON.stringify(r)}`);
+        expect(mine.length === mark + 1, `Cả lô phải là MỘT mục Hoàn tác, có ${mine.length - mark}`);
+        expect((await countSlides()) === before + 3, "Số slide không tăng 3");
+
+        // Ảnh thử 400 × 200 (tỷ lệ 2:1) dựng ngay trong khung, đăng ký như một ảnh người dùng đính kèm
+        const { registerAttachedFile, unregisterAttachedFile } = await import("../core/attachedFiles");
+        const cv = document.createElement("canvas");
+        cv.width = 400;
+        cv.height = 200;
+        const g = cv.getContext("2d")!;
+        g.fillStyle = "#1F6FB5";
+        g.fillRect(0, 0, 400, 200);
+        g.fillStyle = "#FFFFFF";
+        g.fillRect(20, 20, 120, 60);
+        const name = `anh-thu-${tag}.png`;
+        registerAttachedFile(name, cv.toDataURL("image/png").split(",")[1]);
+        try {
+          const im = await go("ppt_insert_image", { slide: before + 1, image: `anh-thu-${tag}`, place: "right" });
+          const box = await PowerPoint.run(async (ctx) => {
+            const s = ctx.presentation.slides.getItemAt(before);
+            s.shapes.load("items/name,items/left,items/top,items/width,items/height");
+            await ctx.sync();
+            const sh = s.shapes.items.find((x) => x.name === im.shape);
+            return sh ? { left: sh.left, top: sh.top, width: sh.width, height: sh.height } : null;
+          });
+          expect(box, `Không thấy hình ảnh "${im.shape}" trên slide`);
+          const size = theme.slide_size || { width: 960, height: 540 };
+          const W = size.width || size.w || 960;
+          const H = size.height || size.h || 540;
+          expect(Math.abs(box!.width / box!.height / 2 - 1) < 0.01, `Sai tỷ lệ ảnh: ${JSON.stringify(box)}`);
+          expect(box!.left >= W / 2 - 1 && box!.left + box!.width <= W + 1 && box!.top >= 0 && box!.top + box!.height <= H + 1, `Ảnh không nằm nửa phải trong slide (${W}×${H}): ${JSON.stringify(box)}`);
+          await mine.pop()!.undo();
+          const gone = await PowerPoint.run(async (ctx) => {
+            const s = ctx.presentation.slides.getItemAt(before);
+            s.shapes.load("items/name");
+            await ctx.sync();
+            return !s.shapes.items.some((x) => x.name === im.shape);
+          });
+          expect(gone, "Hoàn tác chưa gỡ ảnh");
+          let missing = "";
+          try {
+            await go("ppt_insert_image", { slide: before + 1, image: "khong-co-anh-nay" });
+          } catch (e: any) {
+            missing = e.message;
+          }
+          expect(/Không thấy ảnh đính kèm/.test(missing), `Ảnh không có mà không báo rõ: ${missing}`);
+          await mine.pop()!.undo();
+          expect((await countSlides()) === before, "Hoàn tác cả lô chưa gỡ đủ 3 slide");
+          return `3 slide (${r.slides.map((x: any) => x.slide).join(", ")}) trong một lệnh, một mục Hoàn tác; ảnh 400×200 đặt ${Math.round(box!.width)}×${Math.round(box!.height)} tại (${Math.round(box!.left)}, ${Math.round(box!.top)}), đúng tỷ lệ, nửa phải; Hoàn tác gỡ ảnh rồi gỡ cả 3 slide`;
+        } finally {
+          unregisterAttachedFile(name);
+        }
+      });
+
       await step("Dọn các slide thử của Đợt 3", async () => {
         await cleanup();
         const n = await countSlides();

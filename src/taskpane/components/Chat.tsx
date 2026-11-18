@@ -220,7 +220,9 @@ interface Item {
 }
 
 /** Câu gửi model khi người dùng bấm "Làm tiếp" */
-export const CONTINUE_TASK = "Làm tiếp nhiệm vụ đang dở từ chỗ vừa dừng. Không làm lại các bước đã có kết quả thành công; xong thì báo ngắn gọn đã làm những gì.";
+export const CONTINUE_TASK =
+  "[Add-in: lượt trước do ADD-IN dừng lại (chạm trần số bước của một lượt, hoặc một công cụ lặp cùng một lỗi) — không phải do trợ lý tự dừng. Người dùng vừa bấm “Làm tiếp”.] " +
+  "Làm tiếp nhiệm vụ đang dở từ chỗ vừa dừng và làm cho tới khi XONG HẲN nhiệm vụ. Không làm lại các bước đã có kết quả thành công; xong thì báo ngắn gọn đã làm những gì.";
 
 interface Props {
   storage: Storage;

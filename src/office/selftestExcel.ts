@@ -336,6 +336,60 @@ export async function runExcelModelSelfTest({ base, step, expect, riskOf }: Kit)
     return "5 dòng (giờ, sheet, ô, cũ, mới, lý do, yêu cầu); công thức ghi thành chữ; AI không ghi được vào nhật ký; Hoàn tác: thêm 5 dòng, ô hết tô sáng, màu cũ trở lại";
   });
 
+  await step("Đợt 7 · Nhật ký cho thay hàng loạt và xóa trùng: giá trị cũ / mới từng ô; khóa ô trên sheet có bố trí khóa riêng thì hỏi trước", async () => {
+    const tlog: UndoEntry[] = [];
+    const trail = withAuditTrail(base, { settings: () => ({ excelLog: true }), describe: (c) => `${c.name} ${c.args?.action || ""}`.trim(), logSheet: NK });
+    const ctx = { log: tlog, said: "Đổi tên đơn vị", request: "Tự kiểm tra Đợt 7" };
+    const logRows = () =>
+      Excel.run(async (c) => {
+        const u = c.workbook.worksheets.getItem(NK).getUsedRange(true);
+        u.load("values");
+        await c.sync();
+        return u.values;
+      });
+    await run("excel_write_range", { sheet: M, address: "W1:W6", values: [["Đơn vị"], ["Cty A"], ["Cty B"], ["Cty A"], ["Cty C"], ["Cty A"]] });
+    const n0 = (await logRows()).length;
+    const rep = await trail.execute("excel_clean_data", { sheet: M, address: "W1:W6", action: "replace_all", find: "Cty A", replace: "Công ty A" }, ctx);
+    expect(rep.replaced === 3 && !("__trail" in rep), `Thay hàng loạt: ${JSON.stringify(rep)}`);
+    const r1 = (await logRows()).slice(n0);
+    expect(r1.length === 3, `Thay 3 ô cần 3 dòng nhật ký, có ${r1.length}: ${JSON.stringify(r1)}`);
+    expect(r1.map((r) => r[2]).join() === "W2,W4,W6" && r1.every((r) => r[3] === "Cty A" && r[4] === "Công ty A"), `Dòng nhật ký thiếu giá trị cũ / mới: ${JSON.stringify(r1)}`);
+    const n1 = n0 + r1.length;
+    const dup = await trail.execute("excel_clean_data", { sheet: M, address: "W1:W6", action: "remove_duplicates", has_headers: true }, ctx);
+    expect(dup.removed === 2, `Xóa trùng: ${JSON.stringify(dup)}`);
+    const r2 = (await logRows()).slice(n1);
+    expect(r2.length >= 2 && r2.every((r) => /^W\d$/.test(String(r[2])) && String(r[3]) !== ""), `Xóa trùng cần các dòng nêu ô và giá trị cũ: ${JSON.stringify(r2)}`);
+    for (const u of tlog.slice().reverse()) await u.undo();
+    const back = await read("W1:W6");
+    expect(back.map((r) => r[0]).join("|") === "Đơn vị|Cty A|Cty B|Cty A|Cty C|Cty A", `Hoàn tác chưa trả đúng dữ liệu: ${JSON.stringify(back)}`);
+    await run("excel_clear_range", { sheet: M, address: "W1:W6" });
+
+    // Khóa ô: sheet mới (mọi ô khóa theo mặc định) không hỏi; có ô mở khóa riêng thì hỏi kèm lý do
+    const K = "AIDN_KT_K_" + sfx;
+    await run("excel_add_sheet", { name: K });
+    await run("excel_write_range", { sheet: K, address: "A1:B2", values: [["Giá", "Thuế"], ["100", "=A2*0.1"]] });
+    const plainRisk = await riskOf("excel_protect", { action: "lock_formulas", sheet: K });
+    await Excel.run(async (c) => {
+      c.workbook.worksheets.getItem(K).getRange("A2").format.protection.locked = false;
+      await c.sync();
+    });
+    const customRisk = await riskOf("excel_protect", { action: "lock_formulas", sheet: K });
+    const locked = await Excel.run(async (c) => {
+      const ws = c.workbook.worksheets.getItem(K);
+      const p = ws.getRange("A2").format.protection;
+      p.load("locked");
+      await c.sync();
+      const v = p.locked;
+      ws.delete();
+      await c.sync();
+      return v;
+    });
+    expect(plainRisk === null, `Sheet mặc định mà vẫn hỏi: ${plainRisk}`);
+    expect(/bố trí khóa ô riêng/.test(String(customRisk)), `Sheet có ô mở khóa riêng mà không hỏi: ${customRisk}`);
+    expect(locked === false, "Chỉ hỏi thôi mà bố trí khóa đã bị đổi");
+    return `Thay 3 ô → 3 dòng (W2, W4, W6: “Cty A” → “Công ty A”); xóa 2 dòng trùng → ${r2.length} dòng có giá trị cũ; Hoàn tác trả đủ; khóa ô: sheet mặc định không hỏi, sheet có ô mở khóa riêng thì hỏi, bố trí cũ còn nguyên`;
+  });
+
   // Dọn: bỏ bảo vệ nếu còn, xóa sheet thử và tên vùng thử
   await Excel.run(async (ctx) => {
     const nm = ctx.workbook.names.getItemOrNullObject(NAME);
