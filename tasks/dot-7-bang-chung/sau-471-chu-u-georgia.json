@@ -1,0 +1,38 @@
+{
+ "ca": {
+  "1a ô chữ, có ư": {
+   "phongCaKhung": "Verdana",
+   "phong": "[Arial] Nhận xét xu hướng tư"
+  },
+  "1b ô chữ, không dấu": {
+   "phongCaKhung": "Verdana",
+   "phong": "[Verdana] Tong quan doanh thu"
+  },
+  "1c ô chữ rỗng → ghi chữ có ư → đặt lại phông cũ": {
+   "phongKhungRong": "Verdana",
+   "sauGhi": "[Arial] Nhận xét xu hướng tư",
+   "sauDatLai": "[Verdana] Nhận xét xu hướng tư"
+  },
+  "2 hình chữ nhật, ghi chữ có ư": {
+   "phongHinhRong": "Verdana",
+   "sauGhi": "[Arial] Nhận xét xu hướng tư",
+   "sauDatLai": "[Verdana] Nhận xét xu hướng tư",
+   "datArial": "[Arial] Nhận xét xu hướng tư"
+  },
+  "3 bảng thêm mới + sửa ô": {
+   "themMoi": [
+    "[Verdana] Nhận xét xu hướng tư",
+    "[Verdana] Tong quan doanh thu",
+    "[Verdana] Quý 1"
+   ],
+   "suaO": "[Verdana] Tăng trưởng ư",
+   "phongOKhongDau": "Verdana",
+   "sauDatLai": [
+    "Verdana",
+    "Verdana"
+   ]
+  },
+  "anh": 38400
+ },
+ "daXoaSlideThu": true
+}

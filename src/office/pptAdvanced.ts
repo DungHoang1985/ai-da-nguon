@@ -406,11 +406,17 @@ async function drawFlow(ctx: PowerPoint.RequestContext, a: any) {
   const T = a.top !== undefined ? Number(a.top) : Math.round((size.h * 0.25 + size.h - 40) / 2 - H / 2);
   const fontSize = Number(a.font_size) || (n <= 4 ? 16 : n <= 6 ? 13 : 11);
   const added: PowerPoint.Shape[] = [];
+  /** Phông của từng hình đọc TRƯỚC khi ghi chữ (lệnh nạp xếp hàng trước lệnh ghi): chữ có “ư” làm PowerPoint đổi sang Arial
+   *  (đo 18/11/2026, tham-do-8-chu-u.js) → trả lại phông này sau khi ghi */
+  const fontsBefore: { shp: PowerPoint.Shape; font: PowerPoint.ShapeFont }[] = [];
   const text = (shp: PowerPoint.Shape, t: string) => {
     const tf = shp.textFrame;
     tf.wordWrap = true;
     tf.verticalAlignment = "Middle";
     const tr = tf.textRange;
+    const font = tr.font;
+    font.load("name");
+    fontsBefore.push({ shp, font });
     tr.text = t;
     tr.font.size = fontSize;
     if (a.font_color) tr.font.color = a.font_color;
@@ -459,8 +465,12 @@ async function drawFlow(ctx: PowerPoint.RequestContext, a: any) {
       fill(d);
       added.push(d);
       const above = i % 2 === 0;
-      const tb = slide.shapes.addTextBox(t, { left: cx - slot / 2 + 4, top: above ? T : mid + dot, width: slot - 8, height: H / 2 - dot });
+      const tb = slide.shapes.addTextBox("", { left: cx - slot / 2 + 4, top: above ? T : mid + dot, width: slot - 8, height: H / 2 - dot });
       const tf = tb.textFrame;
+      const font = tf.textRange.font;
+      font.load("name");
+      fontsBefore.push({ shp: tb, font });
+      tf.textRange.text = t;
       tf.wordWrap = true;
       tf.verticalAlignment = above ? "Bottom" : "Top";
       tf.textRange.font.size = fontSize;
@@ -471,6 +481,7 @@ async function drawFlow(ctx: PowerPoint.RequestContext, a: any) {
   }
   added.forEach((s) => s.load("id,name"));
   await ctx.sync();
+  for (const x of fontsBefore) await restoreFont(ctx, x.shp, x.font.name).catch(() => 0);
   let group: { id: string; name: string } | null = null;
   if (supports("1.8")) {
     try {

@@ -729,6 +729,71 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         return `Tiêu đề và nội dung có “ư”: ${[...new Set(all1)].join(", ")}; sau khi sửa chữ: ${[...new Set(f2.flatMap((x) => x.fonts))].join(", ")}; tiêu đề slide biểu đồ: ${[...new Set(f3.flatMap((x) => x.fonts))].join(", ")}`;
       });
 
+      await step("Chữ có “ư” trong ô chữ, hình, sơ đồ quy trình và bảng vẫn theo phông của mẫu", async () => {
+        const lay = theme.layouts.find((l: any) => l.placeholders.some((p: string) => p === "Title")) || theme.layouts[0];
+        const r = await go("ppt_add_slides", { slides: [{ layout: lay.name, title: `Ô chữ ${tag}` }] });
+        const n = r.slides[0].slide;
+        // Ô chữ không dấu làm mốc: phông mà chữ có “ư” phải giống
+        await go("ppt_add_textbox", { slide: n, text: `Tong quan ${tag}`, left: 40, top: 120, width: 300, height: 36 });
+        await go("ppt_add_textbox", { slide: n, text: `Nhận xét xu hướng ${tag}`, left: 360, top: 120, width: 300, height: 36 });
+        await go("ppt_add_shape", { slide: n, shape_type: "rounded_rectangle", text: `Khối tăng trưởng ${tag}`, left: 40, top: 170, width: 260, height: 50 });
+        await go("ppt_add_process_flow", { slide: n, steps: ["Chuẩn bị hồ sơ", "Thẩm định dự án", "Phê duyệt chủ trương"], style: "chevron", top: 240, height: 60 });
+        await go("ppt_add_process_flow", { slide: n, steps: ["Khởi công", "Hoàn thiện phần thô", "Bàn giao nhà ở"], style: "timeline", top: 310, height: 80 });
+        await go("ppt_add_table", { slide: n, values: [["Hạng mục", "Tăng trưởng"], ["Quý 1", "Tư vấn"]], left: 420, top: 170 });
+        const seen = await PowerPoint.run(async (ctx) => {
+          const s = ctx.presentation.slides.getItemAt(n - 1);
+          s.shapes.load("items/id,items/name,items/type");
+          await ctx.sync();
+          let list: PowerPoint.Shape[] = [];
+          for (const sh of s.shapes.items) {
+            if (String(sh.type) === "Group") {
+              sh.group.shapes.load("items/id,items/name,items/type");
+              await ctx.sync();
+              list = list.concat(sh.group.shapes.items);
+            } else list.push(sh);
+          }
+          const out: { text: string; font: string }[] = [];
+          for (const sh of list.filter((x) => ["TextBox", "GeometricShape"].includes(String(x.type)))) {
+            const tr = sh.textFrame.textRange;
+            tr.load("text");
+            await ctx.sync();
+            const text = tr.text || "";
+            if (!text.trim()) continue;
+            // Phông theo từng ký tự (phông cả khung có thể che chỗ lệch), gom thành các đoạn liền cùng phông
+            const chars = [...text].map((_, i) => {
+              const ch = tr.getSubstring(i, 1);
+              ch.font.load("name");
+              return ch;
+            });
+            await ctx.sync();
+            const runs: { text: string; font: string }[] = [];
+            chars.forEach((ch, i) => {
+              const last = runs[runs.length - 1];
+              if (last && last.font === String(ch.font.name)) last.text += text[i];
+              else runs.push({ text: text[i], font: String(ch.font.name) });
+            });
+            out.push(...runs);
+          }
+          for (const sh of list.filter((x) => String(x.type) === "Table")) {
+            const t = sh.getTable();
+            const cells = [0, 1].flatMap((row) => [0, 1].map((col) => t.getCellOrNullObject(row, col)));
+            cells.forEach((c) => {
+              c.load("text");
+              c.font.load("name");
+            });
+            await ctx.sync();
+            cells.forEach((c) => out.push({ text: c.text, font: String(c.font.name) }));
+          }
+          return out;
+        });
+        const ref = seen.find((x) => x.text.startsWith("Tong quan"))?.font;
+        expect(!!ref, `Không đọc được phông ô chữ mốc: ${JSON.stringify(seen)}`);
+        const off = seen.filter((x) => x.font !== ref);
+        expect(!off.length, `Chữ lệch phông mẫu (${ref}): ${JSON.stringify(off)}`);
+        expect(seen.length >= 10, `Đọc được quá ít đoạn chữ: ${JSON.stringify(seen)}`);
+        return `${seen.length} đoạn chữ (ô chữ, hình, 2 sơ đồ, bảng) đều ${ref}`;
+      });
+
       await step("Dọn các slide thử của Đợt 3", async () => {
         await cleanup();
         const n = await countSlides();

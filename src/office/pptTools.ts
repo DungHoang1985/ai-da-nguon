@@ -514,12 +514,15 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
     case "ppt_add_textbox":
       return PowerPoint.run(async (ctx) => {
         const { slide } = await slideAt(ctx, a.slide);
-        const shp = slide.shapes.addTextBox(String(a.text ?? ""), {
+        // Tạo ô rỗng rồi mới ghi chữ (giữ phông): đưa chữ có “ư” thẳng vào addTextBox thì ra Arial thay cho phông của mẫu
+        // (đo 18/11/2026, kiem-thu/cdp-bai/tham-do-8-chu-u.js, cả mẫu Calibri lẫn Georgia / Verdana)
+        const shp = slide.shapes.addTextBox("", {
           left: a.left ?? 60,
           top: a.top ?? 60,
           width: a.width ?? 400,
           height: a.height ?? 60,
         });
+        await setTextKeepFont(ctx, shp, String(a.text ?? ""));
         const tr = shp.textFrame.textRange;
         if (a.font_size) tr.font.size = Number(a.font_size);
         if (a.bold !== undefined) tr.font.bold = !!a.bold;
@@ -550,8 +553,8 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         });
         if (a.fill_color) shp.fill.setSolidColor(a.fill_color);
         if (a.text) {
+          await setTextKeepFont(ctx, shp, String(a.text));
           const tr = shp.textFrame.textRange;
-          tr.text = String(a.text);
           if (a.font_color) tr.font.color = a.font_color;
           if (a.font_size) tr.font.size = Number(a.font_size);
         }

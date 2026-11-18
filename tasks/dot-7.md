@@ -199,10 +199,28 @@ Chưa sửa: lượt thừa còn lại ở bài này là AI đặt lại vị tr
 
 Dọn dẹp: model trả về Anthropic · Claude Opus 5.5 như lúc đầu; PowerPoint thử đã đóng không lưu.
 
+### Chữ có “ư” ở ô chữ, hình, sơ đồ quy trình, bảng (việc 2b của HANDOFF, 18/11/2026)
+
+| Ca (Office.js thô, đúng cách công cụ ghi) | Mẫu Calibri | Mẫu Georgia / Verdana |
+|---|---|---|
+| `addTextBox("…ư…")` (ppt_add_textbox, sơ đồ kiểu timeline) | **Arial** | **Arial** |
+| Ô chữ / hình rỗng rồi ghi `textRange.text` (ppt_add_shape, sơ đồ chevron, boxes) | **Arial**; đặt lại phông đọc trước khi ghi → Calibri | **Arial**; đặt lại → Verdana |
+| Bảng thêm mới (`addTable` với `values`) và sửa ô (`ppt_edit_table`) | Calibri (ảnh slide khớp) | Verdana |
+
+Bằng chứng: `kiem-thu/cdp-bai/tham-do-8-chu-u.js`, `sau-471-chu-u-mac-dinh.json` / `.png`, `sau-471-chu-u-georgia.json` / `.png`. Khác tiêu đề slide biểu đồ: ở đây đặt lại đúng phông cũ thì ăn (chữ ghi bằng Office.js chưa bị gắn phông chủ đề).
+
+Đã sửa: `ppt_add_textbox` tạo ô rỗng rồi ghi bằng `setTextKeepFont`; `ppt_add_shape` ghi bằng `setTextKeepFont`; sơ đồ quy trình đọc phông từng hình trước khi ghi rồi `restoreFont`. Bảng không cần sửa. Tự kiểm tra PowerPoint thêm bước "Chữ có “ư” trong ô chữ, hình, sơ đồ quy trình và bảng…" (so với một ô chữ không dấu làm mốc).
+
+| Kiểm | Kết quả | Bằng chứng |
+|---|---|---|
+| Kiểm thử máy, kiểm kiểu, đóng gói | 560/560, sạch, đạt | — |
+| Tự kiểm tra PowerPoint, bản cục bộ đã sửa, mẫu Georgia | **25/25**; 13 đoạn chữ đều Verdana | `sau-471-tu-kiem-tra-powerpoint-georgia-chu-u.json` |
+| Kiểm ngược: bỏ tạm phần sửa, giữ bước kiểm mới | 24/25 — bước mới trượt đúng ở ô chữ, hình, sơ đồ chevron (Arial) | `sau-471-tu-kiem-tra-chu-u-khi-bo-sua.json` |
+
 ## Việc còn lại
 
 1. Cập nhật bảng so sánh `docs/so-sanh-claude-chinh-thuc.md` theo bản 4.7.0 (chưa làm).
-2. ~~Ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0~~ đã sửa (mục ngay trên, chưa phát hành). Còn: đo chữ có “ư” ở ô chữ, hình, bảng, sơ đồ (nguyên nhân giờ đã rõ là `script="Viet"` của chủ đề — xem các công cụ này có ghi chữ gắn vi-VN không).
+2. ~~Ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0~~ đã sửa (mục ngay trên, chưa phát hành). Chữ có “ư” ở ô chữ, hình, bảng, sơ đồ: đã đo và sửa (mục ngay trên).
 3. E2: nhìn dòng báo "lịch sử đầy" trên khung (mới có kiểm thử máy). A2: bấm thử nút "Dừng ở đây".
 4. G3: chạy lại một bài công cụ mới với Gemini khi máy chủ Gemini trả lời.
 5. Các mục soát mã để lại (bảng ở trên).

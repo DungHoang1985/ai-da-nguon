@@ -1,0 +1,38 @@
+{
+ "ca": {
+  "1a ô chữ, có ư": {
+   "phongCaKhung": "Calibri",
+   "phong": "[Arial] Nhận xét xu hướng tư"
+  },
+  "1b ô chữ, không dấu": {
+   "phongCaKhung": "Calibri",
+   "phong": "[Calibri] Tong quan doanh thu"
+  },
+  "1c ô chữ rỗng → ghi chữ có ư → đặt lại phông cũ": {
+   "phongKhungRong": "Calibri",
+   "sauGhi": "[Arial] Nhận xét xu hướng tư",
+   "sauDatLai": "[Calibri] Nhận xét xu hướng tư"
+  },
+  "2 hình chữ nhật, ghi chữ có ư": {
+   "phongHinhRong": "Calibri",
+   "sauGhi": "[Arial] Nhận xét xu hướng tư",
+   "sauDatLai": "[Calibri] Nhận xét xu hướng tư",
+   "datArial": "[Arial] Nhận xét xu hướng tư"
+  },
+  "3 bảng thêm mới + sửa ô": {
+   "themMoi": [
+    "[Calibri] Nhận xét xu hướng tư",
+    "[Calibri] Tong quan doanh thu",
+    "[Calibri] Quý 1"
+   ],
+   "suaO": "[Calibri] Tăng trưởng ư",
+   "phongOKhongDau": "Calibri",
+   "sauDatLai": [
+    "Calibri",
+    "Calibri"
+   ]
+  },
+  "anh": 25632
+ },
+ "daXoaSlideThu": true
+}
