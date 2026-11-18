@@ -1,7 +1,7 @@
 /** Các mục soát mã "để lại" được làm nốt trước khi phát hành 4.7.2 (18/11/2026): tự thử lại lỗi tạm, không thử lại khi hết hạn mức theo ngày. */
 import * as assert from "assert";
-import { getProvider } from "../../src/core/providers";
-import { ApiError, ensureOk, isRetryable } from "../../src/core/errors";
+import { customProvider, getProvider } from "../../src/core/providers";
+import { ApiError, ensureOk, fetchDiagnosed, isRetryable } from "../../src/core/errors";
 import { callModelStep } from "../../src/core/agent/llm";
 
 const res = (status: number, body: any) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
@@ -13,6 +13,21 @@ const thrown = async (p: Promise<any>) => {
   }
   throw new Error("không ném lỗi");
 };
+
+describe("Nguồn tự khai không theo chuyển hướng (key x-api-key không đi sang miền khác)", () => {
+  it("Yêu cầu tới nguồn tự khai mang redirect: error; nguồn có sẵn giữ mặc định", async () => {
+    const seen: any[] = [];
+    const fetchFn = (async (_u: string, init: any) => {
+      seen.push(init);
+      return new Response("{}", { status: 200 });
+    }) as any;
+    const custom = customProvider({ id: "tuy-chinh-x", name: "X", baseUrl: "https://llm.example.com/anthropic", anthropicHeaders: true, models: ["m"] } as any)!;
+    await fetchDiagnosed(custom, custom.baseUrl + "/messages", { method: "POST" }, fetchFn);
+    await fetchDiagnosed(getProvider("anthropic")!, "https://api.anthropic.com/v1/messages", { method: "POST" }, fetchFn);
+    assert.strictEqual(seen[0].redirect, "error");
+    assert.strictEqual(seen[1].redirect, undefined);
+  });
+});
 
 describe("Tự thử lại: lỗi tạm và hết hạn mức theo ngày", () => {
   it("408 (hết giờ chờ phía máy chủ) được tự thử lại", () => {

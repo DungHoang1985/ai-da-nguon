@@ -352,6 +352,9 @@ export function hiddenErrorMessage(p: Provider, model?: string): string {
 
 /** fetch có chẩn đoán: lỗi fetch mà máy chủ vẫn tới được (gọi thử chế độ no-cors) → máy chủ trả lỗi giấu chi tiết, không phải mất mạng. */
 export async function fetchDiagnosed(p: Provider, url: string, init: RequestInit, fetchFn: typeof fetch = fetch, model?: string): Promise<Response> {
+  // Nguồn tự khai: không theo chuyển hướng. Trình duyệt chỉ gỡ tiêu đề Authorization khi chuyển sang tên miền khác, còn
+  // x-api-key thì đi theo → key có thể tới nơi khác với dòng "key được gửi tới {host}" (soát mã Đợt 6, mục 10).
+  if (p.custom && init.redirect === undefined) init = { ...init, redirect: "error" };
   try {
     return await fetchFn(url, init);
   } catch (e: any) {
