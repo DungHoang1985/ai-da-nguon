@@ -523,7 +523,7 @@ export function checkTerms(rows: ParaRow[], outline: OutlineItem[], which: { ter
 
 // ───────────────────────── 5. Chỗ trống chưa điền ─────────────────────────
 
-const BLANKS: RegExp[] = [
+export const BLANKS: RegExp[] = [
   /(?<![\p{L}\p{N}.…])(?:\.{3,}|…+)(?:\s*(?:\.{2,}|…+))*/gu,
   /_{3,}/g,
   /\[\s*(?:●|•|\*+|\.{2,}|…+|_+|x{2,})?\s*\]/giu,
@@ -533,7 +533,7 @@ const BLANKS: RegExp[] = [
   /ngày\s{2,}tháng\s{2,}năm/giu,
 ];
 /** Dòng ký tên: gạch chân, chấm chấm ở đó là chỗ ký, không phải chỗ quên điền */
-const SIGN_LINE = /ký tên|chữ ký|ký, ghi rõ|ký và ghi rõ|ký, đóng dấu|đóng dấu|signature|signed by/i;
+export const SIGN_LINE = /ký tên|chữ ký|ký, ghi rõ|ký và ghi rõ|ký, đóng dấu|đóng dấu|signature|signed by/i;
 
 export function checkBlanks(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
   const issues: Issue[] = [];

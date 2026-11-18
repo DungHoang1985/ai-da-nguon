@@ -182,6 +182,10 @@ function describeBase(call: ToolCall): string {
       return "Đọc các bảng";
     case "word_fill_table":
       return `Điền bảng số ${a.table_index}`;
+    case "word_list_form_fields":
+      return "Liệt kê chỗ cần điền trong mẫu";
+    case "word_fill_form":
+      return `Điền mẫu: ${Array.isArray(a.fields) ? a.fields.length : 0} chỗ`;
     case "word_go_to":
       return `Chuyển tới [¶${a.paragraph_index}]`;
     case "word_check_consistency":

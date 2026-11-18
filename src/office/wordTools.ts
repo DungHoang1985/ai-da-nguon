@@ -24,6 +24,7 @@ import {
 import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseName, findClause, outlineByParagraph } from "../core/outline";
 import { WORD_REVIEW_SPECS, createWordReviewTools } from "./wordReview";
 import { WORD_ADMIN_SPECS, createWordAdminTools } from "./wordAdmin";
+import { WORD_FORM_SPECS, createWordFormTools } from "./wordForm";
 import {
   ChangeSnap,
   beforeExcerpt,
@@ -379,6 +380,8 @@ export const WORD_SPECS: ToolSpec[] = [
   ...WORD_REVIEW_SPECS,
   // Đợt 3: dựng văn bản hành chính đúng thể thức, đặt thể thức trang (wordAdmin.ts)
   ...WORD_ADMIN_SPECS,
+  // Đợt 8: điền mẫu — liệt kê chỗ cần điền, điền hết trong một lệnh (wordForm.ts)
+  ...WORD_FORM_SPECS,
 ];
 
 /** Công cụ sửa nội dung Word nhận thêm `reason`: một câu lý do ngắn, hiện cạnh bước trên khung, trong hộp hỏi và ở mục Hoàn tác
@@ -1012,11 +1015,13 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
   });
 
   const admin = createWordAdminTools({ supports, tracked, resolvePara });
+  const form = createWordFormTools({ supports, tracked, loadRows: (ctx) => loadRows(ctx) });
 
   async function run(name: string, a: any, u: Undo): Promise<any> {
     const extra = u.extra;
     if (review.has(name)) return review.run(name, a);
     if (admin.has(name)) return admin.run(name, a, u);
+    if (form.has(name)) return form.run(name, a);
     switch (name) {
       case "word_get_overview":
         return overview();
@@ -2164,6 +2169,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
   /** Cảnh báo rủi ro: trả về lý do (luôn hỏi người dùng) hoặc null (không rủi ro). */
   const RISK: Record<string, (a: any) => string | null | Promise<string | null>> = {
     ...admin.risk,
+    ...form.risk,
     // Xóa đoạn: hộp xác nhận hiện trích nội dung sắp xóa
     word_delete_paragraphs: (a) =>
       Word.run(async (ctx) => {
@@ -2287,6 +2293,7 @@ export const WORD_SYSTEM_PROMPT = [
   "- NGOÀI THÂN VĂN BẢN: chú thích của một đoạn đi kèm đoạn đó trong kết quả đọc (trường notes). Đầu trang, chân trang, bookmark, trường dẫn chiếu, ô điền mẫu, hộp văn bản không nằm trong các đoạn: đọc bằng word_read_parts khi người dùng hỏi tới, và khi rà soát toàn văn.",
   "- VĂN BẢN HÀNH CHÍNH (công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản): soạn mới thì dựng bằng MỘT lần gọi word_create_admin_document — công cụ tự trình bày đúng thể thức; thông tin chưa biết (số, ngày, người ký) thì bỏ trống tham số, không bịa. Lề và khổ giấy sai thì sửa bằng word_set_page_format.",
   "- THỂ THỨC TRANG (lề, khổ giấy, phông, cỡ chữ của công văn, tờ trình…): word_check_page_format. SO VỚI PHIÊN BẢN KHÁC (tệp .docx người dùng đính kèm): word_compare_versions, rồi tóm tắt đủ mọi chỗ khác theo số điều (đếm theo differences); công cụ không sửa văn bản đang mở.",
+  "- ĐIỀN MẪU (hợp đồng mẫu, tờ khai, biểu mẫu có ô điền mẫu hoặc chỗ trống ……, ____, [●]): word_list_form_fields một lần, rồi điền mọi chỗ có thông tin trong MỘT lần gọi word_fill_form. Không bịa số giấy tờ, ngày, số tiền: thiếu thì để trống và kê lại cho người dùng.",
   "- Mọi sửa đổi của bạn được ghi bằng Theo dõi thay đổi để người dùng duyệt, và người dùng có nút Hoàn tác cho cả lượt.",
   "- Rà soát văn bản/hợp đồng: ghi nhận xét đúng chỗ bằng word_add_comment; chỉ sửa trực tiếp khi được yêu cầu.",
   "- Giữ nguyên văn phong, định dạng; không tự bịa số hiệu văn bản, điều khoản hay căn cứ pháp lý.",

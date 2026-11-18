@@ -423,6 +423,31 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 6. Nhãn và chú giải dùng màu chữ thường, không dùng màu của chuỗi. Màu trạng thái (đạt, cảnh báo, không đạt) chỉ dùng cho trạng thái và luôn kèm chữ.
 7. Excel: excel_create_chart từ vùng dữ liệu có dòng tiêu đề. PowerPoint: ppt_add_chart (biểu đồ gốc, sửa được dữ liệu). Xong thì xem lại bằng công cụ tổng quan.`,
   },
+  {
+    name: "dien-mau",
+    description:
+      "Điền thông tin vào mẫu Word có sẵn (hợp đồng mẫu, tờ khai, giấy đề nghị, biểu mẫu thủ tục): ô điền mẫu, chỗ trống '……', '____', '[●]', ô bảng trống. Lấy thông tin từ câu của người dùng, tệp đính kèm, bảng Excel đang mở; thiếu thì để trống và kê ra, không bịa. Dùng khi người dùng nói 'điền mẫu', 'điền vào mẫu', 'điền thông tin', 'điền hợp đồng', 'điền tờ khai', 'điền biểu mẫu', 'hoàn thiện mẫu'.",
+    hosts: ["Word"],
+    source: "builtin",
+    enabled: true,
+    triggers: ["dien mau", "dien vao", "dien giup", "dien ho", "dien cac cho", "dien vao mau", "dien thong tin", "dien hop dong", "dien to khai", "dien bieu mau", "dien cho trong", "dien vao cho trong", "hoan thien mau", "dien giay", "dien don"],
+    body: `# Điền mẫu
+
+1. Gọi word_list_form_fields một lần để biết mọi chỗ cần điền (mã, nhãn, loại ô, danh sách mục của ô chọn, định dạng ngày). Kết quả có next_start là chưa hết: gọi tiếp.
+2. Gom thông tin trước khi điền:
+   - từ câu của người dùng;
+   - từ tệp đính kèm: PDF đọc theo trang bằng read_attachment_pages; tệp .docx đã có chữ trong tin nhắn;
+   - từ Excel đang mở: read_other_app (nếu đã kết nối).
+3. Ghép từng chỗ với thông tin theo NHÃN đứng trước chỗ đó (ví dụ "Số CCCD:", "cấp ngày", "tại"), không theo thứ tự xuất hiện. Một chỗ trống mà nhãn không rõ (nhãn rỗng hoặc chỉ là dấu câu) thì xem chữ đứng sau (after) và đoạn chứa nó.
+4. Điền TẤT CẢ trong MỘT lần gọi word_fill_form, mỗi chỗ kèm label đúng như danh sách. Không điền từng chỗ một.
+5. KHÔNG BỊA: số giấy tờ (CCCD, mã số thuế, số thửa, số giấy chứng nhận), ngày tháng, số tiền, địa chỉ, tên người — không có trong thông tin được đưa thì bỏ chỗ đó, không đoán, không lấy ví dụ.
+6. Cách viết:
+   - Ô đánh dấu: true hoặc false. Ô chọn: đúng một mục trong danh sách của ô; thông tin không khớp mục nào thì không điền và nêu lại cho người dùng.
+   - Ngày: dd/MM/yyyy (công cụ tự viết theo định dạng của ô). Chỗ trống "ngày   tháng   năm" thay cả cụm, ví dụ "ngày 18 tháng 11 năm".
+   - Số tiền: điền cả bằng số và bằng chữ, hai chỗ phải khớp nhau; số viết kiểu Việt Nam (1.250.000.000). Tên riêng giữ đúng chữ hoa như nguồn.
+   - Chỗ trống chỉ là chỗ để ký, đóng dấu: không điền.
+7. Sau khi điền: báo ngắn (a) đã điền bao nhiêu chỗ, (b) chỗ bỏ qua và lý do công cụ trả, (c) chỗ còn trống vì thiếu thông tin — kê theo nhãn để người dùng bổ sung. Có số tiền thì chạy word_check_consistency với checks ["amount","blank"] để soát số và chữ.`,
+  },
 ];
 
 function norm(s: string): string {
