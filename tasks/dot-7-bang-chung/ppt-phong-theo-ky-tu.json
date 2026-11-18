@@ -1,0 +1,44 @@
+﻿[
+ {
+  "slide": 2,
+  "hinh": "Title 1",
+  "chu": "Tổng quan doanh thu",
+  "doDai": 19,
+  "maKyTu": "54 1ed5 6e 67 20 71 75 61 6e 20 64 6f 61 6e 68 20 74 68 75",
+  "phongCaDoan": "Calibri Light",
+  "theoKyTu": [
+   {
+    "phong": "Calibri Light",
+    "chu": "Tổng quan doanh thu"
+   }
+  ]
+ },
+ {
+  "slide": 3,
+  "hinh": "Text 0",
+  "chu": "Doanh thu theo quý",
+  "doDai": 18,
+  "maKyTu": "44 6f 61 6e 68 20 74 68 75 20 74 68 65 6f 20 71 75 fd",
+  "phongCaDoan": "Times New Roman",
+  "theoKyTu": [
+   {
+    "phong": "Times New Roman",
+    "chu": "Doanh thu theo quý"
+   }
+  ]
+ },
+ {
+  "slide": 4,
+  "hinh": "Title 1",
+  "chu": "Nhận xét xu hướng",
+  "doDai": 17,
+  "maKyTu": "4e 68 1ead 6e 20 78 e9 74 20 78 75 20 68 1b0 1edb 6e 67",
+  "phongCaDoan": "Times New Roman",
+  "theoKyTu": [
+   {
+    "phong": "Times New Roman",
+    "chu": "Nhận xét xu hướng"
+   }
+  ]
+ }
+]

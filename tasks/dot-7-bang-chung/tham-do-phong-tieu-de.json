@@ -1,0 +1,79 @@
+﻿{
+ "boCuc": "Title and Content",
+ "soSlideTruoc": 4,
+ "soSlideSau": 4,
+ "ketQua": [
+  {
+   "ca": "A không dấu",
+   "phongTruocKhiGhi": "Calibri Light",
+   "phongCaKhungSau": "Calibri Light",
+   "theoKyTu": [
+    "[Calibri Light] Tong quan doanh thu"
+   ]
+  },
+  {
+   "ca": "B có ổ",
+   "phongTruocKhiGhi": "Calibri Light",
+   "phongCaKhungSau": "Calibri Light",
+   "theoKyTu": [
+    "[Calibri Light] Tổng quan doanh thu"
+   ]
+  },
+  {
+   "ca": "C có ậ, ướ",
+   "phongTruocKhiGhi": "Calibri Light",
+   "phongCaKhungSau": "Calibri Light",
+   "theoKyTu": [
+    "[Times New Roman] Nhận xét xu hướng"
+   ]
+  },
+  {
+   "ca": "D chỉ ư",
+   "phongTruocKhiGhi": "Calibri Light",
+   "phongCaKhungSau": "Calibri Light",
+   "theoKyTu": [
+    "[Times New Roman] Xu huong tư"
+   ]
+  },
+  {
+   "ca": "E chỉ ậ",
+   "phongTruocKhiGhi": "Calibri Light",
+   "phongCaKhungSau": "Calibri Light",
+   "theoKyTu": [
+    "[Calibri Light] Nhan xet nhận"
+   ]
+  },
+  {
+   "ca": "F có ý",
+   "phongTruocKhiGhi": "Calibri Light",
+   "phongCaKhungSau": "Calibri Light",
+   "theoKyTu": [
+    "[Calibri Light] Doanh thu theo quý"
+   ]
+  },
+  {
+   "ca": "G lặp lại B",
+   "phongTruocKhiGhi": "Calibri Light",
+   "phongCaKhungSau": "Calibri Light",
+   "theoKyTu": [
+    "[Calibri Light] Tổng quan doanh thu"
+   ]
+  },
+  {
+   "ca": "H ậ ướ, đặt phông chủ đề sau khi ghi",
+   "phongTruocKhiGhi": "Calibri Light",
+   "phongCaKhungSau": "Calibri Light",
+   "theoKyTu": [
+    "[Calibri Light] Nhận xét xu hướng"
+   ]
+  },
+  {
+   "ca": "I ậ ướ, ghi bằng insertText",
+   "phongTruocKhiGhi": "Calibri Light",
+   "phongCaKhungSau": "Calibri Light",
+   "theoKyTu": [
+    "[Times New Roman] Nhận xét xu hướng"
+   ]
+  }
+ ]
+}

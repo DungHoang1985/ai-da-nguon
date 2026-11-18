@@ -675,6 +675,57 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         }
       });
 
+      await step("Đợt 7 · Chữ có “ư” trong tiêu đề, nội dung và tiêu đề slide biểu đồ vẫn theo phông của mẫu (không thành Times New Roman)", async () => {
+        const lay = theme.layouts.find((l: any) => l.placeholders.some((p: string) => p === "Title") && l.placeholders.some((p: string) => /Body|Content/.test(p))) || theme.layouts[0];
+        const before = await countSlides();
+        /** Phông của từng dòng chữ trong các ô giữ chỗ có chữ của một slide */
+        const fontsOf = (n: number) =>
+          PowerPoint.run(async (ctx) => {
+            const s = ctx.presentation.slides.getItemAt(n - 1);
+            s.shapes.load("items/id,items/name,items/type");
+            await ctx.sync();
+            const out: { shape: string; fonts: string[] }[] = [];
+            for (const sh of s.shapes.items.filter((x) => String(x.type) === "Placeholder")) {
+              const tr = sh.textFrame.textRange;
+              tr.load("text");
+              await ctx.sync();
+              const text = String(tr.text || "");
+              if (!text.trim()) continue;
+              const rs: PowerPoint.TextRange[] = [];
+              let at = 0;
+              for (const line of text.split(/\r\n|\r|\n|\v/)) {
+                if (line.length) {
+                  const r = tr.getSubstring(at, line.length);
+                  r.font.load("name");
+                  rs.push(r);
+                }
+                at += line.length + 1;
+              }
+              await ctx.sync();
+              out.push({ shape: sh.name, fonts: rs.map((r) => String(r.font.name)) });
+            }
+            return out;
+          });
+        const r = await go("ppt_add_slides", { slides: [{ layout: lay.name, title: `Nhận xét xu hướng ${tag}`, body: "Tăng trưởng tương đối đều\nKhông dấu" }] });
+        const n = r.slides[0].slide;
+        const f1 = await fontsOf(n);
+        const all1 = f1.flatMap((x) => x.fonts);
+        expect(all1.length >= 3, `Không đọc được phông của slide thử: ${JSON.stringify(f1)}`);
+        expect(!all1.some((f) => /times new roman/i.test(f)), `Chữ có “ư” bị đổi sang Times New Roman: ${JSON.stringify(f1)}`);
+        // Sửa chữ một ô có sẵn bằng ppt_set_shape_text
+        const titleName = f1[0].shape;
+        await go("ppt_set_shape_text", { slide: n, shape: titleName, text: `Xu hướng thị trường ${tag}` });
+        const f2 = await fontsOf(n);
+        expect(!f2.flatMap((x) => x.fonts).some((f) => /times new roman/i.test(f)), `Sau ppt_set_shape_text chữ thành Times New Roman: ${JSON.stringify(f2)}`);
+        // Tiêu đề của slide biểu đồ
+        const c = await go("ppt_add_chart", { title: `Doanh thu theo quý ${tag}`, chart_type: "column", categories: ["Q1", "Q2"], series: [{ name: "Doanh thu", values: [1, 2] }] });
+        const f3 = await fontsOf(c.slide);
+        expect(f3.length >= 1, `Slide biểu đồ không có ô tiêu đề có chữ: ${JSON.stringify(f3)}`);
+        expect(!f3.flatMap((x) => x.fonts).some((f) => /times new roman/i.test(f)), `Tiêu đề slide biểu đồ mang Times New Roman: ${JSON.stringify(f3)}`);
+        expect((await countSlides()) === before + 2, "Số slide thử không đúng");
+        return `Tiêu đề và nội dung có “ư”: ${[...new Set(all1)].join(", ")}; sau khi sửa chữ: ${[...new Set(f2.flatMap((x) => x.fonts))].join(", ")}; tiêu đề slide biểu đồ: ${[...new Set(f3.flatMap((x) => x.fonts))].join(", ")}`;
+      });
+
       await step("Dọn các slide thử của Đợt 3", async () => {
         await cleanup();
         const n = await countSlides();

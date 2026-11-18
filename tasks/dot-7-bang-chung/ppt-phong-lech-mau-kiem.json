@@ -1,0 +1,18 @@
+﻿{
+ "phienBan": "v4.7",
+ "model": "e) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cheDoThu": true,
+ "dinhKem": [],
+ "giay": 12,
+ "daHoi": [
+  "AI muốn: Thêm 2 slide (từ \"Tổng quan doanh thu\") | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "lanGoiAI": 3,
+ "buoc": [
+  "✅ Thêm 2 slide (từ \"Tổng quan doanh thu\")",
+  "✅ Chèn biểu đồ cột (slide mới)",
+  "✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 3 điểm cần xem: 1 slide thiếu tiêu đề, 2 phông lệch mẫu"
+ ],
+ "theLamTiep": null,
+ "khung": "AI Đa Nguồn\nv4.7\nchế độ thử — không lưu lịch sử\nExcel — · Word —\nBài thử của add-in, làm đúng từng bước và KHÔNG sửa gì ngoài các bước này: (1) gọi ppt_add_slides thêm 2 slide bố cục Title and Content: “Tổng quan doanh thu” với 2 ý ngắn, “Nhận xét xu hướng” với 2 ý ngắn; (2) gọi ppt_add_chart thêm một slide biểu đồ cột tiêu đề “Doanh thu theo quý” với số liệu Quý 1: 120, Quý 2: 150, Quý 3: 135, Quý 4: 180; (3) gọi ppt_check_deck rồi chép NGUYÊN VĂN các trường template_fonts và issues của kết quả (dạng JSON) vào câu trả lời. Không chụp ảnh slide, không sửa phông, không sửa gì theo kết quả kiểm.\nKỹ năng áp dụng: thiet-ke-bieu-do\n✅ Thêm 2 slide (từ \"Tổng quan doanh thu\")\n✅ Chèn biểu đồ cột (slide mới)\n✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 3 điểm cần xem: 1 slide thiếu tiêu đề, 2 phông lệch mẫu\nĐã làm xong ba bước. Riêng bước 1 và 2, tôi tạo slide và biểu đồ theo thứ tự trên, nhưng biểu đồ đặt ở slide 3 (sau \"Tổng quan doanh thu\") chứ không nối cuối bài, nên \"Nhận xét xu hướng\" thành slide 4. Tôi không sửa lại vì bạn yêu cầu không sửa thêm.\n \n• Slide 2: \"Tổng quan doanh thu\" (Title and Content)\n• Slide 3: \"Doanh thu theo quý\" (biểu đồ cột gốc, Quý 1–4: 120, 150, 135, 180)\n• Slide 4: \"Nhận xét xu hướng\" (Title and Content)\n \nKết quả ppt_check_deck, nguyên văn:\n \n```json\n{\n\"template_fonts\": [\"Calibri Light\", \"Calibri\"],\n\"issues\": [\n{\"kind\":\"missing_title\",\"slide\":1,\"message\":\"Slide 1 có ô tiêu đề nhưng để trống.\",\"fix\":\"ppt_set_shape_text vào ô tiêu đề\"},\n{\"kind\":\"font\",\"slide\":3,\"shape\":\"Text 0\",\"message\":\"Slide 3, “Text 0” (hình số 1): phông Times New Roman (mẫu dùng Calibri Light, Calibri) — “Doanh thu theo quý”.\",\"fix\":\"ppt_format_text với font_name \\\"Calibri\\\"\"},\n{\"kind\":\"font\",\"slide\":4,\"shape\":\"Title 1\",\"message\":\"Slide 4, “Title 1” (hình số 1): phông Times New Roman (mẫu dùng Calibri Light, Calibri) — “Nhận xét xu hướng”.\",\"fix\":\"ppt_format_text với font_name \\\"Calibri\\\"\"}\n]\n}\n```\n \nTheo đúng chỉ dẫn, tôi không sửa gì theo kết quả kiểm. Lưu ý: slide 1 là slide bìa có sẵn của bài, chưa có tiêu đề, không phải slide tôi tạo.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 42.616 · ra 1.764 · đọc từ bộ nhớ đệm 27.534 · ghi vào bộ nhớ đệm 15.074\nHoàn tác thay đổi (2)\nChèn vào slide\nSao chép\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}

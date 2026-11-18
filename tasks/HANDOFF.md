@@ -28,7 +28,7 @@
   - Soát mã độc lập đã chạy cho các đợt 1A, 1B, 2, 3 (A và B), 4, và ở Đợt 7 cho lõi tác tử (thay cho Đợt 0B), Đợt 5, Đợt 6; báo cáo `soat-ma-*.md` trong thư mục bằng chứng của từng đợt. Mã của chính Đợt 7 chưa có lượt soát độc lập.
   - Kiểm Office không chiếm màn hình của anh: `kiem-thu/mo-office.ps1` mặc định mở Office trên desktop ẩn (`kiem-thu/desktop-rieng.ps1`), điều khiển khung bằng `kiem-thu/cdp.mjs`. Đã đạt với Word, Excel, PowerPoint mở riêng từng ứng dụng.
   - Bảng so sánh với bản chính thức: `docs/so-sanh-claude-chinh-thuc.md`.
-- **Đang làm:** không có việc dở. Đợt 7 đã phát hành 18/11/2026 (bản 4.7.0); phần chưa đạt và chưa kiểm được ghi ở Vấn đề mở.
+- **Đang làm:** bản vá phông PowerPoint trên nhánh `claude/dot-7`, **đã sửa và kiểm trên bản cục bộ, CHƯA phát hành** (chờ anh duyệt 4.7.1): chữ có “ư” ghi vào ô giữ chỗ và tiêu đề slide biểu đồ không còn thành Times New Roman. Tự kiểm tra PowerPoint 24/24; bài 3 slide + 1 biểu đồ từ 6 xuống 4–5 lần gọi AI. Chi tiết: mục "Sau phát hành 4.7.0" của `tasks/dot-7.md`.
 - **Quyết định và lý do:**
   - AI sửa thẳng vào tài liệu + Hoàn tác; Word luôn ghi Track Changes; thao tác rủi ro luôn hỏi kèm lý do, "Cho phép hết lần này" không áp dụng cho thao tác rủi ro. Lý do: tự động tối đa nhưng an toàn như bản chính thức.
   - Kỹ năng chính thức được chuyển thể, không chép nguyên văn; không ghi số hiệu văn bản pháp luật trong kỹ năng (có kiểm thử chặn).
@@ -79,7 +79,7 @@
     - OpenAI: lỗi không đọc được chi tiết, nghi số dư hoặc quyền dùng model.
     - Model Claude đời cũ dùng `budget_tokens`; ca lượt soát lập luận trả "CHƯA ĐẠT" (Đợt 1B).
   - **Việc kỹ thuật chưa làm:**
-    - **Tìm ra ở Đợt 7, chưa sửa:** bài "3 slide + 1 biểu đồ" vẫn 6 lần gọi AI (mốc ≤ 4) vì `ppt_check_deck` báo "phông lệch mẫu" ở tiêu đề slide vừa thêm rồi AI sửa — chưa rõ là báo nhầm hay thật; nút Hoàn tác sau khi bấm Làm tiếp vẫn tính theo từng lượt, không gộp; kết quả tìm kiếm Word đánh dấu chỗ khớp bằng «…», có lần AI tưởng là định dạng lạ của văn bản; dòng báo "lịch sử đầy" và nút "Dừng ở đây" chưa nhìn trong Office; công cụ mới chưa Chạy thật được với Gemini (máy chủ im lặng 150 giây).
+    - **Tìm ra ở Đợt 7, chưa sửa:** ô tiêu đề của slide biểu đồ được tổng quan báo ở toạ độ 0, 0, 0, 0 nên AI tốn một lượt đặt lại vị trí (bài 3 slide + 1 biểu đồ còn 4–5 lần gọi); chữ có “ư” ở ô chữ, hình, bảng, sơ đồ quy trình của PowerPoint chưa đo; nút Hoàn tác sau khi bấm Làm tiếp vẫn tính theo từng lượt, không gộp; kết quả tìm kiếm Word đánh dấu chỗ khớp bằng «…», có lần AI tưởng là định dạng lạ của văn bản; dòng báo "lịch sử đầy" và nút "Dừng ở đây" chưa nhìn trong Office; công cụ mới chưa Chạy thật được với Gemini (máy chủ im lặng 150 giây).
     - Mục soát mã để lại: Đợt 4 còn 10 mục (bảng "Để lại" ở `tasks/dot-4.md`; hai mục nhật ký và khóa ô đã làm ở Đợt 7); phần A Đợt 3 còn 1, phần B còn 6; ba lượt soát của Đợt 7 để lại chủ yếu mục thấp (bảng ở `tasks/dot-7.md`).
     - Ghi chéo với hai tài liệu cùng ứng dụng chưa thử trong Office.
     - Soát mã độc lập cho mã của chính Đợt 7 (chưa chạy).
@@ -101,7 +101,7 @@
     - Bảy worktree của các đợt cũ đã xóa 18/11 (anh duyệt), các nhánh cục bộ đã gộp vào `main` cũng đã xóa. Còn hai thư mục **rỗng** `dot-0a-office-addon-compare-47836b` và `dot-4-a4b5e7` trong `D:\ADD IN\.claude\worktrees\` bị một tiến trình giữ, không xóa được lúc đó; xóa sau khi khởi động lại ứng dụng Claude.
 - **Bước tiếp theo (đề xuất 18/11/2026, chờ anh duyệt từng bước):**
   1. ~~Kéo `D:\ADD IN` lên `origin/main`, viết gọn tệp này~~ xong 18/11.
-  2. ~~Bản 4.7.0 "trả nợ kỹ thuật"~~ đã phát hành 18/11. Việc nối tiếp, theo thứ tự nên làm: (a) tìm vì sao `ppt_check_deck` báo "phông lệch mẫu" ở tiêu đề slide vừa thêm — bài 3 slide + 1 biểu đồ vì thế vẫn 6 lần gọi AI; (b) soát mã độc lập cho mã của Đợt 7; (c) cập nhật bảng so sánh; (d) các mục soát mã để lại (bảng ở `tasks/dot-7.md`).
+  2. ~~Bản 4.7.0 "trả nợ kỹ thuật"~~ đã phát hành 18/11. Việc nối tiếp, theo thứ tự nên làm: (a) phát hành bản vá phông 4.7.1 (đã sửa trên nhánh `claude/dot-7`, chờ anh duyệt); (b) ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0; (c) soát mã độc lập cho mã của Đợt 7; (d) cập nhật bảng so sánh; (e) các mục soát mã để lại (bảng ở `tasks/dot-7.md`).
   3. **Một buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được vì thiếu tiền hoặc key" trong một lượt. Anh chỉ cần nạp những nguồn anh định dùng.
   4. **Anh chọn việc ở mục D.** Gợi ý cho việc pháp lý – BĐS: "điền mẫu qua ô điền sẵn" và "bộ nhớ dài hạn giữa các hội thoại" trước; connectors và Outlook là việc lớn, để sau.
   - Câu mở đầu phiên sau: `Đọc tasks/HANDOFF.md mục Bước tiếp theo rồi hỏi tôi muốn làm việc nào.`
@@ -228,3 +228,6 @@
   - (18/11/2026) Anh có thể mở Office giữa buổi thử. Khi đó `mo-office.ps1 -Dong` cũng dừng, bản Office thử đang chạy ẩn nằm lại: kiểm tiến trình không cửa sổ, đối chiếu dòng lệnh có đúng tệp `aidn-thu-…` của phiên rồi mới kết thúc đúng tiến trình đó; không đụng tiến trình có cửa sổ của anh. Mọi việc cần Office dừng lại cho tới khi anh đóng.
   - (18/11/2026) Trong bài thử qua CDP: bảng chọn model mở bằng nút "Model đang dùng" là nút bật / tắt — bấm lần hai là đóng. Đọc trạng thái cũ và chọn model trong cùng một lần mở. `Set-Content -Encoding utf8` của PowerShell 5.1 thêm BOM vào tệp nguồn: ghi bằng `[IO.File]::WriteAllText` với `UTF8Encoding($false)`.
   - (18/11/2026) Soát mã độc lập theo "trạng thái hiện tại" của lõi (không theo diff cũ) vẫn tìm ra lỗi cao có từ Đợt 0B (bản tóm tắt rỗng xóa mất hội thoại). Ba tác tử chạy song song ngay đầu phiên, mỗi tác tử một phạm vi và một tệp báo cáo riêng, không chạm hạn mức.
+
+  - (18/11/2026) **PowerPoint qua Office.js, đã đo:** ghi chữ có ký tự “ư” vào ô giữ chỗ (`textRange.text = …`) làm PowerPoint đổi CẢ dòng sang Times New Roman; chữ có “ổ”, “ậ”, “ý” thì không. `textRange.font.name` của cả khung vẫn trả phông chủ đề — phải đọc `getSubstring(…).font.name` theo từng dòng mới thấy. Cách chữa: đọc phông trước khi ghi, ghi xong đặt lại `font.name` cho những dòng bị đổi (`setTextKeepFont` trong `pptCore.ts`). Slide dựng bằng pptxgenjs rồi chèn vào thì tiêu đề luôn Times New Roman: lấy phông ô tiêu đề của bố cục mà trả lại.
+  - (18/11/2026) Thấy công cụ kiểm "báo lỗi" lặp đi lặp lại thì đo trước khi kết luận là báo nhầm: ở đây phép kiểm đúng, còn công cụ ghi mới là thứ sai. Cách tách nhanh: nhờ AI chép nguyên văn kết quả công cụ, rồi đọc cùng thuộc tính bằng Office.js thô trong khung và một bài thăm dò 9 ca (mỗi ca đổi một yếu tố).

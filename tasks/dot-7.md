@@ -158,10 +158,28 @@ Dọn dẹp sau buổi thứ hai: mọi bài chạy ở chế độ thử (khôn
 
 Phát hành 4.7.0 (18/11/2026, anh duyệt): `main@dea9bc7` → `gh-pages@8c61ba1`, lượt Actions 44233555510 xanh, GitHub Pages trả gói `taskpane.5d421d5a.js`. Tự kiểm tra trên bản phát hành ở desktop ẩn (đầu khung hiện v4.7): Word 38/38, Excel 40/40, PowerPoint 23/23 — `tasks/dot-7-bang-chung/phat-hanh-470-*.json`.
 
+## Sau phát hành 4.7.0 — tìm nguyên nhân bài slide "phông lệch mẫu" (18/11/2026; đã sửa trên nhánh `claude/dot-7`, CHƯA phát hành)
+
+Không phải `ppt_check_deck` báo nhầm. Hai lỗi thật, đều làm chữ trên slide mang Times New Roman thay cho phông của mẫu:
+
+| Điều đo | Kết quả | Bằng chứng |
+|---|---|---|
+| Ghi chữ tiêu đề bằng Office.js, 9 kiểu chữ (`kiem-thu/cdp-bai/tham-do-7-phong-tieu-de.js`) | Chữ có ký tự **“ư”** ("Nhận xét xu hướng", "Xu huong tư") → PowerPoint đổi CẢ dòng sang Times New Roman. Chữ không dấu, có “ổ”, “ậ”, “ý” → giữ Calibri Light. Phông đọc ở mức cả khung vẫn báo Calibri Light; phải đọc theo từng dòng / ký tự mới thấy. Đặt lại tên phông sau khi ghi → về Calibri Light | `tham-do-phong-tieu-de.json`, `ppt-phong-theo-ky-tu.json` |
+| Tiêu đề slide biểu đồ (`ppt_add_chart`, slide dựng bằng pptxgenjs rồi chèn vào) | Luôn Times New Roman, kể cả chữ không có “ư” | `ppt-phong-doc-bang-ma.json`, `ppt-phong-lech-mau-kiem.json` |
+
+Đã sửa: `src/office/pptCore.ts` thêm `setTextKeepFont` và `restoreFont` (ghi chữ rồi trả phông cũ cho đúng những dòng bị đổi); dùng ở `ppt_add_slide`, `ppt_add_slides` (tiêu đề, nội dung), `ppt_set_shape_text`; `ppt_add_chart` trả phông ô tiêu đề của bố cục cho tiêu đề slide biểu đồ. Tự kiểm tra PowerPoint thêm bước "Đợt 7 · Chữ có “ư”…".
+
+| Kiểm | Kết quả | Bằng chứng |
+|---|---|---|
+| Kiểm thử máy, kiểm kiểu, đóng gói | 560/560, sạch, đạt | — |
+| Tự kiểm tra PowerPoint trên bản cục bộ đã sửa | **24/24**; bước mới: tiêu đề và nội dung có “ư” ra Calibri Light / Calibri, sau `ppt_set_shape_text` vẫn vậy, tiêu đề slide biểu đồ Calibri Light | `tu-kiem-tra-powerpoint-sau-sua-phong.json` |
+| Chạy thật bài 3 slide + 1 biểu đồ (Haiku 5.5), hai lần | **5 lần gọi** rồi **4 lần gọi** (trước khi sửa: 6); mọi tiêu đề và nội dung đúng phông mẫu, AI không còn sửa phông | `ppt-3-slide-bieu-do-sau-sua-phong-lan1.json`, `…lan2.json`, `ppt-phong-sau-sua-lan1.json`, `…lan2.json` |
+
+Chưa kiểm: Tự kiểm tra Word và Excel trên bản đã sửa (mã đổi chỉ nằm trong các tệp PowerPoint). Chưa sửa: lượt thừa còn lại ở bài này là AI đặt lại vị trí ô tiêu đề của slide biểu đồ, vì tổng quan báo ô đó ở toạ độ 0, 0, 0, 0 (ô giữ chỗ thừa hưởng vị trí từ bố cục). Các chỗ ghi chữ khác của PowerPoint (`ppt_add_textbox`, `ppt_add_shape`, `ppt_edit_table`, sơ đồ quy trình) chưa đo với chữ có “ư”.
 ## Việc còn lại
 
 1. Cập nhật bảng so sánh `docs/so-sanh-claude-chinh-thuc.md` theo bản 4.7.0 (chưa làm).
-2. B2 chưa đạt mốc ≤ 4 lần gọi: tìm vì sao `ppt_check_deck` báo lệch phông ở tiêu đề slide vừa thêm (nếu là báo nhầm thì bớt được 2–3 lượt).
+2. Phát hành bản vá phông (4.7.1) khi anh duyệt. Sau đó: ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0 (còn làm AI tốn một lượt); đo chữ có “ư” ở ô chữ, hình, bảng, sơ đồ.
 3. E2: nhìn dòng báo "lịch sử đầy" trên khung (mới có kiểm thử máy). A2: bấm thử nút "Dừng ở đây".
 4. G3: chạy lại một bài công cụ mới với Gemini khi máy chủ Gemini trả lời.
 5. Các mục soát mã để lại (bảng ở trên).

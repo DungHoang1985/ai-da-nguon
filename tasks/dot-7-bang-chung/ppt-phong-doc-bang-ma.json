@@ -1,0 +1,104 @@
+﻿[
+ {
+  "slide": 1,
+  "boCuc": "Title Slide",
+  "hinh": [
+   {
+    "ten": "Title 1",
+    "rong": true
+   },
+   {
+    "ten": "Subtitle 2",
+    "rong": true
+   }
+  ]
+ },
+ {
+  "slide": 2,
+  "boCuc": "Title and Content",
+  "hinh": [
+   {
+    "ten": "Title 1",
+    "phongCaKhung": "Calibri Light",
+    "co": 44,
+    "doan": [
+     {
+      "chu": "Tổng quan doanh thu",
+      "phong": "Calibri Light",
+      "co": 44
+     }
+    ]
+   },
+   {
+    "ten": "Content Placeholder 2",
+    "phongCaKhung": "Calibri",
+    "co": 28,
+    "doan": [
+     {
+      "chu": "Doanh thu bốn quý đạt 585 triệ",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý 4 cao nhất trong năm",
+      "phong": "Calibri",
+      "co": 28
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 3,
+  "boCuc": "Title Only",
+  "hinh": [
+   {
+    "ten": "Text 0",
+    "phongCaKhung": "Times New Roman",
+    "co": 44,
+    "doan": [
+     {
+      "chu": "Doanh thu theo quý",
+      "phong": "Times New Roman",
+      "co": 44
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "slide": 4,
+  "boCuc": "Title and Content",
+  "hinh": [
+   {
+    "ten": "Title 1",
+    "phongCaKhung": "Calibri Light",
+    "co": 44,
+    "doan": [
+     {
+      "chu": "Nhận xét xu hướng",
+      "phong": "Times New Roman",
+      "co": 44
+     }
+    ]
+   },
+   {
+    "ten": "Content Placeholder 2",
+    "phongCaKhung": "Calibri",
+    "co": 28,
+    "doan": [
+     {
+      "chu": "Doanh thu tăng qua Quý 2",
+      "phong": "Calibri",
+      "co": 28
+     },
+     {
+      "chu": "Quý 3 giảm nhẹ rồi tăng mạnh ở",
+      "phong": "Calibri",
+      "co": 28
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -2,7 +2,7 @@
 /** Công cụ để AI thao tác trực tiếp trên bài trình chiếu PowerPoint. Mỗi thao tác tạo/sửa đều có Hoàn tác. */
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { normalize2D, truncate } from "./util";
-import { currentSlideId, deleteShapeUndo, findShape, loadShapeTexts, shapeOn, slideAt, supports } from "./pptCore";
+import { currentSlideId, deleteShapeUndo, findShape, loadShapeTexts, restoreFont, setTextKeepFont, shapeOn, slideAt, supports } from "./pptCore";
 import { PPT_ADV_SPECS, executePptAdvanced, pptRisk, slideSizePt } from "./pptAdvanced";
 import { findAttachedImage, listAttachedImages } from "../core/attachedFiles";
 import { imageBox } from "../core/imagefit";
@@ -341,7 +341,7 @@ async function addOneSlide(a: any, log: UndoEntry[], select: boolean): Promise<{
         }
         const { title, body } = await findPlaceholders(ctx, slide);
         if (a.title) {
-          if (title) title.textFrame.textRange.text = String(a.title);
+          if (title) await setTextKeepFont(ctx, title, String(a.title));
           else {
             const tb = slide.shapes.addTextBox(String(a.title), { left: 40, top: 30, width: 880, height: 70 });
             tb.textFrame.textRange.font.size = 32;
@@ -354,7 +354,7 @@ async function addOneSlide(a: any, log: UndoEntry[], select: boolean): Promise<{
             .map((l) => l.replace(/^\s*[-*•]\s+/, ""))
             .filter((l) => l.trim())
             .join("\n");
-          if (body) body.textFrame.textRange.text = text;
+          if (body) await setTextKeepFont(ctx, body, text);
           else {
             const tb = slide.shapes.addTextBox(text, { left: 40, top: 120, width: 880, height: 380 });
             tb.textFrame.textRange.font.size = 20;
@@ -482,11 +482,17 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         tr.font.load("size,bold,color");
         await ctx.sync();
         const old = { text: tr.text, size: tr.font.size, bold: tr.font.bold, color: tr.font.color };
+        // Phông của khung trước khi ghi: ghi chữ có “ư” làm PowerPoint đổi cả dòng sang Times New Roman (đo 18/11/2026) → trả lại sau khi ghi
+        const fontBefore = shape.textFrame.textRange.font;
+        fontBefore.load("name");
+        await ctx.sync();
+        const wantFont = fontBefore.name;
         tr.text = String(a.text ?? "");
         if (a.font_size) tr.font.size = Number(a.font_size);
         if (a.bold !== undefined) tr.font.bold = !!a.bold;
         if (a.font_color) tr.font.color = a.font_color;
         await ctx.sync();
+        await restoreFont(ctx, shape, wantFont).catch(() => 0);
         const slideId = slide.id;
         const shapeId = shape.id;
         const shapeName = shape.name;

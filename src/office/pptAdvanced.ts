@@ -1,7 +1,7 @@
 /* global PowerPoint */
 /** Công cụ PowerPoint nâng cao: biểu đồ gốc (sửa được dữ liệu), sơ đồ quy trình tự dàn trang, di chuyển/nhân bản/xóa slide, sửa và xóa hình. */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
-import { currentSlideId, deleteShapeUndo, findShape, remapSlide, shapeOn, slideAt, supports } from "./pptCore";
+import { currentSlideId, deleteShapeUndo, findShape, remapSlide, restoreFont, shapeOn, slideAt, supports } from "./pptCore";
 
 const slideProp = { type: "number", description: "Slide number (1-based)." };
 const shapeProp = { type: "string", description: "Shape name (from the overview) or its number on the slide." };
@@ -543,6 +543,32 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
             }
           } catch {
             /* không đổi được bố cục: giữ như PowerPoint đã chèn */
+          }
+        }
+        // Tiêu đề của slide biểu đồ: slide dựng bằng pptxgenjs rồi chèn vào nên chữ tiêu đề mang phông Times New Roman, không theo mẫu
+        // (đo 18/11/2026). Lấy phông của ô tiêu đề trên bố cục đang dùng và trả cho tiêu đề.
+        if (supports("1.8")) {
+          try {
+            const sl = ctx.presentation.slides.getItem(fresh[0]);
+            sl.shapes.load("items/id,items/name,items/type");
+            sl.layout.shapes.load("items/id,items/name,items/type");
+            await ctx.sync();
+            const isTitle = async (list: PowerPoint.Shape[]) => {
+              const hs = list.filter((x) => String(x.type) === "Placeholder");
+              hs.forEach((x) => x.placeholderFormat.load("type"));
+              await ctx.sync();
+              return hs.find((x) => /Title/.test(String(x.placeholderFormat.type)));
+            };
+            const mine = await isTitle(sl.shapes.items);
+            const model = await isTitle(sl.layout.shapes.items);
+            if (mine && model) {
+              const f = model.textFrame.textRange.font;
+              f.load("name");
+              await ctx.sync();
+              await restoreFont(ctx, mine, f.name);
+            }
+          } catch {
+            /* không đọc được phông của bố cục: giữ như PowerPoint đã chèn */
           }
         }
         if (supports("1.5")) {

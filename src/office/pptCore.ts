@@ -41,6 +41,61 @@ export async function shapeOn(ctx: PowerPoint.RequestContext, slide: PowerPoint.
   return shape;
 }
 
+const sameFont = (a: any, b: any) => String(a ?? "").trim().toLowerCase() === String(b ?? "").trim().toLowerCase();
+
+/** Trả phông `want` cho những dòng chữ của một hình đang mang phông khác. Trả số dòng đã sửa.
+ *  Vì sao cần (đo trong PowerPoint 18/11/2026, `kiem-thu/cdp-bai/tham-do-7-phong-tieu-de.js`): ghi chữ có ký tự “ư” vào một ô giữ chỗ
+ *  bằng Office.js làm PowerPoint đổi CẢ dòng sang Times New Roman (chữ có “ổ”, “ậ”, “ý” thì không); đặt lại tên phông sau khi ghi thì hết.
+ *  Chỉ đụng dòng bị đổi, để các dòng khác vẫn theo phông chủ đề. */
+export async function restoreFont(ctx: PowerPoint.RequestContext, shape: PowerPoint.Shape, want: string | null | undefined): Promise<number> {
+  if (!want || !String(want).trim()) return 0;
+  const tr = shape.textFrame.textRange;
+  tr.load("text");
+  await ctx.sync();
+  const text = String(tr.text || "");
+  if (!text.trim()) return 0;
+  const parts: PowerPoint.TextRange[] = [];
+  let at = 0;
+  for (const line of text.split(/\r\n|\r|\n|\v/)) {
+    if (line.length) {
+      const r = tr.getSubstring(at, line.length);
+      r.font.load("name");
+      parts.push(r);
+    }
+    at += line.length + 1;
+  }
+  await ctx.sync();
+  let fixed = 0;
+  for (const r of parts) {
+    if (!sameFont(r.font.name, want)) {
+      r.font.name = String(want);
+      fixed++;
+    }
+  }
+  if (fixed) await ctx.sync();
+  return fixed;
+}
+
+/** Ghi chữ vào một khung (ô tiêu đề, ô nội dung…) mà giữ nguyên phông khung đang có trước khi ghi (thường là phông chủ đề). */
+export async function setTextKeepFont(ctx: PowerPoint.RequestContext, shape: PowerPoint.Shape, text: string): Promise<void> {
+  const tr = shape.textFrame.textRange;
+  tr.font.load("name");
+  let want: string | null = null;
+  try {
+    await ctx.sync();
+    want = tr.font.name || null;
+  } catch {
+    want = null;
+  }
+  shape.textFrame.textRange.text = text;
+  await ctx.sync();
+  try {
+    await restoreFont(ctx, shape, want);
+  } catch {
+    /* không đọc được phông từng dòng: chữ đã ghi, giữ như PowerPoint đặt */
+  }
+}
+
 /** Khi một slide được khôi phục bằng bản sao, id slide đổi: ghi lại id cũ → id mới để các bước Hoàn tác trước đó vẫn tìm thấy. */
 const slideRemap = new Map<string, string>();
 export function remapSlide(oldId: string, newId: string) {
