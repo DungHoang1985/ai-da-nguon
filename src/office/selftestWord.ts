@@ -887,6 +887,8 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       untitled: `Tên viết tắt ${K}: VIETTAT`,
       name: `Họ và tên người đại diện ${K}: ……………………`,
       money: `Số tiền ${K}: [●] đồng (bằng chữ: [●] đồng).`,
+      // Hai chỗ trống cùng chuỗi trong một đoạn, điền trong CÙNG một lệnh (Chạy thật 18/11 lộ lỗi đọc chữ của đoạn một lần đầu lệnh)
+      fee: `Phí ${K}: [●] và [●].`,
     };
     const T = { ten: `Tên ${code}`, hop: `Đánh dấu ${code}`, tt: `Thanh toán ${code}`, loai: `Loại ${code}`, ngay: `Ngày ${code}` };
     const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
@@ -908,7 +910,7 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     const blockPkg = pkg.replace(/<w:body><w:p>[\s\S]*<\/w:p><\/w:body>/, () => `<w:body><w:sdt>${pr(`Khối ${code}`, "aidn_dien_khoi", "<w:showingPlcHdr/>")}<w:sdtContent><w:p>${r("Bấm để nhập đoạn")}</w:p></w:sdtContent></w:sdt></w:body>`);
     // Ô không tên: nhãn lấy từ chữ đứng trước ô (soát mã #2)
     const untitledPkg = pkg.replace(/<w:body><w:p>[\s\S]*<\/w:p><\/w:body>/, () => `<w:body><w:p><w:sdt><w:sdtPr><w:tag w:val="aidn_dien_vt"/><w:showingPlcHdr/><w:text/></w:sdtPr><w:sdtContent>${r("Nhập")}</w:sdtContent></w:sdt></w:p></w:body>`);
-    await addTemp([P.block, P.cc, P.untitled, P.name, P.money]);
+    await addTemp([P.block, P.cc, P.untitled, P.name, P.money, P.fee]);
     const mark = log.length;
     try {
       await untracked(async (ctx) => {
@@ -936,7 +938,8 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
         const f = l.fields || [];
         const by = (title: string) => f.find((x: any) => x.kind === "control" && x.label === title);
         const vt = f.find((x: any) => x.kind === "control" && /^Tên viết tắt DIENMAU/.test(x.label));
-        return { l, name: f.find((x: any) => x.kind === "blank" && x.i === iName), money: f.filter((x: any) => x.kind === "blank" && x.i === iMoney), ten: by(T.ten), hop: by(T.hop), tt: by(T.tt), loai: by(T.loai), ngay: by(T.ngay), khoi: by(`Khối ${code}`), vt };
+        const iFee = await need(`Phí ${K}`);
+        return { l, name: f.find((x: any) => x.kind === "blank" && x.i === iName), money: f.filter((x: any) => x.kind === "blank" && x.i === iMoney), ten: by(T.ten), hop: by(T.hop), tt: by(T.tt), loai: by(T.loai), ngay: by(T.ngay), khoi: by(`Khối ${code}`), vt, fee: f.filter((x: any) => x.kind === "blank" && x.i === iFee) };
       };
       const vals = (m: any) => [m.ten?.value, m.hop?.value, m.tt?.value, m.loai?.value, m.ngay?.value, m.khoi?.value, m.vt?.value].join(" | ");
       const m0 = await listMine();
@@ -956,6 +959,8 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
           { id: m.money[0].id, value: v.so, label: m.money[0].label },
           { id: m.khoi.id, value: v.khoi, label: m.khoi.label },
           { id: m.vt.id, value: v.vt, label: m.vt.label },
+          { id: m.fee[0].id, value: "10 triệu", label: m.fee[0].label },
+          { id: m.fee[1].id, value: "20 triệu", label: m.fee[1].label },
         ];
         expect((await riskOf("word_fill_form", { fields })) === null, "Điền chỗ còn trống mà vẫn hỏi");
         const before = log.length;
@@ -968,6 +973,8 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
         const jName = await need(`người đại diện ${K}`);
         const jMoney = await need(`Số tiền ${K}`);
         expect((await inspect(jName)).current === `Họ và tên người đại diện ${K}: ${v.name}`, `Đoạn họ tên sau khi điền: “${(await inspect(jName)).current}”`);
+        const jFee = await need(`Phí ${K}`);
+        expect((await inspect(jFee)).current === `Phí ${K}: 10 triệu và 20 triệu.`, `Hai “[●]” cùng đoạn điền trong một lệnh: “${(await inspect(jFee)).current}”`);
         expect((await inspect(jMoney)).current === `Số tiền ${K}: ${v.so} đồng (bằng chữ: [●] đồng).`, `Đoạn số tiền sau khi điền: “${(await inspect(jMoney)).current}”`);
         // Lần điền thứ hai khi lần đầu còn chờ duyệt trong cùng đoạn (soát mã #3): chỗ “[●]” còn lại vẫn điền được
         const m2b = await listMine();
@@ -984,7 +991,7 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
         log.length = mark;
         const m3 = await listMine();
         expect(vals(m3) === empty0, `Ô điền mẫu sau hoàn tác: ${vals(m3)} (đúng phải là ${empty0})`);
-        expect((await inspect(await need(`người đại diện ${K}`))).current === P.name && (await inspect(await need(`Số tiền ${K}`))).current === P.money, "Chỗ trống sau hoàn tác không về như cũ");
+        expect((await inspect(await need(`người đại diện ${K}`))).current === P.name && (await inspect(await need(`Số tiền ${K}`))).current === P.money && (await inspect(await need(`Phí ${K}`))).current === P.fee, "Chỗ trống sau hoàn tác không về như cũ");
         return m3;
       };
       const filled = await round(m0, { ten: "Công ty TNHH Thử Hưng Thịnh", tt: "Tiền mặt", loai: "Đất nền", ngay: "05/03/2027", ngayDoc: "05/03/2027", name: "Nguyễn Văn Thử", so: "500.000.000", chu: "năm trăm triệu", khoi: "Điều khoản thử điền vào ô chứa đoạn", vt: "HTTN" });

@@ -236,11 +236,20 @@ export function createWordFormTools(d: Deps) {
   /** Vùng của chỗ trống thứ k trong đoạn i; lỗi (câu tiếng Việt) nếu không chắc đúng chỗ */
   async function locateBlank(ctx: Word.RequestContext, loaded: Loaded, i: number, k: number): Promise<{ range: Word.Range; found: ReturnType<typeof findBlanks>[number] }> {
     const row = loaded.rows[i];
-    const found = row && !row.deleted ? findBlanks(row.text)[k] : undefined;
+    if (!row || row.deleted) throw new Error("chỗ trống không còn ở đó (văn bản đã đổi): gọi lại word_list_form_fields");
+    // Chữ HIỆN TẠI của đoạn, đọc lại ngay lúc này: trong cùng một lệnh, chỗ trống phía sau của đoạn đã được điền (chữ cũ thành chữ
+    // xóa chờ duyệt). Điền từ cuối lên nên chỗ trống thứ k vẫn đúng là chỗ k (đo 18/11/2026: đọc một lần đầu lệnh thì chỗ đầu bị từ chối).
+    let text = row.text;
+    if (d.supports("1.4")) {
+      const cur = loaded.paras.items[i].getReviewedText("Current");
+      await ctx.sync();
+      text = String(cur.value ?? "").replace(/[\u0001\u0002\u0005]/g, "").replace(/[\r\n]+$/, "");
+    }
+    const found = findBlanks(text)[k];
     if (!found) throw new Error("chỗ trống không còn ở đó (văn bản đã đổi): gọi lại word_list_form_fields");
     if (found.str.length > MAX_SEARCH) throw new Error("chỗ trống dài quá 255 ký tự, Word không tìm được: sửa bằng word_replace_text");
     const live = await liveHits(ctx, loaded.paras.items[i], found.str);
-    if (live.length !== countOccurrences(row.text, found.str)) {
+    if (live.length !== countOccurrences(text, found.str)) {
       throw new Error("không định vị chắc được chỗ trống này (đoạn có sửa đổi chờ duyệt đan vào chỗ trống): duyệt sửa đổi trước hoặc sửa bằng word_replace_text");
     }
     const range = live[found.occurrence];

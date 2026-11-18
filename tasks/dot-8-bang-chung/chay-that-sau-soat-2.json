@@ -1,0 +1,17 @@
+{
+ "phienBan": "v4.7.2",
+ "model": "e) Claude Haiku 5.5. Bấm để đổi Anthropic · Claude Haiku 5.5",
+ "cheDoThu": false,
+ "dinhKem": [],
+ "giay": 15,
+ "daHoi": [
+  "AI muốn: Điền mẫu: 15 chỗ | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "lanGoiAI": 3,
+ "buoc": [
+  "✅ Liệt kê chỗ cần điền trong mẫu — 19 chỗ điền (8 ô điền mẫu, 8 chỗ trống gõ tay, 3 ô bảng), 16 chỗ còn trống",
+  "✅ Điền mẫu: 15 chỗ — đã điền 15/15 chỗ"
+ ],
+ "theLamTiep": null,
+ "khung": "AI Đa Nguồn\nv4.7.2\nExcel — · PowerPoint —\nĐiền giúp tôi hợp đồng đặt cọc này với thông tin sau (thông tin bịa để thử). Bên A: Công ty TNHH Thử Nghiệm Hưng Thịnh, trụ sở tại số 1 phố Thử, phường Hoàn Kiếm, Hà Nội. Bên đặt cọc là tổ chức. Thanh toán bằng chuyển khoản. Tài sản là căn hộ chung cư, mã căn A-1205, diện tích 85,5 m², giá bán 4.250.000.000 đồng. Ngày ký 18/11/2026, ký tại Hà Nội. Người đại diện Bên B là ông Trần Văn Thử. Số tiền đặt cọc 500.000.000 đồng, thời hạn đặt cọc 30 ngày.\nKỹ năng áp dụng: dien-mau\n✅ Liệt kê chỗ cần điền trong mẫu — 19 chỗ điền (8 ô điền mẫu, 8 chỗ trống gõ tay, 3 ô bảng), 16 chỗ còn trống\n✅ Điền mẫu: 15 chỗ — đã điền 15/15 chỗ\nĐã điền 15/15 chỗ được cung cấp, tất cả ghi bằng Theo dõi thay đổi. Số tiền bằng số và bằng chữ khớp nhau.\n \nĐã điền:\n• Tên Bên A: Công ty TNHH Thử Nghiệm Hưng Thịnh; địa chỉ: số 1 phố Thử, phường Hoàn Kiếm, Hà Nội\n• Bên đặt cọc: ☑ Tổ chức\n• Hình thức thanh toán: Chuyển khoản\n• Loại tài sản: Căn hộ chung cư; mã căn A-1205; diện tích 85,5 m²; giá bán 4.250.000.000 đồng\n• Ngày ký: 18/11/2026; \"Hà Nội, ngày 18 tháng 11 năm 2026\"\n• Người đại diện Bên B: Trần Văn Thử\n• Số tiền đặt cọc: 500.000.000 đồng (bằng chữ: năm trăm triệu đồng)\n• Thời hạn đặt cọc: 30 ngày kể từ ngày ký\n \nCòn trống (không có thông tin):\n• Số CCCD, \"cấp ngày\" và \"tại\" ở đoạn số CCCD (chưa rõ đây là giấy tờ của người đại diện Bên B hay bên nào khác).\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 65.162 · ra 1.895 · đọc từ bộ nhớ đệm 63.032 · ghi vào bộ nhớ đệm 2.122\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\nAnthropic · Claude Haiku 5.5"
+}
