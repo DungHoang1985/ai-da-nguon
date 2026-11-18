@@ -50,8 +50,21 @@ export function isRetryable(e: unknown): boolean {
 /** Che mọi thứ trông như API key trong một câu trước khi hiện, chép hay lưu (soát mã độc lập 16/11/2026, T1):
  *  câu lỗi của nhà cung cấp có thể nhắc lại key, mà thông báo lỗi được hiện trên khung, vào nút "Chép chi tiết lỗi"
  *  và được lưu cùng hội thoại. Che cả dạng nhà cung cấp đã che dở (sk-proj-****abcd). */
+/** Các key đang dùng trong phiên (chỉ trong bộ nhớ): che ĐÚNG giá trị đó ở mọi câu đưa ra ngoài, kể cả key không có tiền tố
+ *  nhận ra được (JWT, chuỗi hex — MiniMax, Mistral, Cohere, nguồn tự khai) khi nhà cung cấp nhắc lại trong câu lỗi. */
+const knownSecrets = new Set<string>();
+export function rememberSecret(value: string | undefined | null): void {
+  const v = String(value ?? "").trim();
+  if (v.length >= 12) knownSecrets.add(v);
+}
+export function forgetSecrets(): void {
+  knownSecrets.clear();
+}
+
 export function maskSecrets(text: string): string {
-  return String(text ?? "")
+  let t = String(text ?? "");
+  for (const k of knownSecrets) if (t.includes(k)) t = t.split(k).join("…[key]");
+  return t
     .replace(/\bsk-[A-Za-z0-9_*.\-]{6,}/g, "sk-…")
     .replace(/\bAIza[A-Za-z0-9_\-]{16,}/g, "AIza…")
     .replace(/\b(gsk|xai|csk|nvapi|pplx|r8|hf)[_-][A-Za-z0-9_\-]{8,}/g, "$1_…")

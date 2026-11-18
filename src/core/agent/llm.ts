@@ -1,7 +1,7 @@
 /** Gọi model một bước, có khai báo công cụ, nhận chữ chạy dần + các lệnh gọi công cụ. 3 kiểu API: OpenAI-compatible, Anthropic, Gemini. */
 import { Provider } from "../providers";
 import { anthropicHeaders } from "../models";
-import { ApiError, ensureOk, explainApiError, fetchDiagnosed, isRetryable, maskSecrets } from "../errors";
+import { ApiError, ensureOk, explainApiError, fetchDiagnosed, isRetryable, maskSecrets, rememberSecret } from "../errors";
 import { createSSEParser } from "../sse";
 import { AgentMessage, RawAssistant, StepResult, ToolCall, ToolSpec, Usage } from "./types";
 import { prepareHistory } from "./history";
@@ -498,7 +498,10 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void,
           else if (b.type === "tool_use" && b.name) rawBlocks.push({ type: "tool_use" });
         }
         const raw: RawAssistant | undefined = rawBlocks.some((b) => b.type === "thinking" || b.type === "redacted_thinking") ? { kind: "anthropic", blocks: rawBlocks } : undefined;
-        return { text, toolCalls: calls, ...(raw ? { raw } : {}), finishReason, truncated: finishReason === "max_tokens", usage };
+        // Luồng đứt trước khi có lý do kết thúc mà lệnh công cụ cuối chưa có tham số: coi như bị cắt dở (không chạy lệnh với tham số rỗng)
+        const lastTool = [...ordered].reverse().find((b) => b.type === "tool_use" && b.name);
+        const cutOff = !finishReason && !!lastTool && !String(lastTool.json || "").trim();
+        return { text, toolCalls: calls, ...(raw ? { raw } : {}), finishReason, truncated: finishReason === "max_tokens" || finishReason === "model_context_window_exceeded" || cutOff, usage };
       }
       if (kind === "gemini") {
         return { text, toolCalls: gCalls, raw: { kind: "gemini", parts: gParts }, finishReason, truncated: finishReason === "MAX_TOKENS", usage };
@@ -507,7 +510,9 @@ export function createStepAccumulator(kind: string, onText: (d: string) => void,
         .filter((c) => c && c.name)
         .map((c) => ({ id: c.id || newCallId(), name: c.name, args: parseArgs(c.args) }));
       const raw: RawAssistant | undefined = orDetails.length ? { kind: "openrouter", reasoning: orDetails } : undefined;
-      return { text, toolCalls: calls, ...(raw ? { raw } : {}), finishReason, truncated: finishReason === "length", usage };
+      const lastOa = [...oaCalls].reverse().find((c) => c && c.name);
+      const cutOffOa = !finishReason && !!lastOa && !String(lastOa.args || "").trim();
+      return { text, toolCalls: calls, ...(raw ? { raw } : {}), finishReason, truncated: finishReason === "length" || cutOffOa, usage };
     },
   };
 }
@@ -589,6 +594,7 @@ export interface CallModelOptions {
 /** Gọi model một bước; tự thử lại khi nhà cung cấp quá tải hoặc hết hạn mức tạm thời (429, 5xx, 529),
  *  miễn là chưa có chữ nào hiện ra cho người dùng (tránh lặp chữ) và người dùng chưa bấm Dừng. */
 export async function callModelStep(input: CallModelOptions): Promise<StepResult> {
+  rememberSecret(input.key);
   const opts: CallModelOptions = input.state ? input : { ...input, state: {} };
   const delays = opts.retryDelaysMs ?? RETRY_DELAYS_MS;
   for (let attempt = 0; ; attempt++) {

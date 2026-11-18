@@ -7,8 +7,9 @@ export const SCAN_TEXT_MIN_CHARS = 300;
 /** Vòng lặp tác tử chỉ chuyển tối đa 4 ảnh cho một lần gọi công cụ */
 export const MAX_SCAN_PAGES_PER_CALL = 4;
 export const MAX_TEXT_PAGES_PER_CALL = 20;
-/** Chữ tối đa của một lần gọi (các trang có lớp chữ) */
-export const MAX_PAGE_TEXT_CHARS = 60000;
+/** Chữ tối đa của một lần gọi (các trang có lớp chữ). Phải nằm DƯỚI trần kết quả công cụ của vòng lặp (30.000 ký tự sau khi
+ *  đóng gói JSON): vượt thì kết quả bị cắt đuôi, mất lời dặn và phần chữ cuối mà model không biết (soát mã 18/11/2026). */
+export const MAX_PAGE_TEXT_CHARS = 20000;
 /** PDF quét dài hơn ngần này trang thì không gửi nguyên tệp nữa (tệp nằm lại trong lịch sử, tốn token mọi lượt): AI đọc theo trang */
 export const WHOLE_PDF_MAX_PAGES = 5;
 
@@ -21,7 +22,8 @@ export function parsePageSpec(spec: unknown, total: number): { pages: number[]; 
   const s = String(spec ?? "").trim();
   if (!s) return { pages: [], error: "Thiếu pages. Ví dụ: \"1-4\" hoặc \"2, 5, 7\"." };
   const set = new Set<number>();
-  for (const part of s.split(/[,;\s]+/).filter(Boolean)) {
+  // "1 - 3" (có dấu cách quanh gạch nối) là một khoảng
+  for (const part of s.replace(/\s*[-–]\s*/g, "-").split(/[,;\s]+/).filter(Boolean)) {
     const m = /^(\d+)(?:\s*[-–]\s*(\d+))?$/.exec(part);
     if (!m) return { pages: [], error: `Không hiểu "${part}" trong pages. Ví dụ: "1-4" hoặc "2, 5, 7".` };
     const a = Number(m[1]);
@@ -95,7 +97,8 @@ export function routeScanPdf(o: { pages: number; pdfCapable: boolean; vision?: b
 /** Dòng nhắc riêng tư khi tệp đính kèm sắp được gửi cho nguồn miễn phí hoặc qua nơi trung chuyển. Không phải thì trả "". */
 export function attachmentPrivacyNote(o: { providerId: string; providerName: string; modelId: string; free?: boolean }): string {
   const freeModel = /:free$/i.test(o.modelId) || !!o.free;
-  if (o.providerId === "openrouter") {
+  // Mọi kênh đi qua OpenRouter (kể cả kênh Claude kiểu Anthropic) đều là nơi trung chuyển
+  if (/^openrouter(-|$)/.test(o.providerId)) {
     return freeModel
       ? `Tệp đính kèm được gửi qua OpenRouter tới một model miễn phí: nhà cung cấp model miễn phí thường được phép lưu và dùng nội dung để huấn luyện. Tài liệu thật, có thông tin mật thì nên dùng nguồn trả tiền.`
       : `Tệp đính kèm được gửi qua OpenRouter (nơi trung chuyển) rồi tới nhà cung cấp model. Tài liệu có thông tin mật thì cân nhắc gửi thẳng tới nhà cung cấp.`;

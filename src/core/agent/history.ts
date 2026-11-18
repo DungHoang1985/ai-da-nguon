@@ -55,6 +55,25 @@ export function remapCallId(id: string, used: Set<string>): string {
 const str = (v: unknown): string => (typeof v === "string" ? v : v === undefined || v === null ? "" : String(v));
 
 /** Trả về bản lịch sử hợp lệ cho nguồn đích. Không sửa mảng/đối tượng gốc. */
+/** Trần số ảnh do công cụ chụp được giữ trong hội thoại gửi đi, và cỡ lô khi cắt */
+export const MAX_TOOL_IMAGES = 16;
+export const TOOL_IMAGE_BATCH = 8;
+
+/** counts[k] = số ảnh của tin nhắn ảnh công cụ thứ k (theo thứ tự thời gian). Trả chỉ số các tin nhắn CŨ cần gỡ ảnh
+ *  để tổng còn lại không quá MAX_TOOL_IMAGES; số ảnh gỡ nhảy theo lô TOOL_IMAGE_BATCH. Tin nhắn mới nhất luôn được giữ. */
+export function oldToolImageMessages(counts: number[]): number[] {
+  const total = counts.reduce((a, b) => a + b, 0);
+  if (total <= MAX_TOOL_IMAGES) return [];
+  const target = Math.ceil((total - MAX_TOOL_IMAGES) / TOOL_IMAGE_BATCH) * TOOL_IMAGE_BATCH;
+  const drop: number[] = [];
+  let gone = 0;
+  for (let k = 0; k < counts.length - 1 && gone < target; k++) {
+    drop.push(k);
+    gone += counts[k];
+  }
+  return drop;
+}
+
 export function prepareHistory(messages: AgentMessage[], target: HistoryTarget): AgentMessage[] {
   const p = target.provider;
   const turns = messages.filter((m) => m.role !== "system");
@@ -119,8 +138,16 @@ export function prepareHistory(messages: AgentMessage[], target: HistoryTarget):
   // ở đầu lượt sẽ bị bỏ ngay khi công cụ chụp một ảnh). Ảnh công cụ: chỉ giữ ảnh của lần chụp gần nhất.
   const lastUser = out.map((m) => (m.role === "user" && !(m as any).fromTool ? "user" : "")).lastIndexOf("user");
   const lastToolImage = out.map((m) => (m.role === "user" && (m as any).fromTool ? "t" : "")).lastIndexOf("t");
+  // Ảnh do công cụ chụp (trang quét, ảnh slide) dồn lại qua nhiều bước: quá trần thì bỏ ảnh của các lần chụp CŨ NHẤT.
+  // Cắt theo lô (mốc cắt chỉ nhảy sau mỗi TOOL_IMAGE_BATCH ảnh) để phần đầu yêu cầu ít đổi, bộ nhớ đệm lời nhắc không vỡ ở từng bước.
+  const toolImgAt = out.map((m, i) => (m.role === "user" && (m as any).fromTool && m.images?.length ? i : -1)).filter((i) => i >= 0);
+  const dropOld = new Set<number>(oldToolImageMessages(toolImgAt.map((i) => ((out[i] as any).images as any[]).length)).map((k) => toolImgAt[k]));
   out = out.map((m, i) => {
     if (m.role !== "user" || !m.images?.length) return m;
+    if (dropOld.has(i)) {
+      const { images, ...rest } = m;
+      return { ...rest, content: `${rest.content}\n[${images.length} ảnh này đã gửi ở các bước trước và được gỡ khỏi hội thoại để nhẹ yêu cầu. Cần xem lại thì gọi lại công cụ đã chụp.]` };
+    }
     // Anthropic: mọi model Claude hiện hành đều nhận ảnh, và bỏ ảnh của lượt cũ là sửa tin nhắn cũ (làm hỏng khối suy nghĩ
     // đã gắn với phần hội thoại đứng trước, vỡ bộ nhớ đệm) → chưa rõ thì vẫn giữ
     const keep = target.vision === true || (target.vision === undefined && (i === lastUser || i === lastToolImage || p.kind === "anthropic"));

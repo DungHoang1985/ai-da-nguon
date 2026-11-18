@@ -12,6 +12,8 @@ export const TOOL_TIMEOUT_MS = 120000;
 export const MAX_TRUNCATED_IN_A_ROW = 2;
 
 export const STOP_NOTE = "[Người dùng đã bấm Dừng ở đây. Các bước ở trên có kết quả thành công thì đã được thực hiện trong tài liệu.]";
+export const STOPPED_MID_TOOL =
+  "Người dùng bấm Dừng khi bước này đang chạy: add-in thôi chờ. Thao tác có thể đã xong, đang chạy tiếp hoặc chưa làm trong tài liệu — lượt sau hãy đọc lại trạng thái tài liệu trước khi làm tiếp.";
 export const NOT_RUN_STOPPED = "Chưa thực hiện: người dùng đã bấm Dừng trước bước này.";
 /** Bước soát lập luận chặn tối đa bấy nhiêu lần trong một lượt; sau đó lệnh ghi được chạy thẳng (tránh vòng lặp và tốn token) */
 export const MAX_REVIEW_BLOCKS = 2;
@@ -29,30 +31,51 @@ export function stepCapFor(host: string): number {
   return host === "PowerPoint" ? 20 : host === "Word" || host === "Excel" ? 12 : 20;
 }
 
+/** Đóng gói kết quả công cụ; kết quả không đóng gói được (vòng tham chiếu, BigInt) không được làm hỏng lượt và để lại lệnh gọi thiếu kết quả */
+export function safeJson(v: any): string {
+  try {
+    const s = JSON.stringify(v, (_k, x) => (typeof x === "bigint" ? String(x) : x));
+    return s === undefined ? '{"ok":true}' : s;
+  } catch (e: any) {
+    return JSON.stringify({ ok: false, error: `Công cụ đã chạy nhưng kết quả không đóng gói được (${e?.message || e}). Đọc lại trạng thái tài liệu để biết thao tác đã làm gì.` });
+  }
+}
+
 export function clip(s: string, max: number): string {
   return s.length <= max ? s : s.slice(0, max) + `… [đã cắt bớt ${s.length - max} ký tự]`;
 }
 
 /** Chờ một bước công cụ có hạn. Hết hạn thì thôi chờ (không hủy được thao tác Office đang chạy) và báo cho model. */
-export function withTimeout<T>(p: Promise<T>, ms: number, what: string): Promise<T> {
-  if (!Number.isFinite(ms) || ms <= 0) return p;
+export function withTimeout<T>(p: Promise<T>, ms: number, what: string, signal?: AbortSignal): Promise<T> {
+  if ((!Number.isFinite(ms) || ms <= 0) && !signal) return p;
   return new Promise<T>((resolve, reject) => {
-    const t = setTimeout(
+    // Bấm Dừng lúc công cụ đang chạy: thôi chờ ngay (không hủy được thao tác Office đang chạy), không bắt người dùng đợi hết hạn chờ
+    const onAbort = () => {
+      clearTimeout(t);
+      reject(new Error(STOPPED_MID_TOOL));
+    };
+    if (signal?.aborted) return onAbort();
+    signal?.addEventListener("abort", onAbort, { once: true });
+    const done = () => signal?.removeEventListener("abort", onAbort);
+    const t: any = !Number.isFinite(ms) || ms <= 0 ? undefined : setTimeout(
       () =>
+        (done(),
         reject(
           new Error(
             `Bước "${what}" chạy quá ${Math.round(ms / 1000)} giây nên add-in thôi chờ. Thao tác có thể vẫn đang chạy hoặc đã xong trong tài liệu: hãy đọc lại trạng thái tài liệu trước khi làm tiếp, không lặp lại ngay thao tác ghi.`
           )
-        ),
+        )),
       ms
     );
     p.then(
       (v) => {
         clearTimeout(t);
+        done();
         resolve(v);
       },
       (e) => {
         clearTimeout(t);
+        done();
         reject(e);
       }
     );
@@ -121,7 +144,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
     role: "tool",
     toolCallId: call.id,
     name: call.name,
-    content: clip(JSON.stringify(result ?? { ok: true }), MAX_TOOL_RESULT_CHARS),
+    content: clip(safeJson(result ?? { ok: true }), MAX_TOOL_RESULT_CHARS),
   });
   const aborted = () => !!o.signal?.aborted;
   /** Ghi mốc dừng. Chưa làm được gì trong lượt này thì không ghi (bên gọi sẽ bỏ luôn câu hỏi của lượt). */
@@ -197,7 +220,11 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       continue;
     }
     truncatedRun = 0;
-    if (!res.toolCalls.length) return msgs;
+    if (!res.toolCalls.length) {
+      // Trả lời rỗng (bị từ chối, bị chặn, lệnh gọi công cụ hỏng): nói rõ trên khung, không để lượt kết thúc im lặng
+      if (!res.text.trim()) o.onEvent({ type: "text", delta: `(Model không trả lời gì${res.finishReason ? ` — lý do nhà cung cấp báo: ${res.finishReason}` : ""}. Thử gửi lại, diễn đạt khác, hoặc đổi model.)` });
+      return msgs;
+    }
 
     /** Ảnh do công cụ trả về trong bước này (ảnh slide…): gửi cho model ở một tin nhắn riêng ngay sau các kết quả công cụ */
     const toolImages: { mime: string; data: string; label?: string }[] = [];
@@ -255,7 +282,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         const run = extraNames.has(call.name)
           ? o.extra!.execute(call.name, call.args || {})
           : o.tools.execute(call.name, call.args || {}, { log: o.log, said: res.text, request: o.request });
-        result = await withTimeout(Promise.resolve(run), spec.timeoutMs ?? o.toolTimeoutMs ?? TOOL_TIMEOUT_MS, call.name);
+        result = await withTimeout(Promise.resolve(run), spec.timeoutMs ?? o.toolTimeoutMs ?? TOOL_TIMEOUT_MS, call.name, o.signal);
       } catch (e: any) {
         error = e?.message || String(e);
         if (e?.code && !String(error).includes(e.code)) error += ` [${e.code}]`;

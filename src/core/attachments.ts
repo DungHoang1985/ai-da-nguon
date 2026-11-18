@@ -1,7 +1,7 @@
 /** Đọc tệp đính kèm thành chữ (TXT/CSV/MD/JSON/HTML, PDF, DOCX) hoặc ảnh (base64) để gửi kèm câu hỏi.
  *  PDF quét (không có lớp chữ) được giữ nguyên tệp (kind "file") để gửi cho model tự đọc. */
 
-import { formatPages } from "./pdfPages";
+import { formatPages, isScanPage } from "./pdfPages";
 
 export interface Attachment {
   name: string;
@@ -64,7 +64,7 @@ function toBase64(buf: ArrayBuffer): string {
   return btoa(s);
 }
 
-async function pdfText(buf: ArrayBuffer): Promise<{ text: string; pages: number; blank: number[] }> {
+async function pdfText(buf: ArrayBuffer): Promise<{ text: string; pages: number; blank: number[]; thin: number[] }> {
   const pdfjs: any = await import("pdfjs-dist");
   if (!pdfjs.GlobalWorkerOptions.workerSrc) {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdf.worker.min.js", document.baseURI).toString();
@@ -74,6 +74,8 @@ async function pdfText(buf: ArrayBuffer): Promise<{ text: string; pages: number;
   const pages: string[] = [];
   /** Các trang không có lớp chữ (ảnh quét lẫn trong tệp) */
   const blank: number[] = [];
+  /** Trang có lớp chữ nhưng rất ít (dưới ngưỡng của công cụ đọc theo trang): có thể là trang quét chỉ mang dấu chữ ký số, số trang */
+  const thin: number[] = [];
   for (let i = 1; i <= doc.numPages; i++) {
     const page = await doc.getPage(i);
     const tc = await page.getTextContent();
@@ -87,11 +89,13 @@ async function pdfText(buf: ArrayBuffer): Promise<{ text: string; pages: number;
       }
     }
     if (line) out.push(line);
-    if (!out.join("").trim()) blank.push(i);
+    const chars = out.join("").replace(/\s+/g, "").length;
+    if (!chars) blank.push(i);
+    else if (isScanPage(chars)) thin.push(i);
     pages.push(`[Trang ${i}]\n${out.join("\n")}`);
     if (pages.join("\n").length > MAX_ATTACH_CHARS) break;
   }
-  return { text: pages.join("\n\n"), pages: doc.numPages, blank };
+  return { text: pages.join("\n\n"), pages: doc.numPages, blank, thin };
 }
 
 export async function readAttachment(file: File): Promise<Attachment> {
@@ -103,7 +107,9 @@ export async function readAttachment(file: File): Promise<Attachment> {
   }
   if (lower.endsWith(".pdf")) {
     const buf = await file.arrayBuffer();
-    const { text: t, pages, blank } = await pdfText(buf);
+    const { text: t, pages, blank, thin: thinAll } = await pdfText(buf);
+    // Chỉ coi là "có thể là bản quét" khi từ nửa số trang trở lên gần như không có chữ (PDF chữ thường cũng có trang bìa, trang ký ngắn)
+    const thin = thinAll.length * 2 >= pages ? thinAll : [];
     if (!t.replace(/\[Trang \d+\]/g, "").trim()) {
       // PDF quét: không có lớp chữ → giữ nguyên tệp để model tự đọc (Anthropic, Gemini… ; nguồn khác sẽ được báo rõ khi gửi)
       if (file.size > MAX_PDF_FILE_BYTES) {
@@ -114,12 +120,18 @@ export async function readAttachment(file: File): Promise<Attachment> {
     const clipped = clipText(t);
     // Tệp lẫn trang quét: nói rõ trang nào chưa đọc được, không bỏ im lặng
     // Giữ bản gốc (trong bộ nhớ của phiên) để AI đọc các trang quét hoặc phần bị cắt bằng công cụ read_attachment_pages
-    const keep = (blank.length || clipped.note) && file.size <= MAX_PDF_FILE_BYTES ? { mime: PDF_MIME, data: toBase64(buf), scanPages: blank } : {};
+    const keep = (blank.length || thin.length || clipped.note) && file.size <= MAX_PDF_FILE_BYTES ? { mime: PDF_MIME, data: toBase64(buf), scanPages: blank } : {};
     const scanNote = blank.length
       ? `${blank.length} trang không có lớp chữ (ảnh quét: trang ${formatPages(blank.slice(0, 60))}${blank.length > 60 ? "…" : ""}) nên CHƯA có trong phần chữ dưới đây` +
         (keep.data ? "" : "; tệp quá lớn để giữ lại, cần đọc thì tách các trang đó thành tệp PDF riêng rồi đính kèm")
       : "";
-    return { name, kind: "text", pages, text: clipped.text, ...keep, ...(clipped.note || scanNote ? { note: [clipped.note, scanNote].filter(Boolean).join(" ") } : {}) };
+    // Bản quét mà mỗi trang chỉ mang một dòng chữ (dấu chữ ký số, số trang): phần chữ dưới đây gần như rỗng dù tệp có nội dung
+    const thinNote = thin.length
+      ? `${thin.length} trang chỉ có rất ít chữ (trang ${formatPages(thin.slice(0, 60))}${thin.length > 60 ? "…" : ""}): có thể là trang quét, nội dung thật nằm trong ảnh và CHƯA có trong phần chữ dưới đây` +
+        (keep.data ? "" : "; tệp quá lớn để giữ lại, cần đọc thì tách các trang đó thành tệp PDF riêng rồi đính kèm")
+      : "";
+    const notes = [clipped.note, scanNote, thinNote].filter(Boolean);
+    return { name, kind: "text", pages, text: clipped.text, ...keep, ...(notes.length ? { note: notes.join(" ") } : {}) };
   }
   if (lower.endsWith(".docx")) {
     const JSZip = (await import("jszip")).default;

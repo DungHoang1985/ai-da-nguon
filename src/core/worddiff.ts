@@ -15,6 +15,20 @@ export interface Hunk {
 
 const TOKEN = /\s+|[\p{L}\p{N}]+(?:[.,/][\p{N}]+)*%?|[^\s\p{L}\p{N}]/gu;
 
+/** Trích chữ GỐC của một đoạn đang có sửa đổi, quanh chỗ đầu tiên khác với chữ hiện tại (để chỗ bị sửa luôn nằm trong phần trích).
+ *  Đoạn ngắn hơn max thì trả nguyên; phần bị cắt đánh dấu bằng "…". */
+export function beforeExcerpt(original: string, current: string, max = 400): string {
+  const o = String(original ?? "");
+  if (o.length <= max) return o;
+  const c = String(current ?? "");
+  let d = 0;
+  const n = Math.min(o.length, c.length);
+  while (d < n && o[d] === c[d]) d++;
+  // Giống hệt nhau tới hết (chỉ khác ở đuôi) hoặc không có chữ hiện tại: lấy quanh điểm đó
+  const start = Math.max(0, Math.min(d - Math.floor(max * 0.35), o.length - max));
+  return (start > 0 ? "…" : "") + o.slice(start, start + max) + (start + max < o.length ? "…" : "");
+}
+
 export function tokenize(s: string): string[] {
   return s.match(TOKEN) || [];
 }

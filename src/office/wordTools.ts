@@ -26,6 +26,7 @@ import { WORD_REVIEW_SPECS, createWordReviewTools } from "./wordReview";
 import { WORD_ADMIN_SPECS, createWordAdminTools } from "./wordAdmin";
 import {
   ChangeSnap,
+  beforeExcerpt,
   EditPlan,
   Locator,
   Wanted,
@@ -753,9 +754,13 @@ async function rejectWanted(wants: Wanted[]): Promise<number> {
   }
 }
 
+/** Thêm vào câu "không tìm thấy" khi văn bản có sửa đổi chờ duyệt: tìm kiếm chỉ chạy trên chữ HIỆN TẠI */
+const NOT_FOUND_PENDING =
+  " LƯU Ý: văn bản đang có sửa đổi chờ duyệt và tìm kiếm chỉ chạy trên chữ hiện tại (sau sửa). Cụm này có thể nằm trong chữ GỐC đã bị sửa hoặc xóa: xem các sửa đổi bằng word_list_revisions, hoặc đọc bản gốc bằng word_read_paragraphs với view = \"original\". Chưa kiểm hai nơi đó thì không được kết luận là văn bản không có nội dung này.";
+
 /** Kết quả tìm kiếm nằm trong đoạn đang có sửa đổi chờ duyệt: gắn changed, chữ gốc của cả đoạn (before, cắt gọn) và người sửa,
  *  để AI nêu được cả hai bản mà không cần gọi thêm công cụ. Trả về số kết quả được gắn. */
-async function markPendingHits(ctx: Word.RequestContext, paras: Word.ParagraphCollection, hits: { i: number }[]): Promise<number> {
+async function markPendingHits(ctx: Word.RequestContext, paras: Word.ParagraphCollection, hits: { i: number }[], current?: (i: number) => string): Promise<number> {
   if (!supports("1.6") || !hits.length) return 0;
   const idx = [...new Set(hits.map((h) => h.i))].filter((i) => paras.items[i]);
   const tcs = idx.map((i) => {
@@ -768,7 +773,7 @@ async function markPendingHits(ctx: Word.RequestContext, paras: Word.ParagraphCo
   if (!hot.length) return 0;
   const orig = hot.map((x) => paras.items[x.i].getReviewedText("Original"));
   await ctx.sync();
-  const info = new Map(hot.map((x, j) => [x.i, { before: truncate(noMarks(strip(orig[j].value)), 400), by: [...new Set(tcs[x.k].items.map((t) => String(t.author || "").trim()).filter(Boolean))].slice(0, 3).join(", ") }]));
+  const info = new Map(hot.map((x, j) => [x.i, { before: beforeExcerpt(noMarks(strip(orig[j].value)), current ? current(x.i) : "", 400), by: [...new Set(tcs[x.k].items.map((t) => String(t.author || "").trim()).filter(Boolean))].slice(0, 3).join(", ") }]));
   let n = 0;
   for (const h of hits as any[]) {
     const x = info.get(h.i);
@@ -1077,8 +1082,9 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
                 words: `${h.matched}/${w.words.length}`,
                 text: truncate(h.sentence, 260),
               }));
+              if (hasChanges) await markPendingHits(ctx, paras, list, (i) => rows[i].text);
               const { picked: some } = takeWithinBudget(list, RESULT_JSON_BUDGET - 600);
-              const pendingSome = hasChanges ? await markPendingHits(ctx, paras, some) : 0;
+              const pendingSome = some.filter((h: any) => h.changed).length;
               return {
                 ok: true,
                 found: 0,
@@ -1091,8 +1097,10 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
               };
             }
           }
-          const { picked } = takeWithinBudget(hits.slice(0, max), RESULT_JSON_BUDGET - 600);
-          const pendingHits = hasChanges ? await markPendingHits(ctx, paras, picked) : 0;
+          const cand = hits.slice(0, max);
+          if (hasChanges) await markPendingHits(ctx, paras, cand, (i) => rows[i].text);
+          const { picked } = takeWithinBudget(cand, RESULT_JSON_BUDGET - 600);
+          const pendingHits = picked.filter((h: any) => h.changed).length;
           return {
             ok: true,
             found: res.total,
@@ -1103,7 +1111,11 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             ...(pendingHits ? { pending_note: PENDING_NOTE } : {}),
             ...(res.total
               ? {}
-              : { message: `Không tìm thấy "${truncate(q, 80)}". Tìm kiếm theo đúng chữ: thử từ khóa khác hoặc ngắn hơn, hoặc xem mục lục bằng word_get_outline.` }),
+              : {
+                  message:
+                    `Không tìm thấy "${truncate(q, 80)}". Tìm kiếm theo đúng chữ: thử từ khóa khác hoặc ngắn hơn, hoặc xem mục lục bằng word_get_outline.` +
+                    (hasChanges ? NOT_FOUND_PENDING : ""),
+                }),
             hits: picked,
           };
         });

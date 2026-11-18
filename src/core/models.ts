@@ -1,6 +1,6 @@
 /** Liệt kê model của từng nhà cung cấp và chuẩn hóa về một định dạng. */
 import { Provider } from "./providers";
-import { ensureOk, fetchDiagnosed } from "./errors";
+import { ensureOk, fetchDiagnosed, rememberSecret } from "./errors";
 
 export interface ModelInfo {
   id: string;
@@ -138,6 +138,7 @@ export function staticModels(provider: Provider): ModelInfo[] {
 }
 
 export async function fetchModels(provider: Provider, key: string, fetchFn: typeof fetch = fetch): Promise<ModelInfo[]> {
+  rememberSecret(key);
   const d = provider.dialect;
   if (d) {
     const fixed = staticModels(provider);
@@ -153,8 +154,10 @@ export async function fetchModels(provider: Provider, key: string, fetchFn: type
       const models = normalizeModels(provider, await res.json());
       if (models.length) return models;
     } catch (e) {
-      // Có danh sách cố định thì dùng tạm; không có thì báo lỗi thật
-      if (!fixed.length) throw e;
+      // Có danh sách cố định thì dùng tạm; không có thì báo lỗi thật. Key bị từ chối (401 / 403) thì luôn báo:
+      // dùng tạm danh sách cố định sẽ hiện nhầm "Đã kết nối" với key sai (soát mã 18/11/2026)
+      const st = (e as any)?.status;
+      if (!fixed.length || st === 401 || st === 403) throw e;
     }
     if (!fixed.length) throw new Error("Nhà cung cấp không trả về model chat nào.");
     return fixed;

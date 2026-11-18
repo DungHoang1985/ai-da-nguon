@@ -38,7 +38,8 @@ export function needsCompaction(o: { chars: number; context?: number; lastInputT
 
 /** Cắt tại đầu một lượt người dùng để không làm vỡ cặp gọi công cụ – kết quả. */
 export function splitForCompaction(h: AgentMessage[], keepTurns = KEEP_RECENT_TURNS): { old: AgentMessage[]; recent: AgentMessage[] } {
-  const userIdx = h.map((m, i) => (m.role === "user" ? i : -1)).filter((i) => i >= 0);
+  // Tin add-in tự thêm để gửi ảnh công cụ chụp (fromTool) không phải đầu một lượt: cắt ở đó là cắt giữa lượt
+  const userIdx = h.map((m, i) => (m.role === "user" && !(m as any).fromTool ? i : -1)).filter((i) => i >= 0);
   if (userIdx.length <= keepTurns) return { old: [], recent: h };
   const cut = userIdx[userIdx.length - keepTurns];
   return { old: h.slice(0, cut), recent: h.slice(cut) };
@@ -51,7 +52,8 @@ export function transcriptOf(h: AgentMessage[], maxChars = 60000): string {
   const cut = (s: string, n: number) => (s.length > n ? s.slice(0, n) + "…" : s);
   const lines: string[] = [];
   for (const m of h) {
-    if (m.role === "user") lines.push(`NGƯỜI DÙNG: ${cut(m.content, 4000)}`);
+    // Lời yêu cầu thật của người dùng nằm ở CUỐI tin (sau khối trạng thái tài liệu, kỹ năng nạp sẵn): giữ cả đầu lẫn cuối
+    if (m.role === "user") lines.push(`NGƯỜI DÙNG: ${m.content.length > 4000 ? m.content.slice(0, 1200) + "\n… [bỏ bớt phần giữa] …\n" + m.content.slice(-2800) : m.content}`);
     else if (m.role === "assistant") {
       if (m.content) lines.push(`TRỢ LÝ: ${cut(m.content, 4000)}`);
       for (const tc of m.toolCalls || []) lines.push(`TRỢ LÝ gọi ${tc.name}(${cut(JSON.stringify(tc.args), 300)})`);
@@ -62,6 +64,9 @@ export function transcriptOf(h: AgentMessage[], maxChars = 60000): string {
   const head = Math.floor(maxChars * 0.25);
   return `${t.slice(0, head)}\n… [bỏ bớt phần giữa] …\n${t.slice(t.length - (maxChars - head))}`;
 }
+
+/** Bản tóm tắt ngắn hơn ngần này ký tự (tức là rỗng) thì coi là hỏng */
+export const MIN_SUMMARY_CHARS = 1;
 
 export async function compactIfNeeded(o: {
   history: AgentMessage[];
@@ -104,7 +109,9 @@ export async function compactIfNeeded(o: {
       { role: "user", content: transcriptOf(old, Math.round(Math.min(150000, Math.max(6000, limit * 0.6)))) },
     ],
   });
-  const summary = res.text.trim() || "(không tóm tắt được)";
+  const summary = res.text.trim();
+  // Model trả rỗng, bị chặn hoặc bị cắt cụt: KHÔNG thay hội thoại cũ bằng một dòng trống nghĩa (mất vĩnh viễn) — giữ nguyên, lượt sau thử lại
+  if (summary.length < MIN_SUMMARY_CHARS || res.truncated) return { history: o.history, compacted: false };
   // Khối suy nghĩ của Anthropic gắn với phần hội thoại đứng trước nó; phần đó vừa bị thay bằng bản tóm tắt nên các khối trong
   // phần giữ lại không còn hợp lệ → bỏ (tài liệu: sau khi tóm tắt không gửi lại khối suy nghĩ cũ)
   recent = recent.map((m) => {
