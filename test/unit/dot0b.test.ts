@@ -150,7 +150,8 @@ describe("Đợt 0B: tự thử lại khi nhà cung cấp quá tải", () => {
   });
   it("Phân loại lỗi tạm thời", () => {
     assert.ok(isRetryable(new ApiError("x", 429)) && isRetryable(new ApiError("x", 529)) && isRetryable(new ApiError("x", 503)));
-    assert.ok(!isRetryable(new ApiError("x", 400)) && !isRetryable(new ApiError("x")) && !isRetryable(new TypeError("Failed to fetch")));
+    assert.ok(!isRetryable(new ApiError("x", 400)) && !isRetryable(new ApiError("x")));
+    // Lỗi mạng thô (đã qua fetchDiagnosed, máy chủ không với tới được): từ 4.7.2 được thử lại — xem dot7-de-lai.test.ts
   });
 });
 

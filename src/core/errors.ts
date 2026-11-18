@@ -25,6 +25,8 @@ export type ErrorReason =
 export class ApiError extends Error {
   /** Lỗi tạm thời dù mã trạng thái không thuộc nhóm tự thử lại (OpenRouter: 402 do ngân sách của các yêu cầu đang chạy) */
   public transient?: boolean;
+  /** Hết hạn mức theo NGÀY (429): gửi lại trong vài giây cũng vậy → không tự thử lại */
+  public daily?: boolean;
   constructor(
     message: string,
     public status?: number,
@@ -40,12 +42,19 @@ export class ApiError extends Error {
 /** Lỗi tạm thời nên tự thử lại: hết hạn mức tạm thời (429), máy chủ lỗi hoặc quá tải (5xx, 529 của Anthropic).
  *  Lỗi đã rõ lý do về key hoặc tiền thì không thử lại: gửi lại bao nhiêu lần cũng thế (Gemini báo hết tiền bằng mã 429). */
 export function isRetryable(e: unknown): boolean {
+  // Lỗi mạng còn nguyên dạng TypeError đã qua fetchDiagnosed: máy chủ không với tới được lúc đó (mạng chập chờn) → thử lại.
+  // Nhà cung cấp chặn gọi từ khung add-in (CORS) thì fetchDiagnosed đã đổi sang ApiError không thử lại.
+  if (e instanceof TypeError) return FETCH_FAILED.test(String(e.message).trim());
   if (!(e instanceof ApiError)) return false;
-  if (e.reason) return false;
+  if (e.reason || e.daily) return false;
   if (e.transient) return true;
   const s = e.status;
-  return typeof s === "number" && (s === 429 || s >= 500);
+  return typeof s === "number" && (s === 408 || s === 429 || s >= 500);
 }
+
+/** Câu lỗi 429 nói hết hạn mức theo ngày (Gemini "PerDay", OpenRouter "free-models-per-day", Groq "requests per day (RPD)") */
+const DAILY_QUOTA = /per[\s_-]?day|PerDay|\bRPD\b|\bdaily\b/i;
+const PER_MINUTE = /per[\s_-]?min|PerMinute|\bRPM\b|\bTPM\b/i;
 
 /** Che mọi thứ trông như API key trong một câu trước khi hiện, chép hay lưu (soát mã độc lập 16/11/2026, T1):
  *  câu lỗi của nhà cung cấp có thể nhắc lại key, mà thông báo lỗi được hiện trên khung, vào nút "Chép chi tiết lỗi"
@@ -389,5 +398,10 @@ export async function ensureOk(res: Response, provider?: Provider): Promise<void
   const x = explainApiError(res.status, detail, { provider, body });
   const err = new ApiError(x.text, res.status, retryAfter, x.reason);
   if (x.transient) err.transient = true;
+  if (res.status === 429) {
+    const all = `${detail} ${JSON.stringify(body ?? "")}`;
+    // Câu nói rõ hạn mức theo phút thì không tính là theo ngày, kể cả khi kèm câu quảng cáo "… requests per day"
+    if (DAILY_QUOTA.test(all) && !PER_MINUTE.test(all)) err.daily = true;
+  }
   throw err;
 }

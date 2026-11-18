@@ -621,7 +621,16 @@ export async function callModelStep(input: CallModelOptions): Promise<StepResult
       const ra: number | undefined = e.retryAfter;
       if (ra !== undefined && ra > MAX_RETRY_AFTER_S) throw e;
       const waitMs = ra !== undefined ? Math.max(Math.ceil(ra * 1000), delays[attempt]) : delays[attempt];
-      const reason = e.status === 429 ? "hết hạn mức tạm thời" : e.status === 529 ? "nhà cung cấp quá tải" : `máy chủ nhà cung cấp lỗi ${e.status}`;
+      const reason =
+        e instanceof TypeError
+          ? "mất kết nối tới nhà cung cấp"
+          : e.status === 429
+            ? "hết hạn mức tạm thời"
+            : e.status === 529
+              ? "nhà cung cấp quá tải"
+              : e.status === 408
+                ? "nhà cung cấp hết giờ chờ"
+                : `máy chủ nhà cung cấp lỗi ${e.status}`;
       opts.onRetry?.({ attempt: attempt + 1, max: delays.length, waitMs, reason });
       await (opts.sleep || sleepAbortable)(waitMs, opts.signal);
     }
