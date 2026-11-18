@@ -35,9 +35,10 @@ import { WelcomeSignIn } from "./SignInCard";
 import { useCatalog } from "./useCatalog";
 import { AgentMessage, ToolCall, UndoEntry, Usage } from "../../core/agent/types";
 import { isToolUnsupportedError } from "../../core/agent/llm";
+import { stepCapFor } from "../../core/agent/loop";
 import { addUsage, formatUsage, runTurn } from "../../core/agent/turn";
 import { getKV } from "../../core/db";
-import { ConversationMeta, ConversationStore, newConversationId, slimForStorage, titleFrom } from "../../core/conversations";
+import { ConversationMeta, ConversationStore, MAX_CONVERSATIONS, newConversationId, slimForStorage, testModeOn, titleFrom } from "../../core/conversations";
 import { Command, Skill, SkillStore, resolveSlash, skillCatalog } from "../../core/skills";
 import { CORE_GUIDES, autoSelectSkills } from "../../core/skillpack";
 import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, PDF_MIME, filesBase64Chars, readAttachment, withAttachments } from "../../core/attachments";
@@ -212,7 +213,14 @@ interface Item {
   incoming?: string;
   /** AI nói đã thay đổi tài liệu nhưng lượt này không có thao tác ghi nào thành công (chỉ để hiện; không gửi cho model) */
   claimWarning?: string;
+  /** Lượt dừng vì chạm trần số bước hoặc vì một công cụ lặp cùng một lỗi: hiện thẻ "Làm tiếp?" (chỉ để hiện) */
+  paused?: { steps: number; writes: number; stuck?: string };
+  /** Số lần gọi AI của các lượt trước thuộc CÙNG nhiệm vụ (khi người dùng bấm Làm tiếp) */
+  callsBase?: number;
 }
+
+/** Câu gửi model khi người dùng bấm "Làm tiếp" */
+export const CONTINUE_TASK = "Làm tiếp nhiệm vụ đang dở từ chỗ vừa dừng. Không làm lại các bước đã có kết quả thành công; xong thì báo ngắn gọn đã làm những gì.";
 
 interface Props {
   storage: Storage;
@@ -379,7 +387,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
   }, [input]);
 
   const kv = React.useMemo(() => getKV(), []);
-  const convStore = React.useMemo(() => new ConversationStore(kv), [kv]);
+  /** Chế độ thử (bài thử tự động bật qua sessionStorage): không lưu lịch sử */
+  const testMode = React.useMemo(() => testModeOn(), []);
+  const convStore = React.useMemo(() => new ConversationStore(kv, testModeOn), [kv]);
+  /** Lịch sử đầy: hội thoại cũ nhất sắp bị xóa khi hội thoại mới này được lưu */
+  const [histWarn, setHistWarn] = React.useState("");
   const skillStore = React.useMemo(() => new SkillStore(kv), [kv]);
 
   const hostTools = React.useMemo(() => getHostTools(host, () => storage.getSettings()), [host, storage]);
@@ -664,7 +676,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     if (fileRef.current) fileRef.current.value = "";
   };
 
-  const send = async (text?: string) => {
+  const send = async (text?: string, opts?: { continueTask?: boolean }) => {
     // Nguồn và model lấy tại lúc gửi: đổi nguồn khi đang chạy chỉ có hiệu lực từ lượt sau
     const p = getProvider(providerId);
     const typed = (text ?? input).trim();
@@ -708,6 +720,12 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     atts.forEach((a) => (a.mime === DOCX_MIME || a.mime === PDF_MIME) && a.data && registerAttachedFile(a.name, a.data));
     content = withAttachments(content, atts, { compare: host === "Word" && agentOn, pageTool: useAgent, byPages: byPages.map((a) => a.name) });
     const images = atts.filter((a) => a.kind === "image" && a.data).map((a) => ({ mime: a.mime || "image/png", data: a.data! }));
+    // PowerPoint: giữ ảnh đính kèm trong bộ nhớ của phiên và nêu tên để AI đặt được ảnh vào slide (ppt_insert_image)
+    if (host === "PowerPoint" && useAgent) {
+      const named = atts.filter((a) => a.kind === "image" && a.data);
+      named.forEach((a) => registerAttachedFile(a.name, a.data!));
+      if (named.length) content = `${content}\n\n[Ảnh đính kèm: ${named.map((a) => `“${a.name}”`).join(", ")}. Muốn đặt ảnh vào slide thì gọi ppt_insert_image với image = tên ảnh.]`;
+    }
     // PDF quét gửi nguyên tệp cho model tự đọc; nguồn không đọc được thì báo rõ (và model cũng được báo trong tin nhắn)
     const pdfs = whole.map((a) => ({ mime: a.mime || "application/pdf", data: a.data!, name: a.name }));
     if (pdfs.length && !pdfCapable(p)) {
@@ -722,11 +740,23 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     }
 
 
-    setItems((prev) => [
-      ...prev,
-      { role: "user", text: typed, files: atts.map((a) => a.name), label: slash.label },
-      { role: "assistant", text: "", segments: [], skills: auto.map((k) => k.name) },
-    ]);
+    setItems((prev) => {
+      // Bấm "Làm tiếp": vẫn là nhiệm vụ cũ → số lần gọi AI cộng dồn; thẻ hỏi của lượt trước được gỡ
+      const last = prev[prev.length - 1];
+      const base = opts?.continueTask && last?.role === "assistant" ? (last.callsBase || 0) + (last.calls || 0) : 0;
+      return [
+        ...prev.map((x) => (x.paused ? { ...x, paused: undefined } : x)),
+        { role: "user", text: opts?.continueTask ? "Làm tiếp" : typed, files: atts.map((a) => a.name), label: slash.label },
+        { role: "assistant", text: "", segments: [], skills: auto.map((k) => k.name), callsBase: base || undefined },
+      ];
+    });
+    // Hội thoại mới mà lịch sử đã đầy: báo trước hội thoại cũ nhất sẽ bị xóa (trước đây xóa lặng lẽ)
+    if (!convIdRef.current) {
+      convStore
+        .nextToDrop()
+        .then((d) => setHistWarn(d ? `Lịch sử đã đầy (${MAX_CONVERSATIONS} hội thoại): hội thoại cũ nhất “${d.title}” bị xóa để lấy chỗ. Muốn giữ hội thoại nào thì xóa bớt hội thoại khác trong Lịch sử.` : ""))
+        .catch(() => undefined);
+    }
     setInput("");
     setAttachments([]);
     setShowHistory(false);
@@ -778,6 +808,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                 reviewEdits: host === "Word" && !!settings.reviewEdits,
                 approve: askApproval,
                 log,
+                maxSteps: stepCapFor(host),
               }
             : undefined,
         webSearch: settings.webSearch && webCapable,
@@ -837,7 +868,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
           } else if (ev.type === "thinking_off") {
             setNotice({ text: "Nguồn đang dùng không nhận chế độ suy nghĩ với model này: đã gửi lại yêu cầu ở chế độ thường." });
           } else if (ev.type === "limit") {
-            appendText(`\n(Đã đạt giới hạn ${ev.maxSteps} bước. Gửi "tiếp tục" nếu muốn AI làm tiếp.)`);
+            patchLast((it) => ({ ...it, paused: { steps: ev.maxSteps, writes: ev.writes } }));
+          } else if (ev.type === "stuck") {
+            patchLast((it) => ({ ...it, paused: { steps: ev.step, writes: ev.writes, stuck: `${ev.tool} báo cùng một lỗi ${ev.times} bước liên tiếp` } }));
           } else if (ev.type === "retry") {
             retrying = true;
             const why = ev.reason.charAt(0).toUpperCase() + ev.reason.slice(1);
@@ -932,6 +965,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     historyRef.current = [];
     lastInputRef.current = undefined;
     setConv("");
+    setHistWarn("");
     setNotice(undefined);
     setShowHistory(false);
   };
@@ -944,6 +978,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       historyRef.current = c.history || [];
       lastInputRef.current = undefined;
       setConv(c.id);
+      setHistWarn("");
       setShowHistory(false);
       setNotice({ text: "Đã mở lại hội thoại. Nút Hoàn tác chỉ dùng được trong phiên làm việc đã tạo ra thay đổi." });
     } catch (e) {
@@ -1013,6 +1048,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         <Text size={100} className={s.muted} title={`Phiên bản ${APP_VERSION_FULL}`}>
           v{APP_VERSION}
         </Text>
+        {testMode && (
+          <Text size={100} className={s.err} data-test-mode="1" title="Bài thử tự động đang chạy: hội thoại trong phiên này không được lưu vào Lịch sử. Tự hết khi đóng Office.">
+            chế độ thử — không lưu lịch sử
+          </Text>
+        )}
         {links.length > 0 && (
           <Text
             size={100}
@@ -1158,13 +1198,30 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                   <Text
                     size={100}
                     className={s.muted}
-                    data-calls={it.calls || undefined}
+                    data-calls={(it.callsBase || 0) + (it.calls || 0) || undefined}
                     title="Một nhiệm vụ anh giao được AI làm qua nhiều bước nối tiếp: mỗi bước là một lần gọi AI (AI ra lệnh công cụ → add-in làm trên tài liệu → trả kết quả cho AI). Lần gọi nào cũng kèm toàn bộ yêu cầu và các bước trước, nên AI không mất mạch. Nhà cung cấp tính mỗi bước là một lượt dùng. Số token là tổng mọi bước; phần đọc từ bộ nhớ đệm được tính rẻ hơn nhiều."
                   >
-                    {it.calls && it.calls > 1 ? `1 nhiệm vụ · ${it.calls} lần gọi AI · ` : ""}
+                    {(it.callsBase || 0) + (it.calls || 0) > 1 ? `1 nhiệm vụ · ${(it.callsBase || 0) + (it.calls || 0)} lần gọi AI · ` : ""}
                     {formatUsage(it.usage)}
                   </Text>
                 ) : null}
+                {it.paused && !isLastBusy(i) && i === items.length - 1 && (
+                  <div className={s.warnBox} role="status" data-paused="1">
+                    <Text size={200}>
+                      {it.paused.stuck
+                        ? `AI dừng ở bước ${it.paused.steps}: ${it.paused.stuck}. Đã ghi ${it.paused.writes} thao tác vào tài liệu.`
+                        : `AI đã làm ${it.paused.steps} bước (hết một lượt), đã ghi ${it.paused.writes} thao tác vào tài liệu. Làm tiếp?`}
+                    </Text>
+                    <div className={s.row}>
+                      <Button size="small" appearance="primary" data-continue="1" onClick={() => send(CONTINUE_TASK, { continueTask: true })} disabled={busy || !!cat.blockReason}>
+                        {it.paused.stuck ? "Thử tiếp" : "Làm tiếp"}
+                      </Button>
+                      <Button size="small" data-stop-here="1" onClick={() => setItems((prev) => prev.map((x, k) => (k === i ? { ...x, paused: undefined } : x)))}>
+                        Dừng ở đây
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 {it.incoming && (
                   <Text size={200} data-incoming="1">
                     📥 {it.incoming}
@@ -1429,6 +1486,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
           <ModelPicker cat={cat} agentOn={agentOn} toolsOnly={settings.toolsOnly} onToolsOnly={(v) => updateSettings({ toolsOnly: v })} openRef={openPickerRef} />
         </div>
       </div>
+      {histWarn && (
+        <Text size={100} className={`${s.fixed} ${s.muted}`} data-aidn="lich-su-day">
+          ⚠️ {histWarn}
+        </Text>
+      )}
       {!busy && creditWarn && (
         <Text size={100} className={`${s.fixed} ${creditWarn.level === "out" ? s.err : s.muted}`} data-aidn="canh-bao-han-muc">
           ⚠️ {creditWarn.text}

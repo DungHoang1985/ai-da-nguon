@@ -28,7 +28,12 @@ export interface LogInput {
   reason?: string;
   /** Yêu cầu của người dùng ở lượt đó */
   request?: string;
+  /** Số dòng chi tiết tối đa (mặc định MAX_CELL_ROWS; thao tác hàng loạt dùng MAX_BULK_CELL_ROWS) */
+  maxRows?: number;
 }
+
+/** Thao tác hàng loạt (thay hàng loạt, xóa trùng, tự điền, xóa vùng): ghi chi tiết tới bấy nhiêu ô, phần còn lại gộp một dòng */
+export const MAX_BULK_CELL_ROWS = 200;
 
 const two = (n: number) => String(n).padStart(2, "0");
 
@@ -81,9 +86,10 @@ export function buildLogRows(o: LogInput): string[][] {
   const changes = o.changes;
   if (!changes) return [[time, sheet, logText(o.address, 80), "", "", ...tail]];
   if (!changes.length) return [[time, sheet, logText(o.address, 80), "(không đổi)", "(không đổi)", ...tail]];
-  const rows = changes.slice(0, MAX_CELL_ROWS).map((c) => [time, sheet, logText(c.cell, 20), logText(c.before), logText(c.after), ...tail]);
-  if (changes.length > MAX_CELL_ROWS) {
-    rows.push([time, sheet, logText(o.address, 80), "", `… và ${changes.length - MAX_CELL_ROWS} ô khác trong vùng này`, ...tail]);
+  const cap = Number.isInteger(o.maxRows) && (o.maxRows as number) > 0 ? Math.min(o.maxRows as number, MAX_BULK_CELL_ROWS) : MAX_CELL_ROWS;
+  const rows = changes.slice(0, cap).map((c) => [time, sheet, logText(c.cell, 20), logText(c.before), logText(c.after), ...tail]);
+  if (changes.length > cap) {
+    rows.push([time, sheet, logText(o.address, 80), "", `… và ${changes.length - cap} ô khác trong vùng này (không ghi chi tiết)`, ...tail]);
   }
   return rows;
 }

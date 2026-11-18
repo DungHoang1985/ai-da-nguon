@@ -18,6 +18,17 @@ export const MAX_REVIEW_BLOCKS = 2;
 export const NOT_RUN_TRUNCATED =
   "Chưa thực hiện: câu trả lời vừa rồi bị cắt vì vượt giới hạn độ dài nên lệnh gọi công cụ có thể dở dang. Hãy gọi lại, chia nhỏ: mỗi lần ghi ít nội dung hơn (ví dụ từng phần của văn bản, từng nhóm hàng, từng slide).";
 
+/** Cùng một công cụ báo cùng một lỗi mấy bước liên tiếp thì dừng lượt, không đợi hết trần số bước:
+ *  lặp y nguyên tham số → 2 bước; tham số có đổi mà lỗi vẫn thế → 3 bước. */
+export const STUCK_SAME_ARGS = 2;
+export const STUCK_SAME_ERROR = 3;
+
+/** Trần số bước của một lượt theo ứng dụng (số đo Chạy thật: Word và Excel 3–4 lần gọi AI cho một việc, PowerPoint 6–8).
+ *  Chạm trần thì khung hỏi "Làm tiếp?" chứ không tự chạy tiếp. */
+export function stepCapFor(host: string): number {
+  return host === "PowerPoint" ? 20 : host === "Word" || host === "Excel" ? 12 : 20;
+}
+
 export function clip(s: string, max: number): string {
   return s.length <= max ? s : s.slice(0, max) + `… [đã cắt bớt ${s.length - max} ký tự]`;
 }
@@ -123,6 +134,10 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
   let reviewBlocks = 0;
   /** Dùng chung cho mọi bước của lượt: nhà cung cấp đã từ chối tham số suy nghĩ thì các bước sau không gửi nữa */
   const callState: { plain?: boolean } = {};
+  /** Số lệnh ghi đã chạy thành công trong lượt (để thẻ "Làm tiếp?" nêu rõ đã làm gì) */
+  let writes = 0;
+  /** Lỗi công cụ của bước trước: "tên|lỗi" → { số bước liên tiếp, số bước liên tiếp y nguyên tham số, tham số lần cuối } */
+  let prevFails = new Map<string, { run: number; sameArgs: number; args: string }>();
   for (let step = 1; step <= maxSteps; step++) {
     if (aborted()) {
       markStopped();
@@ -186,6 +201,8 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
 
     /** Ảnh do công cụ trả về trong bước này (ảnh slide…): gửi cho model ở một tin nhắn riêng ngay sau các kết quả công cụ */
     const toolImages: { mime: string; data: string; label?: string }[] = [];
+    const stepFails = new Map<string, { run: number; sameArgs: number; args: string }>();
+    let stuck: { tool: string; error: string; times: number } | undefined;
     for (let i = 0; i < res.toolCalls.length; i++) {
       const call = res.toolCalls[i];
       if (aborted()) {
@@ -256,7 +273,24 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       }
       o.onEvent({ type: "tool_end", call, result, error });
       push(toolMsg(call, result));
+      if (error) {
+        const sig = `${call.name}|${error}`;
+        let args = "";
+        try {
+          args = JSON.stringify(call.args ?? {});
+        } catch {
+          args = "?";
+        }
+        const before = prevFails.get(sig);
+        const now = { run: (before?.run || 0) + 1, sameArgs: before && before.args === args ? before.sameArgs + 1 : 1, args };
+        // Cùng lỗi lặp trong một bước chỉ tính một lần cho bước đó
+        if (!stepFails.has(sig)) stepFails.set(sig, now);
+        if (!stuck && (now.sameArgs >= STUCK_SAME_ARGS || now.run >= STUCK_SAME_ERROR)) stuck = { tool: call.name, error, times: now.run };
+      } else if (specMap.get(call.name)?.write && !(result && typeof result === "object" && result.ok === false)) {
+        writes++;
+      }
     }
+    prevFails = stepFails;
     if (toolImages.length) {
       push({
         role: "user",
@@ -265,8 +299,17 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         fromTool: true,
       });
     }
+    if (stuck) {
+      // Dừng sau khi mọi lệnh của bước đã có kết quả (lịch sử vẫn hợp lệ)
+      o.onEvent({ type: "stuck", tool: stuck.tool, error: stuck.error, times: stuck.times, step, writes });
+      push({
+        role: "assistant",
+        content: `[Add-in dừng lượt: công cụ ${stuck.tool} báo cùng một lỗi ${stuck.times} bước liên tiếp (“${clip(stuck.error, 300)}”). Chờ người dùng quyết định làm tiếp theo cách khác hay thôi.]`,
+      });
+      return msgs;
+    }
   }
-  o.onEvent({ type: "limit", maxSteps });
+  o.onEvent({ type: "limit", maxSteps, writes });
   push({ role: "assistant", content: `[Đã đạt giới hạn ${maxSteps} bước của một lượt; chờ người dùng bảo làm tiếp.]` });
   return msgs;
 }

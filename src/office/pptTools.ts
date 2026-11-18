@@ -4,6 +4,8 @@ import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { normalize2D, truncate } from "./util";
 import { currentSlideId, deleteShapeUndo, findShape, loadShapeTexts, shapeOn, slideAt, supports } from "./pptCore";
 import { PPT_ADV_SPECS, executePptAdvanced, pptRisk, slideSizePt } from "./pptAdvanced";
+import { findAttachedImage, listAttachedImages } from "../core/attachedFiles";
+import { imageBox } from "../core/imagefit";
 import { PPT_DESIGN_SPECS, executePptDesign } from "./pptDesign";
 
 const slideProp = { type: "number", description: "Slide number (1-based)." };
@@ -27,6 +29,49 @@ export const PPT_SPECS: ToolSpec[] = [
         body: { type: "string", description: "Bullet lines separated by \\n." },
         after_slide: { type: "number", description: "Insert after this slide number (default: at the end)." },
       },
+    },
+    write: true,
+  },
+  {
+    name: "ppt_add_slides",
+    description:
+      "Add SEVERAL slides in one call (use this instead of ppt_add_slide whenever you add 2 or more slides). Slides are appended at the end in the given order; each uses one of the presentation's layouts and fills its title and body placeholders. Max 10 slides per call. Undo removes the whole batch.",
+    parameters: {
+      type: "object",
+      properties: {
+        slides: {
+          type: "array",
+          description: "Slides in order.",
+          items: {
+            type: "object",
+            properties: {
+              layout: { type: "string", description: "Layout name, e.g. 'Title and Content', 'Title Slide', 'Title Only'." },
+              title: { type: "string" },
+              body: { type: "string", description: "Bullet lines separated by \\n. Omit for slides that will get a chart or table." },
+            },
+          },
+        },
+      },
+      required: ["slides"],
+    },
+    write: true,
+  },
+  {
+    name: "ppt_insert_image",
+    description:
+      "Place an image the user ATTACHED in this chat onto a slide, keeping its aspect ratio. Only images attached in this session can be used (not web URLs). By default the image is fitted into the content area below the title; use place or left/top/width/height (points) to position it. Undo removes it.",
+    parameters: {
+      type: "object",
+      properties: {
+        slide: { type: "number", description: "Slide number (from 1)." },
+        image: { type: "string", description: "Attached image file name (or its position '1', '2'…). Omit to use the most recently attached image." },
+        place: { type: "string", enum: ["content", "left", "right", "center", "full"], description: "Where to fit the image: content area (default), left or right half, centered, or the whole slide." },
+        left: { type: "number" },
+        top: { type: "number" },
+        width: { type: "number", description: "Give width OR height to set the size; the other side follows the aspect ratio." },
+        height: { type: "number" },
+      },
+      required: ["slide"],
     },
     write: true,
   },
@@ -216,12 +261,53 @@ async function findPlaceholders(ctx: PowerPoint.RequestContext, slide: PowerPoin
   return { title, body };
 }
 
-async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Promise<any> {
-  switch (name) {
-    case "ppt_get_overview":
-      return overview();
+/** Đọc kích thước ảnh đính kèm; ảnh không phải PNG/JPEG (GIF, WebP) hoặc quá lớn thì vẽ lại thành PNG để PowerPoint nhận được.
+ *  Trả base64 (không kèm tiền tố data:). */
+async function loadImageForSlide(name: string, data: string): Promise<{ w: number; h: number; data: string }> {
+  const lower = name.toLowerCase();
+  const mime = lower.endsWith(".png") ? "image/png" : /\.jpe?g$/.test(lower) ? "image/jpeg" : lower.endsWith(".gif") ? "image/gif" : "image/webp";
+  const el = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const im = new Image();
+    im.onload = () => resolve(im);
+    im.onerror = () => reject(new Error(`Không đọc được ảnh "${name}" (tệp hỏng hoặc không phải ảnh).`));
+    im.src = `data:${mime};base64,${data}`;
+  });
+  const w = el.naturalWidth;
+  const h = el.naturalHeight;
+  if (!w || !h) throw new Error(`Không đọc được kích thước của ảnh "${name}".`);
+  const MAX_SIDE = 2400;
+  if ((mime === "image/png" || mime === "image/jpeg") && Math.max(w, h) <= MAX_SIDE) return { w, h, data };
+  const k = Math.min(1, MAX_SIDE / Math.max(w, h));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(w * k));
+  canvas.height = Math.max(1, Math.round(h * k));
+  const g = canvas.getContext("2d");
+  if (!g) throw new Error("Không chuyển được ảnh sang PNG trong môi trường này.");
+  g.drawImage(el, 0, 0, canvas.width, canvas.height);
+  return { w, h, data: canvas.toDataURL("image/png").split(",")[1] };
+}
 
-    case "ppt_add_slide":
+export const MAX_SLIDES_PER_CALL = 10;
+
+/** Chuẩn hóa danh sách slide của ppt_add_slides: nhận mảng hoặc chuỗi JSON, bỏ phần tử rỗng, tối đa MAX_SLIDES_PER_CALL */
+export function normalizeSlideList(v: any): { layout?: string; title?: string; body?: string }[] {
+  let list = v;
+  if (typeof list === "string") {
+    try {
+      list = JSON.parse(list);
+    } catch {
+      list = [];
+    }
+  }
+  if (!Array.isArray(list)) return [];
+  return list
+    .filter((x) => x && typeof x === "object" && (String(x.title ?? "").trim() || String(x.body ?? "").trim() || String(x.layout ?? "").trim()))
+    .slice(0, MAX_SLIDES_PER_CALL)
+    .map((x) => ({ layout: x.layout === undefined ? undefined : String(x.layout), title: x.title === undefined ? undefined : String(x.title), body: x.body === undefined ? undefined : String(x.body) }));
+}
+
+/** Thêm một slide theo bố cục của mẫu và điền tiêu đề, nội dung. select = chuyển tới slide vừa thêm. */
+async function addOneSlide(a: any, log: UndoEntry[], select: boolean): Promise<{ slide: number; slide_id: string; layout: string; note: string }> {
       return PowerPoint.run(async (ctx) => {
         const master = ctx.presentation.slideMasters.getItemAt(0);
         master.load("id");
@@ -275,7 +361,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           }
         }
         await ctx.sync();
-        if (supports("1.5")) {
+        if (select && supports("1.5")) {
           try {
             ctx.presentation.setSelectedSlides([slideId]);
             await ctx.sync();
@@ -294,8 +380,98 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
               await c.sync();
             }),
         });
-        return { ok: true, message: `${note}Đã thêm slide ${index} (bố cục "${layout.name}")`, slide: index, slide_id: slideId };
+        return { slide: index, slide_id: slideId, layout: layout.name, note };
       });
+}
+
+async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Promise<any> {
+  switch (name) {
+    case "ppt_get_overview":
+      return overview();
+
+    case "ppt_add_slides": {
+      const list = normalizeSlideList(a.slides);
+      if (!list.length) throw new Error("Thiếu danh sách slides (mỗi phần tử gồm layout, title, body).");
+      // Mỗi slide ghi mục Hoàn tác riêng vào sổ tạm; cả lô gộp thành MỘT mục Hoàn tác (gỡ từ slide cuối lên)
+      const batch: UndoEntry[] = [];
+      const done: any[] = [];
+      let failed = "";
+      for (const one of list) {
+        try {
+          done.push(await addOneSlide(one, batch, false));
+        } catch (e: any) {
+          failed = e?.message || String(e);
+          break;
+        }
+      }
+      if (batch.length) {
+        log.push({
+          label: `Thêm ${batch.length} slide`,
+          undo: async () => {
+            for (const u of batch.slice().reverse()) await u.undo();
+          },
+        });
+      }
+      if (!done.length) throw new Error(failed || "Không thêm được slide nào.");
+      const nums = done.map((d) => d.slide);
+      return {
+        ok: !failed,
+        message: `Đã thêm ${done.length}/${list.length} slide: ${nums.join(", ")}${failed ? `. Dừng ở slide thứ ${done.length + 1} vì lỗi: ${failed}` : ""}`,
+        slides: done.map((d) => ({ slide: d.slide, slide_id: d.slide_id, layout: d.layout, ...(d.note ? { note: d.note } : {}) })),
+        ...(Array.isArray(a.slides) && a.slides.length > list.length ? { note: `Chỉ nhận ${MAX_SLIDES_PER_CALL} slide mỗi lần gọi; ${a.slides.length - list.length} slide còn lại chưa thêm.` } : {}),
+      };
+    }
+
+    case "ppt_add_slide": {
+      const r = await addOneSlide(a, log, true);
+      return { ok: true, message: `${r.note}Đã thêm slide ${r.slide} (bố cục "${r.layout}")`, slide: r.slide, slide_id: r.slide_id };
+    }
+
+
+    case "ppt_insert_image": {
+      const have = listAttachedImages();
+      const file = findAttachedImage(a.image);
+      if (!file) {
+        throw new Error(
+          have.length
+            ? `Không thấy ảnh đính kèm "${a.image}". Ảnh đang có: ${have.join(", ")}.`
+            : "Chưa có ảnh đính kèm nào trong phiên này (ảnh đính kèm mất khi tải lại khung hoặc mở hội thoại mới). Hãy nói người dùng đính kèm ảnh rồi gửi lại yêu cầu; không dùng được ảnh từ địa chỉ web."
+        );
+      }
+      const img = await loadImageForSlide(file.name, file.data);
+      return PowerPoint.run(async (ctx) => {
+        const { slide } = await slideAt(ctx, a.slide);
+        const size = await slideSizePt(ctx);
+        // Mép dưới của ô tiêu đề (nếu có) để ảnh không đè lên tiêu đề
+        let titleBottom: number | undefined;
+        try {
+          const { title } = await findPlaceholders(ctx, slide);
+          if (title) {
+            title.load("top,height");
+            await ctx.sync();
+            titleBottom = title.top + title.height;
+          }
+        } catch {
+          titleBottom = undefined;
+        }
+        const box = imageBox({ w: img.w, h: img.h }, size, { place: a.place, left: a.left, top: a.top, width: a.width, height: a.height, titleBottom });
+        const shp = slide.shapes.addGeometricShape("Rectangle" as any, box);
+        shp.fill.setImage(img.data);
+        shp.lineFormat.visible = false;
+        shp.name = `Ảnh ${file.name}`.slice(0, 60);
+        shp.load("id,name");
+        await ctx.sync();
+        log.push(deleteShapeUndo(slide.id, shp.id, `Ảnh ${file.name} ở slide ${a.slide}`, shp.name));
+        return {
+          ok: true,
+          message: `Đã đặt ảnh "${file.name}" vào slide ${a.slide}`,
+          shape: shp.name,
+          box: [Math.round(box.left), Math.round(box.top), Math.round(box.width), Math.round(box.height)],
+          image_px: [img.w, img.h],
+          note: "Ảnh là phần tô của một hình chữ nhật: đổi cỡ thì giữ đúng tỷ lệ rộng/cao này; không cắt xén được như ảnh thường.",
+        };
+      });
+    }
 
     case "ppt_set_shape_text":
       return PowerPoint.run(async (ctx) => {
@@ -428,7 +604,7 @@ export const pptTools: HostToolSet = {
       "- Slide đánh số từ 1; kích thước slide (điểm) ở slide_size. Dùng bố cục có sẵn của tệp (danh sách layouts) để giữ đúng giao diện.",
       "- Số liệu cần so sánh → ppt_add_chart (biểu đồ gốc, sửa được dữ liệu, theo màu chủ đề). Quy trình/các bước/mốc thời gian → ppt_add_process_flow. Sắp xếp slide → ppt_move_slide / ppt_duplicate_slide / ppt_delete_slide. Chỉnh vị trí, màu, chữ của hình → ppt_update_shape.",
       "- THEO MẪU: trước khi thêm slide hoặc hình vào một bài có sẵn, xem mẫu bằng ppt_get_theme (màu chủ đề, phông, bố cục và ô giữ chỗ); dùng bố cục và màu của mẫu, không tự đặt phông hay màu lạ.",
-      "- ÍT LƯỢT GỌI: tạo nhiều slide thì gọi các lệnh thêm slide, bảng, biểu đồ trong CÙNG một lượt (slide mới nối vào cuối bài theo thứ tự lệnh, nên biết trước số slide); làm xong HẾT rồi mới kiểm, và kiểm một lần cho mọi slide vừa tạo bằng ppt_get_slide_image với slides: [..]. Không gọi ppt_get_overview sau mỗi bước.",
+      "- ÍT LƯỢT GỌI: từ 2 slide trở lên thì dùng ppt_add_slides (một lệnh thêm cả lô); gọi các lệnh thêm slide, bảng, biểu đồ trong CÙNG một lượt (slide mới nối vào cuối bài theo thứ tự lệnh, nên biết trước số slide); làm xong HẾT rồi mới kiểm, và kiểm một lần cho mọi slide vừa tạo bằng ppt_get_slide_image với slides: [..]. Không gọi ppt_get_overview sau mỗi bước.",
       "- TỰ KIỂM BẰNG MẮT: sau khi tạo hoặc sửa slide có nhiều chữ, bảng, hình, gọi ppt_get_slide_image để NHÌN slide; thấy chữ tràn khung, hình chồng nhau thì sửa ĐÚNG hình có vấn đề (giảm cỡ chữ bằng ppt_format_text, nới hoặc dời khung bằng ppt_update_shape, tách slide) rồi chụp lại MỘT lần để xác nhận. Không dời, không đổi cỡ ô tiêu đề và ô nội dung của bố cục khi chúng không có vấn đề. Slide có hình trùng tên thì chỉ hình bằng số thứ tự (n). Không chụp lại quá hai lần cho một slide; ảnh cho thấy ổn thì dừng, không sửa tiếp theo số đo.",
       "- KIỂM BÀI: khi người dùng nhờ kiểm tra, soát, hoàn thiện bài, gọi ppt_check_deck trước (phông lệch mẫu, chữ quá nhỏ, slide thiếu tiêu đề, chữ tràn, hình ra ngoài slide), báo đủ từng điểm kèm số slide; chỉ sửa khi được nhờ.",
       "- Định dạng một đoạn hay một cụm chữ trong hình: ppt_format_text. Sửa bảng có sẵn: ppt_edit_table. Người dùng nói 'slide này', 'hình này', 'chữ đang chọn': ppt_get_selection. Đổi bố cục slide: ppt_set_layout.",

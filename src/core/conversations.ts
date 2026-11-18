@@ -57,8 +57,33 @@ export function slimForStorage(history: AgentMessage[]): AgentMessage[] {
   });
 }
 
+/** Khóa của "chế độ thử" trong sessionStorage của khung: bài thử tự động bật để hội thoại thử không vào lịch sử
+ *  (lịch sử có trần, hội thoại thử từng đẩy mất hội thoại thật). Không có nút trên giao diện; mất khi đóng Office. */
+export const TEST_MODE_KEY = "aidn-che-do-thu";
+
+export function testModeOn(store?: Pick<Storage, "getItem">): boolean {
+  try {
+    const s = store ?? (typeof sessionStorage !== "undefined" ? sessionStorage : undefined);
+    return s?.getItem(TEST_MODE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 export class ConversationStore {
-  constructor(private kv: AsyncKV) {}
+  /** noSave() trả true thì save() không ghi gì (chế độ thử) */
+  constructor(
+    private kv: AsyncKV,
+    private noSave?: () => boolean
+  ) {}
+
+  /** Hội thoại sẽ bị xóa khỏi lịch sử nếu lưu thêm MỘT hội thoại mới (lịch sử đang đầy); không có thì undefined */
+  async nextToDrop(currentId?: string): Promise<ConversationMeta | undefined> {
+    if (this.noSave?.()) return undefined;
+    const index = ((await this.kv.get<ConversationMeta[]>("conv-index")) || []).slice().sort((a, b) => b.updatedAt - a.updatedAt);
+    if (currentId && index.some((x) => x.id === currentId)) return undefined;
+    return index.length >= MAX_CONVERSATIONS ? index[index.length - 1] : undefined;
+  }
 
   async list(host?: string): Promise<ConversationMeta[]> {
     const index = (await this.kv.get<ConversationMeta[]>("conv-index")) || [];
@@ -70,6 +95,7 @@ export class ConversationStore {
   }
 
   async save(c: Conversation): Promise<void> {
+    if (this.noSave?.()) return;
     const stored: Conversation = { ...c, history: slimForStorage(c.history), updatedAt: Date.now() };
     await this.kv.set("conv:" + c.id, stored);
     let index = (await this.kv.get<ConversationMeta[]>("conv-index")) || [];

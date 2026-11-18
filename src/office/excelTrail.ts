@@ -26,6 +26,8 @@ export interface TrailData {
   after: any[][];
   /** Có bản chụp để Hoàn tác (không có thì không tô sáng: tô rồi không trả lại màu cũ được) */
   undoable: boolean;
+  /** Số dòng chi tiết tối đa trong nhật ký cho thao tác này (thao tác hàng loạt) */
+  maxRows?: number;
 }
 
 interface Highlighted {
@@ -121,8 +123,9 @@ export async function clearHighlights(): Promise<number> {
 const whereOf = (a: any): { sheet: string; address: string } => {
   for (const k of ["address", "cell", "source_address", "print_area", "fill_to"]) {
     if (typeof a?.[k] === "string" && a[k].trim()) {
-      const s = splitAddress(splitAreas(a[k])[0] || "", a.sheet);
-      return { sheet: s.sheet || "", address: s.address };
+      // Nhiều vùng rời: nhật ký ghi đủ các vùng (trước đây chỉ vùng đầu)
+      const parts = splitAreas(a[k]).map((p) => splitAddress(p, a.sheet));
+      return { sheet: parts[0]?.sheet || "", address: parts.map((p) => p.address).join(",") };
     }
   }
   return { sheet: String(a?.sheet || a?.name || ""), address: a?.at ? String(a.at) : "" };
@@ -212,7 +215,7 @@ export function withAuditTrail(base: HostToolSet, o: TrailOptions): HostToolSet 
       }
       if (st.excelLog) {
         try {
-          await appendRows(logSheet, buildLogRows({ time: now(), sheet, address: w.address, changes, action, reason: ctx.said, request: ctx.request }));
+          await appendRows(logSheet, buildLogRows({ time: now(), sheet, address: w.address, changes, action, reason: ctx.said, request: ctx.request, maxRows: trail?.maxRows }));
         } catch (e: any) {
           notes.push(`Không ghi được nhật ký: ${e?.message || e}`);
         }

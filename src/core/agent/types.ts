@@ -116,7 +116,10 @@ export type AgentEvent =
   | { type: "review_end"; call: ToolCall; ok: boolean; note?: string }
   /** Nhà cung cấp từ chối tham số suy nghĩ: đã gửi lại không kèm phần đó */
   | { type: "thinking_off"; reason: string }
-  | { type: "limit"; maxSteps: number }
+  /** Chạm trần số bước của lượt; `writes` = số lệnh ghi đã chạy thành công */
+  | { type: "limit"; maxSteps: number; writes: number }
+  /** Dừng sớm: một công cụ báo cùng một lỗi nhiều bước liên tiếp */
+  | { type: "stuck"; tool: string; error: string; times: number; step: number; writes: number }
   /** Nhà cung cấp quá tải hoặc hết hạn mức tạm thời: sắp thử lại lần `attempt` sau `waitMs` */
   | { type: "retry"; attempt: number; max: number; waitMs: number; reason: string }
   /** Số token của bước vừa xong */

@@ -50,6 +50,15 @@ export async function snapshot(ctx: Excel.RequestContext, range: Excel.Range, wi
   };
 }
 
+/** Dữ liệu trước / sau của một thao tác hàng loạt, cho nhật ký soát lại (lớp bọc excelTrail gỡ khỏi kết quả trước khi trả model).
+ *  Gọi SAU khi thao tác đã chạy. Vùng quá lớn (không có bản chụp) thì trả undefined: nhật ký chỉ ghi một dòng nêu thao tác. */
+export async function bulkTrail(ctx: Excel.RequestContext, range: Excel.Range, snap: Snapshot | null) {
+  if (!snap) return undefined;
+  range.load("formulas");
+  await ctx.sync();
+  return { sheet: snap.sheet, address: snap.address, before: snap.formulas, after: range.formulas, undoable: true, maxRows: 200 };
+}
+
 /** Chỉ giữ các thuộc tính ghi lại được (bỏ address, viền trong, giá trị rỗng) — nếu không setCellProperties báo lỗi tham số. */
 export function settableProps(props: any[][]): any[][] {
   const clean = (o: any) => {

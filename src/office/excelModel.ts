@@ -3,7 +3,7 @@
  *  bảng nhạy cảm, làm sạch dữ liệu, bảo vệ ô công thức. Các API dùng ở đây đã thăm dò trong Excel thật 16/11/2026
  *  (tasks/dot-4.md, bảng thăm dò; bằng chứng tasks/dot-4-bang-chung/01). */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
-import { getRange, restoreFrom, snapshot } from "./excelCore";
+import { bulkTrail, getRange, restoreFrom, snapshot } from "./excelCore";
 import { cellAddress, lettersToCol, splitAddress, topLeft, truncate } from "./util";
 import { formulaRisksOf } from "../core/formularisk";
 import { auditModel } from "../core/modelaudit";
@@ -436,7 +436,28 @@ export async function excelModelRisk(name: string, a: any): Promise<string | nul
     return [many, frMsg].filter(Boolean).join(" ") || null;
   }
   if (name === "excel_protect" && a.action === "unprotect") return `Bỏ bảo vệ sheet "${a.sheet || "đang mở"}": mọi ô, kể cả ô công thức, sẽ sửa được.`;
+  if (name === "excel_protect" && a.action === "lock_formulas") {
+    // Sheet đã có bố trí khóa riêng (ô khóa lẫn ô mở khóa, hoặc cả sheet đã được mở khóa): thao tác này thay bố trí đó → hỏi trước
+    return Excel.run(async (ctx) => {
+      const ws = sheetOf(ctx, a.sheet);
+      ws.load("name");
+      const whole = ws.getRange();
+      whole.format.protection.load("locked");
+      const used = ws.getUsedRangeOrNullObject();
+      used.format.protection.load("locked");
+      await ctx.sync();
+      return lockLayoutRisk(ws.name, whole.format.protection.locked, used.isNullObject ? true : used.format.protection.locked);
+    }).catch(() => null);
+  }
   return null;
+}
+
+/** Câu hỏi trước khi khóa ô công thức trên sheet đã có bố trí khóa riêng. Excel mặc định khóa mọi ô (locked = true):
+ *  null = đang lẫn ô khóa và ô mở khóa; false = đã được mở khóa hết — cả hai đều là bố trí do người dùng đặt. Sheet mặc định: không hỏi. */
+export function lockLayoutRisk(sheet: string, wholeLocked: boolean | null | undefined, usedLocked: boolean | null | undefined): string | null {
+  const custom = wholeLocked === null || wholeLocked === false || usedLocked === null || usedLocked === false;
+  if (!custom) return null;
+  return `Sheet "${sheet}" đang có bố trí khóa ô riêng (một số ô đã được mở khóa hoặc khóa có chủ ý). Thao tác này thay bố trí đó: mở khóa mọi ô rồi chỉ khóa ô công thức (hoặc khóa hết trừ các vùng nhập nêu ra). Hoàn tác chỉ đưa được về "mọi ô đều khóa", không trả lại đúng bố trí cũ.`;
 }
 
 export async function executeExcelModel(name: string, a: any, log: UndoEntry[]): Promise<any> {
@@ -876,7 +897,8 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
           await ctx.sync();
           const u = restoreFrom(snap, `Xóa dòng trùng ${range.address}`);
           if (u && rd.removed) log.push(u);
-          return { ok: true, removed: rd.removed, remaining: rd.uniqueRemaining, message: rd.removed ? `Đã xóa ${rd.removed} dòng trùng ở ${range.address}, còn ${rd.uniqueRemaining} dòng khác nhau` : `Không có dòng trùng ở ${range.address}`, ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }) };
+          const tr = rd.removed ? await bulkTrail(ctx, range, snap) : undefined;
+          return { ok: true, ...(tr ? { __trail: tr } : {}), removed: rd.removed, remaining: rd.uniqueRemaining, message: rd.removed ? `Đã xóa ${rd.removed} dòng trùng ở ${range.address}, còn ${rd.uniqueRemaining} dòng khác nhau` : `Không có dòng trùng ở ${range.address}`, ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }) };
         }
         if (a.action === "replace_all") {
           const find = String(a.find ?? "");
@@ -886,7 +908,8 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
           await ctx.sync();
           const u = restoreFrom(snap, `Thay hàng loạt ${range.address}`);
           if (u && n.value) log.push(u);
-          return { ok: true, replaced: n.value, message: n.value ? `Đã thay ${n.value} chỗ "${truncate(find, 40)}" → "${truncate(a.replace, 40)}" ở ${range.address}` : `Không thấy "${truncate(find, 40)}" ở ${range.address}: thay 0 chỗ`, ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }) };
+          const tr = n.value ? await bulkTrail(ctx, range, snap) : undefined;
+          return { ok: true, ...(tr ? { __trail: tr } : {}), replaced: n.value, message: n.value ? `Đã thay ${n.value} chỗ "${truncate(find, 40)}" → "${truncate(a.replace, 40)}" ở ${range.address}` : `Không thấy "${truncate(find, 40)}" ở ${range.address}: thay 0 chỗ`, ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }) };
         }
         if (a.action === "fill_series") {
           if (!a.fill_to) throw new Error("Thiếu fill_to: vùng đích (gồm cả các ô mẫu), ví dụ 'A2:A31'.");
@@ -902,7 +925,8 @@ export async function executeExcelModel(name: string, a: any, log: UndoEntry[]):
           await ctx.sync();
           const u = restoreFrom(snap, `Tự điền ${dest.address}`);
           if (u) log.push(u);
-          return { ok: true, message: `Đã tự điền ${dest.address} theo mẫu ở ${range.address}`, address: dest.address, preview: first.text, ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }) };
+          const tr = await bulkTrail(ctx, dest, snap);
+          return { ok: true, __trail: tr, message: `Đã tự điền ${dest.address} theo mẫu ở ${range.address}`, address: dest.address, preview: first.text, ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }) };
         }
         throw new Error(`action không hỗ trợ: ${a.action}`);
       });

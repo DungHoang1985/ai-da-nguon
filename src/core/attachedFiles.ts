@@ -49,6 +49,28 @@ export function findAttachedFile(name?: string, ext?: string): AttachedFile | nu
   return partial.length === 1 ? partial[0] : null;
 }
 
+const IMAGE_EXT = /\.(png|jpe?g|gif|webp)$/i;
+
+/** Ảnh người dùng đính kèm trong phiên này (để công cụ đặt ảnh vào slide) */
+export function listAttachedImages(): string[] {
+  return files.filter((f) => IMAGE_EXT.test(f.name)).map((f) => f.name);
+}
+
+/** Tìm ảnh đính kèm theo tên (không phân biệt hoa thường, cho phép thiếu đuôi hoặc gõ một phần tên nếu chỉ khớp một ảnh)
+ *  hoặc theo số thứ tự 1, 2… trong danh sách. Không nêu thì lấy ảnh đính kèm gần nhất. */
+export function findAttachedImage(ref?: string | number): AttachedFile | null {
+  const imgs = files.filter((f) => IMAGE_EXT.test(f.name));
+  if (!imgs.length) return null;
+  const raw = ref === undefined || ref === null ? "" : String(ref).trim();
+  if (!raw) return imgs[imgs.length - 1];
+  if (/^\d+$/.test(raw)) return imgs[Number(raw) - 1] ?? null;
+  const want = fold(raw);
+  const exact = imgs.filter((f) => fold(f.name) === want || fold(f.name).replace(IMAGE_EXT, "") === want);
+  if (exact.length) return exact[exact.length - 1];
+  const partial = imgs.filter((f) => fold(f.name).includes(want));
+  return partial.length === 1 ? partial[0] : null;
+}
+
 export function clearAttachedFiles(): void {
   files.length = 0;
 }

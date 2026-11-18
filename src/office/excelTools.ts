@@ -2,7 +2,7 @@
 /** Công cụ để AI thao tác trực tiếp trên sổ tính Excel. Mỗi thao tác ghi đều lưu ảnh chụp để Hoàn tác. */
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, splitAreas, topLeft, truncate } from "./util";
-import { getRange, restoreFrom, snapshot } from "./excelCore";
+import { bulkTrail, getRange, restoreFrom, snapshot } from "./excelCore";
 import { EXCEL_ADV_SPECS, excelRisk, executeExcelAdvanced } from "./excelAdvanced";
 import { EXCEL_MODEL_SPECS, excelModelRisk, executeExcelModel } from "./excelModel";
 
@@ -485,7 +485,9 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         await ctx.sync();
         const undo = restoreFrom(snap, `Xóa ${range.address}`);
         if (undo) log.push(undo);
-        return { ok: true, message: `Đã xóa (${a.what || "contents"}) ${range.address}` };
+        // Xóa định dạng không đổi nội dung ô: không cần dòng chi tiết từng ô
+        const tr = what === "Formats" ? undefined : await bulkTrail(ctx, range, snap);
+        return { ok: true, ...(tr ? { __trail: tr } : {}), message: `Đã xóa (${a.what || "contents"}) ${range.address}` };
       });
 
     case "excel_select_range":

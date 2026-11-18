@@ -7,7 +7,9 @@
 //   node kiem-thu/cdp.mjs shot <cổng> <tệp .png>                     chụp khung add-in
 //   node kiem-thu/cdp.mjs file <cổng> <bộ chọn CSS> <tệp> [tệp…]     đặt tệp vào ô chọn tệp (đính kèm, nhập kỹ năng)
 //   node kiem-thu/cdp.mjs reload <cổng>                              tải lại khung add-in, bỏ qua bộ nhớ tạm (như Ctrl+F5)
-//   node kiem-thu/cdp.mjs list <cổng>                                liệt kê các trang đang mở (khung add-in, hộp thoại đăng nhập); giá trị tham số nhạy cảm chỉ in độ dài
+//   node kiem-thu/cdp.mjs thu <cổng> [on|off]                        bật / tắt CHẾ ĐỘ THỬ (hội thoại không lưu vào Lịch sử) rồi tải lại khung.
+//                                                                    Lệnh eval trên khung add-in tự bật chế độ này; thêm --luu để eval KHÔNG tự bật.
+//   node kiem-thu/cdp.mjs list <cổng>                               liệt kê các trang đang mở (khung add-in, hộp thoại đăng nhập); giá trị tham số nhạy cảm chỉ in độ dài
 //   node kiem-thu/cdp.mjs nav <cổng>#<đoạn địa chỉ> <địa chỉ>         đưa một trang (ví dụ hộp thoại đăng nhập) tới địa chỉ khác
 //   <cổng>#<đoạn địa chỉ> dùng được với eval, shot: chọn trang có địa chỉ chứa đoạn đó thay cho khung add-in (9229#dang-nhap, 9229#openrouter.ai)
 //   node kiem-thu/cdp.mjs serve <cổng> [thư mục dist]                nạp BẢN CỤC BỘ vào khung: chặn mọi yêu cầu tới địa chỉ add-in và trả tệp
@@ -104,8 +106,31 @@ async function connect(portAndHost) {
   return { send, on: (method, fn) => handlers.set(method, fn), close: () => ws.close(), closed: new Promise((r) => (ws.onclose = r)), url: target.url };
 }
 
+/** Khóa "chế độ thử" của add-in (src/core/conversations.ts, TEST_MODE_KEY): bật thì hội thoại không được lưu vào Lịch sử */
+const TEST_MODE_KEY = "aidn-che-do-thu";
+const TEST_MODE_ON = `try { sessionStorage.setItem(${JSON.stringify(TEST_MODE_KEY)}, "1"); } catch (e) {}\n`;
+
+/** Bật / tắt chế độ thử rồi tải lại khung (để đầu khung hiện dòng "chế độ thử"). Cờ tự mất khi đóng Office. */
+async function testMode(port, state) {
+  const on = state !== "off";
+  const c = await connect(port);
+  try {
+    await c.send("Runtime.evaluate", {
+      expression: on ? TEST_MODE_ON : `try { sessionStorage.removeItem(${JSON.stringify(TEST_MODE_KEY)}); } catch (e) {}`,
+    });
+    await c.send("Page.reload", { ignoreCache: false });
+    console.log(on ? "Đã BẬT chế độ thử: hội thoại không được lưu vào Lịch sử" : "Đã TẮT chế độ thử: hội thoại được lưu như thường");
+  } finally {
+    c.close();
+  }
+}
+
 async function evalFile(port, list) {
-  const body = list.map((f) => fs.readFileSync(f, "utf8")).join("\n");
+  // Mọi bài thử chạy trong khung add-in đều tự bật chế độ thử (không lưu Lịch sử) — có hiệu lực ngay, không cần tải lại.
+  // Bài cần kiểm chính việc lưu lịch sử thì tự gỡ cờ trong mã của bài, hoặc chạy `cdp.mjs thu <cổng> off` trước và thêm tham số --luu.
+  const keep = process.argv.includes("--luu");
+  list = list.filter((f) => f !== "--luu");
+  const body = (String(port).includes("#") || keep ? "" : TEST_MODE_ON) + list.map((f) => fs.readFileSync(f, "utf8")).join("\n");
   const c = await connect(port);
   try {
     const r = await c.send("Runtime.evaluate", {
@@ -281,6 +306,7 @@ try {
   else if (cmd === "list") await listTargets(a1);
   else if (cmd === "nav") await navigate(a1, a2);
   else if (cmd === "reload") await reload(a1);
+  else if (cmd === "thu") await testMode(a1, a2);
   else if (cmd === "serve") await serve(a1, a2);
   else if (cmd === "file") await setFile(a1, a2, process.argv.slice(5));
   else if (cmd === "eval") await evalFile(a1, files);
