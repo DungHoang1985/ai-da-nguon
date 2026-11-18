@@ -525,6 +525,11 @@ export function checkTerms(rows: ParaRow[], outline: OutlineItem[], which: { ter
 
 export const BLANKS: RegExp[] = [
   /(?<![\p{L}\p{N}.…])(?:\.{3,}|…+)(?:\s*(?:\.{2,}|…+))*/gu,
+  // Dãy chấm dài dính liền chữ / số: "Họ và tên..........", "năm 20……", "ngày.....tháng" (soát mã Đợt 8, #8).
+  // Ba chấm sau chữ ("như sau...") vẫn là dấu chấm lửng, không tính.
+  /(?:\.{4,}|…{2,})(?:\s*(?:\.{2,}|…+))*/gu,
+  // Một dấu "…" trong ngày tháng: "…/…/20…", "năm 20…", "19…"
+  /…(?=\/)|(?<=\/)…|(?<=(?:^|[^\p{N}])(?:19|20))…/gu,
   /_{3,}/g,
   /\[\s*(?:●|•|\*+|\.{2,}|…+|_+|x{2,})?\s*\]/giu,
   /\[\s*(?:điền|ghi|nhập|chèn|bổ sung|insert|tbd|to be)[^\]]{0,60}\]/giu,
@@ -535,6 +540,19 @@ export const BLANKS: RegExp[] = [
 /** Dòng ký tên: gạch chân, chấm chấm ở đó là chỗ ký, không phải chỗ quên điền */
 export const SIGN_LINE = /ký tên|chữ ký|ký, ghi rõ|ký và ghi rõ|ký, đóng dấu|đóng dấu|signature|signed by/i;
 
+/** Dấu chấm / gạch không phải chỗ để điền (soát mã Đợt 8, #9): đường dẫn mục lục "Điều 1 ........ 5", "(…)" nghĩa là "vân vân",
+ *  "…" trong ngoặc kép (trích dẫn bị lược), cả dòng chỉ là gạch "______" (đường kẻ trang trí). */
+export function notABlank(text: string, at: number, len: number): boolean {
+  const before = text.slice(0, at);
+  const after = text.slice(at + len);
+  const str = text.slice(at, at + len);
+  if (/^[.…\s]+$/.test(str) && /^\s*\d{1,4}\s*$/.test(after) && /\S/.test(before)) return true; // dẫn mục lục tới số trang
+  if (/\(\s*$/.test(before) && /^\s*\)/.test(after) && len <= 3) return true; // (…)
+  if (/["“]\s*$/.test(before) && /^\s*["”]/.test(after) && len <= 3) return true; // "…"
+  if (/^_+$/.test(str) && !before.trim() && !after.trim()) return true; // cả dòng là gạch
+  return false;
+}
+
 export function checkBlanks(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
   const issues: Issue[] = [];
   for (const r of rows) {
@@ -542,7 +560,7 @@ export function checkBlanks(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
     const text = clean(r.text);
     if (text.length <= 100 && SIGN_LINE.test(text)) continue;
     const hits: { at: number; len: number }[] = [];
-    for (const re of BLANKS) for (const m of text.matchAll(re)) hits.push({ at: m.index as number, len: m[0].length });
+    for (const re of BLANKS) for (const m of text.matchAll(re)) if (!notABlank(text, m.index as number, m[0].length)) hits.push({ at: m.index as number, len: m[0].length });
     if (!hits.length) continue;
     hits.sort((a, b) => a.at - b.at);
     // Gộp các chỗ chồng nhau

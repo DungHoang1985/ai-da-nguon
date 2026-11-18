@@ -155,7 +155,7 @@ describe("Đợt 8 · ghi cả ô bằng OOXML (Hoàn tác trả nguyên ô cũ)
   it("Ô đánh dấu: đặt w14:checked và ký hiệu theo checkedState, giữ phông ký hiệu, giữ chữ ngoài ô", () => {
     const x = fillControlOoxml(wrap(CHECK(false)), { checked: true })!;
     assert.match(x, /<w14:checked w14:val="1"\/>/);
-    assert.match(x, /<w:sdtContent><w:r><w:rPr><w:rFonts w:ascii="MS Gothic"\/><\/w:rPr><w:t xml:space="preserve">☒<\/w:t><\/w:r><\/w:sdtContent>/);
+    assert.match(x, /<w:sdtContent><w:r><w:rPr><w:rFonts w:ascii="MS Gothic" w:eastAsia="MS Gothic" w:hAnsi="MS Gothic" w:cs="MS Gothic"\/><\/w:rPr><w:t xml:space="preserve">☒<\/w:t><\/w:r><\/w:sdtContent>/);
     assert.ok(x.startsWith("<pkg:package><w:p><w:r><w:t>Trước </w:t></w:r>") && x.endsWith("<w:r><w:t> sau</w:t></w:r></w:p></pkg:package>"));
     const y = fillControlOoxml(x, { checked: false })!;
     assert.match(y, /<w14:checked w14:val="0"\/>/);
