@@ -247,10 +247,26 @@ Báo cáo: `tasks/dot-7-bang-chung/soat-ma-dot-7-va-ban-va.md` (phạm vi `git d
 | 16 | Bản tóm tắt bị cắt thì bỏ, lượt sau gọi tóm tắt lại | Chưa thấy xảy ra; cần đo với model trần đầu ra nhỏ |
 | 9 (một phần) | Hai ảnh trùng tên thì ảnh sau đè ảnh trước | Hiếm; người dùng đổi tên tệp được |
 
+### Kiểm tổng trên bản cục bộ cuối cùng (18/11/2026, gói `taskpane.104bd5b7.js`, Office trên desktop ẩn)
+
+| Kiểm | Kết quả | Bằng chứng |
+|---|---|---|
+| Kiểm thử máy, kiểm kiểu, đóng gói | **576/576**, sạch, đạt | — |
+| Tự kiểm tra Word (văn bản trống) | **38/38** | `sau-471-tong-word.json` |
+| Tự kiểm tra Excel | **40/40** | `sau-471-tong-excel.json` |
+| Tự kiểm tra PowerPoint (mẫu Georgia / Verdana) | **25/25** | `sau-471-tong-powerpoint-georgia.json` |
+| Chạy thật bài 3 slide + 1 biểu đồ (Haiku 5.5), mẫu Georgia | 5 lần gọi AI: hai lượt thêm là AI tự chỉnh trình bày theo bài thử (rút ngắn một tiêu đề bị xuống dòng vì Georgia rộng hơn; đưa cỡ tiêu đề slide biểu đồ về 28 pt như các slide có sẵn của bài). Không có lượt nào sửa phông hay vị trí. Trên mẫu Calibri: 3 lần (hai lần chạy ở trên) | `sau-471-tong-ppt-3-slide.json` |
+| A2 / Làm tiếp, Chạy thật trong Excel (Haiku 5.5, chế độ thử) | Đạt: dừng ở 12 ô kèm thẻ "Làm tiếp?"; bấm Làm tiếp → đủ 16 ô, 17 lần gọi AI | `sau-471-tong-lam-tiep-excel.json` |
+| **A2 / nút "Dừng ở đây"** (trước đây chưa bấm thử) | **Đạt**: thẻ mất, không gọi AI thêm, cột giữ 12 ô, khung hết bận, nút "Hoàn tác thay đổi (12)" còn | `sau-471-dung-o-day-excel.json`, bài `kiem-thu/cdp-bai/dot-7-dung-o-day.js` |
+
+Ghi chú bài thử: hàm chờ `send` của `cdp-lib.js` coi nút "Dừng ở đây" là đang bận (cùng tiền tố "Dừng") nên lượt đầu của bài Làm tiếp luôn đo 241 giây (hết hạn chờ của bài thử); khung không bị treo.
+
+Dọn dẹp: chế độ thử, số hội thoại trong lịch sử 0 → 0; model trả về Anthropic · Claude Opus 5.5; Word, Excel, PowerPoint thử đã đóng không lưu.
+
 ## Việc còn lại
 
-1. Cập nhật bảng so sánh `docs/so-sanh-claude-chinh-thuc.md` theo bản 4.7.0 (chưa làm).
+1. ~~Cập nhật bảng so sánh~~ xong 18/11 (theo bản 4.7).
 2. ~~Ô tiêu đề slide biểu đồ báo toạ độ 0, 0, 0, 0~~ đã sửa (mục ngay trên, chưa phát hành). Chữ có “ư” ở ô chữ, hình, bảng, sơ đồ: đã đo và sửa (mục ngay trên).
-3. E2: nhìn dòng báo "lịch sử đầy" trên khung (mới có kiểm thử máy). A2: bấm thử nút "Dừng ở đây".
+3. E2: nhìn dòng báo "lịch sử đầy" trên khung (mới có kiểm thử máy; muốn thử thật phải có gần 60 hội thoại — không tạo trên máy anh, xem Bài học 16/11). ~~A2: bấm thử nút "Dừng ở đây"~~ đạt 18/11.
 4. G3: chạy lại một bài công cụ mới với Gemini khi máy chủ Gemini trả lời.
-5. Các mục soát mã để lại (bảng ở trên).
+5. ~~Các mục soát mã để lại~~ đã xử lý 18/11: sửa phần rẻ và có ích, phần còn lại ghi lý do (bảng "Để lại, lý do" ở trên).
