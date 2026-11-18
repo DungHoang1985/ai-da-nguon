@@ -92,26 +92,86 @@ export function dateFormatFromOoxml(xml: string): string | null {
 const unxml = (s: string) => s.replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
 const xmlEsc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-/** Ô chọn: OOXML mới của ô với mục `item` được chọn (bỏ trạng thái "đang hiện chữ gợi ý", thay chữ trong w:sdtContent).
- *  null nếu không dựng được (không thấy ô hoặc không có chữ trong ô). */
-export function selectDropdownOoxml(xml: string, item: string): string | null {
+/** Vị trí ô điền mẫu ngoài cùng (w:sdt, tính cả ô lồng bên trong) trong một chuỗi OOXML */
+function outerSdt(src: string): { start: number; end: number } | null {
+  const open = /<w:sdt(?=[\s>])/g;
+  const first = open.exec(src);
+  if (!first) return null;
+  const tag = /<w:sdt(?=[\s>])|<\/w:sdt>/g;
+  tag.lastIndex = first.index;
+  let depth = 0;
+  for (let m = tag.exec(src); m; m = tag.exec(src)) {
+    depth += m[0] === "</w:sdt>" ? -1 : 1;
+    if (depth === 0) return { start: first.index, end: m.index + m[0].length };
+  }
+  return null;
+}
+
+/** Định dạng chữ (w:rPr) của run đầu tiên trong một đoạn XML, bỏ kiểu chữ gợi ý (PlaceholderText: màu xám) */
+function firstRunProps(xml: string): string {
+  const r = /<w:r(?=[\s>])[^>]*>\s*(<w:rPr>[\s\S]*?<\/w:rPr>)?/.exec(xml);
+  return (r?.[1] || "").replace(/<w:rStyle w:val="PlaceholderText"\/>/g, "").replace(/<w:rPr>\s*<\/w:rPr>/, "");
+}
+
+const runOf = (props: string, text: string) => `<w:r>${props}<w:t xml:space="preserve">${xmlEsc(text)}</w:t></w:r>`;
+
+/** OOXML mới của ô điền mẫu với giá trị mới — ghi cả ô bằng insertOoxml thay cho ghi chữ vào ô.
+ *  Vì sao (đo 18/11/2026, `tham-do-8-sau-hoan-tac.js`): ghi chữ vào ô rồi Hoàn tác (từ chối sửa đổi) để lại trong ô 5 dấu cách thay
+ *  chữ gợi ý, và từ đó Word từ chối mọi lệnh ghi vào ô (GeneralException); ô đánh dấu thì lệch (w14:checked = 1 mà hiện ☐).
+ *  Thay cả ô thì Hoàn tác trả lại nguyên ô cũ và điền lại được (ô chọn đã chạy theo cách này).
+ *  - text: chữ mới (ô chữ, ô chọn, ô chọn hoặc nhập, ô ngày); nhiều dòng → ô trong dòng xuống dòng bằng w:br, ô chứa đoạn thì mỗi dòng một đoạn;
+ *  - checked: ô đánh dấu (đặt w14:checked và ký hiệu theo checkedState / uncheckedState của ô);
+ *  - date: ô ngày, ghi thêm w:fullDate để bộ chọn ngày của Word hiện đúng ngày.
+ *  null nếu không dựng được. */
+export function fillControlOoxml(xml: string, v: { text?: string; checked?: boolean; date?: { d: number; m: number; y: number } }): string | null {
   const src = String(xml || "");
-  const m = /<w:sdt>[\s\S]*?<\/w:sdt>/.exec(src);
-  if (!m) return null;
-  const sdt = m[0];
-  const content = /<w:sdtContent>([\s\S]*)<\/w:sdtContent>/.exec(sdt);
-  if (!content) return null;
-  // Giữ run đầu tiên (định dạng), thay chữ của nó, bỏ các run sau
-  const firstRun = /<w:r\b[\s\S]*?<\/w:r>/.exec(content[1]);
-  if (!firstRun) return null;
-  const run = /<w:t\b[^>]*>[\s\S]*?<\/w:t>|<w:t\b[^>]*\/>/.test(firstRun[0])
-    ? firstRun[0].replace(/<w:t\b[^>]*>[\s\S]*?<\/w:t>|<w:t\b[^>]*\/>/, `<w:t xml:space="preserve">${xmlEsc(item)}</w:t>`)
-    : firstRun[0].replace(/<\/w:r>$/, `<w:t xml:space="preserve">${xmlEsc(item)}</w:t></w:r>`);
-  // Bỏ kiểu chữ gợi ý (PlaceholderText) để chữ đã chọn không hiện màu xám
-  const cleanRun = run.replace(/<w:rStyle w:val="PlaceholderText"\/>/g, "");
-  const inner = content[1].replace(/<w:r\b[\s\S]*<\/w:r>/, cleanRun);
-  const sdtNew = sdt.replace(/<w:showingPlcHdr\/>/g, "").replace(/<w:sdtContent>[\s\S]*<\/w:sdtContent>/, `<w:sdtContent>${inner}</w:sdtContent>`);
-  return src.slice(0, m.index) + sdtNew + src.slice((m.index as number) + sdt.length);
+  const pos = outerSdt(src);
+  if (!pos) return null;
+  const sdt = src.slice(pos.start, pos.end);
+  const prM = /<w:sdtPr>[\s\S]*?<\/w:sdtPr>/.exec(sdt);
+  // Nội dung ô có thể rỗng dạng tự đóng <w:sdtContent/> (ô trống sau khi từ chối sửa đổi)
+  const ctM = /<w:sdtContent>([\s\S]*)<\/w:sdtContent>|<w:sdtContent\s*\/>/.exec(sdt);
+  if (!prM || !ctM) return null;
+  let pr = prM[0].replace(/<w:showingPlcHdr\/>/g, "");
+  const content = ctM[1] ?? "";
+  // Ô chứa đoạn (w:p bên trong) hay nằm trong một đoạn; nội dung rỗng thì xét ô có đang nằm trong w:p không
+  const opened = (src.slice(0, pos.start).match(/<w:p(?=[\s>])/g) || []).length - (src.slice(0, pos.start).match(/<\/w:p>/g) || []).length;
+  const block = content ? /<w:p(?=[\s>])/.test(content) : opened <= 0;
+  const props = firstRunProps(content);
+  let inner: string;
+  if (v.checked !== undefined) {
+    if (!/<w14:checkbox>/.test(pr)) return null;
+    pr = /<w14:checked\b/.test(pr)
+      ? pr.replace(/<w14:checked w14:val="[^"]*"\/>/, `<w14:checked w14:val="${v.checked ? 1 : 0}"/>`)
+      : pr.replace(/<w14:checkbox>/, `<w14:checkbox><w14:checked w14:val="${v.checked ? 1 : 0}"/>`);
+    const st = new RegExp(`<w14:${v.checked ? "checkedState" : "uncheckedState"}\\b[^>]*w14:val="([0-9A-Fa-f]+)"`).exec(pr);
+    const glyph = st ? String.fromCodePoint(parseInt(st[1], 16)) : v.checked ? "☒" : "☐";
+    inner = runOf(props, glyph);
+    if (block) inner = `<w:p>${/<w:pPr>[\s\S]*?<\/w:pPr>/.exec(content)?.[0] || ""}${inner}</w:p>`;
+  } else {
+    const text = String(v.text ?? "");
+    const lines = text.split(/\r\n|\r|\n/);
+    if (block) {
+      const pPr = /<w:pPr>[\s\S]*?<\/w:pPr>/.exec(content)?.[0] || "";
+      inner = lines.map((l) => `<w:p>${pPr}${runOf(props, l)}</w:p>`).join("");
+    } else {
+      inner = lines.map((l, k) => (k ? `<w:r>${props}<w:br/></w:r>` : "") + runOf(props, l)).join("");
+    }
+    if (v.date) {
+      const iso = `${v.date.y}-${String(v.date.m).padStart(2, "0")}-${String(v.date.d).padStart(2, "0")}T00:00:00Z`;
+      pr = pr.replace(/<w:date\b([^>]*?)(\/?)>/, (_m, attrs: string, slash: string) => `<w:date${attrs.replace(/\s*w:fullDate="[^"]*"/, "")} w:fullDate="${iso}"${slash}>`);
+    }
+  }
+  const sdtNew =
+    sdt.slice(0, prM.index) +
+    pr +
+    sdt.slice(prM.index + prM[0].length).replace(/<w:sdtContent>[\s\S]*<\/w:sdtContent>|<w:sdtContent\s*\/>/, () => `<w:sdtContent>${inner}</w:sdtContent>`);
+  return src.slice(0, pos.start) + sdtNew + src.slice(pos.end);
+}
+
+/** Ô chọn: OOXML mới của ô với mục `item` được chọn (giữ lại cho kiểm thử cũ; dùng fillControlOoxml). */
+export function selectDropdownOoxml(xml: string, item: string): string | null {
+  return fillControlOoxml(xml, { text: item });
 }
 
 /** Giá trị cho ô đánh dấu: true / false, hoặc null nếu không hiểu */

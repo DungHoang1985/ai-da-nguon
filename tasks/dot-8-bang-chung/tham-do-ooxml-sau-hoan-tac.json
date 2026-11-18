@@ -1,0 +1,16 @@
+{
+ "buoc": 12,
+ "truoc": "<w:sdt><w:sdtPr><w:alias w:val=\"Thăm dò\"/><w:tag w:val=\"aidn_tham_do_ooxml\"/><w:id w:val=\"1939326520\"/><w:placeholder><w:docPart w:val=\"CB23FCFE13634EA9A00DDAB6FB80BC87\"/></w:placeholder></w:sdtPr><w:sdtContent><w:r><w:t>X</w:t></w:r></w:sdtContent></w:sdt>",
+ "sauGhi": [
+  "",
+  "Giá trị",
+  "X"
+ ],
+ "sauHoanTac": [
+  "480814818 \"\"",
+  "1939326520 \"X\""
+ ],
+ "ooxmlWhole": "<w:sdt><w:sdtPr><w:alias w:val=\"Thăm dò\"/><w:tag w:val=\"aidn_tham_do_ooxml\"/><w:id w:val=\"1939326520\"/><w:placeholder><w:docPart w:val=\"2558F81ADBF74BF59C450B9FC5714722\"/></w:placeholder></w:sdtPr><w:sdtContent><w:r><w:t>X</w:t></w:r></w:sdtContent></w:sdt>",
+ "ooxmlContent": "(không có w:sdt) <w:body><w:p w14:paraId=\"61020E1A\" w14:textId=\"77777777\" w:rsidR=\"00B91FE3\" w:rsidRDefault=\"009826F5\"><w:r><w:t>X</w:t></w:r></w:p><w:sectPr w:rsidR=\"00B91FE3\"><w:pgSz w:w=\"12240\" w:h=\"15840\"/><w:pgMar w:top=\"1440\" w:right=\"1440\" w:bottom=\"1440\" w:left=\"1440\" w:header=\"720\" w:footer=\"720\" w:gutter=\"0\"/><w:cols w:space=\"720\"/></w:sectPr></w:body></w:document></pkg:xmlData></pkg:part><pkg:part pkg:name=\"/word/_rels/document.xml.rels\" pkg:contentType=\"application/vnd.openxmlformats-package.relationships+xml\" pkg:padding=\"256\"><pkg:xmlData><Relationships xmlns=\"http://schemas.openxmlformats.org/pa",
+ "coSdtTrongWhole": true
+}

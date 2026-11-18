@@ -1,0 +1,104 @@
+{
+ "o": [
+  {
+   "tag": "so_hd",
+   "id": 8000,
+   "type": "PlainText",
+   "text": "HĐĐC-THU-01",
+   "khoa": true,
+   "suaDoiTrong": [],
+   "sdtPr": "<w:sdtPr><w:alias w:val=\"Số hợp đồng\"/><w:tag w:val=\"so_hd\"/><w:id w:val=\"8000\"/><w:lock w:val=\"sdtContentLocked\"/><w:text/></w:sdtPr>",
+   "noiDung": "<w:sdtContent><w:r><w:t>HĐĐC-THU-01</w:t></w:r></w:sdtContent>"
+  },
+  {
+   "tag": "ben_a",
+   "id": 8001,
+   "type": "PlainText",
+   "text": "",
+   "khoa": false,
+   "suaDoiTrong": [],
+   "sdtPr": "<w:sdtPr><w:alias w:val=\"Tên Bên A\"/><w:tag w:val=\"ben_a\"/><w:id w:val=\"8001\"/><w:showingPlcHdr/><w:text/></w:sdtPr>",
+   "noiDung": "<w:sdtContent><w:r><w:t xml:space=\"preserve\">     </w:t></w:r></w:sdtContent>"
+  },
+  {
+   "tag": "dia_chi_a",
+   "id": 8002,
+   "type": "RichText",
+   "text": "số 1 phố Thử, phường Hoàn Kiếm, Hà Nội",
+   "khoa": false,
+   "suaDoiTrong": [
+    "Added:số 1 phố Thử, phường Hoàn Kiếm, Hà Nội"
+   ],
+   "sdtPr": "<w:sdtPr><w:alias w:val=\"Địa chỉ Bên A\"/><w:tag w:val=\"dia_chi_a\"/><w:id w:val=\"8002\"/></w:sdtPr>",
+   "noiDung": "<w:sdtContent><w:ins w:id=\"0\" w:author=\"[tên tài khoản Office]\" w:date=\"2026-11-18T15:29:00Z\" w16du:dateUtc=\"2026-11-18T08:29:00Z\"><w:r><w:t>số 1 phố Thử, phường Hoàn Kiếm, Hà Nội</w:t></w:r></w:ins></w:sdtContent>"
+  },
+  {
+   "tag": "la_ca_nhan",
+   "id": 8003,
+   "type": "CheckBox",
+   "text": "☐",
+   "khoa": false,
+   "suaDoiTrong": [],
+   "sdtPr": "<w:sdtPr><w:alias w:val=\"Cá nhân\"/><w:tag w:val=\"la_ca_nhan\"/><w:id w:val=\"8003\"/><w14:checkbox><w14:checked w14:val=\"0\"/><w14:checkedState w14:val=\"2612\" w14:font=\"MS Gothic\"/><w14:uncheckedState w14:val=\"2610\" w14:font=\"MS Gothic\"/></w14:checkbox></w:sdtPr>",
+   "noiDung": "<w:sdtContent><w:r><w:t>☐</w:t></w:r></w:sdtContent>"
+  },
+  {
+   "tag": "la_to_chuc",
+   "id": 8004,
+   "type": "CheckBox",
+   "text": "☐",
+   "khoa": false,
+   "suaDoiTrong": [],
+   "sdtPr": "<w:sdtPr><w:alias w:val=\"Tổ chức\"/><w:tag w:val=\"la_to_chuc\"/><w:id w:val=\"8004\"/><w14:checkbox><w14:checked w14:val=\"1\"/><w14:checkedState w14:val=\"2612\" w14:font=\"MS Gothic\"/><w14:uncheckedState w14:val=\"2610\" w14:font=\"MS Gothic\"/></w14:checkbox></w:sdtPr>",
+   "noiDung": "<w:sdtContent><w:r><w:t>☐</w:t></w:r></w:sdtContent>"
+  },
+  {
+   "tag": "thanh_toan",
+   "id": 1683616948,
+   "type": "DropDownList",
+   "text": "Chuyển khoản",
+   "khoa": false,
+   "suaDoiTrong": [],
+   "sdtPr": "<w:sdtPr><w:alias w:val=\"Hình thức thanh toán\"/><w:tag w:val=\"thanh_toan\"/><w:id w:val=\"1683616948\"/><w:dropDownList></w:dropDownList></w:sdtPr>",
+   "noiDung": "<w:sdtContent><w:customXmlInsRangeEnd w:id=\"0\"/><w:ins w:id=\"1\" w:author=\"[tên tài khoản Office]\" w:date=\"2026-11-18T15:29:00Z\" w16du:dateUtc=\"2026-11-18T08:29:00Z\"><w:r><w:t>Chuyển khoản</w:t></w:r></w:ins><w:customXmlInsRangeStart w:id=\"2\" w:author=\"[tên tài khoản Office]\" w:date=\"2026-11-18T15:29:00Z\"/></w:sdt"
+  },
+  {
+   "tag": "thanh_toan",
+   "id": 8005,
+   "type": "DropDownList",
+   "text": "",
+   "khoa": false,
+   "suaDoiTrong": [],
+   "sdtPr": "<w:sdtPr><w:alias w:val=\"Hình thức thanh toán\"/><w:tag w:val=\"thanh_toan\"/><w:id w:val=\"8005\"/><w:dropDownList></w:dropDownList></w:sdtPr>",
+   "noiDung": "<w:sdtContent><w:customXmlDelRangeEnd w:id=\"0\"/><w:customXmlDelRangeStart w:id=\"1\" w:author=\"[tên tài khoản Office]\" w:date=\"2026-11-18T15:29:00Z\"/></w:sdtContent>"
+  },
+  {
+   "tag": "loai_ts",
+   "id": 8006,
+   "type": "ComboBox",
+   "text": "",
+   "khoa": false,
+   "suaDoiTrong": [],
+   "sdtPr": "<w:sdtPr><w:alias w:val=\"Loại tài sản\"/><w:tag w:val=\"loai_ts\"/><w:id w:val=\"8006\"/><w:showingPlcHdr/><w:comboBox></w:comboBox></w:sdtPr>",
+   "noiDung": "<w:sdtContent><w:r><w:t xml:space=\"preserve\">     </w:t></w:r></w:sdtContent>"
+  },
+  {
+   "tag": "ngay_ky",
+   "id": 8007,
+   "type": "DatePicker",
+   "text": "",
+   "khoa": false,
+   "suaDoiTrong": [],
+   "sdtPr": "<w:sdtPr><w:alias w:val=\"Ngày ký\"/><w:tag w:val=\"ngay_ky\"/><w:id w:val=\"8007\"/><w:showingPlcHdr/><w:date w:fullDate=\"2026-11-18T00:00:00Z\"><w:dateFormat w:val=\"dd/MM/yyyy\"/><w:lid w:val=\"vi-VN\"/><w:storeMappedDataAs w:val=\"dateTime\"/><w:calendar w:val=\"gregorian\"/></w:date></w:sdtPr>",
+   "noiDung": "<w:sdtContent><w:r><w:t xml:space=\"preserve\">     </w:t></w:r></w:sdtContent>"
+  }
+ ],
+ "thu": {
+  "ben_a insertText": "LOI GeneralException ContentControl.insertText",
+  "ben_a getRange(Content).insertText": "LOI GeneralException Range.insertText",
+  "loai_ts getRange(Content).insertText": "LOI GeneralException Range.insertText",
+  "la_to_chuc_sau": "true \"☐\"",
+  "la_to_chuc isChecked": "được"
+ },
+ "suaDoiTruocKhiDon": 16
+}

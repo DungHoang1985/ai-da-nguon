@@ -9,6 +9,7 @@ import { PageSetupInfo, ParaFont, VAN_BAN_HANH_CHINH, checkPageFormat, customSta
 import { compareVersions } from "../core/compare";
 import { findAttachedFile, listAttachedFiles } from "../core/attachedFiles";
 import { RESULT_JSON_BUDGET, takeWithinBudget, truncate } from "./util";
+import { liveContentControls } from "./wordForm";
 
 export interface ReviewRow extends ParaRow {
   id?: string;
@@ -142,9 +143,7 @@ export function createWordReviewTools(deps: ReviewDeps) {
       // Ô điền mẫu còn trống cũng là chỗ trống chưa điền
       if (checks.includes("blank") && supports("1.5")) {
         try {
-          const cc = ctx.document.getContentControls({ types: CC_TYPES as any });
-          cc.load("items/title,items/tag,items/text,items/type");
-          await ctx.sync();
+          const cc = { items: await liveContentControls(ctx, supports, "items/title,items/tag,items/text,items/type") };
           const empty = cc.items.filter((c) => c.type !== "CheckBox" && !String(c.text || "").trim());
           if (empty.length) {
             const ps = empty.map((c) => {
@@ -352,9 +351,7 @@ export function createWordReviewTools(deps: ReviewDeps) {
         try {
           out.content_controls = await Word.run(async (ctx) => {
             // Thăm dò 15/11/2026: document.contentControls chỉ trả ô kiểu RichText; phải nêu rõ các loại
-            const cc = ctx.document.getContentControls({ types: CC_TYPES as any });
-            cc.load("items/title,items/tag,items/text,items/type");
-            await ctx.sync();
+            const cc = { items: await liveContentControls(ctx, supports, "items/title,items/tag,items/text,items/type") };
             const items = cc.items.slice(0, 600);
             const ps = items.map((c) => {
               const p = c.paragraphs.getFirstOrNullObject();

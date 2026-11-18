@@ -1,0 +1,39 @@
+{
+ "o": [
+  "so_hd [PlainText] \"HĐĐC-THU-01\"",
+  "ben_a [PlainText] \"Công ty TNHH Thử Nghiệm Hưng Thịnh\"",
+  "dia_chi_a [RichText] \"Số 1 phố Thử, phường Hoàn Kiếm, Hà Nội\"",
+  "la_ca_nhan [CheckBox] \"☐\"",
+  "la_to_chuc [CheckBox] \"☒☐\"",
+  "thanh_toan [DropDownList] \"Chuyển khoản\"",
+  "thanh_toan [DropDownList] \"\"",
+  "loai_ts [ComboBox] \"Căn hộ chung cư\"",
+  "ngay_ky [DatePicker] \"18/11/2026\""
+ ],
+ "doan": [
+  "Họ và tên người đại diện Bên B: Trần Văn Thử\r",
+  "Số CCCD: ____________________ cấp ngày ………… tại …………………\r",
+  "Số tiền đặt cọc: 500.000.000 đồng (bằng chữ: Năm trăm triệu đồng).\r",
+  "Thời hạn đặt cọc: 30 ngày kể từ ngày ký.\r",
+  "Hà Nội, ngày 18 tháng 11 năm 2026\r"
+ ],
+ "bang": [
+  [
+   "Thông tin",
+   "Nội dung"
+  ],
+  [
+   "Diện tích (m²)",
+   "85,5 m²"
+  ],
+  [
+   "Giá bán",
+   "4.250.000.000 đồng"
+  ],
+  [
+   "Mã căn",
+   "A-1205"
+  ]
+ ],
+ "suaDoi": 21
+}

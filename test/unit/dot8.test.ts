@@ -82,7 +82,7 @@ describe("Đợt 8 · ô điền mẫu đọc qua OOXML", () => {
     assert.ok(x.startsWith("<pkg:package>") && x.endsWith("</pkg:package>"));
     assert.ok(!/showingPlcHdr/.test(x));
     assert.ok(!/PlaceholderText/.test(x));
-    assert.match(x, /<w:sdtContent><w:r><w:rPr><\/w:rPr><w:t xml:space="preserve">Tiền mặt<\/w:t><\/w:r><\/w:sdtContent>/);
+    assert.match(x, /<w:sdtContent><w:r><w:t xml:space="preserve">Tiền mặt<\/w:t><\/w:r><\/w:sdtContent>/);
     assert.strictEqual(listItemsFromOoxml(x).length, 3, "danh sách mục còn nguyên");
   });
   it("Định dạng ngày của ô ngày", () => {
@@ -137,9 +137,62 @@ describe("Đợt 8 · công cụ và kỹ năng", () => {
   });
   it("Mã chỗ điền", () => {
     assert.deepStrictEqual(parseFieldId("c8001"), { kind: "control", cc: 8001 });
+    assert.deepStrictEqual(parseFieldId("c-672413777"), { kind: "control", cc: -672413777 }, "mã Word cấp có thể âm");
     assert.deepStrictEqual(parseFieldId("b12.1"), { kind: "blank", i: 12, k: 1 });
     assert.deepStrictEqual(parseFieldId("t0.2.1"), { kind: "cell", t: 0, r: 2, c: 1 });
     assert.strictEqual(parseFieldId("12"), null);
     assert.strictEqual(parseFieldId("b12"), null);
+  });
+});
+
+import { fillControlOoxml } from "../../src/core/formfill";
+
+describe("Đợt 8 · ghi cả ô bằng OOXML (Hoàn tác trả nguyên ô cũ)", () => {
+  const wrap = (sdt: string) => `<pkg:package><w:p><w:r><w:t>Trước </w:t></w:r>${sdt}<w:r><w:t> sau</w:t></w:r></w:p></pkg:package>`;
+  const CHECK = (on: boolean) =>
+    `<w:sdt><w:sdtPr><w:alias w:val="Tổ chức"/><w14:checkbox><w14:checked w14:val="${on ? 1 : 0}"/><w14:checkedState w14:val="2612" w14:font="MS Gothic"/><w14:uncheckedState w14:val="2610" w14:font="MS Gothic"/></w14:checkbox></w:sdtPr>` +
+    `<w:sdtContent><w:r><w:rPr><w:rFonts w:ascii="MS Gothic"/></w:rPr><w:t>${on ? "☒" : "☐"}</w:t></w:r></w:sdtContent></w:sdt>`;
+  it("Ô đánh dấu: đặt w14:checked và ký hiệu theo checkedState, giữ phông ký hiệu, giữ chữ ngoài ô", () => {
+    const x = fillControlOoxml(wrap(CHECK(false)), { checked: true })!;
+    assert.match(x, /<w14:checked w14:val="1"\/>/);
+    assert.match(x, /<w:sdtContent><w:r><w:rPr><w:rFonts w:ascii="MS Gothic"\/><\/w:rPr><w:t xml:space="preserve">☒<\/w:t><\/w:r><\/w:sdtContent>/);
+    assert.ok(x.startsWith("<pkg:package><w:p><w:r><w:t>Trước </w:t></w:r>") && x.endsWith("<w:r><w:t> sau</w:t></w:r></w:p></pkg:package>"));
+    const y = fillControlOoxml(x, { checked: false })!;
+    assert.match(y, /<w14:checked w14:val="0"\/>/);
+    assert.match(y, />☐</);
+    assert.strictEqual(fillControlOoxml(wrap('<w:sdt><w:sdtPr><w:text/></w:sdtPr><w:sdtContent><w:r><w:t>a</w:t></w:r></w:sdtContent></w:sdt>'), { checked: true }), null, "ô chữ không nhận checked");
+  });
+  it("Ô chữ đang hiện chữ gợi ý: bỏ showingPlcHdr và kiểu PlaceholderText, chữ nhiều dòng xuống dòng bằng w:br", () => {
+    const sdt = '<w:sdt><w:sdtPr><w:alias w:val="Tên"/><w:showingPlcHdr/><w:text/></w:sdtPr><w:sdtContent><w:r><w:rPr><w:rStyle w:val="PlaceholderText"/><w:b/></w:rPr><w:t>Bấm để nhập</w:t></w:r><w:r><w:t>thêm</w:t></w:r></w:sdtContent></w:sdt>';
+    const x = fillControlOoxml(wrap(sdt), { text: "Dòng 1\nDòng <2>" })!;
+    assert.ok(!/showingPlcHdr|PlaceholderText|Bấm để nhập|thêm/.test(x));
+    assert.match(x, /<w:sdtContent><w:r><w:rPr><w:b\/><\/w:rPr><w:t xml:space="preserve">Dòng 1<\/w:t><\/w:r><w:r><w:rPr><w:b\/><\/w:rPr><w:br\/><\/w:r><w:r><w:rPr><w:b\/><\/w:rPr><w:t xml:space="preserve">Dòng &lt;2&gt;<\/w:t><\/w:r><\/w:sdtContent>/);
+  });
+  it("Ô chứa cả đoạn: mỗi dòng một đoạn, giữ định dạng đoạn; ô lồng bên trong được thay cùng ô ngoài", () => {
+    const sdt =
+      '<w:sdt><w:sdtPr><w:alias w:val="Điều khoản"/></w:sdtPr><w:sdtContent><w:p><w:pPr><w:jc w:val="both"/></w:pPr><w:r><w:t>Cũ 1</w:t></w:r></w:p>' +
+      '<w:p><w:sdt><w:sdtPr><w:alias w:val="Con"/></w:sdtPr><w:sdtContent><w:r><w:t>con</w:t></w:r></w:sdtContent></w:sdt></w:p></w:sdtContent></w:sdt>';
+    const x = fillControlOoxml(`<pkg:package>${sdt}<w:p><w:r><w:t>Đoạn sau</w:t></w:r></w:p></pkg:package>`, { text: "Mới A\nMới B" })!;
+    assert.ok(/<w:sdtContent><w:p><w:pPr><w:jc w:val="both"\/><\/w:pPr><w:r><w:t xml:space="preserve">Mới A<\/w:t><\/w:r><\/w:p><w:p><w:pPr><w:jc w:val="both"\/><\/w:pPr><w:r><w:t xml:space="preserve">Mới B<\/w:t><\/w:r><\/w:p><\/w:sdtContent><\/w:sdt><w:p><w:r><w:t>Đoạn sau<\/w:t>/.test(x), x);
+    assert.ok(!/Cũ 1|con/.test(x));
+  });
+  it("Ô ngày: ghi chữ theo định dạng và w:fullDate", () => {
+    const sdt = '<w:sdt><w:sdtPr><w:showingPlcHdr/><w:date w:fullDate="2020-01-01T00:00:00Z"><w:dateFormat w:val="dd/MM/yyyy"/></w:date></w:sdtPr><w:sdtContent><w:r><w:t>Chọn ngày</w:t></w:r></w:sdtContent></w:sdt>';
+    const x = fillControlOoxml(wrap(sdt), { text: "05/03/2027", date: { d: 5, m: 3, y: 2027 } })!;
+    assert.match(x, /<w:date w:fullDate="2027-03-05T00:00:00Z">/);
+    assert.match(x, />05\/03\/2027</);
+    const noAttr = fillControlOoxml(wrap(sdt.replace(' w:fullDate="2020-01-01T00:00:00Z"', "")), { text: "05/03/2027", date: { d: 5, m: 3, y: 2027 } })!;
+    assert.match(noAttr, /<w:date w:fullDate="2027-03-05T00:00:00Z">/);
+  });
+});
+
+describe("Đợt 8 · ô trống dạng <w:sdtContent/>", () => {
+  it("Ô chữ nằm trong đoạn có nội dung rỗng tự đóng: dựng được, chữ nằm trong dòng", () => {
+    const x = fillControlOoxml('<pkg:package><w:p><w:r><w:t>Tên: </w:t></w:r><w:sdt><w:sdtPr><w:alias w:val="Tên"/><w:text/></w:sdtPr><w:sdtContent/></w:sdt></w:p></pkg:package>', { text: "Công ty $1 Thử" })!;
+    assert.match(x, /<w:sdtContent><w:r><w:t xml:space="preserve">Công ty \$1 Thử<\/w:t><\/w:r><\/w:sdtContent><\/w:sdt><\/w:p>/);
+  });
+  it("Ô chứa đoạn có nội dung rỗng: chữ thành một đoạn", () => {
+    const x = fillControlOoxml('<pkg:package><w:body><w:sdt><w:sdtPr><w:alias w:val="Khối"/></w:sdtPr><w:sdtContent/></w:sdt></w:body></pkg:package>', { text: "Một" })!;
+    assert.match(x, /<w:sdtContent><w:p><w:r><w:t xml:space="preserve">Một<\/w:t><\/w:r><\/w:p><\/w:sdtContent>/);
   });
 });

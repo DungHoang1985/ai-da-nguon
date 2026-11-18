@@ -878,6 +878,115 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     }
   });
 
+  await step("Đợt 8 · Điền mẫu: 5 loại ô điền mẫu và chỗ trống, điền hết trong một lệnh có theo dõi, hỏi khi ghi đè; hoàn tác về y cũ rồi điền lại được", async () => {
+    if (!sup("1.6")) throw new Skip("Cần WordApi 1.6 (Hoàn tác theo danh sách sửa đổi)");
+    const K = `DIENMAU${code}`;
+    const P = {
+      cc: `Ô ${K}: OCHON`,
+      name: `Họ và tên người đại diện ${K}: ……………………`,
+      money: `Số tiền ${K}: [●] đồng (bằng chữ: [●] đồng).`,
+    };
+    const T = { ten: `Tên ${code}`, hop: `Đánh dấu ${code}`, tt: `Thanh toán ${code}`, loai: `Loại ${code}`, ngay: `Ngày ${code}` };
+    const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+    const pr = (title: string, tag: string, extra: string) => `<w:sdtPr><w:alias w:val="${esc(title)}"/><w:tag w:val="${tag}"/>${extra}</w:sdtPr>`;
+    const item = (x: string) => `<w:listItem w:displayText="${esc(x)}" w:value="${esc(x)}"/>`;
+    const r = (t: string) => `<w:r><w:t xml:space="preserve">${esc(t)}</w:t></w:r>`;
+    const sdts =
+      `<w:sdt>${pr(T.ten, "aidn_dien_ten", "<w:showingPlcHdr/><w:text/>")}<w:sdtContent>${r("Bấm để nhập")}</w:sdtContent></w:sdt>${r(" ")}` +
+      `<w:sdt>${pr(T.hop, "aidn_dien_hop", '<w14:checkbox><w14:checked w14:val="0"/><w14:checkedState w14:val="2612" w14:font="MS Gothic"/><w14:uncheckedState w14:val="2610" w14:font="MS Gothic"/></w14:checkbox>')}<w:sdtContent>${r("☐")}</w:sdtContent></w:sdt>${r(" ")}` +
+      `<w:sdt>${pr(T.tt, "aidn_dien_tt", `<w:showingPlcHdr/><w:dropDownList>${item("Chuyển khoản")}${item("Tiền mặt")}</w:dropDownList>`)}<w:sdtContent>${r("Chọn một mục")}</w:sdtContent></w:sdt>${r(" ")}` +
+      `<w:sdt>${pr(T.loai, "aidn_dien_loai", `<w:showingPlcHdr/><w:comboBox>${item("Căn hộ chung cư")}${item("Đất nền")}</w:comboBox>`)}<w:sdtContent>${r("Chọn hoặc nhập")}</w:sdtContent></w:sdt>${r(" ")}` +
+      `<w:sdt>${pr(T.ngay, "aidn_dien_ngay", '<w:showingPlcHdr/><w:date><w:dateFormat w:val="dd/MM/yyyy"/><w:lid w:val="vi-VN"/><w:storeMappedDataAs w:val="dateTime"/><w:calendar w:val="gregorian"/></w:date>')}<w:sdtContent>${r("Chọn ngày")}</w:sdtContent></w:sdt>`;
+    const pkg =
+      '<pkg:package xmlns:pkg="http://schemas.microsoft.com/office/2006/xmlPackage"><pkg:part pkg:name="/_rels/.rels" pkg:contentType="application/vnd.openxmlformats-package.relationships+xml"><pkg:xmlData><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships></pkg:xmlData></pkg:part>' +
+      '<pkg:part pkg:name="/word/document.xml" pkg:contentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"><pkg:xmlData><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"><w:body><w:p>' +
+      sdts +
+      "</w:p></w:body></w:document></pkg:xmlData></pkg:part></pkg:package>";
+    await addTemp([P.cc, P.name, P.money]);
+    const mark = log.length;
+    try {
+      await untracked(async (ctx) => {
+        const ps = ctx.document.body.paragraphs;
+        ps.load("items/text");
+        await ctx.sync();
+        const pc = ps.items.find((x) => x.text === P.cc) as Word.Paragraph;
+        const w = pc.search("OCHON", { matchCase: true });
+        w.load("items");
+        await ctx.sync();
+        w.items[0].insertOoxml(pkg, "Replace");
+        await ctx.sync();
+      });
+      const iName = await need(`người đại diện ${K}`);
+      const iMoney = await need(`Số tiền ${K}`);
+      const listMine = async () => {
+        const l = await run("word_list_form_fields", {});
+        const f = l.fields || [];
+        const by = (title: string) => f.find((x: any) => x.kind === "control" && x.label === title);
+        return { l, name: f.find((x: any) => x.kind === "blank" && x.i === iName), money: f.filter((x: any) => x.kind === "blank" && x.i === iMoney), ten: by(T.ten), hop: by(T.hop), tt: by(T.tt), loai: by(T.loai), ngay: by(T.ngay) };
+      };
+      const vals = (m: any) => [m.ten?.value, m.hop?.value, m.tt?.value, m.loai?.value, m.ngay?.value].join(" | ");
+      const m0 = await listMine();
+      expect(m0.ten && m0.hop && m0.tt && m0.loai && m0.ngay, `Không thấy đủ 5 ô điền mẫu vừa tạo: ${JSON.stringify(m0.l.fields?.filter((x: any) => x.kind === "control"))}`);
+      expect(m0.tt.items?.join(",") === "Chuyển khoản,Tiền mặt" && m0.ngay.date_format === "dd/MM/yyyy", `Danh sách mục / định dạng ngày đọc sai: ${JSON.stringify([m0.tt, m0.ngay])}`);
+      expect(m0.name?.blank === "……………………" && m0.money.length === 2, `Chỗ trống đọc sai: ${JSON.stringify([m0.name, m0.money])}`);
+      const empty0 = vals(m0);
+      /** Một vòng: điền mọi chỗ trong một lệnh rồi kiểm */
+      const round = async (m: any, v: { ten: string; tt: string; loai: string; ngay: string; ngayDoc: string; name: string; so: string; chu: string }) => {
+        const fields = [
+          { id: m.ten.id, value: v.ten, label: m.ten.label },
+          { id: m.hop.id, value: "true", label: m.hop.label },
+          { id: m.tt.id, value: v.tt, label: m.tt.label },
+          { id: m.loai.id, value: v.loai, label: m.loai.label },
+          { id: m.ngay.id, value: v.ngay, label: m.ngay.label },
+          { id: m.name.id, value: v.name, label: m.name.label },
+          { id: m.money[0].id, value: v.so, label: m.money[0].label },
+          { id: m.money[1].id, value: v.chu, label: m.money[1].label },
+        ];
+        expect((await riskOf("word_fill_form", { fields })) === null, "Điền chỗ còn trống mà vẫn hỏi");
+        const before = log.length;
+        const res = await run("word_fill_form", { fields });
+        expect(res.filled?.length === fields.length, `Điền ${res.filled?.length}/${fields.length}: ${JSON.stringify(res.skipped)}`);
+        expect(log.length === before + 1, `Một lệnh điền phải có đúng một mục Hoàn tác, thấy ${log.length - before}`);
+        const m2 = await listMine();
+        expect(vals(m2) === [v.ten, "true", v.tt, v.loai, v.ngayDoc].join(" | "), `Ô điền mẫu sau khi điền: ${vals(m2)}`);
+        expect((await inspect(iName)).current === `Họ và tên người đại diện ${K}: ${v.name}`, `Đoạn họ tên sau khi điền: “${(await inspect(iName)).current}”`);
+        expect((await inspect(iMoney)).current === `Số tiền ${K}: ${v.so} đồng (bằng chữ: ${v.chu} đồng).`, `Đoạn số tiền sau khi điền: “${(await inspect(iMoney)).current}”`);
+        return m2;
+      };
+      /** Hoàn tác mọi thao tác của bước rồi kiểm về y cũ */
+      const undoAll = async () => {
+        for (const u of log.slice(mark).reverse()) await u.undo();
+        log.length = mark;
+        const m3 = await listMine();
+        expect(vals(m3) === empty0, `Ô điền mẫu sau hoàn tác: ${vals(m3)} (đúng phải là ${empty0})`);
+        expect((await inspect(iName)).current === P.name && (await inspect(iMoney)).current === P.money, "Chỗ trống sau hoàn tác không về như cũ");
+        return m3;
+      };
+      const filled = await round(m0, { ten: "Công ty TNHH Thử Hưng Thịnh", tt: "Tiền mặt", loai: "Đất nền", ngay: "05/03/2027", ngayDoc: "05/03/2027", name: "Nguyễn Văn Thử", so: "500.000.000", chu: "năm trăm triệu" });
+      // Ghi đè ô đã có chữ: hỏi trước. Mã sai, mục ngoài danh sách: bỏ qua có lý do
+      const warn = await riskOf("word_fill_form", { fields: [{ id: filled.ten.id, value: "Công ty khác" }] });
+      expect(warn && /Ghi đè 1 chỗ/.test(warn), `Ghi đè ô đã có chữ mà không hỏi: ${warn}`);
+      const bad = await run("word_fill_form", { fields: [{ id: "b99999.0", value: "x" }, { id: filled.tt.id, value: "Trả góp" }] });
+      expect(!bad.ok && bad.skipped?.length === 2 && bad.skipped.some((x: any) => /danh sách/.test(x.reason)), `Mã sai / mục ngoài danh sách phải bị bỏ qua: ${JSON.stringify(bad)}`);
+      const m1 = await undoAll();
+      // Điền lại sau khi hoàn tác (trước đây Word khóa ô sau khi hoàn tác) rồi hoàn tác lần nữa
+      await round(m1, { ten: "Công ty Thử Lần Hai", tt: "Chuyển khoản", loai: "Nhà xưởng", ngay: "2027-12-31", ngayDoc: "31/12/2027", name: "Trần Thị Thử", so: "1.000.000", chu: "một triệu" });
+      await undoAll();
+      return `${m0.l.brief}; 5 loại ô (chữ, đánh dấu, chọn, chọn hoặc nhập, ngày) + “……” + hai “[●]” điền trong một lệnh, một mục Hoàn tác; ghi đè thì hỏi; mã sai, mục ngoài danh sách bị bỏ qua; hoàn tác về y cũ, điền lại lần hai rồi hoàn tác vẫn đúng`;
+    } finally {
+      for (const u of log.slice(mark).reverse()) await u.undo().catch(() => undefined);
+      log.length = mark;
+      await untracked(async (ctx) => {
+        const all = ctx.document.getContentControls({ types: ["RichText", "PlainText", "CheckBox", "DropDownList", "ComboBox", "DatePicker"] as any });
+        all.load("items/tag");
+        await ctx.sync();
+        all.items.filter((c) => /^aidn_dien_/.test(c.tag)).forEach((c) => c.delete(false));
+        await ctx.sync();
+      }).catch(() => undefined);
+      await removeTemp([K]);
+    }
+  });
+
   await step("Thể thức trang: báo đúng lề nào lệch chuẩn (đối chiếu với số đo đọc trực tiếp)", async () => {
     if (!sup("1.3", "WordApiDesktop")) throw new Skip("Cần WordApiDesktop 1.3 để đọc lề và khổ giấy");
     const direct = await Word.run(async (ctx) => {

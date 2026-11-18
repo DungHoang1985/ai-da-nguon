@@ -17,8 +17,10 @@ import {
   listItemsFromOoxml,
   matchListItem,
   parseDate,
-  selectDropdownOoxml,
+  fillControlOoxml,
 } from "../core/formfill";
+import { checkConsistency } from "../core/consistency";
+import { buildOutline } from "../core/outline";
 import { RESULT_JSON_BUDGET, takeWithinBudget, truncate } from "./util";
 
 const CC_TYPES = ["RichText", "PlainText", "CheckBox", "DropDownList", "ComboBox", "DatePicker"];
@@ -83,6 +85,29 @@ interface Deps {
   loadRows: (ctx: Word.RequestContext) => Promise<Loaded>;
 }
 
+/** Ô điền mẫu còn sống: bỏ các ô đang chờ xóa có theo dõi. Ghi lại một ô chọn (OOXML) để lại ô cũ "chờ xóa" cạnh ô mới, cùng tên;
+ *  đọc cả hai thì ô cũ trông như ô còn trống (đo 18/11/2026, Chạy thật: AI phải đọc lại đoạn để kiểm). */
+export async function liveContentControls(ctx: Word.RequestContext, supports: (v: string) => boolean, props: string): Promise<Word.ContentControl[]> {
+  const cc = ctx.document.getContentControls({ types: CC_TYPES as any });
+  cc.load(props);
+  await ctx.sync();
+  if (!supports("1.6") || !cc.items.length) return cc.items;
+  const tcs = cc.items.map((c) => {
+    const t = c.getRange("Whole").getTrackedChanges();
+    t.load("items/type");
+    return t;
+  });
+  try {
+    await ctx.sync();
+  } catch {
+    return cc.items;
+  }
+  return cc.items.filter((_, k) => {
+    const types = tcs[k].items.map((x) => String(x.type));
+    return !(types.length && types.every((t) => t === "Deleted"));
+  });
+}
+
 export interface FormField {
   id: string;
   kind: "control" | "blank" | "cell";
@@ -102,7 +127,8 @@ export interface FormField {
 /** Đọc một mã chỗ điền */
 export function parseFieldId(id: unknown): { kind: "control"; cc: number } | { kind: "blank"; i: number; k: number } | { kind: "cell"; t: number; r: number; c: number } | null {
   const s = String(id ?? "").trim();
-  let m = /^c(\d+)$/i.exec(s);
+  // Mã ô điền mẫu do Word cấp có thể âm (đo 18/11/2026: c-672413777)
+  let m = /^c(-?\d+)$/i.exec(s);
   if (m) return { kind: "control", cc: Number(m[1]) };
   if ((m = /^b(\d+)\.(\d+)$/i.exec(s))) return { kind: "blank", i: Number(m[1]), k: Number(m[2]) };
   if ((m = /^t(\d+)\.(\d+)\.(\d+)$/i.exec(s))) return { kind: "cell", t: Number(m[1]), r: Number(m[2]), c: Number(m[3]) };
@@ -125,9 +151,8 @@ export function createWordFormTools(d: Deps) {
   /** Ô điền mẫu trong thân văn bản, kèm OOXML cho ô chọn / ô ngày (để đọc danh sách mục và định dạng ngày) */
   async function loadControls(ctx: Word.RequestContext) {
     if (!d.supports("1.5")) return [];
-    const cc = ctx.document.getContentControls({ types: CC_TYPES as any });
-    cc.load("items/id,items/tag,items/title,items/type,items/text,items/cannotEdit");
-    await ctx.sync();
+    const items = await liveContentControls(ctx, d.supports, "items/id,items/tag,items/title,items/type,items/text,items/cannotEdit");
+    const cc = { items };
     const paras = cc.items.map((c) => {
       const p = c.paragraphs.getFirstOrNullObject();
       p.load("text");
@@ -251,27 +276,31 @@ export function createWordFormTools(d: Deps) {
               continue;
             }
             try {
+              // Mọi loại ô: dựng lại OOXML của cả ô rồi ghi đè cả ô (có theo dõi). Ghi chữ vào ô rồi Hoàn tác làm Word khóa ô
+              // với mọi lệnh ghi sau (đo 18/11/2026) — thay cả ô thì Hoàn tác trả nguyên ô cũ.
+              let want: { text?: string; checked?: boolean; date?: { d: number; m: number; y: number } };
               if (type === "CheckBox") {
                 const v = checkboxValue(f.value);
                 if (v === null) throw new Error(`ô đánh dấu cần true hoặc false, nhận “${truncate(f.value, 30)}”`);
-                c.checkboxContentControl.isChecked = v;
+                want = { checked: v };
               } else if (type === "DropDownList") {
                 const item = matchListItem(x.items, f.value);
                 if (!item) throw new Error(`không có trong danh sách của ô: ${x.items.map((s) => `“${s}”`).join(", ") || "(không đọc được danh sách)"}`);
-                const ox = c.getRange("Whole").getOoxml();
-                await ctx.sync();
-                const next = selectDropdownOoxml(ox.value, item);
-                if (!next) throw new Error("không dựng được nội dung mới của ô chọn");
-                c.getRange("Whole").insertOoxml(next, "Replace");
+                want = { text: item };
               } else if (type === "DatePicker") {
                 const dt = parseDate(f.value);
                 if (!dt) throw new Error(`ngày không đọc được “${truncate(f.value, 30)}” (dùng dd/MM/yyyy)`);
-                c.getRange("Content").insertText(formatDate(dt, x.dateFormat), "Replace");
+                want = { text: formatDate(dt, x.dateFormat), date: dt };
               } else if (type === "ComboBox") {
-                c.getRange("Content").insertText(matchListItem(x.items, f.value) ?? f.value, "Replace");
+                want = { text: matchListItem(x.items, f.value) ?? f.value };
               } else {
-                c.insertText(f.value, "Replace");
+                want = { text: f.value };
               }
+              const ox = c.getRange("Whole").getOoxml();
+              await ctx.sync();
+              const next = fillControlOoxml(ox.value, want);
+              if (!next) throw new Error("không dựng được nội dung mới của ô (cấu trúc ô lạ): sửa ô này bằng tay");
+              c.getRange("Whole").insertOoxml(next, "Replace");
               await ctx.sync();
               filled.push(f.id);
             } catch (e: any) {
@@ -345,11 +374,26 @@ export function createWordFormTools(d: Deps) {
         }
       })
     );
+    // Soát số tiền bằng số – bằng chữ ngay sau khi điền (khỏi một lượt gọi công cụ soát riêng)
+    let amount: { i: number; message: string }[] = [];
+    if (filled.length) {
+      try {
+        amount = await Word.run(async (ctx) => {
+          const { rows } = await d.loadRows(ctx);
+          return checkConsistency(rows, { checks: ["amount"], outline: buildOutline(rows) })
+            .issues.slice(0, 5)
+            .map((x) => ({ i: x.p, message: x.message }));
+        });
+      } catch {
+        amount = [];
+      }
+    }
     return {
       ok: filled.length > 0,
-      brief: `đã điền ${filled.length}/${fields.length} chỗ${skipped.length ? `, bỏ qua ${skipped.length}` : ""}`,
+      brief: `đã điền ${filled.length}/${fields.length} chỗ${skipped.length ? `, bỏ qua ${skipped.length}` : ""}${amount.length ? `, ${amount.length} chỗ số lệch chữ` : ""}`,
       filled,
       ...(skipped.length ? { skipped } : {}),
+      amount_check: amount.length ? amount : "số tiền bằng số và bằng chữ trong văn bản khớp nhau (hoặc không có)",
       note: "Mọi chỗ đã điền được ghi bằng Theo dõi thay đổi. Báo cho người dùng những chỗ bỏ qua và những chỗ còn trống vì thiếu thông tin.",
     };
   }
