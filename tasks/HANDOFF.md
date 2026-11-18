@@ -1,6 +1,6 @@
 # Bàn giao – Add-in AI đa nguồn cho Office
 
-**Phiên bản đang chạy: v4.6.0** (phát hành 17/11/2026, `main@01a6a13` → `gh-pages@0745fc6`, gói `taskpane.a5bf3f0e.js`) · **Cập nhật:** 18/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`)
+**Phiên bản đang chạy: v4.7.0** (Đợt 7, phát hành 18/11/2026; mã commit và tên gói ở cuối `tasks/dot-7.md`). Bản trước: v4.6.0 (17/11/2026, `main@01a6a13`) · **Cập nhật:** 18/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`)
 
 > Tệp này được viết gọn lại ngày 18/11/2026. Bản đầy đủ tới hết 17/11 (diễn biến từng phiên, các mục "Bước tiếp theo" cũ) lưu ở `tasks/luu/HANDOFF-den-2026-11-17.md`. Chi tiết từng đợt — việc, bảng thăm dò, bảng nghiệm thu, bảng soát mã — nằm ở `tasks/dot-*.md`; bằng chứng ở `tasks/dot-*-bang-chung/`. Mục Quyết định và mục Bài học giữ nguyên văn.
 >
