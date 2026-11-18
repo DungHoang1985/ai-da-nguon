@@ -1,0 +1,38 @@
+{
+ "o": [
+  "so_hd [PlainText] \"HĐĐC-THU-01\"",
+  "ben_a [PlainText] \"\"",
+  "dia_chi_a [RichText] \"\"",
+  "la_ca_nhan [CheckBox] \"☐\"",
+  "la_to_chuc [CheckBox] \"☐\"",
+  "thanh_toan [DropDownList] \"\"",
+  "loai_ts [ComboBox] \"\"",
+  "ngay_ky [DatePicker] \"\""
+ ],
+ "doan": [
+  "Họ và tên người đại diện Bên B: ……………………………………\r",
+  "Số CCCD: ____________________ cấp ngày ………… tại …………………\r",
+  "Số tiền đặt cọc: [●] đồng (bằng chữ: [●] đồng).\r",
+  "Thời hạn đặt cọc: …… ngày kể từ ngày ký.\r",
+  "Hà Nội, ngày   tháng   năm 2026\r"
+ ],
+ "bang": [
+  [
+   "Thông tin",
+   "Nội dung"
+  ],
+  [
+   "Diện tích (m²)",
+   ""
+  ],
+  [
+   "Giá bán",
+   ""
+  ],
+  [
+   "Mã căn",
+   ""
+  ]
+ ],
+ "suaDoi": 0
+}
