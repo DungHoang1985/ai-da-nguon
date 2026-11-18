@@ -183,6 +183,9 @@ export const EXCEL_MODEL_SPECS: ToolSpec[] = [
       required: ["action"],
     },
     write: true,
+    // Thay bố trí khóa riêng thì Hoàn tác không trả lại được bố trí cũ: luôn hỏi, kể cả khi tắt "Hỏi trước thao tác rủi ro"
+    // (soát mã Đợt 7, #13). Sheet bố trí mặc định thì kiểm rủi ro trả null, không hỏi.
+    alwaysAsk: true,
   },
 ];
 
