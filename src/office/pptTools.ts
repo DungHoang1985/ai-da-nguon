@@ -265,7 +265,15 @@ async function findPlaceholders(ctx: PowerPoint.RequestContext, slide: PowerPoin
  *  Trả base64 (không kèm tiền tố data:). */
 async function loadImageForSlide(name: string, data: string): Promise<{ w: number; h: number; data: string }> {
   const lower = name.toLowerCase();
-  const mime = lower.endsWith(".png") ? "image/png" : /\.jpe?g$/.test(lower) ? "image/jpeg" : lower.endsWith(".gif") ? "image/gif" : "image/webp";
+  const mime = lower.endsWith(".png")
+    ? "image/png"
+    : /\.(jpe?g|jpe|jfif)$/.test(lower)
+      ? "image/jpeg"
+      : lower.endsWith(".gif")
+        ? "image/gif"
+        : lower.endsWith(".bmp")
+          ? "image/bmp"
+          : "image/webp";
   const el = await new Promise<HTMLImageElement>((resolve, reject) => {
     const im = new Image();
     im.onload = () => resolve(im);

@@ -5,6 +5,7 @@ import { ApiError, ensureOk, fetchDiagnosed, isRetryable } from "../../src/core/
 import { callModelStep } from "../../src/core/agent/llm";
 import { normalizeSlideList } from "../../src/office/pptTools";
 import { runAgent } from "../../src/core/agent/loop";
+import { clearAttachedFiles, findAttachedImage, listAttachedImages, registerAttachedFile } from "../../src/core/attachedFiles";
 
 const res = (status: number, body: any) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 const thrown = async (p: Promise<any>) => {
@@ -154,5 +155,19 @@ describe("Dò lỗi lặp (soát mã Đợt 7, #6)", () => {
   it("Người dùng từ chối cùng thao tác nhiều lần: không tính là lỗi lặp", async () => {
     const ev = await run({ tools: tools(async () => ({ ok: true })), askBeforeWrite: true, approve: async () => false });
     assert.ok(!ev.some((e) => e.type === "stuck"), "từ chối bị tính là lỗi lặp");
+  });
+});
+
+describe("Ảnh đính kèm cho ppt_insert_image (soát mã Đợt 7, #9)", () => {
+  it("Ảnh .jfif được nhận; image='1' lấy ảnh tên 1.png nếu có, không thì ảnh thứ nhất", () => {
+    clearAttachedFiles();
+    registerAttachedFile("2.png", "AAAA");
+    registerAttachedFile("1.png", "BBBB");
+    registerAttachedFile("anh.jfif", "CCCC");
+    assert.ok(listAttachedImages().includes("anh.jfif"));
+    assert.strictEqual(findAttachedImage("anh")?.name, "anh.jfif");
+    assert.strictEqual(findAttachedImage("1")?.name, "1.png");
+    assert.strictEqual(findAttachedImage("3")?.name, "anh.jfif");
+    clearAttachedFiles();
   });
 });

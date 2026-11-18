@@ -49,7 +49,8 @@ export function findAttachedFile(name?: string, ext?: string): AttachedFile | nu
   return partial.length === 1 ? partial[0] : null;
 }
 
-const IMAGE_EXT = /\.(png|jpe?g|gif|webp)$/i;
+// .jfif, .jpe cũng là JPEG: trước đây được báo cho AI là ảnh đính kèm mà công cụ không thấy (soát mã Đợt 7, #9)
+const IMAGE_EXT = /\.(png|jpe?g|jpe|jfif|gif|webp|bmp)$/i;
 
 /** Ảnh người dùng đính kèm trong phiên này (để công cụ đặt ảnh vào slide) */
 export function listAttachedImages(): string[] {
@@ -63,10 +64,11 @@ export function findAttachedImage(ref?: string | number): AttachedFile | null {
   if (!imgs.length) return null;
   const raw = ref === undefined || ref === null ? "" : String(ref).trim();
   if (!raw) return imgs[imgs.length - 1];
-  if (/^\d+$/.test(raw)) return imgs[Number(raw) - 1] ?? null;
   const want = fold(raw);
   const exact = imgs.filter((f) => fold(f.name) === want || fold(f.name).replace(IMAGE_EXT, "") === want);
   if (exact.length) return exact[exact.length - 1];
+  // Số thứ tự chỉ dùng khi không có ảnh nào tên đúng là số đó ("1" → ảnh 1.png nếu có) — soát mã Đợt 7, #9
+  if (/^\d+$/.test(raw)) return imgs[Number(raw) - 1] ?? null;
   const partial = imgs.filter((f) => fold(f.name).includes(want));
   return partial.length === 1 ? partial[0] : null;
 }
