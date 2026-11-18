@@ -263,6 +263,8 @@ Ghi chú bài thử: hàm chờ `send` của `cdp-lib.js` coi nút "Dừng ở �
 
 Dọn dẹp: chế độ thử, số hội thoại trong lịch sử 0 → 0; model trả về Anthropic · Claude Opus 5.5; Word, Excel, PowerPoint thử đã đóng không lưu.
 
+Phát hành 4.7.2 (18/11/2026, anh bảo "phát hành rồi làm tiếp"): `main@e385325` → `gh-pages@cea89c0`, lượt Actions 44256929174 xanh, GitHub Pages trả gói `taskpane.7980fdef.js`. Tự kiểm tra trên bản phát hành ở desktop ẩn (đầu khung hiện v4.7.2): Word 38/38, Excel 40/40, PowerPoint 25/25 (mẫu Georgia) — `phat-hanh-472-*.json`.
+
 ## Việc còn lại
 
 1. ~~Cập nhật bảng so sánh~~ xong 18/11 (theo bản 4.7).
