@@ -1,4 +1,4 @@
-# Đợt 7 — bản 4.7.0 "trả nợ kỹ thuật" (mã và nghiệm thu xong trên nhánh `claude/dot-7`, CHƯA phát hành — chờ anh duyệt)
+# Đợt 7 — bản 4.7.0 "trả nợ kỹ thuật" (đã phát hành trong bản 4.7.0, 18/11/2026)
 
 > Trạng thái 18/11/2026: anh duyệt kế hoạch theo ba đề xuất mặc định. Mã của cả sáu việc đã viết và commit trên nhánh `claude/dot-7` (chưa đẩy `main`). Kiểm thử máy 560/560. Tự kiểm tra trên bản cục bộ: Word 38/38, Excel 40/40, PowerPoint 23/23. Chạy thật (Haiku 5.5) đạt các bài trừ B2 (3 slide + 1 biểu đồ còn 6 lần gọi AI, mốc đặt ra ≤ 4) và G3 (Gemini im lặng). Bảng kết quả và việc còn lại ở cuối tệp.
 
@@ -156,9 +156,11 @@ Sửa thêm sau các bài Chạy thật: nhãn bước của hai công cụ mớ
 
 Dọn dẹp sau buổi thứ hai: mọi bài chạy ở chế độ thử (không lưu lịch sử); model trả về Anthropic · Claude Opus 5.5 và Gemini · Gemini 2.5 Flash như lúc đầu; Word, PowerPoint, Excel thử đã đóng không lưu.
 
+Phát hành 4.7.0 (18/11/2026, anh duyệt): `main@dea9bc7` → `gh-pages@8c61ba1`, lượt Actions 44233555510 xanh, GitHub Pages trả gói `taskpane.5d421d5a.js`. Tự kiểm tra trên bản phát hành ở desktop ẩn (đầu khung hiện v4.7): Word 38/38, Excel 40/40, PowerPoint 23/23 — `tasks/dot-7-bang-chung/phat-hanh-470-*.json`.
+
 ## Việc còn lại
 
-1. Anh duyệt phát hành 4.7.0 → nâng `package.json`, đẩy `main`, Tự kiểm tra lại ba ứng dụng trên bản phát hành, cập nhật bảng so sánh.
+1. Cập nhật bảng so sánh `docs/so-sanh-claude-chinh-thuc.md` theo bản 4.7.0 (chưa làm).
 2. B2 chưa đạt mốc ≤ 4 lần gọi: tìm vì sao `ppt_check_deck` báo lệch phông ở tiêu đề slide vừa thêm (nếu là báo nhầm thì bớt được 2–3 lượt).
 3. E2: nhìn dòng báo "lịch sử đầy" trên khung (mới có kiểm thử máy). A2: bấm thử nút "Dừng ở đây".
 4. G3: chạy lại một bài công cụ mới với Gemini khi máy chủ Gemini trả lời.

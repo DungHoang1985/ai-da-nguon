@@ -1,6 +1,6 @@
 # Bàn giao – Add-in AI đa nguồn cho Office
 
-**Phiên bản đang chạy: v4.7.0** (Đợt 7, phát hành 18/11/2026; mã commit và tên gói ở cuối `tasks/dot-7.md`). Bản trước: v4.6.0 (17/11/2026, `main@01a6a13`) · **Cập nhật:** 18/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`)
+**Phiên bản đang chạy: v4.7.0** (Đợt 7, phát hành 18/11/2026, `main@dea9bc7` → `gh-pages@8c61ba1`, gói `taskpane.5d421d5a.js`). Bản trước: v4.6.0 (17/11/2026, `main@01a6a13`) · **Cập nhật:** 18/11/2026 · Thư mục: `D:\ADD IN` · Mã nguồn: https://github.com/DungHoang1985/ai-da-nguon (công khai, nhánh `main`) · Bản chạy: https://dunghoang1985.github.io/ai-da-nguon/ (nhánh `gh-pages`)
 
 > Tệp này được viết gọn lại ngày 18/11/2026. Bản đầy đủ tới hết 17/11 (diễn biến từng phiên, các mục "Bước tiếp theo" cũ) lưu ở `tasks/luu/HANDOFF-den-2026-11-17.md`. Chi tiết từng đợt — việc, bảng thăm dò, bảng nghiệm thu, bảng soát mã — nằm ở `tasks/dot-*.md`; bằng chứng ở `tasks/dot-*-bang-chung/`. Mục Quyết định và mục Bài học giữ nguyên văn.
 >
@@ -21,13 +21,14 @@
     | 4 | 4.4.0 | 16/11 | Excel thêm 9 công cụ (nay 29): sửa biểu đồ / Pivot có sẵn, chuẩn bị in, kiểm toán mô hình, giải ngược, làm sạch dữ liệu, khóa ô; sheet "Nhật ký AI" và tô sáng (mặc định tắt); câu gợi ý "mở lại cửa sổ Word"; Groq 413 thành câu tiếng Việt | `tasks/dot-4.md` |
     | So song song | 4.4.1 | 16–17/11 | So với add-in Claude chính thức: ngang ở 4 bài, gọn hơn ở bài xử lý 5 nhận xét. Sửa: Gemini bị 400 trong Word (enum số), khung treo khi nhà cung cấp im lặng → hạn chờ 150 giây | `tasks/so-song-song.md` |
     | 5 | 4.5.0 | 17/11 | `read_attachment_pages` đọc PDF đính kèm theo trang (trang chữ ra chữ, trang quét ra ảnh); đoạn chờ duyệt đưa cả chữ gốc lẫn chữ đang sửa; công cụ sửa Word nhận `reason`; dòng nhắc riêng tư | `tasks/dot-5.md` |
+    | 7 | 4.7.0 | 18/11 | Nút Làm tiếp khi chạm trần số bước (Word 12, Excel 12, PowerPoint 20), dừng sớm khi công cụ lặp cùng lỗi; `ppt_add_slides`, `ppt_insert_image`; nhật ký Excel ghi giá trị cũ / mới cho thao tác hàng loạt, hỏi trước khi thay bố trí khóa ô; chế độ thử không lưu lịch sử, báo khi lịch sử đầy; sửa theo ba lượt soát mã độc lập (lõi tác tử, Đợt 5, Đợt 6) | `tasks/dot-7.md` |
     | 6 | 4.6.0 | 17/11 | Nguồn nói cùng kiểu Anthropic (`dialect`): OpenRouter kênh Claude, DeepSeek kiểu Anthropic (dùng chung key), MiniMax, Kimi, nguồn tự khai | `tasks/dot-6.md` |
 
-  - Số đo trên bản 4.6.0 đã phát hành (desktop ẩn, 17/11): Tự kiểm tra Word 38/38, Excel 39/39, PowerPoint 22/22; kiểm thử máy 524/524, kiểm kiểu sạch.
-  - Soát mã độc lập đã chạy cho các đợt 1A, 1B, 2, 3 (A và B), 4; báo cáo `soat-ma-doc-lap*.md` trong thư mục bằng chứng của từng đợt. Chưa chạy cho Đợt 0B, 5, 6.
+  - Số đo trên bản 4.7.0 đã phát hành (desktop ẩn, 18/11): Tự kiểm tra Word 38/38, Excel 40/40, PowerPoint 23/23; kiểm thử máy 560/560, kiểm kiểu sạch.
+  - Soát mã độc lập đã chạy cho các đợt 1A, 1B, 2, 3 (A và B), 4, và ở Đợt 7 cho lõi tác tử (thay cho Đợt 0B), Đợt 5, Đợt 6; báo cáo `soat-ma-*.md` trong thư mục bằng chứng của từng đợt. Mã của chính Đợt 7 chưa có lượt soát độc lập.
   - Kiểm Office không chiếm màn hình của anh: `kiem-thu/mo-office.ps1` mặc định mở Office trên desktop ẩn (`kiem-thu/desktop-rieng.ps1`), điều khiển khung bằng `kiem-thu/cdp.mjs`. Đã đạt với Word, Excel, PowerPoint mở riêng từng ứng dụng.
   - Bảng so sánh với bản chính thức: `docs/so-sanh-claude-chinh-thuc.md`.
-- **Đang làm:** **Đợt 7 (bản 4.7.0), nhánh `claude/dot-7`, chưa đẩy `main`, chưa phát hành — chờ anh duyệt phát hành.** Mã và nghiệm thu xong 18/11: kiểm thử máy 560/560; Tự kiểm tra trên bản cục bộ Word 38/38, Excel 40/40, PowerPoint 23/23; Chạy thật (Haiku 5.5) đạt: nút Làm tiếp, soạn công văn 2 lần gọi, việc Excel 6 yêu cầu 4 lần gọi, đặt ảnh vào slide, báo khi không có ảnh, tìm trong Word khi có sửa đổi chờ duyệt, đọc PDF theo trang. Chưa đạt: bài 3 slide + 1 biểu đồ còn 6 lần gọi AI (mốc ≤ 4). Chưa kiểm được: Gemini (im lặng 150 giây), dòng báo lịch sử đầy trên khung. Bảng ở cuối `tasks/dot-7.md`. `package.json` vẫn ghi 4.6.0 (nâng ở commit phát hành).
+- **Đang làm:** không có việc dở. Đợt 7 đã phát hành 18/11/2026 (bản 4.7.0); phần chưa đạt và chưa kiểm được ghi ở Vấn đề mở.
 - **Quyết định và lý do:**
   - AI sửa thẳng vào tài liệu + Hoàn tác; Word luôn ghi Track Changes; thao tác rủi ro luôn hỏi kèm lý do, "Cho phép hết lần này" không áp dụng cho thao tác rủi ro. Lý do: tự động tối đa nhưng an toàn như bản chính thức.
   - Kỹ năng chính thức được chuyển thể, không chép nguyên văn; không ghi số hiệu văn bản pháp luật trong kỹ năng (có kiểm thử chặn).
@@ -78,13 +79,11 @@
     - OpenAI: lỗi không đọc được chi tiết, nghi số dư hoặc quyền dùng model.
     - Model Claude đời cũ dùng `budget_tokens`; ca lượt soát lập luận trả "CHƯA ĐẠT" (Đợt 1B).
   - **Việc kỹ thuật chưa làm:**
-    - Phần còn lại của "giảm số lần gọi AI": trần số bước theo loại việc kèm câu hỏi "làm tiếp?"; công cụ thêm nhiều slide trong một lệnh; đo với model miễn phí.
-    - 12 mục để lại của lần soát mã Đợt 4 (bảng "Để lại" ở `tasks/dot-4.md`); đáng làm nhất: nhật ký ghi giá trị cũ / mới cho thay hàng loạt và xóa trùng, hỏi trước khi thay bố trí khóa ô sẵn có. Lần soát phần A Đợt 3 để lại 1 mục, phần B để lại 6 mục.
-    - Chèn ảnh vào slide chưa thành công cụ (thăm dò đã cho thấy làm được).
+    - **Tìm ra ở Đợt 7, chưa sửa:** bài "3 slide + 1 biểu đồ" vẫn 6 lần gọi AI (mốc ≤ 4) vì `ppt_check_deck` báo "phông lệch mẫu" ở tiêu đề slide vừa thêm rồi AI sửa — chưa rõ là báo nhầm hay thật; nút Hoàn tác sau khi bấm Làm tiếp vẫn tính theo từng lượt, không gộp; kết quả tìm kiếm Word đánh dấu chỗ khớp bằng «…», có lần AI tưởng là định dạng lạ của văn bản; dòng báo "lịch sử đầy" và nút "Dừng ở đây" chưa nhìn trong Office; công cụ mới chưa Chạy thật được với Gemini (máy chủ im lặng 150 giây).
+    - Mục soát mã để lại: Đợt 4 còn 10 mục (bảng "Để lại" ở `tasks/dot-4.md`; hai mục nhật ký và khóa ô đã làm ở Đợt 7); phần A Đợt 3 còn 1, phần B còn 6; ba lượt soát của Đợt 7 để lại chủ yếu mục thấp (bảng ở `tasks/dot-7.md`).
     - Ghi chéo với hai tài liệu cùng ứng dụng chưa thử trong Office.
-    - Soát mã độc lập cho Đợt 0B (`git diff 58555e1..0c570a7 -- src`), Đợt 5 và Đợt 6.
+    - Soát mã độc lập cho mã của chính Đợt 7 (chưa chạy).
     - Bản quét: đọc hai lần độc lập rồi máy so số liệu; máy kiểm dãy Điều – khoản – điểm trên bản chép.
-    - Bài thử chưa có cờ "không lưu lịch sử" (lịch sử mỗi ứng dụng chỉ giữ 60 hội thoại; bài thử từng đẩy mất 4 hội thoại cũ của anh).
     - Mỗi lượt Word gửi khoảng 25.800 token trở lên (lời nhắc + 29 công cụ + mục lục) → Groq miễn phí (8.000 token mỗi phút) không chạy được trong Word, nguồn không có bộ nhớ đệm thì tốn. Chưa rút gọn mô tả công cụ.
     - Tệp .docx đính kèm vẫn chép chữ vào tin nhắn (tốn token với hợp đồng dài).
     - Đợt 6: đọc tài liệu chính thức của SiliconFlow, Qwen, ModelScope, StepFun rồi mới thêm sẵn (hiện dùng qua nguồn tự khai); Bedrock, Foundry, Vercel chưa làm.
@@ -98,14 +97,14 @@
   - **Chờ anh quyết hoặc làm:**
     - Chọn việc ở mục D của `tasks/dot-5.md`: bộ nhớ dài hạn giữa các hội thoại · tải bản ghi hội thoại · gợi ý gạch chân bấm để chấp nhận trong Word · điền mẫu qua ô điền sẵn · connectors (MCP) · công cụ chạy mã Office.js do AI viết · phím tắt mở khung · đọc một trang web cụ thể · Outlook · Sign in with Poe · hàm `=AI(…)` trong ô Excel.
     - Xóa các khóa "AI Da Nguon (Office)" thừa ở `openrouter.ai/settings/keys` (add-in dùng khóa cấp sau cùng).
-    - Model đang nhớ của nguồn Gemini đã bị bài thử đổi (hiện là một model Flash); anh chọn lại nếu cần.
+    - Model đang nhớ của nguồn Gemini trên máy là "Gemini 2.5 Flash", Google báo không còn cấp cho người dùng mới (18/11): anh chọn lại Gemini 3.8 Flash.
     - Bảy worktree của các đợt cũ đã xóa 18/11 (anh duyệt), các nhánh cục bộ đã gộp vào `main` cũng đã xóa. Còn hai thư mục **rỗng** `dot-0a-office-addon-compare-47836b` và `dot-4-a4b5e7` trong `D:\ADD IN\.claude\worktrees\` bị một tiến trình giữ, không xóa được lúc đó; xóa sau khi khởi động lại ứng dụng Claude.
 - **Bước tiếp theo (đề xuất 18/11/2026, chờ anh duyệt từng bước):**
   1. ~~Kéo `D:\ADD IN` lên `origin/main`, viết gọn tệp này~~ xong 18/11.
-  2. **Bản 4.7.0 "trả nợ kỹ thuật"** (anh duyệt kế hoạch 18/11): mã xong trên nhánh `claude/dot-7`. Chờ anh duyệt phát hành; sau đó làm mục "Việc còn lại" ở cuối `tasks/dot-7.md`.
+  2. ~~Bản 4.7.0 "trả nợ kỹ thuật"~~ đã phát hành 18/11. Việc nối tiếp, theo thứ tự nên làm: (a) tìm vì sao `ppt_check_deck` báo "phông lệch mẫu" ở tiêu đề slide vừa thêm — bài 3 slide + 1 biểu đồ vì thế vẫn 6 lần gọi AI; (b) soát mã độc lập cho mã của Đợt 7; (c) cập nhật bảng so sánh; (d) các mục soát mã để lại (bảng ở `tasks/dot-7.md`).
   3. **Một buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được vì thiếu tiền hoặc key" trong một lượt. Anh chỉ cần nạp những nguồn anh định dùng.
   4. **Anh chọn việc ở mục D.** Gợi ý cho việc pháp lý – BĐS: "điền mẫu qua ô điền sẵn" và "bộ nhớ dài hạn giữa các hội thoại" trước; connectors và Outlook là việc lớn, để sau.
-  - Câu mở đầu phiên sau: `Phát hành 4.7.0 từ nhánh claude/dot-7 rồi kiểm trên bản phát hành (mục "Việc còn lại" ở cuối tasks/dot-7.md).` — phải là phiên **trên máy**; anh đang mở Office thì chưa mở được Office thử.
+  - Câu mở đầu phiên sau: `Đọc tasks/HANDOFF.md mục Bước tiếp theo rồi hỏi tôi muốn làm việc nào.`
 - **Bài học:**
   - **Bài thử làm mất hội thoại cũ của anh (16/11/2026):** lịch sử mỗi ứng dụng chỉ giữ 60 hội thoại (`MAX_CONVERSATIONS`); một buổi thử tạo hơn 70 hội thoại đã đẩy 4 hội thoại có từ trước của Word ra khỏi lịch sử, không lấy lại được. Từ nay: trước khi chạy loạt bài, đếm lịch sử; **xóa hội thoại thử ngay sau mỗi model** (không để dồn), và dừng nếu số hội thoại sắp chạm 60. Nên cân nhắc cho bài thử một cờ "không lưu lịch sử".
   - **Khung add-in bị che thì hẹn giờ đứng:** khi khung Claude chính thức nằm trên khung AI Đa Nguồn (cùng một ngăn, đổi bằng thẻ), `setTimeout` trong khung bị che không chạy → `cdp.mjs eval` có `sleep` treo vô hạn. Đưa khung cần điều khiển lên trước (bấm nút "Mở AI Đa Nguồn" / "Claude" bằng UI Automation) rồi mới chạy. Khác với cửa sổ Word thu nhỏ (đã đo: hẹn giờ vẫn chạy).
