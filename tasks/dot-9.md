@@ -2,7 +2,7 @@
 
 Ngày lập: 19/11/2026. Nhánh: `claude/dot-9` (tách từ `main@8f4a4f7`). Căn cứ: mục 12 của `tasks/ban-giao-phan-phoi-cong-ty-va-che-do-web.md` (anh duyệt khoảng 00:00 ngày 19/11, sửa lúc 00:03 để đưa Cohere vào chế độ Miễn phí) và năm ý anh đưa ra sáng 19/11.
 
-**Trạng thái: CHỜ DUYỆT bản sửa.** Anh yêu cầu xem xét kỹ nội dung đã duyệt lúc 0 giờ. Lượt rà mã dưới đây thấy 9 chỗ kế hoạch gốc chưa tính đến; kế hoạch và tiêu chí đã sửa theo các chỗ đó. Chưa sửa mã.
+**Trạng thái: ĐÃ DUYỆT bản sửa (19/11/2026), đang làm.** Anh yêu cầu xem xét kỹ nội dung đã duyệt lúc 0 giờ. Lượt rà mã dưới đây thấy 9 chỗ kế hoạch gốc chưa tính đến; kế hoạch và tiêu chí đã sửa theo các chỗ đó. Ba điểm anh chốt ở mục 6.
 
 Nhãn: **[Đã đọc mã]** = đối chiếu tệp trên `main@8f4a4f7`. **[Chưa kiểm]** = phải kiểm tài liệu chính thức hoặc đo thật khi làm.
 
@@ -85,11 +85,12 @@ Xếp lại các nguồn "chưa xếp": Cerebras → Trả phí (hết bậc fre
 
 ---
 
-## 6. Điểm cần anh chốt trước khi viết mã
+## 6. Anh đã chốt (19/11/2026)
 
-1. Hạn chờ im lặng ở chế độ Miễn phí: giữ 150 giây hay hạ xuống (ví dụ 60 giây) để xoay sớm hơn. Hạ thì có thể cắt nhầm lúc Gemini 3 đang "Suy nghĩ kỹ" lâu.
-2. Key Gemini / Groq / Cohere có thể bị tính tiền (R1): chỉ hiện cảnh báo, hay bắt người dùng tích xác nhận "key gói miễn phí" trước khi nguồn vào vòng.
-3. Lỗi 429 theo phút: xoay ngay, hay chờ một lần khi nhà cung cấp hẹn ≤ 10 giây rồi mới xoay.
+**Đã duyệt bản sửa, làm ngay.** Ba điểm:
+1. Hạn chờ im lặng ở chế độ Miễn phí: **60 giây**; khi bật "Suy nghĩ kỹ" vẫn 150 giây. Chế độ Trả phí giữ 150 giây.
+2. Key Gemini / Groq / Cohere có thể bị tính tiền (R1): **chỉ hiện cảnh báo khi nhập key**, nguồn vào vòng ngay.
+3. Lỗi 429 theo phút: **xoay ngay**, nguồn đó nghỉ 60 giây (hoặc theo `retry-after` nếu lâu hơn).
 
 ## 7. Việc buộc phải có anh ở máy
 
