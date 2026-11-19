@@ -32,6 +32,7 @@
   - Kiểm Office không chiếm màn hình của anh: `kiem-thu/mo-office.ps1` mặc định mở Office trên desktop ẩn (`kiem-thu/desktop-rieng.ps1`), điều khiển khung bằng `kiem-thu/cdp.mjs`. Đã đạt với Word, Excel, PowerPoint mở riêng từng ứng dụng.
   - Bảng so sánh với bản chính thức: `docs/so-sanh-claude-chinh-thuc.md`.
 - **Đang làm:** không có việc dở. Đợt 8 (điền mẫu, bản 4.8.0) đã phát hành 18/11/2026; phần chưa kiểm được (Gemini) ghi ở `tasks/dot-8.md`. Đợt 7 (4.7.0) và bản vá phông PowerPoint (4.7.1) đã phát hành 18/11/2026; phần chưa đạt và chưa kiểm được ghi ở Vấn đề mở.
+- **Việc chờ quyết định (18/11/2026):** phân phối add-in cho cả công ty, chi phí AI (gói free, key dùng chung), chẩn đoán Gemini dừng sớm và chế độ web chat. Chưa có kế hoạch nào được duyệt, chưa sửa mã. Toàn bộ nội dung, quy tắc có thể đổi và bước tiếp theo ở `tasks/ban-giao-phan-phoi-cong-ty-va-che-do-web.md`.
 - **Quyết định và lý do:**
   - AI sửa thẳng vào tài liệu + Hoàn tác; Word luôn ghi Track Changes; thao tác rủi ro luôn hỏi kèm lý do, "Cho phép hết lần này" không áp dụng cho thao tác rủi ro. Lý do: tự động tối đa nhưng an toàn như bản chính thức.
   - Kỹ năng chính thức được chuyển thể, không chép nguyên văn; không ghi số hiệu văn bản pháp luật trong kỹ năng (có kiểm thử chặn).
