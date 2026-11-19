@@ -30,6 +30,9 @@ export interface Provider {
   keyFrom?: string;
   /** Nguồn do người dùng tự khai (địa chỉ, key, tên model) */
   custom?: boolean;
+  /** Chế độ dùng (Đợt 9): "free" = chỉ hiện ở chế độ Miễn phí, "both" = có bậc miễn phí và bậc trả phí (cùng key),
+   *  không ghi = chỉ Trả phí. Lọc model theo chế độ ở src/core/modes.ts. */
+  tier?: "free" | "paid" | "both";
 }
 
 /** "Phương ngữ" của một nguồn nhận kiểu yêu cầu Anthropic (POST …/messages). Thiếu trường nào = giống api.anthropic.com.
@@ -75,6 +78,7 @@ export const PROVIDERS: Provider[] = [
   {
     id: "openrouter",
     name: "OpenRouter",
+    tier: "both",
     kind: "openai",
     baseUrl: "https://openrouter.ai/api/v1",
     keyUrl: "https://openrouter.ai/keys",
@@ -91,6 +95,7 @@ export const PROVIDERS: Provider[] = [
   {
     id: "gemini",
     name: "Google Gemini",
+    tier: "both",
     kind: "gemini",
     baseUrl: "https://generativelanguage.googleapis.com/v1beta",
     keyUrl: "https://aistudio.google.com/apikey",
@@ -99,6 +104,7 @@ export const PROVIDERS: Provider[] = [
   {
     id: "groq",
     name: "Groq",
+    tier: "both",
     kind: "openai",
     baseUrl: "https://api.groq.com/openai/v1",
     keyUrl: "https://console.groq.com/keys",
@@ -247,6 +253,7 @@ export const PROVIDERS: Provider[] = [
   {
     id: "cohere",
     name: "Cohere",
+    tier: "both",
     kind: "openai",
     baseUrl: "https://api.cohere.ai/compatibility/v1",
     modelsUrl: "https://api.cohere.com/v1/models?endpoint=chat&page_size=1000",
@@ -264,6 +271,8 @@ export interface CustomSource {
   models: string[];
   /** Gửi key kiểu Anthropic gốc (x-api-key kèm anthropic-version) thay cho Authorization: Bearer */
   anthropicHeaders?: boolean;
+  /** Người dùng khai đây là nguồn miễn phí (Đợt 9): chỉ hiện ở chế độ Miễn phí và vào vòng xoay. Không ghi = Trả phí. */
+  free?: boolean;
 }
 
 export const CUSTOM_PREFIX = "tuy-chinh-";
@@ -296,6 +305,7 @@ export function customProvider(c: CustomSource): Provider | undefined {
     baseUrl: n.url,
     keyUrl: "",
     custom: true,
+    ...(c.free ? { tier: "free" as const } : {}),
     note: `Nguồn tự khai, kiểu Anthropic · key được gửi tới ${n.host}`,
     dialect: {
       auth: c.anthropicHeaders ? "x-api-key" : "bearer",

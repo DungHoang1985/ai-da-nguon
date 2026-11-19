@@ -17,6 +17,7 @@ import { ArrowClockwiseRegular, ChevronDownRegular } from "@fluentui/react-icons
 import type { ModelInfo } from "../../core/models";
 import { useCatalog } from "./useCatalog";
 import { toolReliabilityNote } from "../../core/catalog";
+import type { UsageMode } from "../../core/modes";
 
 type Catalog = ReturnType<typeof useCatalog>;
 
@@ -59,7 +60,10 @@ const ModelPicker: React.FC<{
   onToolsOnly: (v: boolean) => void;
   /** Cho khung chat mở bảng chọn từ nút "Đổi nguồn" cạnh thông báo lỗi */
   openRef?: React.MutableRefObject<(() => void) | null>;
-}> = ({ cat, agentOn, toolsOnly, onToolsOnly, openRef }) => {
+  /** Đợt 9: chế độ Miễn phí / Trả phí và cách đổi */
+  mode?: UsageMode;
+  onMode?: (m: UsageMode) => void;
+}> = ({ cat, agentOn, toolsOnly, onToolsOnly, openRef, mode, onMode }) => {
   const s = useStyles();
   const [open, setOpen] = React.useState(false);
   React.useEffect(() => {
@@ -89,7 +93,10 @@ const ModelPicker: React.FC<{
           aria-label={`Model đang dùng: ${cat.provider?.name || ""} ${label}. Bấm để đổi`}
         >
           <span className={s.label}>
-            <span className={s.prov}>{provShort} · </span>
+            <span className={s.prov}>
+              {mode === "free" ? "🆓 " : mode === "paid" ? "💳 " : ""}
+              {provShort} ·{" "}
+            </span>
             <span className={status === "error" ? s.err : undefined}>
               {weak ? "⚠ " : ""}
               {label}
@@ -98,6 +105,21 @@ const ModelPicker: React.FC<{
         </Button>
       </PopoverTrigger>
       <PopoverSurface className={s.surface} aria-label="Chọn nhà cung cấp và model">
+        {mode && onMode && (
+          <div className={s.row} role="radiogroup" aria-label="Chế độ" data-aidn="che-do">
+            <Button size="small" appearance={mode === "free" ? "primary" : "outline"} aria-pressed={mode === "free"} onClick={() => onMode("free")} style={{ flex: 1 }}>
+              🆓 Miễn phí
+            </Button>
+            <Button size="small" appearance={mode === "paid" ? "primary" : "outline"} aria-pressed={mode === "paid"} onClick={() => onMode("paid")} style={{ flex: 1 }}>
+              💳 Trả phí
+            </Button>
+          </div>
+        )}
+        {mode === "free" && (
+          <Text size={100} className={s.muted}>
+            Chỉ hiện nguồn, model miễn phí. Nguồn đang chọn hết lượt hoặc không phản hồi thì tự đổi sang nguồn miễn phí kế tiếp; không bao giờ tự sang nguồn trả phí.
+          </Text>
+        )}
         <div className={s.row}>
           <Select
             size="small"
@@ -127,9 +149,9 @@ const ModelPicker: React.FC<{
           value={cat.search}
           onChange={(_, d) => cat.setSearch(d.value)}
         />
-        {cat.providerId === "openrouter" && (
+        {cat.providerId === "openrouter" && (!mode || agentOn) && (
           <div className={s.row}>
-            <Switch label="Miễn phí" checked={cat.freeOnly} onChange={(_, d) => cat.setFreeOnly(d.checked)} />
+            {!mode && <Switch label="Miễn phí" checked={cat.freeOnly} onChange={(_, d) => cat.setFreeOnly(d.checked)} />}
             {agentOn && <Switch label="Chỉ model thao tác được" checked={toolsOnly} onChange={(_, d) => onToolsOnly(d.checked)} />}
           </div>
         )}

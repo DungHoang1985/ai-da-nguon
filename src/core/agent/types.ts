@@ -125,4 +125,6 @@ export type AgentEvent =
   /** Số token của bước vừa xong */
   | { type: "usage"; step: number; usage: Usage }
   /** Câu trả lời bị cắt vì hết độ dài; `skipped` = số lệnh công cụ không được chạy; `gaveUp` = dừng vì bị cắt liên tiếp */
-  | { type: "truncated"; skipped: number; gaveUp?: boolean };
+  | { type: "truncated"; skipped: number; gaveUp?: boolean }
+  /** Chế độ Miễn phí: chuyển sang nguồn kế tiếp (Đợt 9). `partial` = chữ dở của nguồn trước đã hiện, không vào lịch sử */
+  | { type: "switch"; from: string; to: string; reason: string; partial: boolean };

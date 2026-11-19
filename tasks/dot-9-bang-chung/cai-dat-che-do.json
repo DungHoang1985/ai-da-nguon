@@ -1,0 +1,8 @@
+{
+ "the": "🆓 Miễn phí\n💳 Trả phí\nMiễn phí: chỉ hiện nguồn và model có gói miễn phí; nguồn đang dùng hết lượt, quá tải, không phản hồi trong 60 giây hoặc yêu cầu quá lớn thì tự đổi sang nguồn kế tiếp theo thứ tự dưới đây (chỉ nguồn đã có key); không bao giờ tự sang nguồn trả phí. Trả phí: chỉ hiện nguồn thu tiền, không tự đổi nguồn.\nThứ tự tự đổi nguồn\n1. Google Gemini\n↑\n↓\n2. Groq\n↑\n↓\n3. OpenRouter\n↑\n↓\n4. Cohere\n↑\n↓\nNguồn đang chọn ở nhãn model luôn được dùng trước; các nguồn khác theo thứ tự này.",
+ "canhBaoKey": [
+  "⚠️ Chỉ miễn phí khi key thuộc gói miễn phí (dự án / tài khoản chưa bật thanh toán). Đã bật thanh toán thì mỗi lần gọi bị tính tiền.",
+  "⚠️ Chỉ miễn phí khi key thuộc gói miễn phí (dự án / tài khoản chưa bật thanh toán). Đã bật thanh toán thì mỗi lần gọi bị tính tiền.",
+  "⚠️ Key dùng thử: miễn phí, giới hạn tốc độ, Cohere không cho dùng vào mục đích thương mại. Chỉ miễn phí khi key thuộc gói miễn phí (dự án / tài khoản chưa bật thanh toán). Đã bật thanh toán thì mỗi lần gọi bị tính tiền."
+ ]
+}

@@ -5,7 +5,8 @@ import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { HostName } from "../../office/host";
 import { getHostTools } from "../../office/tools";
 import { TestStep, runSelfTest } from "../../office/selftest";
-import { CUSTOM_PREFIX, Provider, allProviders, normalizeBaseUrl } from "../../core/providers";
+import { CUSTOM_PREFIX, Provider, allProviders, getProvider, normalizeBaseUrl } from "../../core/providers";
+import { UsageMode, freeKeyWarning, normalizeFreeOrder, providerInMode } from "../../core/modes";
 import { Storage } from "../../core/storage";
 import { fetchModels } from "../../core/models";
 import { cleanKey, describeError, keyProblem, networkErrorMessage } from "../../core/errors";
@@ -107,6 +108,11 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
         )}
       </div>
       {p.note && <Text size={200} className={s.muted}>{p.note}</Text>}
+      {storage.getSelection().mode === "free" && providerInMode(p, "free") && freeKeyWarning(p) && (
+        <Text size={200} className={s.muted} data-aidn="canh-bao-key-mien-phi">
+          ⚠️ {freeKeyWarning(p)}
+        </Text>
+      )}
       {p.blockedReason && (
         <Text size={200} className={s.err}>
           ⚠️ {p.blockedReason}
@@ -134,6 +140,69 @@ const ProviderCard: React.FC<{ p: Provider } & Props> = ({ p, storage, onChanged
   );
 };
 
+/** Đợt 9: chế độ Miễn phí / Trả phí và thứ tự tự đổi nguồn của chế độ Miễn phí */
+const ModeCard: React.FC<Props> = ({ storage, onChanged }) => {
+  const s = useStyles();
+  const [mode, setMode] = React.useState<UsageMode | undefined>(storage.getSelection().mode);
+  const [order, setOrder] = React.useState<string[]>(() => normalizeFreeOrder(storage.getSelection().freeOrder, allProviders()));
+  const keys = storage.getKeys();
+  const pick = (m: UsageMode) => {
+    storage.setSelection({ mode: m });
+    setMode(m);
+    onChanged();
+  };
+  const move = (i: number, d: -1 | 1) => {
+    const j = i + d;
+    if (j < 0 || j >= order.length) return;
+    const next = order.slice();
+    [next[i], next[j]] = [next[j], next[i]];
+    storage.setSelection({ freeOrder: next });
+    setOrder(next);
+    onChanged();
+  };
+  return (
+    <div className={s.card} data-aidn="the-che-do">
+      <div className={s.row}>
+        <Button size="small" appearance={mode === "free" ? "primary" : "outline"} aria-pressed={mode === "free"} onClick={() => pick("free")}>
+          🆓 Miễn phí
+        </Button>
+        <Button size="small" appearance={mode === "paid" ? "primary" : "outline"} aria-pressed={mode === "paid"} onClick={() => pick("paid")}>
+          💳 Trả phí
+        </Button>
+      </div>
+      <Text size={200} className={s.muted}>
+        Miễn phí: chỉ hiện nguồn và model có gói miễn phí; nguồn đang dùng hết lượt, quá tải, không phản hồi trong 60 giây hoặc yêu cầu quá lớn thì tự
+        đổi sang nguồn kế tiếp theo thứ tự dưới đây (chỉ nguồn đã có key); không bao giờ tự sang nguồn trả phí. Trả phí: chỉ hiện nguồn thu tiền, không
+        tự đổi nguồn.
+      </Text>
+      {mode === "free" && (
+        <div data-aidn="thu-tu-xoay-vong">
+          <Text size={200} weight="semibold">
+            Thứ tự tự đổi nguồn
+          </Text>
+          {order.map((pid, i) => (
+            <div key={pid} className={s.row}>
+              <Text size={200} style={{ flex: 1 }}>
+                {i + 1}. {getProvider(pid)?.name || pid}
+                {keys[pid] ? "" : " (chưa có key — bị bỏ qua)"}
+              </Text>
+              <Button size="small" appearance="subtle" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Lên">
+                ↑
+              </Button>
+              <Button size="small" appearance="subtle" disabled={i === order.length - 1} onClick={() => move(i, 1)} aria-label="Xuống">
+                ↓
+              </Button>
+            </div>
+          ))}
+          <Text size={100} className={s.muted}>
+            Nguồn đang chọn ở nhãn model luôn được dùng trước; các nguồn khác theo thứ tự này.
+          </Text>
+        </div>
+      )}
+    </div>
+  );
+};
+
 /** Thêm một nguồn kiểu Anthropic do người dùng tự khai: tên, địa chỉ gốc, tên model. Key nhập ở thẻ của nguồn sau khi thêm. */
 const CustomSourceCard: React.FC<Props> = ({ storage, onChanged }) => {
   const s = useStyles();
@@ -142,6 +211,7 @@ const CustomSourceCard: React.FC<Props> = ({ storage, onChanged }) => {
   const [url, setUrl] = React.useState("");
   const [models, setModels] = React.useState("");
   const [native, setNative] = React.useState(false);
+  const [free, setFree] = React.useState(false);
   const [err, setErr] = React.useState("");
   const n = url.trim() ? normalizeBaseUrl(url) : undefined;
 
@@ -156,7 +226,7 @@ const CustomSourceCard: React.FC<Props> = ({ storage, onChanged }) => {
     const all = storage.getCustomSources();
     if (all.length >= 8) return setErr("Tối đa 8 nguồn tự khai.");
     const id = CUSTOM_PREFIX + Date.now().toString(36);
-    storage.setCustomSources([...all, { id, name: name.trim() || base.host || id, baseUrl: base.url, models: list, anthropicHeaders: native }]);
+    storage.setCustomSources([...all, { id, name: name.trim() || base.host || id, baseUrl: base.url, models: list, anthropicHeaders: native, ...(free ? { free: true } : {}) }]);
     setName("");
     setUrl("");
     setModels("");
@@ -190,6 +260,11 @@ const CustomSourceCard: React.FC<Props> = ({ storage, onChanged }) => {
         checked={native}
         onChange={(_, d) => setNative(d.checked)}
         label="Gửi key kiểu Anthropic gốc (x-api-key). Để tắt nếu không chắc: phần lớn nguồn chỉ nhận Authorization."
+      />
+      <Switch
+        checked={free}
+        onChange={(_, d) => setFree(d.checked)}
+        label="Nguồn miễn phí: chỉ hiện ở chế độ Miễn phí và vào vòng tự đổi nguồn. Để tắt nếu nguồn thu tiền."
       />
       {(err || n?.error) && (
         <Text size={200} className={s.err}>
@@ -656,6 +731,8 @@ const Settings: React.FC<Props> = (props) => {
         </Text>
       </div>
       <div className={s.scroll}>
+        <div className={s.section}>Chế độ dùng AI</div>
+        <ModeCard {...props} />
         <div className={s.section}>Tài khoản và key</div>
         <Text size={200} className={s.muted} block style={{ marginBottom: 8 }}>
           Key chỉ lưu trên máy này, trong add-in; chỉ gửi tới đúng nhà cung cấp khi gọi. Bấm “Lưu” để kiểm tra key và tải danh sách model. Model đã chọn

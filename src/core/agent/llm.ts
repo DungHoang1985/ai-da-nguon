@@ -87,6 +87,9 @@ export function buildStepRequest(
     think?: boolean;
     /** Không gửi tham số suy nghĩ và không gửi lại khối suy nghĩ (lần gửi lại sau khi nhà cung cấp từ chối các phần đó) */
     plain?: boolean;
+    /** Gemini: lệnh gọi công cụ do nguồn khác sinh ra (không có phần gốc của Gemini, nên không có chữ ký suy nghĩ) gửi dưới dạng chữ,
+     *  kèm kết quả của nó — xoay vòng nguồn miễn phí, Đợt 9 R3. Chỉ đổi yêu cầu gửi đi, không đổi lịch sử. */
+    foreignToolsAsText?: boolean;
   } = {}
 ): { url: string; init: RequestInit } {
   const system = messages
@@ -198,6 +201,11 @@ export function buildStepRequest(
     for (const m of turns) {
       if (m.role === "assistant") for (const tc of m.toolCalls || []) if (tc.nativeId) nativeIds.add(tc.id);
     }
+    /** Lệnh gọi của nguồn khác gửi thành chữ (Đợt 9 R3) */
+    const foreign = new Set<string>();
+    if (opts.foreignToolsAsText)
+      for (const m of turns)
+        if (m.role === "assistant" && !(m.raw?.kind === "gemini" && m.raw.parts?.length)) for (const tc of m.toolCalls || []) foreign.add(tc.id);
     const contents: any[] = [];
     for (const m of turns) {
       if (m.role === "user")
@@ -215,10 +223,20 @@ export function buildStepRequest(
         } else {
           const parts: any[] = [];
           if (m.content) parts.push({ text: m.content });
-          for (const tc of m.toolCalls || []) parts.push({ functionCall: { name: tc.name, args: tc.args || {} } });
+          for (const tc of m.toolCalls || [])
+            parts.push(
+              foreign.has(tc.id)
+                ? { text: `[Bước do model trước thực hiện: đã gọi công cụ ${tc.name} với tham số ${JSON.stringify(tc.args || {})}]` }
+                : { functionCall: { name: tc.name, args: tc.args || {} } }
+            );
           if (!parts.length) parts.push({ text: " " });
           contents.push({ role: "model", parts });
         }
+      } else if (m.role === "tool" && foreign.has(m.toolCallId)) {
+        const part = { text: `[Kết quả công cụ ${m.name} (bước do model trước thực hiện)]: ${m.content || "(trống)"}` };
+        const prev = contents[contents.length - 1];
+        if (prev && prev.role === "user" && !prev.parts.some((p: any) => p.functionResponse)) prev.parts.push(part);
+        else contents.push({ role: "user", parts: [part] });
       } else if (m.role === "tool") {
         let response: any;
         try {
@@ -587,8 +605,10 @@ export interface CallModelOptions {
   /** Thay bảng khoảng chờ (kiểm thử); mảng rỗng = không thử lại */
   retryDelaysMs?: number[];
   sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
-  /** Thay hạn chờ im lặng STALL_MS (kiểm thử) */
+  /** Thay hạn chờ im lặng STALL_MS (chế độ Miễn phí: 60 giây; kiểm thử) */
   stallMs?: number;
+  /** Gemini: lệnh gọi công cụ của nguồn khác gửi thành chữ (xoay vòng, Đợt 9) */
+  foreignToolsAsText?: boolean;
 }
 
 /** Gọi model một bước; tự thử lại khi nhà cung cấp quá tải hoặc hết hạn mức tạm thời (429, 5xx, 529),
@@ -644,6 +664,7 @@ async function callModelOnce(opts: CallModelOptions): Promise<StepResult> {
     maxOutput: opts.maxOutput,
     think: opts.think,
     plain: opts.state?.plain,
+    foreignToolsAsText: opts.foreignToolsAsText,
   });
   const fetchFn = opts.fetchFn || fetch;
   // Chó canh: nhà cung cấp nhận yêu cầu rồi im lặng (đo 16/11/2026 với Gemini lúc quá tải: khung treo vô hạn) thì hủy yêu cầu
@@ -683,7 +704,9 @@ async function callModelOnce(opts: CallModelOptions): Promise<StepResult> {
   } catch (e: any) {
     if (stalled && !opts.signal?.aborted) {
       // ApiError không kèm mã trạng thái: hiện như lỗi của nhà cung cấp, và không thuộc nhóm tự gửi lại (tránh chờ thêm nhiều lần 150 giây)
-      throw new ApiError(`${opts.provider.name}: không nhận được phản hồi trong ${Math.round(stallMs / 1000)} giây (máy chủ nhà cung cấp im lặng). Thử lại, hoặc đổi model / đổi nguồn.`);
+      const err = new ApiError(`${opts.provider.name}: không nhận được phản hồi trong ${Math.round(stallMs / 1000)} giây (máy chủ nhà cung cấp im lặng). Thử lại, hoặc đổi model / đổi nguồn.`);
+      err.stall = true;
+      throw err;
     }
     throw e;
   } finally {

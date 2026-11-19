@@ -26,7 +26,10 @@ import {
   StopRegular,
 } from "@fluentui/react-icons";
 import ModelPicker from "./ModelPicker";
-import { getProvider } from "../../core/providers";
+import { allProviders, getProvider } from "../../core/providers";
+import { UsageMode, normalizeFreeOrder, providerInMode } from "../../core/modes";
+import { FREE_STALL_MS, FREE_STALL_THINK_MS, FreeRotation, buildFreeCandidates } from "../../core/agent/rotation";
+import { fetchModels, isStale } from "../../core/models";
 import { Storage } from "../../core/storage";
 import { ErrorReason, describeError, networkErrorMessage } from "../../core/errors";
 import { chatCreditWarning } from "../../core/credits";
@@ -400,7 +403,20 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
 
   const hostTools = React.useMemo(() => getHostTools(host, () => storage.getSettings()), [host, storage]);
   const agentOn = settings.agentMode && !!hostTools;
-  const cat = useCatalog(storage, { agentOn, toolsOnly: settings.toolsOnly, version });
+  /** Đợt 9: chế độ Miễn phí / Trả phí; chưa chọn → hiện thẻ chọn chế độ */
+  const [mode, setModeState] = React.useState<UsageMode | undefined>(() => storage.getSelection().mode);
+  /** Nguồn tải danh mục model lỗi lần gần nhất (để không tải lại mỗi lần gửi) */
+  const catalogFailRef = React.useRef<Record<string, number>>({});
+  const setMode = (m: UsageMode) => {
+    storage.setSelection({ mode: m });
+    setModeState(m);
+  };
+  // Đổi chế độ hoặc thứ tự xoay vòng trong Cài đặt: đọc lại
+  React.useEffect(() => {
+    const m = storage.getSelection().mode;
+    if (m !== mode) setModeState(m);
+  }, [version]); // eslint-disable-line react-hooks/exhaustive-deps
+  const cat = useCatalog(storage, { agentOn, toolsOnly: settings.toolsOnly, version, mode });
   const { available, providerId, modelId, models, shown } = cat;
   /** Mở bảng chọn nguồn và model từ nút "Đổi nguồn" cạnh thông báo lỗi */
   const openPickerRef = React.useRef<(() => void) | null>(null);
@@ -579,8 +595,48 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     prevBusy.current = busy;
   }, [busy]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Màn chào: chỉ hiện khi chưa có key nào
+  // Đợt 9: chọn chế độ khi bắt đầu (cả người dùng bản cũ); chọn xong không hiện lại, đổi được ở bảng chọn model và Cài đặt
+  if (!mode) {
+    return (
+      <div className={s.wrap}>
+        <div className={s.header}>
+          <Text weight="semibold" size={300}>
+            AI Đa Nguồn
+          </Text>
+          <Text size={100} className={s.muted}>
+            v{APP_VERSION}
+          </Text>
+          <div style={{ flex: 1 }} />
+          <Button appearance="subtle" size="small" icon={<SettingsRegular />} title="Cài đặt" aria-label="Cài đặt" onClick={onOpenSettings} />
+        </div>
+        <div className={s.welcome} data-aidn="chon-che-do">
+          <Text size={500} weight="semibold">
+            Chọn chế độ dùng AI
+          </Text>
+          <Button appearance="primary" size="large" onClick={() => setMode("free")} style={{ justifyContent: "flex-start" }} data-mode="free">
+            🆓 Miễn phí
+          </Button>
+          <Text size={200} className={s.muted}>
+            Dùng key gói miễn phí của Gemini, Groq, OpenRouter (model :free), Cohere. Nguồn hết lượt hoặc không phản hồi thì tự đổi sang nguồn miễn phí kế
+            tiếp. Gói miễn phí có giới hạn lượt và nhà cung cấp có thể dùng nội dung gửi lên để cải thiện dịch vụ: không gửi tài liệu mật.
+          </Text>
+          <Button appearance="primary" size="large" onClick={() => setMode("paid")} style={{ justifyContent: "flex-start" }} data-mode="paid">
+            💳 Trả phí
+          </Button>
+          <Text size={200} className={s.muted}>
+            Dùng key trả tiền (Anthropic Claude, OpenAI, DeepSeek, OpenRouter…). Tính tiền theo key của anh, không tự đổi nguồn.
+          </Text>
+          <Text size={100} className={s.muted}>
+            Đổi chế độ lúc nào cũng được: bấm nhãn model cạnh ô nhập.
+          </Text>
+        </div>
+      </div>
+    );
+  }
+
+  // Màn chào: chỉ hiện khi chưa có key nào (của chế độ đang bật)
   if (!available.length) {
+    const otherKeys = allProviders().some((p) => storage.getKeys()[p.id] && !providerInMode(p, mode));
     return (
       <div className={s.wrap}>
         <div className={s.header}>
@@ -597,6 +653,14 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
           <Text size={500} weight="semibold">
             Chào anh 👋
           </Text>
+          {otherKeys && (
+            <Text data-aidn="che-do-chua-co-key">
+              Chế độ {mode === "free" ? "Miễn phí" : "Trả phí"} chưa có nguồn nào có key.{" "}
+              <Button size="small" onClick={() => setMode(mode === "free" ? "paid" : "free")}>
+                Chuyển sang {mode === "free" ? "Trả phí" : "Miễn phí"}
+              </Button>
+            </Text>
+          )}
           <Text>
             AI Đa Nguồn làm việc ngay trong {host === "Khác" ? "Word, Excel, PowerPoint" : host}: đọc, sửa, tạo nội dung theo yêu cầu, bằng API
             key của anh (OpenRouter, Anthropic, Gemini, Groq…).
@@ -789,8 +853,70 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       setNotice(undefined);
     };
 
+    // Đợt 9: chế độ Miễn phí → mọi lần gọi model của lượt đi qua vòng xoay nguồn miễn phí; nguồn đang chọn đứng đầu
+    let rotation: FreeRotation | undefined;
+    if (mode === "free") {
+      const keys = storage.getKeys();
+      const order = normalizeFreeOrder(storage.getSelection().freeOrder, allProviders());
+      // Nguồn trong vòng chưa có danh mục model (hoặc đã cũ): tải trước để chọn được model. Tối đa 8 giây, bấm Dừng là thôi chờ;
+      // nguồn tải lỗi thì 10 phút sau mới thử tải lại (soát mã Đợt 9, M2)
+      const fetches = order
+        .filter((pid) => keys[pid] && pid !== p.id)
+        .map(async (pid) => {
+          const c = storage.getModelCache()[pid];
+          const pp = getProvider(pid);
+          if (!pp || (c && !isStale(c.at)) || (catalogFailRef.current[pid] || 0) > Date.now() - 600000) return;
+          try {
+            storage.setModels(pid, await fetchModels(pp, keys[pid]));
+          } catch {
+            catalogFailRef.current[pid] = Date.now();
+          }
+        });
+      await Promise.race([
+        Promise.all(fetches),
+        new Promise((r) => setTimeout(r, 8000)),
+        new Promise((r) => ac.signal.addEventListener("abort", r, { once: true })),
+      ]);
+      if (ac.signal.aborted) {
+        setBusy(false);
+        abortRef.current = null;
+        return;
+      }
+      const candidates = buildFreeCandidates({
+        order,
+        selected: { providerId: p.id, modelId },
+        keys,
+        getProvider,
+        modelCache: storage.getModelCache(),
+        remembered: (pid) => storage.getModelFor(pid),
+        agentOn: useAgent,
+      });
+      try {
+        rotation = new FreeRotation(candidates, {
+          store: { get: () => storage.getCooldowns(), set: (v) => storage.setCooldowns(v) },
+          stallMs: settings.deepThink ? FREE_STALL_THINK_MS : FREE_STALL_MS,
+        });
+      } catch (e) {
+        const text = describeError(e, { provider: p }).text;
+        patchLast((it) => ({ ...it, error: text }));
+        setNotice({ text, err: true });
+        // Trả lại chữ đã gõ để gửi lại không phải gõ lại (soát mã Đợt 9, L4)
+        if (!opts?.continueTask) {
+          setInput(typed);
+          setAttachments(atts);
+        }
+        setBusy(false);
+        abortRef.current = null;
+        return;
+      }
+      // Chỉ có một nguồn miễn phí dùng được: nhắc nhập thêm key để có chỗ đổi khi hết lượt (dot-9 R9)
+      if (candidates.length < 2)
+        setNotice({ text: `Chế độ Miễn phí mới có một nguồn dùng được (${candidates[0].provider.name}): hết lượt là phải dừng. Nhập thêm key miễn phí (Gemini, Groq, OpenRouter, Cohere) trong Cài đặt để add-in tự đổi nguồn.` });
+    }
+
     try {
       const res = await runTurn({
+        rotation,
         provider: p,
         key,
         model: modelId,
@@ -875,6 +1001,12 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                   : sg
               ),
             }));
+          } else if (ev.type === "switch") {
+            clearRetry();
+            appendText(`
+↪ ${ev.from}: ${ev.reason} — đổi sang ${ev.to}${ev.partial ? " (trả lời lại bước này)" : ""}.
+`);
+            needSep = false;
           } else if (ev.type === "thinking_off") {
             setNotice({ text: "Nguồn đang dùng không nhận chế độ suy nghĩ với model này: đã gửi lại yêu cầu ở chế độ thường." });
           } else if (ev.type === "limit") {
@@ -1494,7 +1626,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
           </Text>
         )}
         <div className={s.modelSlot}>
-          <ModelPicker cat={cat} agentOn={agentOn} toolsOnly={settings.toolsOnly} onToolsOnly={(v) => updateSettings({ toolsOnly: v })} openRef={openPickerRef} />
+          <ModelPicker cat={cat} agentOn={agentOn} toolsOnly={settings.toolsOnly} onToolsOnly={(v) => updateSettings({ toolsOnly: v })} openRef={openPickerRef} mode={mode} onMode={setMode} />
         </div>
       </div>
       {histWarn && (

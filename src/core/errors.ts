@@ -27,6 +27,8 @@ export class ApiError extends Error {
   public transient?: boolean;
   /** Hết hạn mức theo NGÀY (429): gửi lại trong vài giây cũng vậy → không tự thử lại */
   public daily?: boolean;
+  /** Nhà cung cấp im lặng quá hạn chờ (không có mã HTTP): chế độ Miễn phí chuyển nguồn ngay (Đợt 9) */
+  public stall?: boolean;
   constructor(
     message: string,
     public status?: number,

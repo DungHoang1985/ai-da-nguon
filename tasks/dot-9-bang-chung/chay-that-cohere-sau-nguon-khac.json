@@ -1,0 +1,14 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Cohere command-a-03-2025. Bấm để đổi 🆓 Cohere · command-a-03-2025"
+ },
+ "treo": 0,
+ "daHoi": [
+  "AI muốn: Chèn nội dung (end) — lý do: Thêm đoạn văn theo yêu cầu của người dùng. | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 8,
+ "khung": "AI Đa Nguồn\nv4.8\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nChèn vào cuối văn bản một đoạn mới với nội dung đúng như sau: Bài thử Đợt 9, Cohere gọi công cụ.\n✅ Chèn nội dung (end) — lý do: Thêm đoạn văn theo yêu cầu của người dùng.\nĐã chèn đoạn văn vào cuối văn bản tại [¶3].\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nChèn vào cuối văn bản một đoạn mới với nội dung đúng như sau: Lượt của OpenRouter.\n✅ Chèn nội dung (end) — lý do: Thêm đoạn văn theo yêu cầu của người dùng.\nĐã chèn đoạn văn vào cuối văn bản tại [¶4].\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 28.552 · ra 127 · đọc từ bộ nhớ đệm 26.304\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nChèn vào cuối văn bản một đoạn mới với nội dung đúng như sau: Lượt sau của Cohere.\n✅ Chèn nội dung (end) — lý do: Thêm đoạn văn theo yêu cầu của người dùng.\nĐã chèn đoạn văn vào cuối văn bản tại [¶5].\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🆓 Cohere · command-a-03-2025",
+ "doiNguon": [],
+ "lanGoiAI": "2"
+}

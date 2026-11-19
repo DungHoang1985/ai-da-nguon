@@ -3,6 +3,7 @@
  *  không cho gửi khi model không thuộc nguồn đang chọn; nhớ model theo từng nguồn. */
 import type { ModelInfo } from "./models";
 import type { Provider } from "./providers";
+import { UsageMode, modelInMode } from "./modes";
 
 export type CatalogStatus = "loading" | "ready" | "error";
 
@@ -42,14 +43,19 @@ export interface FilterOptions {
   toolsOnly: boolean;
   agentOn: boolean;
   search: string;
+  /** Đợt 9: chế độ đang bật — chỉ giữ model của chế độ này (cần kèm `provider`); có chế độ thì bỏ qua `freeOnly` */
+  mode?: UsageMode;
+  provider?: Provider;
 }
 
 /** "Miễn phí" và "Chỉ model thao tác được" chỉ có nghĩa với OpenRouter (nơi danh mục có dữ liệu đó). */
 export function filterModels(models: ModelInfo[], o: FilterOptions): ModelInfo[] {
   const or = o.providerId === "openrouter";
   const q = o.search.trim().toLowerCase();
+  const byMode = !!(o.mode && o.provider);
   return models
-    .filter((m) => !(or && o.freeOnly) || m.free)
+    .filter((m) => !byMode || modelInMode(o.provider!, m, o.mode!))
+    .filter((m) => byMode || !(or && o.freeOnly) || m.free)
     .filter((m) => !(or && o.agentOn && o.toolsOnly) || m.tools !== false)
     .filter((m) => !q || m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q));
 }

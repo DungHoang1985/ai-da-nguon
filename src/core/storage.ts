@@ -88,6 +88,12 @@ export interface Selection {
   freeOnly?: boolean;
   /** Từ 3.6: model đã dùng lần trước theo từng nguồn */
   models?: Record<string, string>;
+  /** Đợt 9: chế độ Miễn phí / Trả phí; chưa có = chưa chọn → khung hiện thẻ chọn chế độ */
+  mode?: "free" | "paid";
+  /** Đợt 9: thứ tự xoay vòng nguồn miễn phí (mã nguồn) */
+  freeOrder?: string[];
+  /** Đợt 9: nguồn đã chọn lần cuối ở từng chế độ — đổi qua lại chế độ thì về đúng nguồn cũ (soát mã Đợt 9, M4) */
+  providerByMode?: { free?: string; paid?: string };
 }
 
 export class Storage {
@@ -174,6 +180,16 @@ export class Storage {
 
   setSettings(s: Partial<AppSettings>): void {
     this.write("settings", { ...this.getSettings(), ...s });
+  }
+
+  /** Đợt 9: thời điểm nghỉ của từng nguồn miễn phí (hết lượt hôm nay / tạm thời) */
+  getCooldowns(): Record<string, { until: number; reason: string }> {
+    const v = this.read<Record<string, { until: number; reason: string }>>("freeCooldowns", {});
+    return v && typeof v === "object" ? v : {};
+  }
+
+  setCooldowns(v: Record<string, { until: number; reason: string }>): void {
+    this.write("freeCooldowns", v);
   }
 
   getSelection(): Selection {

@@ -2,6 +2,7 @@
  *  Ngưỡng tính theo sức chứa của model. Giữa hai lần tóm tắt, lịch sử không bị sửa (để bộ nhớ đệm lời nhắc có tác dụng). */
 import { Provider } from "../providers";
 import { callModelStep } from "./llm";
+import type { FreeRotation } from "./rotation";
 import { AgentMessage } from "./types";
 
 /** Ngưỡng khi không biết sức chứa của model */
@@ -81,6 +82,8 @@ export async function compactIfNeeded(o: {
   limitChars?: number;
   signal?: AbortSignal;
   fetchFn?: typeof fetch;
+  /** Chế độ Miễn phí: gọi qua vòng xoay nguồn (Đợt 9) */
+  rotation?: FreeRotation;
 }): Promise<{ history: AgentMessage[]; compacted: boolean }> {
   const limit = o.limitChars ?? compactLimitChars(o.context);
   if (!needsCompaction({ chars: historyChars(o.history), context: o.context, lastInputTokens: o.lastInputTokens, limitChars: limit })) {
@@ -92,7 +95,7 @@ export async function compactIfNeeded(o: {
   // Không còn gì để tóm tắt, hoặc phần cũ chỉ là bản tóm tắt lần trước → thôi (tránh tóm tắt đi tóm tắt lại)
   if (!old.length || isSummaryPair(old)) return { history: o.history, compacted: false };
 
-  const res = await callModelStep({
+  const res = await (o.rotation ? (x: Parameters<typeof callModelStep>[0]) => o.rotation!.call(x) : callModelStep)({
     provider: o.provider,
     key: o.key,
     model: o.model,

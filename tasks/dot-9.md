@@ -36,7 +36,7 @@ Nhãn: **[Đã đọc mã]** = đối chiếu tệp trên `main@8f4a4f7`. **[Ch�
 
 Các điểm của mục 12 giữ nguyên: thứ tự mặc định **Gemini → Groq → OpenRouter `:free` → Cohere**, sửa được trong Cài đặt; chế độ Trả phí không xoay vòng; **không bao giờ tự chuyển từ Miễn phí sang Trả phí**; hết mọi nguồn thì dừng và báo; nguồn tự khai do người dùng chọn chế độ khi khai; Mistral xếp Trả phí; Cohere ghi chú "Key dùng thử: miễn phí, giới hạn tốc độ, Cohere không cho dùng vào mục đích thương mại."
 
-Xếp lại các nguồn "chưa xếp": Cerebras → Trả phí (hết bậc free thường trực 16/7/2026); SambaNova, NVIDIA vẫn bị chặn CORS → ẩn ở cả hai chế độ như hiện nay.
+Xếp lại các nguồn "chưa xếp": Cerebras → Trả phí (hết bậc free thường trực 16/7/2026); SambaNova, NVIDIA vẫn bị chặn CORS → xếp Trả phí, giữ dòng báo "bị chặn" như hiện nay, không bao giờ vào vòng xoay.
 
 ---
 
@@ -46,7 +46,7 @@ Xếp lại các nguồn "chưa xếp": Cerebras → Trả phí (hết bậc fre
 |---|---|
 | Miễn phí | Gemini (Flash, Flash-Lite, Gemma) · Groq · OpenRouter (chỉ `:free`) · Cohere (key dùng thử) |
 | Trả phí | Anthropic · OpenRouter (model trả phí) · OpenRouter·Claude · DeepSeek (3 kênh) · MiniMax · Kimi · OpenAI · Mistral · Cerebras · Gemini, Groq, Cohere khi key đã bật thanh toán (người dùng tự chọn) |
-| Ẩn | SambaNova, NVIDIA (chặn CORS) |
+| Trả phí, bị chặn | SambaNova, NVIDIA (chặn CORS, hiện kèm lý do như bản cũ) |
 | Nguồn tự khai | Người dùng chọn chế độ khi khai |
 
 ---
@@ -95,3 +95,48 @@ Xếp lại các nguồn "chưa xếp": Cerebras → Trả phí (hết bậc fre
 ## 7. Việc buộc phải có anh ở máy
 
 Không có: các key cần dùng đã lưu sẵn trong add-in. Bài thử Trả phí tốn một ít tín dụng key Claude (một bài Word, ước chừng dưới 0,5 USD [Chưa kiểm]).
+
+---
+
+## 8. Kết quả (19/11/2026)
+
+Mã: `src/core/modes.ts` (chế độ, lọc nguồn / model, cảnh báo key, thứ tự xoay vòng), `src/core/agent/rotation.ts` (phân loại lỗi, nghỉ, mốc đặt lại, dựng vòng, `FreeRotation`), nối vào `loop.ts`, `turn.ts`, `compaction.ts`; `llm.ts` thêm cờ `stall` và `foreignToolsAsText` (Gemini); giao diện: thẻ chọn chế độ khi bắt đầu, nút chế độ ở bảng chọn model, thẻ "Chế độ dùng AI" trong Cài đặt (thứ tự xoay vòng ↑↓), cảnh báo key, ô "Nguồn miễn phí" cho nguồn tự khai, dòng "↪ … đổi sang …" trong câu trả lời.
+
+Thử trong Office: Word, Excel, PowerPoint trên desktop ẩn, bản cục bộ (`cdp.mjs serve`), không đụng màn hình của anh.
+
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| T1 | Chế độ Miễn phí chỉ hiện nguồn, model có bậc miễn phí; Trả phí chỉ hiện nguồn, model thu phí | Đạt | Kiểm thử máy (`dot9.test.ts`); trong Word: Miễn phí còn đúng 4 nguồn (OpenRouter, Gemini, Groq, Cohere), OpenRouter chỉ model `:free`, Gemini chỉ Flash / Flash-Lite / Gemma (không còn Pro); Trả phí không còn model `:free` — `che-do-mien-phi.json`, `che-do-tra-phi.json`, `gemini-mien-phi.json`, `bang-chon-*.png` |
+| T2 | Lần mở đầu (nâng từ 4.8.0, máy có key Claude) hiện thẻ chọn chế độ; chọn xong không hiện lại; nguồn đang dùng không bị đổi ngầm | Đạt | `the-chon-che-do.png`, `che-do-tra-phi.json` (chọn Trả phí → vẫn Anthropic · Claude Opus 5.5 như trước); sau sửa M4: Miễn phí (Gemini) → Trả phí về đúng Anthropic · Claude Opus 5.5 — `doi-che-do-ve-tra-phi.json` |
+| T3 | Im lặng, 429 phút, 503, 413, vượt ngữ cảnh → chuyển ngay, lượt làm xong | Đạt | Kiểm thử máy (6 ca); Chạy thật (2 lần, trước và sau sửa theo soát mã — `chay-that-mien-phi-xoay-sau-soat.json`): Gemini 3.8 Flash bị giả lập im lặng (chỉ trong bài thử) → sau 60 giây đổi sang Groq → Groq 413 → đổi sang OpenRouter Nemotron 3 Ultra `:free`, chèn đúng đoạn, Track Changes, 68 giây, Gemini chỉ bị gọi 1 lần — `chay-that-mien-phi-xoay.json` |
+| T4 | Miễn phí không bao giờ gọi nguồn / model ngoài danh sách; cảnh báo R1 khi nhập key | Đạt | Kiểm thử máy (vòng chỉ dựng từ nguồn miễn phí; hết nguồn → dừng, không gọi Anthropic); `cai-dat-che-do.json` (3 dòng cảnh báo: Gemini, Groq, Cohere) |
+| T5 | 429 theo ngày → bỏ qua đến mốc đặt lại, kể cả sau khi mở lại khung | Đạt (Kiểm thử máy) | `dot9.test.ts`: lưu qua kho cục bộ, vòng mới vẫn bỏ qua, qua mốc thì dùng lại. Chưa gặp 429 theo ngày thật trong phiên |
+| T6 | Đổi nguồn giữa lượt có lệnh gọi công cụ gửi được yêu cầu hợp lệ | Đạt (Kiểm thử máy) | Groq gọi công cụ → Groq 429 → Gemini làm tiếp, lệnh gọi của Groq gửi cho Gemini thành chữ. Chạy thật mới có đổi nguồn ở bước đầu (T3), chưa ép được đổi giữa lượt sang Gemini thật |
+| T7 | Trả phí chạy 1 bài Word bằng key Claude, không xoay | Đạt | Claude Haiku 5.5, 2 lần gọi AI, 4 giây, không có dòng đổi nguồn — `chay-that-tra-phi.json` |
+| T8 | Cohere gọi được công cụ qua `compatibility/v1` | Đạt (có ghi chú) | 2 lần Chạy thật đạt (hội thoại mới, và sau lượt của OpenRouter) — `chay-that-cohere*.json`. Lần đầu Cohere lỗi, vòng xoay chuyển tiếp đúng nhưng chưa rõ lỗi gì (dòng báo khi đó chưa kèm câu lỗi; đã sửa để kèm) |
+| T9 | Kiểm thử cũ xanh, kiểm kiểu sạch, Tự kiểm tra không lùi, không lộ key | Đạt | `npm test` 647/647 (609 cũ + 38 mới), `tsc` sạch; Tự kiểm tra trên bản cục bộ: Word 39/39, Excel 40/40, PowerPoint 25/25 (`tu-kiem-tra-*.json`); rà bằng chứng không thấy key |
+
+Sửa trong lúc thử: (1) vòng xoay bỏ sót nguồn khi đổi hai lần liên tiếp (mốc vòng thử bị dời) — kiểm thử bắt được, đã sửa; (2) mẫu lọc Gemini loại nhầm `gemini-3.8-flash`; (3) nguồn dự phòng không lấy lại model đã đánh dấu ⚠ không gọi công cụ đáng tin; (4) dòng đổi nguồn kèm câu lỗi.
+
+Sau khi thử, nhãn model trả về như cũ (Trả phí · Anthropic · Claude Opus 5.5). Máy anh đã có chế độ "Trả phí" nên sẽ không thấy thẻ chọn chế độ nữa; đổi ở nhãn model hoặc Cài đặt.
+
+Chưa kiểm: `gemini-omni-*-flash` có thật thuộc bậc miễn phí không (đang hiện ở Miễn phí theo mẫu "flash"); mốc đặt lại của Groq (đang dùng 24 giờ).
+
+### Soát mã độc lập (19/11/2026) — đã sửa / để lại
+
+Một lượt soát độc lập (tác tử riêng, chỉ đọc mã): 2 cao · 4 trung bình · 6 thấp.
+
+| # | Phát hiện | Xử lý |
+|---|---|---|
+| H1 | Bật tìm web ở chế độ Miễn phí, xoay sang OpenRouter thì gửi plugin "web" — OpenRouter tính tiền theo kết quả kể cả model `:free` | Đã sửa: vòng xoay không bao giờ bật tìm web cho OpenRouter; kiểm thử |
+| H2 | Nguồn nghỉ 60 giây bị bỏ luôn cả lượt (không vào lại vòng khi hết hạn nghỉ) — trái R7 và ý anh | Đã sửa: tách "nghỉ có hạn" và "bỏ cả lượt"; kiểm thử đồng hồ giả |
+| M1 | Nghỉ tính theo nguồn, mà hạn mức free tính theo model; Groq hết lượt ngày (cửa sổ trượt) bị nghỉ 24 giờ | Đã sửa: khóa nghỉ theo nguồn + model (OpenRouter hết lượt ngày tính chung tài khoản); đọc "try again in …" / "retry in …s" để đặt hạn nghỉ; kiểm thử |
+| M2 | Tải trước danh mục model lúc gửi không có hạn chờ, bấm Dừng không ăn | Đã sửa: tối đa 8 giây, Dừng là thôi; nguồn tải lỗi 10 phút sau mới tải lại |
+| M3 | Ngưỡng tóm tắt hạ theo nguồn nhỏ nhất trong vòng → tóm tắt quá sớm | Đã sửa: theo nguồn đang chọn; nguồn quá nhỏ vòng xoay tự bỏ qua |
+| M4 | Đổi Miễn phí rồi về Trả phí bị kẹt ở Gemini thay vì Claude | Đã sửa: nhớ nguồn theo từng chế độ; Chạy thật đạt |
+| L1 | 429 theo phút của key dùng thử Cohere có thể bị coi là hết lượt tháng | Đã sửa; kiểm thử |
+| L3 | Thiếu gợi ý R9 (chỉ một nguồn) | Đã sửa: dòng nhắc nhập thêm key. Dòng "Đang dùng …": nhãn model + dòng "↪ … đổi sang …" thay thế |
+| L4 | Lỗi dựng vòng xoay làm mất chữ đã gõ | Đã sửa: trả lại chữ và tệp đính kèm |
+| L2 | Đổi sang model không nhận ảnh thì ảnh bị thay bằng ghi chú, khung không báo; dựng vòng chưa ưu tiên model nhận ảnh khi lượt có ảnh | Để lại (ít gặp: nguồn miễn phí chính Gemini nhận ảnh) |
+| L5 | Câu lỗi cuối có thể nêu tên nguồn đang chọn thay vì nguồn hỏng | Để lại (câu "đã thử hết" đã liệt kê từng nguồn) |
+| L6 | Hai khung (Word, Excel) cùng ghi thời gian nghỉ có thể ghi đè nhau | Giảm nhẹ: đọc lại ngay trước khi ghi; để lại phần còn lại (hậu quả: một nguồn bị gọi lại sớm, rồi lại nghỉ) |

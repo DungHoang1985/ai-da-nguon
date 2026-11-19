@@ -3,6 +3,7 @@
  *  và mọi lệnh gọi công cụ đều có kết quả đi kèm — để lượt sau AI biết chính xác mình đã làm gì. */
 import { Provider } from "../providers";
 import { callModelStep } from "./llm";
+import type { FreeRotation } from "./rotation";
 import { AgentEvent, AgentMessage, ExtraTools, HostToolSet, StepResult, ToolCall, ToolSpec, UndoEntry } from "./types";
 
 export const MAX_TOOL_RESULT_CHARS = 30000;
@@ -129,6 +130,8 @@ export interface RunAgentOptions {
   /** Cho kiểm thử: bảng khoảng chờ thử lại và hàm chờ */
   retryDelaysMs?: number[];
   sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
+  /** Chế độ Miễn phí: gọi model qua vòng xoay nguồn (nguồn, key, model, nhận ảnh lấy theo nguồn đang chạy) — Đợt 9 */
+  rotation?: FreeRotation;
 }
 
 /** Ghi chú của add-in trong lịch sử (dừng vì chạm trần, vì lỗi lặp). Đặt ở vai người dùng có cờ fromTool, KHÔNG đặt ở vai trợ lý:
@@ -181,7 +184,14 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
     let partial = "";
     let res: StepResult;
     try {
-      res = await callModelStep({
+      const call = o.rotation
+        ? (x: Parameters<typeof callModelStep>[0]) =>
+            o.rotation!.call(x, (i) => {
+              partial = "";
+              o.onEvent({ type: "switch", ...i });
+            })
+        : callModelStep;
+      res = await call({
         provider: o.provider,
         key: o.key,
         model: o.model,
@@ -338,7 +348,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         const { __images: _drop, ...rest } = result;
         void _drop;
         result = rest;
-        if (o.vision === false) result = { ...result, image_note: "Model đang dùng không nhận ảnh nên ảnh không được gửi: chỉ dùng được phần chữ và số đo bằng mã. Muốn AI tự nhìn ảnh (slide, trang quét), người dùng cần chọn model nhận ảnh. Không được đoán nội dung của ảnh." };
+        if ((o.rotation ? o.rotation.current().vision : o.vision) === false) result = { ...result, image_note: "Model đang dùng không nhận ảnh nên ảnh không được gửi: chỉ dùng được phần chữ và số đo bằng mã. Muốn AI tự nhìn ảnh (slide, trang quét), người dùng cần chọn model nhận ảnh. Không được đoán nội dung của ảnh." };
         else toolImages.push(...imgs);
       }
       o.onEvent({ type: "tool_end", call, result, error });

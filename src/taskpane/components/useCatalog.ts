@@ -4,14 +4,20 @@ import { allProviders, getProvider } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { fetchModels, isStale } from "../../core/models";
 import { describeError, keyProblem } from "../../core/errors";
+import { UsageMode, modelInMode, providerInMode } from "../../core/modes";
 import { CatalogState, applyFailed, applyLoaded, filterModels, pickModel, sendBlockReason, startCatalog } from "../../core/catalog";
 
-export function useCatalog(storage: Storage, o: { agentOn: boolean; toolsOnly: boolean; version: number }) {
+export function useCatalog(storage: Storage, o: { agentOn: boolean; toolsOnly: boolean; version: number; mode?: UsageMode }) {
   const keys = storage.getKeys();
-  const available = allProviders().filter((p) => keys[p.id]);
+  /** Đợt 9: chỉ nguồn có key VÀ thuộc chế độ đang bật (chưa chọn chế độ thì hiện hết như bản cũ) */
+  const inMode = (pid: string) => {
+    const p = getProvider(pid);
+    return !!p && (!o.mode || providerInMode(p, o.mode));
+  };
+  const available = allProviders().filter((p) => keys[p.id] && inMode(p.id));
   const firstPid = (() => {
     const sel = storage.getSelection();
-    return sel.providerId && keys[sel.providerId] ? sel.providerId : available[0]?.id || "";
+    return sel.providerId && keys[sel.providerId] && inMode(sel.providerId) ? sel.providerId : available[0]?.id || "";
   })();
 
   const tokenRef = React.useRef(0);
@@ -51,14 +57,24 @@ export function useCatalog(storage: Storage, o: { agentOn: boolean; toolsOnly: b
   // Mở khung / đổi cài đặt (thêm, xóa key): nạp lại nguồn đang chọn; nguồn mất key thì sang nguồn khác
   React.useEffect(() => {
     const ks = storage.getKeys();
-    const pid = providerId && ks[providerId] ? providerId : allProviders().find((p) => ks[p.id])?.id || "";
-    if (pid !== providerId) setModelIdState(storage.getModelFor(pid));
+    // Đổi chế độ: về nguồn đã chọn lần cuối ở chế độ đó (nếu còn key và còn thuộc chế độ), không thì giữ nguồn đang dùng nếu hợp lệ
+    const sel = storage.getSelection();
+    const back = o.mode ? sel.providerByMode?.[o.mode] : undefined;
+    const ok = (id?: string) => !!id && !!ks[id] && inMode(id);
+    const pid = ok(back) ? back! : ok(providerId) ? providerId : allProviders().find((p) => ks[p.id] && inMode(p.id))?.id || "";
+    if (pid !== providerId) {
+      setModelIdState(storage.getModelFor(pid));
+      if (pid) storage.setSelection({ providerId: pid });
+    }
+    if (pid && o.mode) storage.setSelection({ providerByMode: { ...sel.providerByMode, [o.mode]: pid } });
     if (pid) load(pid, false);
-  }, [o.version]); // eslint-disable-line react-hooks/exhaustive-deps
+    else if (providerId) setCatalog(startCatalog("", undefined, ++tokenRef.current));
+  }, [o.version, o.mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const selectProvider = (pid: string) => {
     if (pid === providerId) return;
-    storage.setSelection({ providerId: pid });
+    const sel = storage.getSelection();
+    storage.setSelection({ providerId: pid, ...(o.mode ? { providerByMode: { ...sel.providerByMode, [o.mode]: pid } } : {}) });
     setModelIdState(storage.getModelFor(pid));
     setSearch("");
     load(pid, false);
@@ -76,17 +92,21 @@ export function useCatalog(storage: Storage, o: { agentOn: boolean; toolsOnly: b
   };
 
   // Danh sách về (hoặc bộ lọc đổi) mà model đang chọn không thuộc nguồn này / bị lọc: chọn model đã nhớ hoặc model gọi được công cụ
-  const eligible = filterModels(catalog.models, { providerId, freeOnly, toolsOnly: o.toolsOnly, agentOn: o.agentOn, search: "" });
+  const eligible = filterModels(catalog.models, { providerId, freeOnly, toolsOnly: o.toolsOnly, agentOn: o.agentOn, search: "", mode: o.mode, provider });
   React.useEffect(() => {
     if (catalog.status !== "ready" || !eligible.length) return;
     if (eligible.some((m) => m.id === modelId)) return;
-    const id = pickModel(eligible, { providerId, remembered: storage.getModelFor(providerId), agentOn: o.agentOn, freeOnly });
+    const id = pickModel(eligible, { providerId, remembered: storage.getModelFor(providerId), agentOn: o.agentOn, freeOnly: o.mode ? o.mode === "free" : freeOnly });
     if (id) selectModel(id);
   }, [catalog.status, catalog.providerId, eligible.map((m) => m.id).join("|")]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const shown = filterModels(catalog.models, { providerId, freeOnly, toolsOnly: o.toolsOnly, agentOn: o.agentOn, search });
+  const shown = filterModels(catalog.models, { providerId, freeOnly, toolsOnly: o.toolsOnly, agentOn: o.agentOn, search, mode: o.mode, provider });
   const model = catalog.models.find((m) => m.id === modelId);
-  const blockReason = sendBlockReason({ provider, catalog, modelId });
+  const blockReason =
+    sendBlockReason({ provider, catalog, modelId }) ||
+    (o.mode && provider && model && !modelInMode(provider, model, o.mode)
+      ? `Model ${model.id} không thuộc chế độ ${o.mode === "free" ? "Miễn phí" : "Trả phí"}: hãy chọn model khác.`
+      : null);
   const note =
     catalog.status === "loading"
       ? "Đang tải danh sách model…"

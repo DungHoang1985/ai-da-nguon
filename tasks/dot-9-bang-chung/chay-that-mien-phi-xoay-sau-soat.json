@@ -1,0 +1,17 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi 🆓 Google Gemini · Gemini 3.8 Flash"
+ },
+ "treo": 1,
+ "daHoi": [
+  "AI muốn: Chèn nội dung (end) — lý do: Thêm đoạn mới vào cuối văn bản theo yêu cầu | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 65,
+ "khung": "AI Đa Nguồn\nv4.8\nExcel — · PowerPoint —\nChèn vào cuối văn bản một đoạn mới với nội dung đúng như sau: Bài thử Đợt 9, chế độ Miễn phí, tự đổi nguồn.\n↪ Google Gemini · gemini-3.8-flash: không phản hồi — đổi sang Groq · openai/gpt-oss-120b.\n \n↪ Groq · openai/gpt-oss-120b: yêu cầu quá lớn so với nguồn này — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free.\n \n✅ Chèn nội dung (end) — lý do: Thêm đoạn mới vào cuối văn bản theo yêu cầu\nĐã chèn đoạn mới vào cuối văn bản.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 27.477 · ra 184 · đọc từ bộ nhớ đệm 26.304\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🆓 Google Gemini · Gemini 3.8 Flash",
+ "doiNguon": [
+  "↪ Google Gemini · gemini-3.8-flash: không phản hồi — đổi sang Groq · openai/gpt-oss-120b.",
+  "↪ Groq · openai/gpt-oss-120b: yêu cầu quá lớn so với nguồn này — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free."
+ ],
+ "lanGoiAI": "2"
+}

@@ -1,0 +1,38 @@
+{
+ "phienBan": "",
+ "theChonCheDo": false,
+ "nhanModel": "Model đang dùng: Anthropic (Claude) Claude Opus 5.5. Bấm để đổi 💳 Anthropic · Claude Opus 5.5",
+ "nguon": [
+  "openrouter",
+  "gemini",
+  "groq",
+  "anthropic",
+  "openrouter-claude",
+  "deepseek-anthropic",
+  "openai",
+  "cerebras",
+  "deepseek",
+  "cohere"
+ ],
+ "nutCheDo": [
+  "🆓 Miễn phí",
+  "💳 Trả phí (đang bật)"
+ ],
+ "model": [
+  "claude-fable-5",
+  "claude-fable-5-1",
+  "claude-fable-5-2",
+  "claude-haiku-4-5-20251001",
+  "claude-haiku-5-5",
+  "claude-opus-4-5-20251101",
+  "claude-opus-4-6",
+  "claude-opus-4-7",
+  "claude-opus-4-8",
+  "claude-opus-5",
+  "claude-opus-5-5",
+  "claude-sonnet-4-5-20250929",
+  "claude-sonnet-4-6",
+  "claude-sonnet-5",
+  "claude-sonnet-5-5"
+ ]
+}

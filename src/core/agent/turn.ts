@@ -4,6 +4,7 @@
 import { Provider } from "../providers";
 import { compactIfNeeded } from "./compaction";
 import { callModelStep } from "./llm";
+import type { FreeRotation } from "./rotation";
 import { STOP_NOTE, runAgent } from "./loop";
 import { buildPlainSystem, buildSystemPrompt, buildTurnMessage } from "./prompt";
 import { AgentEvent, AgentMessage, ExtraTools, FilePart, HostToolSet, ToolCall, UndoEntry, Usage } from "./types";
@@ -80,6 +81,8 @@ export interface TurnOptions {
   fetchFn?: typeof fetch;
   retryDelaysMs?: number[];
   sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
+  /** Chế độ Miễn phí: mọi lần gọi model của lượt (tóm tắt, soát lập luận, tác tử, trò chuyện) đi qua vòng xoay nguồn — Đợt 9 */
+  rotation?: FreeRotation;
 }
 
 export interface TurnResult {
@@ -116,6 +119,7 @@ export const plainHistory = (h: AgentMessage[]): AgentMessage[] =>
     .map((m) => (m.role === "assistant" ? { role: "assistant", content: m.content } : { role: "user", content: m.content })) as AgentMessage[];
 
 export async function runTurn(o: TurnOptions): Promise<TurnResult> {
+  const step = o.rotation ? (x: Parameters<typeof callModelStep>[0]) => o.rotation!.call(x) : callModelStep;
   let history = o.history;
   let compacted = false;
   let usage: Usage = {};
@@ -133,10 +137,12 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
       provider: o.provider,
       key: o.key,
       model: o.model,
+      // Ngưỡng tóm tắt theo nguồn đang chọn; nguồn dự phòng quá nhỏ cho yêu cầu thì vòng xoay tự bỏ qua (soát mã Đợt 9, M3)
       context: o.context,
       lastInputTokens: o.lastInputTokens,
       signal: o.signal,
       fetchFn: o.fetchFn,
+      rotation: o.rotation,
     });
     if (comp.compacted) {
       history = comp.history;
@@ -182,7 +188,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
           } catch {
             /* không lấy được chữ hiện tại: vẫn soát theo yêu cầu và đề xuất */
           }
-          const res = await callModelStep({
+          const res = await step({
             provider: o.provider,
             key: o.key,
             model: o.model,
@@ -240,6 +246,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
         toolTimeoutMs: a.toolTimeoutMs,
         think: o.think,
         review,
+        rotation: o.rotation,
         fetchFn: o.fetchFn,
         retryDelaysMs: o.retryDelaysMs,
         sleep: o.sleep,
@@ -262,7 +269,13 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
   const userMsg = userOf(o.text);
   let partial = "";
   try {
-    const res = await callModelStep({
+    const res = await (o.rotation
+      ? (x: Parameters<typeof callModelStep>[0]) =>
+          o.rotation!.call(x, (i) => {
+            partial = "";
+            o.onEvent({ type: "switch", ...i });
+          })
+      : callModelStep)({
       provider: o.provider,
       key: o.key,
       model: o.model,
