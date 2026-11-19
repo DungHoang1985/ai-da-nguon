@@ -2,7 +2,7 @@
 
 Ngày lập: 19/11/2026. Nhánh: `claude/dot-9` (tách từ `main@8f4a4f7`). Căn cứ: mục 12 của `tasks/ban-giao-phan-phoi-cong-ty-va-che-do-web.md` (anh duyệt khoảng 00:00 ngày 19/11, sửa lúc 00:03 để đưa Cohere vào chế độ Miễn phí) và năm ý anh đưa ra sáng 19/11.
 
-**Trạng thái: ĐÃ DUYỆT bản sửa (19/11/2026), đang làm.** Anh yêu cầu xem xét kỹ nội dung đã duyệt lúc 0 giờ. Lượt rà mã dưới đây thấy 9 chỗ kế hoạch gốc chưa tính đến; kế hoạch và tiêu chí đã sửa theo các chỗ đó. Ba điểm anh chốt ở mục 6.
+**Trạng thái: ĐÃ PHÁT HÀNH bản 4.9.0 (19/11/2026, `main@80e7f86` → `gh-pages@13026d0`).** Anh yêu cầu xem xét kỹ nội dung đã duyệt lúc 0 giờ. Lượt rà mã dưới đây thấy 9 chỗ kế hoạch gốc chưa tính đến; kế hoạch và tiêu chí đã sửa theo các chỗ đó. Ba điểm anh chốt ở mục 6.
 
 Nhãn: **[Đã đọc mã]** = đối chiếu tệp trên `main@8f4a4f7`. **[Chưa kiểm]** = phải kiểm tài liệu chính thức hoặc đo thật khi làm.
 
@@ -140,3 +140,7 @@ Một lượt soát độc lập (tác tử riêng, chỉ đọc mã): 2 cao · 
 | L2 | Đổi sang model không nhận ảnh thì ảnh bị thay bằng ghi chú, khung không báo; dựng vòng chưa ưu tiên model nhận ảnh khi lượt có ảnh | Để lại (ít gặp: nguồn miễn phí chính Gemini nhận ảnh) |
 | L5 | Câu lỗi cuối có thể nêu tên nguồn đang chọn thay vì nguồn hỏng | Để lại (câu "đã thử hết" đã liệt kê từng nguồn) |
 | L6 | Hai khung (Word, Excel) cùng ghi thời gian nghỉ có thể ghi đè nhau | Giảm nhẹ: đọc lại ngay trước khi ghi; để lại phần còn lại (hậu quả: một nguồn bị gọi lại sớm, rồi lại nghỉ) |
+
+### Sau phát hành
+
+Tự kiểm tra trên bản phát hành 4.9.0 (không nạp bản cục bộ, desktop ẩn): Word 39/39, Excel 40/40, PowerPoint 25/25 — `phat-hanh-490-tu-kiem-tra-*.json`.
