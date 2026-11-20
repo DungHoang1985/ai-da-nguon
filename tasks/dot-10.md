@@ -143,4 +143,4 @@ Ghi chú: một lần chạy "sau" của B7 bị bỏ vì quên mở lại Word 
 
 ## 9. Trạng thái
 
-- 20/11: A + B xong, T1–T7 đạt. Phát hành 4.10.0.
+- 20/11: A + B xong, T1–T7 đạt. Đã phát hành 4.10.0 (`main@d9859da`, gh-pages "Bản chạy thật v4.10.0"). Tự kiểm tra trên bản phát hành (không nạp bản cục bộ, desktop ẩn): Word 39/39, Excel 40/40, PowerPoint 25/25 — `phat-hanh-4100-tu-kiem-tra-*.json`.
