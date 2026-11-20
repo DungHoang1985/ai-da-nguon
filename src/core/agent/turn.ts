@@ -8,7 +8,7 @@ import type { FreeRotation } from "./rotation";
 import { STOP_NOTE, runAgent } from "./loop";
 import { buildPlainSystem, buildSystemPrompt, buildTurnMessage } from "./prompt";
 import { AgentEvent, AgentMessage, ExtraTools, FilePart, HostToolSet, ToolCall, UndoEntry, Usage } from "./types";
-import { ToolGroup, groupsNote, requestGroups, usedGroups, visibleSpecs, withLoadTools } from "../toolgroups";
+import { ToolGroup, freeBasePrompt, groupsNote, requestGroups, usedGroups, visibleSpecs, withLoadTools } from "../toolgroups";
 
 export type TurnEvent = AgentEvent | { type: "compacted" };
 
@@ -31,8 +31,10 @@ export interface TurnAgentOptions {
   reviewEdits?: boolean;
   /** Nạp công cụ theo việc (Đợt 10, chỉ chế độ Miễn phí): có thì mỗi bước chỉ gửi công cụ lõi + nhóm chuyên đang bật */
   toolGroups?: ToolGroup[];
-  /** Nhóm bật sẵn theo tệp đính kèm của lượt (vd PDF → "ngoai", .docx → "soat") */
+  /** Nhóm bật sẵn theo tệp đính kèm của lượt (.docx → "soat") */
   groupHints?: string[];
+  /** Tên kỹ năng của lượt (tự chọn + gọi bằng /tên) để bật nhóm công cụ kỹ năng cần; thiếu thì lấy theo autoSkills */
+  groupSkills?: string[];
 }
 
 /** Lời nhắc của lượt soát lập luận. Cố định; không nằm trong hội thoại chính nên không ảnh hưởng lịch sử hay bộ nhớ đệm của nó. */
@@ -177,7 +179,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
     }
     const groups = a.toolGroups?.length ? a.toolGroups : undefined;
     const system = buildSystemPrompt({
-      base: a.tools.systemPrompt(),
+      base: groups ? freeBasePrompt(a.tools.systemPrompt()) : a.tools.systemPrompt(),
       guide: a.guide,
       host: o.host,
       instructions: o.instructions,
@@ -185,7 +187,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
       toolGroups: groups ? groupsNote(groups) : undefined,
     });
     // Nhóm bật theo lượt này; nhóm đã dùng ở các lượt trước và trong lượt được đọc lại từ lịch sử ở mỗi bước
-    const turnGroups = groups ? requestGroups(groups, { text: o.request ?? o.text, skills: a.autoSkills?.map((k) => k.name), hints: a.groupHints }) : undefined;
+    const turnGroups = groups ? requestGroups(groups, { text: o.request ?? o.text, skills: a.groupSkills ?? a.autoSkills?.map((k) => k.name), hints: a.groupHints }) : undefined;
     const toolFilter = groups
       ? (all: Parameters<typeof visibleSpecs>[0], msgs: AgentMessage[]) => visibleSpecs(all, groups, new Set([...turnGroups!, ...usedGroups(groups, msgs)]))
       : undefined;

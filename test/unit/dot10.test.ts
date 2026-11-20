@@ -4,7 +4,7 @@ import { getProvider } from "../../src/core/providers";
 import { runTurn } from "../../src/core/agent/turn";
 import { buildSystemPrompt } from "../../src/core/agent/prompt";
 import { AgentMessage, HostToolSet } from "../../src/core/agent/types";
-import { LOAD_TOOLS, WORD_TOOL_GROUPS, fold, groupsNote, loadToolsSpec, requestGroups, usedGroups, visibleSpecs, withLoadTools } from "../../src/core/toolgroups";
+import { LOAD_TOOLS, WORD_SPECIAL_LINE, WORD_TOOL_GROUPS, fold, freeBasePrompt, groupsNote, loadToolsSpec, requestGroups, toolGroupsFor, usedGroups, visibleSpecs, withLoadTools } from "../../src/core/toolgroups";
 import { WORD_SPECS, WORD_SYSTEM_PROMPT } from "../../src/office/wordTools";
 import { createCommonTools } from "../../src/office/common";
 import { BUILTIN_SKILLS, CORE_GUIDES } from "../../src/core/skillpack";
@@ -90,9 +90,9 @@ describe("Đợt 10 — nhóm công cụ Word", () => {
     assert.deepStrictEqual(req("Tóm tắt nghĩa vụ của bên B"), []);
   });
   it("Kỹ năng tự chọn và tệp đính kèm kéo theo nhóm", () => {
-    assert.deepStrictEqual(req("làm giúp", { skills: ["dien-mau"] }), ["dien_mau"]);
+    assert.deepStrictEqual(req("làm giúp", { skills: ["dien-mau"] }), ["dien_mau", "ngoai"]);
     assert.deepStrictEqual(req("làm giúp", { skills: ["xu-ly-nhan-xet"] }), ["nhan_xet_sua_doi"]);
-    assert.deepStrictEqual(req("đọc tệp này", { hints: ["ngoai"] }), ["ngoai"]);
+    assert.deepStrictEqual(req("đọc tệp này", { hints: ["soat"] }), ["soat"]);
   });
   it("Nhóm đã dùng trong lịch sử giữ lại: load_tools, gọi thẳng công cụ của nhóm, use_skill", () => {
     const h: AgentMessage[] = [
@@ -101,7 +101,7 @@ describe("Đợt 10 — nhóm công cụ Word", () => {
       { role: "assistant", content: "", toolCalls: [{ id: "3", name: "use_skill", args: { name: "soan-thao-van-ban-hanh-chinh" } }] },
       { role: "assistant", content: "", toolCalls: [{ id: "4", name: LOAD_TOOLS, args: { group: "khong_co" } }] },
     ] as any;
-    assert.deepStrictEqual(ids(usedGroups(G, h)), ["bang", "dien_mau", "hanh_chinh"]);
+    assert.deepStrictEqual(ids(usedGroups(G, h)), ["bang", "dien_mau", "hanh_chinh", "soat"]);
   });
   it("load_tools: enum là chuỗi (Gemini chỉ nhận enum chuỗi); nhóm sai báo lỗi kèm danh sách; công cụ dùng chung vẫn chạy qua lớp bọc", async () => {
     const spec = loadToolsSpec(G);
@@ -149,7 +149,7 @@ describe("Đợt 10 — chạy một lượt", () => {
     assert.ok(!second.includes("word_create_admin_document"));
     assert.deepStrictEqual(executed, ["word_list_form_fields"]);
     const sys = g.bodies[0].messages[0].content as string;
-    assert.ok(sys.includes("## Nhóm công cụ chuyên") && sys.includes("dien_mau: word_list_form_fields, word_fill_form"));
+    assert.ok(sys.includes("## Nhóm công cụ chuyên") && sys.includes("- dien_mau: điền mẫu"));
     // Lượt sau cùng hội thoại: nhóm đã dùng vẫn được gửi ngay từ bước đầu
     const g2 = fakeGroq([() => oaText("OK")]);
     await runTurn({ provider: getProvider("groq")!, key: "K", model: "m", host: "Word", history: res.history, text: "Cảm ơn", onEvent: () => {}, fetchFn: g2.fetchFn, agent: { tools: fakeWord([]), log: [], toolGroups: G } });
@@ -176,6 +176,56 @@ describe("Đợt 10 — chạy một lượt", () => {
     assert.strictEqual(t.length, WORD_SPECS.length);
     assert.ok(!t.includes(LOAD_TOOLS));
     assert.ok(!String(g.bodies[0].messages[0].content).includes("Nhóm công cụ chuyên"));
+  });
+});
+
+describe("Đợt 10 — sửa theo soát mã độc lập", () => {
+  const skills = (BUILTIN_SKILLS as any[]).filter((s) => !s.hosts || s.hosts.includes("Word"));
+  const common = createCommonTools({ host: "Word", skills, shareContext: true });
+  const ex = withLoadTools(common, G);
+  it("H1: read_attachment_pages luôn được gửi (quy tắc Đợt 5), kể cả khi không nhóm nào bật", () => {
+    assert.ok(visibleSpecs([...WORD_SPECS, ...ex.specs], G, new Set()).some((t) => t.name === "read_attachment_pages"));
+    assert.ok(!G.some((g) => g.tools.includes("read_attachment_pages")));
+  });
+  it("H2: lời nhắc hệ thống ở chế độ Miễn phí không nêu tên công cụ nào có thể đang ẩn", () => {
+    const sys = buildSystemPrompt({ base: freeBasePrompt(WORD_SYSTEM_PROMPT), guide: CORE_GUIDES.Word, host: "Word", skillCatalog: skillCatalog(skills), toolGroups: groupsNote(G) });
+    for (const t of G.flatMap((g) => g.tools)) assert.ok(!sys.includes(t), `lời nhắc Miễn phí còn nêu ${t}`);
+    assert.ok(WORD_SYSTEM_PROMPT.includes(WORD_SPECIAL_LINE), "dòng chỉ đường Trả phí phải nằm nguyên trong lời nhắc Word để thay được");
+    assert.ok(sys.includes("CHỈ gọi công cụ có trong danh sách"));
+  });
+  it("H3: kỹ năng gọi bằng /tên bật nhóm của kỹ năng (groupSkills)", async () => {
+    const g = fakeGroq([() => oaText("OK")]);
+    await runTurn({ provider: getProvider("groq")!, key: "K", model: "m", host: "Word", history: [], text: "[Người dùng gọi kỹ năng]", request: "/dien-mau", onEvent: () => {}, fetchFn: g.fetchFn, agent: { tools: fakeWord([]), log: [], toolGroups: G, groupSkills: ["dien-mau"] } });
+    assert.ok(sentTools(g.bodies[0]).includes("word_fill_form"));
+  });
+  it("M1: mọi công cụ chuyên mà thân kỹ năng Word dựng sẵn nhắc tới đều thuộc nhóm kỹ năng đó kéo theo", () => {
+    for (const sk of skills) {
+      const named = (sk.body + JSON.stringify(sk.files || {})).match(/\b(word_[a-z_]+|read_other_app|write_other_app)\b/g) || [];
+      for (const t of new Set(named)) {
+        const grp = G.find((x) => x.tools.includes(t));
+        if (grp) assert.ok(grp.skills?.includes(sk.name), `${sk.name} nhắc ${t} nhưng không kéo nhóm ${grp.id}`);
+      }
+    }
+  });
+  it("M2: chữ gõ kiểu tổ hợp (NFD) vẫn khớp từ khóa có dấu", () => {
+    assert.deepStrictEqual(req("Chèn bảng 3 cột".normalize("NFD")), ["bang"]);
+    assert.deepStrictEqual(req("Soạn công văn".normalize("NFD")), ["hanh_chinh"]);
+  });
+  it("M3: không khớp chuỗi con — số điện thoại, có chữ ký, lại sửa", () => {
+    assert.deepStrictEqual(req("Thêm số điện thoại của bên B vào Điều 1"), []);
+    assert.deepStrictEqual(req("Văn bản này có chữ ký chưa?"), []);
+    assert.deepStrictEqual(req("Viết lại sửa cho gọn Điều 2"), []);
+  });
+  it("M4: từ khóa số trang, lề trái, cỡ chữ", () => {
+    assert.ok(req("Đánh số trang ở giữa").includes("hanh_chinh"));
+    assert.deepStrictEqual(req("Chỉnh lề trái 3 cm"), ["hanh_chinh"]);
+    assert.deepStrictEqual(req("Cỡ chữ 14 cho toàn văn"), ["hanh_chinh"]);
+  });
+  it("M5: chỉ chế độ Miễn phí của Word nạp theo việc", () => {
+    assert.strictEqual(toolGroupsFor("free", "Word"), G);
+    assert.strictEqual(toolGroupsFor("paid", "Word"), undefined);
+    assert.strictEqual(toolGroupsFor("free", "Excel"), undefined);
+    assert.strictEqual(toolGroupsFor("free", "PowerPoint"), undefined);
   });
 });
 

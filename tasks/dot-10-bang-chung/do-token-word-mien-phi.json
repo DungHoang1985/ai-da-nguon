@@ -1,20 +1,20 @@
 {
  "host": "Word",
  "mode": "free (nhóm lõi)",
- "tools": 17,
- "system_chars": 8240,
+ "tools": 18,
+ "system_chars": 8029,
  "system_parts_chars": {
   "base": 3281,
   "guide": 536,
   "catalog": 1820,
-  "rules_and_groups": 2603
+  "rules_and_groups": 2392
  },
- "tools_chars": 9895,
- "total_chars": 18135,
+ "tools_chars": 10588,
+ "total_chars": 18617,
  "est_tokens": {
-  "system": 2575,
-  "tools": 3092,
-  "total": 5667
+  "system": 2509,
+  "tools": 3309,
+  "total": 5818
  },
  "per_tool": [
   {
@@ -41,6 +41,11 @@
    "name": "word_read_paragraphs",
    "chars": 793,
    "desc": 407
+  },
+  {
+   "name": "read_attachment_pages",
+   "chars": 693,
+   "desc": 263
   },
   {
    "name": "word_set_paragraph_text",

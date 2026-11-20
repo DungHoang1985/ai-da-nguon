@@ -8,7 +8,7 @@ import { createCommonTools } from "../src/office/common";
 import { buildSystemPrompt } from "../src/core/agent/prompt";
 import { CORE_GUIDES, BUILTIN_SKILLS } from "../src/core/skillpack";
 import { skillCatalog } from "../src/core/skills";
-import { WORD_TOOL_GROUPS, groupsNote, visibleSpecs, withLoadTools } from "../src/core/toolgroups";
+import { WORD_TOOL_GROUPS, freeBasePrompt, groupsNote, visibleSpecs, withLoadTools } from "../src/core/toolgroups";
 
 const host = (process.argv[2] || "Word") as any;
 const asJson = process.argv.includes("--json");
@@ -24,7 +24,7 @@ const parts = {
   guide: CORE_GUIDES[host] || "",
   catalog: skillCatalog(skills),
 };
-const system = buildSystemPrompt({ base: parts.base, guide: parts.guide, host, skillCatalog: parts.catalog, toolGroups: free ? groupsNote(WORD_TOOL_GROUPS) : undefined });
+const system = buildSystemPrompt({ base: free ? freeBasePrompt(parts.base) : parts.base, guide: parts.guide, host, skillCatalog: parts.catalog, toolGroups: free ? groupsNote(WORD_TOOL_GROUPS) : undefined });
 // Dạng gửi Anthropic: { name, description, input_schema }
 const specs = free ? visibleSpecs([...tools.specs, ...extra.specs], WORD_TOOL_GROUPS, new Set()) : [...tools.specs, ...extra.specs];
 const toolJson = (t: any) => JSON.stringify({ name: t.name, description: t.description, input_schema: t.parameters || {} });

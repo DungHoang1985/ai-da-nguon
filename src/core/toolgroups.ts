@@ -17,19 +17,24 @@ export interface ToolGroup {
 
 export const LOAD_TOOLS = "load_tools";
 
+/** Nhóm công cụ theo chế độ và ứng dụng: chỉ chế độ Miễn phí của Word nạp theo việc; Trả phí luôn gửi đủ (giữ bộ nhớ đệm lời nhắc) */
+export function toolGroupsFor(mode: string, host: string): ToolGroup[] | undefined {
+  return mode === "free" && host === "Word" ? WORD_TOOL_GROUPS : undefined;
+}
+
 export const WORD_TOOL_GROUPS: ToolGroup[] = [
   {
     id: "hanh_chinh",
     label: "văn bản hành chính, thể thức trang",
     tools: ["word_create_admin_document", "word_set_page_format", "word_check_page_format"],
-    keywords: ["cong van", "to trinh", "bao cao", "quyet dinh", "thong bao", "giay moi", "bien ban", "ke hoach", "the thuc", "hanh chinh", "le trang", "can le", "kho giay", "kho a4", "phong chu", "co chu"],
+    keywords: ["cong van", "to trinh", "bao cao", "quyet dinh", "thong bao", "giay moi", "bien ban", "ke hoach", "the thuc", "hanh chinh", "le trang", "can le", "kho giay", "kho a4", "so trang", "danh so trang", "phong chu", "lề", "cỡ chữ"],
     skills: ["soan-thao-van-ban-hanh-chinh", "soan-phan-hoi-phap-ly"],
   },
   {
     id: "dien_mau",
     label: "điền mẫu",
     tools: ["word_list_form_fields", "word_fill_form"],
-    keywords: ["dien mau", "dien vao", "dien thong tin", "dien hop dong", "dien to khai", "dien bieu mau", "dien giup", "dien cac", "dien het", "dien day du", "to khai", "bieu mau", "cho trong", "hoan thien mau", "mau co san", "o dien"],
+    keywords: ["dien mau", "dien vao", "dien thong tin", "dien hop dong", "dien to khai", "dien bieu mau", "dien giup", "dien cac", "dien het", "dien day du", "to khai", "bieu mau", "cho trong", "hoan thien mau", "mau co san", "ô điền"],
     skills: ["dien-mau"],
   },
   {
@@ -37,48 +42,72 @@ export const WORD_TOOL_GROUPS: ToolGroup[] = [
     label: "soát nhất quán, so phiên bản, phần ngoài thân văn bản",
     tools: ["word_check_consistency", "word_compare_versions", "word_read_parts"],
     keywords: ["soat", "kiem tra", "ra soat", "nhat quan", "truoc khi ky", "trinh ky", "ban cuoi", "so sanh", "phien ban", "doi chieu", "chu thich", "dau trang", "chan trang", "bookmark", "footnote", "header", "footer", "hop van ban", "loi chinh ta", "danh so"],
-    skills: ["kiem-tra-truoc-ky", "ra-soat-hop-dong"],
+    skills: ["kiem-tra-truoc-ky", "ra-soat-hop-dong", "soan-thao-van-ban-hanh-chinh"],
   },
   {
     id: "nhan_xet_sua_doi",
     label: "nhận xét và sửa đổi theo dõi",
     tools: ["word_list_comments", "word_reply_comment", "word_resolve_comment", "word_list_revisions", "word_review_revision"],
-    keywords: ["nhan xet", "comment", "gop y", "sua doi", "track", "redline", "doi tac", "chap nhan", "tu choi", "theo doi", "ai sua", "da sua gi"],
-    skills: ["xu-ly-nhan-xet", "tom-tat-sua-doi-doi-tac", "kiem-tra-truoc-ky"],
+    keywords: ["nhan xet", "comment", "gop y", "sua doi", "track changes", "redline", "doi tac", "chap nhan", "tu choi", "theo doi", "ai sua", "da sua gi"],
+    skills: ["xu-ly-nhan-xet", "tom-tat-sua-doi-doi-tac", "kiem-tra-truoc-ky", "ra-soat-hop-dong"],
   },
   {
     id: "bang",
     label: "bảng",
     tools: ["word_read_tables", "word_insert_table", "word_fill_table"],
     keywords: ["bảng", "table", "cột", "kẻ bảng"],
+    skills: ["kiem-tra-tuan-thu"],
   },
   {
     id: "ngoai",
-    label: "ứng dụng khác, tệp PDF đính kèm",
-    tools: ["read_other_app", "write_other_app", "read_attachment_pages"],
-    keywords: ["excel", "powerpoint", "slide", "trinh chieu", "bang tinh", "dinh kem", "pdf", "trang so", "ban quet", "ban scan"],
+    label: "ứng dụng khác (Excel, PowerPoint)",
+    tools: ["read_other_app", "write_other_app"],
+    keywords: ["excel", "powerpoint", "slide", "trinh chieu", "bang tinh", "ung dung khac"],
+    skills: ["kiem-tra-tuan-thu", "chuan-bi-hop", "dien-mau"],
   },
 ];
+
+/** Dòng chỉ đường tới công cụ chuyên trong lời nhắc Word (chế độ Trả phí: đủ công cụ, gọi thẳng tên) */
+export const WORD_SPECIAL_LINE =
+  "- CÔNG CỤ CHUYÊN (làm theo mô tả của công cụ): soát trước khi ký, rà lỗi → word_check_consistency; đầu/chân trang, bookmark, trường, ô điền mẫu, hộp văn bản → word_read_parts; soạn văn bản hành chính → MỘT lần word_create_admin_document; lề, khổ giấy → word_check_page_format, word_set_page_format; so với tệp .docx đính kèm → word_compare_versions; điền mẫu → word_list_form_fields rồi MỘT lần word_fill_form.";
+
+/** Chế độ Miễn phí: chỉ đường bằng TÊN NHÓM, không nêu tên công cụ có thể đang ẩn (soát mã Đợt 10, H2: model gọi tên công cụ
+ *  không có trong danh sách gửi đi thì nhà cung cấp có thể từ chối cả yêu cầu) */
+export const WORD_SPECIAL_LINE_FREE =
+  "- CÔNG CỤ CHUYÊN (xem mục Nhóm công cụ chuyên): soát trước khi ký, rà lỗi, so với tệp .docx đính kèm, đầu/chân trang, bookmark, trường, hộp văn bản → nhóm soat; soạn văn bản hành chính (một lần gọi), lề, khổ giấy → nhóm hanh_chinh; điền mẫu → nhóm dien_mau; nhận xét, sửa đổi được theo dõi → nhóm nhan_xet_sua_doi; bảng → nhóm bang; ứng dụng Office khác → nhóm ngoai.";
+
+/** Lời nhắc riêng của Word cho chế độ Miễn phí: thay dòng chỉ đường theo tên công cụ bằng dòng theo tên nhóm */
+export function freeBasePrompt(base: string, groups: ToolGroup[] = WORD_TOOL_GROUPS): string {
+  let out = base.replace(WORD_SPECIAL_LINE, WORD_SPECIAL_LINE_FREE);
+  // Chỗ khác của lời nhắc còn nêu tên công cụ chuyên (vd word_list_revisions ở mục Track Changes): đổi thành tên nhóm
+  for (const g of groups) for (const t of g.tools) out = out.split(t).join(`công cụ nhóm ${g.id}`);
+  return out;
+}
 
 /** Chữ thường, bỏ dấu tiếng Việt, gộp khoảng trắng */
 export function fold(s: string): string {
   return String(s || "")
+    .normalize("NFC")
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
     .replace(/\s+/g, " ");
 }
 
 const isAscii = (s: string) => /^[\x00-\x7f]*$/.test(s);
+const escRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+/** Khớp trọn từ (không khớp chuỗi con: "số điện thoại" không chứa "ô điền", "lại sửa" không chứa "ai sửa") */
+const hasWord = (text: string, kw: string) => new RegExp(`(^|[^\\p{L}\\p{N}])${escRe(kw)}($|[^\\p{L}\\p{N}])`, "u").test(text);
 
-/** Nhóm bật theo lời người dùng của lượt này, kỹ năng tự chọn và gợi ý từ tệp đính kèm (id nhóm) */
+/** Nhóm bật theo lời người dùng của lượt này, kỹ năng (tự chọn hoặc gọi bằng /tên) và gợi ý từ tệp đính kèm (id nhóm) */
 export function requestGroups(groups: ToolGroup[], o: { text: string; skills?: string[]; hints?: string[] }): Set<string> {
-  const raw = ` ${String(o.text || "").toLowerCase().replace(/\s+/g, " ")} `;
-  const folded = ` ${fold(o.text)} `;
+  // NFC: chữ gõ kiểu tổ hợp (dấu tách rời) vẫn khớp từ khóa có dấu
+  const raw = String(o.text || "").normalize("NFC").toLowerCase().replace(/\s+/g, " ");
+  const folded = fold(o.text);
   const on = new Set<string>();
   for (const g of groups) {
-    const hit = g.keywords.some((k) => (isAscii(k) ? folded.includes(k) : raw.includes(k.toLowerCase())));
+    const hit = g.keywords.some((k) => (isAscii(k) ? hasWord(folded, k) : hasWord(raw, k.normalize("NFC").toLowerCase())));
     if (hit || g.skills?.some((s) => o.skills?.includes(s)) || o.hints?.includes(g.id)) on.add(g.id);
   }
   return on;
@@ -128,8 +157,8 @@ export function loadToolsSpec(groups: ToolGroup[]): ToolSpec {
 export function groupsNote(groups: ToolGroup[]): string {
   return [
     "## Nhóm công cụ chuyên",
-    `Để tiết kiệm, chỉ công cụ cơ bản được gửi sẵn. Cần công cụ chuyên mà danh sách công cụ chưa có thì GỌI ${LOAD_TOOLS}(group) rồi dùng ở bước sau (có thể gọi cùng lúc với lệnh đọc). Các nhóm:`,
-    ...groups.map((g) => `- ${g.id}: ${g.tools.join(", ")}`),
+    `Để tiết kiệm, chỉ công cụ cơ bản được gửi sẵn. CHỈ gọi công cụ có trong danh sách công cụ hiện có. Cần công cụ chuyên thì GỌI ${LOAD_TOOLS}(group) trước (có thể gọi cùng lúc với lệnh đọc); công cụ của nhóm có từ bước sau. Các nhóm:`,
+    ...groups.map((g) => `- ${g.id}: ${g.label}`),
   ].join("\n");
 }
 

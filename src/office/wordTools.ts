@@ -25,6 +25,7 @@ import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseName, findClause, o
 import { WORD_REVIEW_SPECS, createWordReviewTools } from "./wordReview";
 import { WORD_ADMIN_SPECS, createWordAdminTools } from "./wordAdmin";
 import { WORD_FORM_SPECS, createWordFormTools } from "./wordForm";
+import { WORD_SPECIAL_LINE } from "../core/toolgroups";
 import {
   ChangeSnap,
   beforeExcerpt,
@@ -2276,10 +2277,6 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
       `Trạng thái hiện tại của văn bản (JSON; headings = mục lục điều khoản cấp cao nhất, clauses = tổng số điều khoản; track_changes là chế độ người dùng đang đặt — sửa đổi của bạn LUÔN được ghi có theo dõi dù chế độ là Off):\n${overviewForPrompt(ov)}`,
   };
 }
-
-/** Đợt 10: cách dùng từng công cụ chuyên nằm trong mô tả của chính công cụ đó; lời nhắc chỉ còn một dòng chỉ đường */
-export const WORD_SPECIAL_LINE =
-  "- CÔNG CỤ CHUYÊN (làm theo mô tả của công cụ): soát trước khi ký, rà lỗi → word_check_consistency; đầu/chân trang, bookmark, trường, ô điền mẫu, hộp văn bản → word_read_parts; soạn văn bản hành chính → MỘT lần word_create_admin_document; lề, khổ giấy → word_check_page_format, word_set_page_format; so với tệp .docx đính kèm → word_compare_versions; điền mẫu → word_list_form_fields rồi MỘT lần word_fill_form.";
 
 /** Lời nhắc hệ thống CỐ ĐỊNH của Word (không chứa trạng thái tài liệu, để bộ nhớ đệm lời nhắc có tác dụng) */
 export const WORD_SYSTEM_PROMPT = [

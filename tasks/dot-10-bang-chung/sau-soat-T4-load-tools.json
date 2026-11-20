@@ -1,0 +1,15 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi 🆓 Google Gemini · Gemini 3.8 Flash"
+ },
+ "treo": 0,
+ "daHoi": [],
+ "daDung": false,
+ "giay": 17,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nDòng chữ lặp lại ở trên cùng và dưới cùng mỗi trang của văn bản này ghi gì?\n↪ Google Gemini · gemini-3.8-flash: máy chủ lỗi hoặc quá tải — đổi sang Groq · openai/gpt-oss-120b.\n \n✅ Đọc đoạn 0–10\n↪ Groq · openai/gpt-oss-120b: hết lượt tạm thời — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free.\n \n✅ Nạp thêm công cụ: soát nhất quán, so phiên bản, phần ngoài thân văn bản\n✅ Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản — 1 đầu và chân trang\nDòng chữ lặp lại ở đầu trang (header):\n“Hợp đồng thuê văn phòng số 12/2026/HĐT-VP”\n \nDòng chữ lặp lại ở chân trang (footer):\n“Bản dự thảo lần 3 ngày 10/11/2026 — Lưu hành nội bộ — Trang 1” (kèm trường tự động chèn số trang).\n1 nhiệm vụ · 4 lần gọi AI · Token: vào 31.156 · ra 654 · đọc từ bộ nhớ đệm 8.768\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\n🆓 Google Gemini · Gemini 3.8 Flash",
+ "doiNguon": [
+  "↪ Google Gemini · gemini-3.8-flash: máy chủ lỗi hoặc quá tải — đổi sang Groq · openai/gpt-oss-120b.",
+  "↪ Groq · openai/gpt-oss-120b: hết lượt tạm thời — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free."
+ ],
+ "lanGoiAI": "4"
+}

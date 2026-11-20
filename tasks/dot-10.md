@@ -115,16 +115,32 @@ Mỗi lần gọi (B5): 19.492 → 15.238 token.
 
 | # | Tiêu chí | Kết quả | Bằng chứng |
 |---|---|---|---|
-| T1 | Phần cố định Word: Trả phí giảm ≥ 25%, Miễn phí nhóm lõi giảm ≥ 50% | **Đạt** — Trả phí 40.922 → 30.049 ký tự (−26,6%); Miễn phí 18.135 (−55,7%) | `do-token-word-moc-490.json`, `do-token-word-tra-phi.json`, `do-token-word-mien-phi.json`; kiểm thử chặn phình lại |
+| T1 | Phần cố định Word: Trả phí giảm ≥ 25%, Miễn phí nhóm lõi giảm ≥ 50% | **Đạt** — Trả phí 40.922 → 30.049 ký tự (−26,6%); Miễn phí 18.135 (−55,7%); sau sửa theo soát mã 18.617 (−54,5%) | `do-token-word-moc-490.json`, `do-token-word-tra-phi.json`, `do-token-word-mien-phi.json`; kiểm thử chặn phình lại |
 | T2 | Token thật mỗi lần gọi (Haiku, bài chèn đoạn) giảm ≥ 20% | **Đạt** — 19.492 → 15.238 (−21,8%) | `truoc-B5-chen.json`, `sau-B5-chen.json` |
 | T3 | 7 bài Haiku làm xong đúng, số lần gọi không tăng quá 1; 2 bài Miễn phí làm xong | **Đạt** — 7/7 xong, số lần gọi bằng hoặc ít hơn; điền mẫu và công văn ở Miễn phí làm xong | bảng trên, `sau-*.json`, `mien-phi-B6-*.json`, `mien-phi-B7-*.json` |
 | T4 | Miễn phí: bài không khớp từ khóa → model gọi `load_tools` rồi làm xong | **Đạt** (Gemini 3.8 Flash) | `mien-phi-T4-load-tools.json` |
 | T5 | Ít nhất một nguồn miễn phí làm xong bài Word ngắn; ghi Groq có hết 413 không | **Đạt** — Groq hết 413 ở bài ngắn (lần gọi đầu chạy được); vẫn bị hạn 8.000 token/phút ở lần gọi thứ hai và vẫn "quá lớn" khi đã nạp nhóm văn bản hành chính → vòng xoay tự đổi nguồn | `mien-phi-T5-groq.json`, `mien-phi-B7-cong-van.json` |
 | T6 | Kiểm thử máy, kiểm kiểu; Tự kiểm tra Word 39/39, Excel 40/40, PowerPoint 25/25 | **Đạt** — 663/663, tsc sạch; Tự kiểm tra Word 39/39, Excel 40/40, PowerPoint 25/25 trên bản 4.10 cục bộ | `tu-kiem-tra-*.json` |
-| T7 | Soát mã độc lập, sửa hết mục cao và trung bình | Đang chạy | `soat-ma-dot-10.md` |
+| T7 | Soát mã độc lập, sửa hết mục cao và trung bình | **Đạt** — 3 cao · 5 trung bình · 6 thấp; sửa hết cao và trung bình (bảng dưới), kiểm thử máy 671/671; Chạy thật lại 2 bài Miễn phí trên bản đã sửa | `soat-ma-dot-10.md`, `sau-soat-T4-load-tools.json`, `sau-soat-T6-sua-doi.json` |
+
+### Soát mã độc lập (20/11/2026) — xử lý
+
+| # | Mức | Phát hiện | Xử lý |
+|---|---|---|---|
+| 1 | Cao | `read_attachment_pages` bị đưa vào nhóm `ngoai`, trái quy tắc Đợt 5 (luôn có trong bộ công cụ) | Đã sửa: về nhóm lõi; kiểm thử H1 |
+| 2 | Cao | Lời nhắc Miễn phí nêu tên công cụ đang ẩn → model gọi thẳng tên, nguồn kiểm tên công cụ (nghi Groq) có thể từ chối cả yêu cầu | Đã sửa: lời nhắc Miễn phí chỉ đường theo **tên nhóm** (`WORD_SPECIAL_LINE_FREE`, mọi tên công cụ chuyên còn sót đổi thành tên nhóm), mục nhóm ghi "CHỈ gọi công cụ có trong danh sách"; kiểm thử H2 quét lời nhắc. Hành vi của Groq khi bị gọi tên công cụ lạ **chưa đo** |
+| 3 | Cao | Kỹ năng gọi bằng `/tên` không bật nhóm của nó | Đã sửa: `groupSkills` (tự chọn + `/tên`); kiểm thử H3 |
+| 4 | TB | Bảng kỹ năng → nhóm thiếu | Đã sửa theo công cụ mà thân từng kỹ năng nêu; kiểm thử M1 chặn lệch về sau |
+| 5 | TB | Chữ gõ tổ hợp (NFD) không khớp từ khóa có dấu | Đã sửa: chuẩn hóa NFC; kiểm thử M2 |
+| 6 | TB | Khớp chuỗi con báo nhầm ("số điện thoại", "có chữ ký", "lại sửa") | Đã sửa: khớp trọn từ; "cỡ chữ" dùng từ khóa có dấu; kiểm thử M3 |
+| 7 | TB | Thiếu từ khóa "số trang", "lề trái" | Đã thêm; kiểm thử M4 |
+| 8 | TB | Điều kiện "chỉ Miễn phí + Word" nằm trong `Chat.tsx`, chưa có kiểm thử | Đã chuyển thành `toolGroupsFor`; kiểm thử M5 |
+| 9–14 | Thấp | Kiểm thử máy giả không kiểm tên công cụ; `load_tools` tốn thêm một lần gọi; đổi chế độ giữa hội thoại còn lệnh `load_tools` trong lịch sử; mô tả `write_other_app`, `EXPECT_DESC` mất vài chữ; thiếu kiểm thử ca biên | Để lại: chi phí một lần gọi là cố ý (Chạy thật T4, T6: 3–4 lần gọi); đổi chế độ chưa đo, ghi ở Vấn đề mở; các câu mất ở mục 12–13 đã có ở lời nhắc hệ thống hoặc trong câu lỗi của công cụ |
+
+Sau sửa: Miễn phí, nhóm lõi 18.617 ký tự (−54,5%; `read_attachment_pages` về lõi); Trả phí giữ 30.049.
 
 Ghi chú: một lần chạy "sau" của B7 bị bỏ vì quên mở lại Word (văn bản còn công văn của lần chạy mốc); đã chạy lại trên văn bản trống. Câu trả lời của AI ở lần chạy hỏng có nhắc tên tài khoản Office của anh; tệp đó đã bị bản chạy lại ghi đè, đã `grep` lại toàn bộ bằng chứng: không còn tên.
 
 ## 9. Trạng thái
 
-- 20/11: A + B xong, kiểm xong T1–T6. Đang chạy soát mã độc lập (T7), sau đó phát hành 4.10.0.
+- 20/11: A + B xong, T1–T7 đạt. Phát hành 4.10.0.
