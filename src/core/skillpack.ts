@@ -22,13 +22,11 @@ export const CORE_GUIDES: Record<string, string> = {
 - Định dạng có điều kiện: độ lớn → thang một màu nhạt đến đậm; có âm/dương hoặc so với mục tiêu → hai màu với điểm giữa trung tính; màu trạng thái luôn kèm chữ.
 - Khi trả lời về số liệu, dẫn địa chỉ ô (vd Sheet1!C12) để người dùng bấm kiểm tra.`,
   Word: `## Chuẩn làm việc với Word (luôn áp dụng)
-- Xem mục lục điều khoản trước (word_get_outline); hỏi về một điều thì đọc đúng điều đó (word_read_clause) hoặc tìm theo nội dung (word_find). Việc rà soát toàn diện thì đọc đủ văn bản trước khi kết luận, vì các điều khoản tác động lẫn nhau.
-- Sửa tối thiểu, đúng chỗ: đổi một cụm từ bằng word_replace_text kèm paragraph_index; viết lại câu bằng word_set_paragraph_text (kèm expect, công cụ chỉ đổi đúng các từ khác đi); thêm điều khoản bằng word_insert_clause để nối đúng số và kiểu của điều bên cạnh. Giữ nguyên kiểu chữ, đánh số, định dạng.
-- Mọi sửa đổi ghi bằng Theo dõi thay đổi để người dùng duyệt; góp ý thì dùng nhận xét neo đúng cụm chữ.
-- Không tự bịa số hiệu, điều, khoản văn bản pháp luật; căn cứ nào không có trong tài liệu/tệp đính kèm thì ghi "cần đối chiếu văn bản gốc".
+- Rà soát toàn diện thì đọc đủ văn bản trước khi kết luận, vì các điều khoản tác động lẫn nhau.
+- Sửa tối thiểu, đúng chỗ, giữ nguyên kiểu chữ, đánh số, định dạng; góp ý thì dùng nhận xét neo đúng cụm chữ.
+- Căn cứ pháp lý không có trong tài liệu hoặc tệp đính kèm thì ghi "cần đối chiếu văn bản gốc".
 - Kiểm tra nhất quán: thuật ngữ định nghĩa, tham chiếu chéo, đánh số, ngày tháng, số tiền bằng số và bằng chữ, tên các bên.
-- Soạn công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản: dựng bằng word_create_admin_document (đúng thể thức trong một lần gọi), theo kỹ năng soan-thao-van-ban-hanh-chinh.
-- Khi nói tới một điều khoản, dẫn số điều kèm số đoạn, ví dụ Điều 5.3 [¶57], để người dùng bấm tới.`,
+- Soạn văn bản hành chính theo kỹ năng soan-thao-van-ban-hanh-chinh.`,
   PowerPoint: `## Chuẩn làm việc với PowerPoint (luôn áp dụng)
 - Mỗi slide một thông điệp; bài dài theo cấu trúc kim tự tháp: kết luận chính → tóm tắt → các phần → kết luận/bước tiếp theo.
 - Dùng bố cục (layout) và màu, phông của mẫu đang mở; không tự thêm thanh màu trang trí, đường gạch dưới tiêu đề.
@@ -49,6 +47,7 @@ export interface BuiltinSkill extends Skill {
 export const BUILTIN_SKILLS: BuiltinSkill[] = [
   {
     name: "ra-soat-hop-dong",
+    brief: "Rà soát hợp đồng theo điều khoản, phân loại Xanh/Vàng/Đỏ, ghi nhận xét, đề xuất câu chữ. Dùng khi rà soát, góp ý, đánh giá hợp đồng.",
     description:
       "Rà soát hợp đồng, phụ lục, thỏa thuận trong Word theo từng điều khoản: xác định loại hợp đồng và bên mình, phân loại sai lệch Xanh/Vàng/Đỏ, ghi nhận xét đúng chỗ, đề xuất câu chữ sửa (Track Changes khi được yêu cầu). Dùng khi người dùng muốn rà soát, góp ý, đánh giá một hợp đồng.",
     hosts: ["Word"],
@@ -71,6 +70,7 @@ export const BUILTIN_SKILLS: BuiltinSkill[] = [
   },
   {
     name: "sang-loc-nda",
+    brief: "Sàng lọc nhanh NDA, xếp loại Xanh/Vàng/Đỏ. Dùng khi có thỏa thuận bảo mật cần xem nhanh.",
     description:
       "Sàng lọc nhanh thỏa thuận bảo mật (NDA) trong Word theo danh mục kiểm tra và xếp loại Xanh (ký được)/Vàng (cần người duyệt)/Đỏ (cần rà soát đầy đủ). Dùng khi người dùng gửi NDA, thỏa thuận bảo mật cần xem nhanh.",
     hosts: ["Word"],
@@ -92,6 +92,7 @@ Xếp loại: **Xanh** khi mọi mục đạt → ký theo phân quyền; **Vàn
   },
   {
     name: "danh-gia-rui-ro-phap-ly",
+    brief: "Chấm rủi ro pháp lý theo ma trận mức độ × khả năng, đề xuất biện pháp. Dùng khi đánh giá, lập danh mục rủi ro.",
     description:
       "Đánh giá rủi ro pháp lý theo ma trận Mức độ nghiêm trọng × Khả năng xảy ra (1–5), xếp mức Thấp/Trung bình/Cao/Nghiêm trọng, đề xuất biện pháp; lập bảng theo dõi rủi ro trong Excel hoặc bản ghi nhớ trong Word. Dùng khi người dùng muốn đánh giá, chấm điểm, lập danh mục rủi ro của hợp đồng, dự án, thủ tục.",
     hosts: ["Word", "Excel"],
@@ -113,6 +114,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "xu-ly-nhan-xet",
+    brief: "Xử lý từng nhận xét (comment): sửa đúng chỗ, trả lời, đánh dấu xong. Dùng khi được nhờ xử lý, làm theo nhận xét, góp ý.",
     description:
       "Lần lượt xử lý các nhận xét (comment) trong Word: đọc đoạn được neo, sửa đúng chỗ bằng Track Changes, trả lời nhận xét nêu đã sửa gì, đánh dấu đã xử lý khi được yêu cầu. Dùng khi người dùng bảo xử lý, giải quyết, làm theo các nhận xét/góp ý trong văn bản.",
     hosts: ["Word"],
@@ -131,6 +133,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "tom-tat-sua-doi-doi-tac",
+    brief: "Tóm tắt redline của đối tác theo điều khoản, đề xuất chấp nhận/từ chối. Dùng khi hỏi đối tác đã sửa gì.",
     description:
       "Đọc và tóm tắt các sửa đổi được theo dõi (redline) mà đối tác gửi lại trong Word: nhóm theo điều khoản, đánh giá mức độ, đề xuất chấp nhận/từ chối/đàm phán; chấp nhận hoặc từ chối từng sửa đổi khi được yêu cầu. Dùng khi người dùng nhận bản sửa của đối tác, hỏi đối tác đã sửa gì.",
     hosts: ["Word"],
@@ -259,6 +262,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "kiem-tra-tuan-thu",
+    brief: "Kiểm tra một việc định làm có đúng quy định, cần phê duyệt gì. Dùng khi hỏi 'có đúng quy định không', 'cần xin phép gì'.",
     description:
       "Kiểm tra tuân thủ một việc định làm (phương án, chương trình bán hàng, hồ sơ, văn bản, quy trình) trước khi triển khai: quy định nào áp dụng, yêu cầu đã đáp ứng chưa, rủi ro, phê duyệt cần có, kết luận Làm được / Làm được có điều kiện / Cần xem xét thêm. Dùng khi người dùng hỏi 'có đúng quy định không', 'cần xin phép gì', 'điều kiện pháp lý để…', 'kiểm tra tuân thủ'.",
     hosts: ["Word", "Excel"],
@@ -282,6 +286,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "kiem-tra-truoc-ky",
+    brief: "Soát văn bản trước khi trình ký, kết luận ĐẠT / CÓ VẤN ĐỀ. Dùng khi nói 'trước khi ký', 'trình ký', 'bản cuối'.",
     description:
       "Soát hợp đồng hoặc văn bản trong Word trước khi trình ký: còn sửa đổi chưa duyệt, nhận xét chưa xử lý, phụ lục được nhắc tới có đủ không, tên pháp nhân, người ký, chức danh, ủy quyền, ngày tháng, số tiền bằng số và bằng chữ, đánh số và tham chiếu, chữ mẫu còn sót. Kết luận ĐẠT hoặc CÓ VẤN ĐỀ kèm danh sách cần sửa. Dùng khi người dùng nói 'trước khi ký', 'trình ký', 'chốt bản ký', 'kiểm tra bản cuối'.",
     hosts: ["Word"],
@@ -306,6 +311,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "chuan-bi-hop",
+    brief: "Tổng hợp tài liệu chuẩn bị họp, đàm phán có nội dung pháp lý. Dùng khi nói 'chuẩn bị họp', 'tài liệu họp', 'mai đi đàm phán'.",
     description:
       "Chuẩn bị tài liệu cho cuộc họp có nội dung pháp lý (đàm phán hợp đồng, làm việc với cơ quan nhà nước, họp ban dự án, họp đối tác): tổng hợp từ văn bản đang mở, tệp đính kèm và ứng dụng khác thành bản chuẩn bị gồm bối cảnh, vấn đề còn mở, lưu ý pháp lý, ý chính cần nói, câu hỏi cần đặt, quyết định cần có, giới hạn không nhượng bộ, thông tin còn thiếu. Dùng khi người dùng nói 'chuẩn bị họp', 'tài liệu họp', 'briefing', 'mai đi đàm phán'.",
     hosts: ["Word", "PowerPoint"],
@@ -328,6 +334,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "soan-phan-hoi-phap-ly",
+    brief: "Soạn văn bản trả lời yêu cầu, câu hỏi, khiếu nại pháp lý; nhận diện ca phải chuyển cấp trên. Dùng khi nói 'soạn văn bản trả lời', 'phản hồi khách hàng'.",
     description:
       "Soạn văn bản trả lời một yêu cầu hoặc câu hỏi pháp lý thường gặp (khách hàng hỏi về pháp lý, tiến độ dự án; đối tác đề nghị ký NDA; yêu cầu cung cấp thông tin hoặc dữ liệu cá nhân; văn bản đôn đốc; khiếu nại), có bước kiểm tra các dấu hiệu không được trả lời theo mẫu mà phải chuyển cấp trên hoặc luật sư. Dùng khi người dùng nói 'soạn văn bản trả lời', 'trả lời công văn', 'phản hồi khách hàng', 'trả lời khiếu nại'.",
     hosts: ["Word"],
@@ -345,6 +352,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "soan-thao-van-ban-hanh-chinh",
+    brief: "Soạn, sửa, soát thể thức văn bản hành chính (công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch). Dùng khi nói 'soạn công văn', 'tờ trình', 'đúng thể thức chưa'.",
     description:
       "Soạn, sửa và soát thể thức văn bản hành chính trong Word: công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch. Dựng trọn văn bản đúng thể thức (quốc hiệu, tiêu ngữ, tên cơ quan, số và ký hiệu, địa danh ngày tháng, trích yếu, kính gửi, phần ký, nơi nhận, lề, phông, cỡ chữ) và kiểm lại. Dùng khi người dùng nói 'soạn công văn', 'soạn tờ trình', 'viết báo cáo gửi…', 'soạn quyết định', 'thông báo', 'giấy mời', 'biên bản', 'kiểm tra thể thức', 'đúng thể thức chưa'.",
     hosts: ["Word"],
@@ -425,6 +433,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "dien-mau",
+    brief: "Điền thông tin vào mẫu có sẵn (ô điền mẫu, chỗ trống '……', '[●]', ô bảng trống), thiếu thì để trống. Dùng khi nói 'điền mẫu', 'điền tờ khai', 'điền hợp đồng'.",
     description:
       "Điền thông tin vào mẫu Word có sẵn (hợp đồng mẫu, tờ khai, giấy đề nghị, biểu mẫu thủ tục): ô điền mẫu, chỗ trống '……', '____', '[●]', ô bảng trống. Lấy thông tin từ câu của người dùng, tệp đính kèm, bảng Excel đang mở; thiếu thì để trống và kê ra, không bịa. Dùng khi người dùng nói 'điền mẫu', 'điền vào mẫu', 'điền thông tin', 'điền hợp đồng', 'điền tờ khai', 'điền biểu mẫu', 'hoàn thiện mẫu'.",
     hosts: ["Word"],

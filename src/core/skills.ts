@@ -16,6 +16,8 @@ export interface Skill {
   origin?: string;
   /** Giới hạn ứng dụng (Excel/Word/PowerPoint); rỗng = mọi ứng dụng */
   hosts?: string[];
+  /** Mô tả ngắn cho danh mục kỹ năng trong lời nhắc (Đợt 10: kỹ năng dựng sẵn; thiếu thì dùng description) */
+  brief?: string;
   enabled?: boolean;
 }
 
@@ -239,8 +241,8 @@ export function skillCatalog(skills: Skill[]): string {
   if (!skills.length) return "";
   return [
     "## Kỹ năng (Skills)",
-    "Khi yêu cầu khớp mô tả của một kỹ năng, GỌI use_skill với tên kỹ năng để đọc hướng dẫn đầy đủ trước khi làm, rồi làm đúng theo đó. Tệp tham chiếu của kỹ năng đọc bằng use_skill(name, file).",
-    ...skills.slice(0, 40).map((s) => `- ${s.name}: ${s.description.slice(0, 300)}`),
+    "Yêu cầu khớp một kỹ năng thì GỌI use_skill(name) đọc hướng dẫn đầy đủ trước khi làm, rồi làm đúng theo đó; tệp tham chiếu: use_skill(name, file).",
+    ...skills.slice(0, 40).map((s) => `- ${s.name}: ${(s.brief || s.description).slice(0, 300)}`),
   ].join("\n");
 }
 

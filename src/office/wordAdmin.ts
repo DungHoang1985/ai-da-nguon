@@ -20,7 +20,7 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
   {
     name: "word_create_admin_document",
     description:
-      "Build a complete Vietnamese administrative document (công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch) with the correct formal layout in one call: national title and motto, issuing organisation, number and symbol, place and date, document title and subject, 'Kính gửi', body, signature block and 'Nơi nhận', all in Times New Roman with the right sizes, alignment and rule lines. On an empty document it also sets A4 paper, standard margins and the page number. ALWAYS use this tool to draft such a document instead of inserting the parts by hand. Leave unknown facts (number, date, signer) out: the tool leaves blanks and reports them. Do not invent them.",
+      "Build a complete Vietnamese administrative document (công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch) in the correct formal layout in ONE call: national motto, organisation, number/symbol, place/date, title, subject, Kính gửi, body, signature block, Nơi nhận. On an empty document also sets A4, margins, page number. ALWAYS use it instead of inserting parts by hand. Omit unknown facts (number, date, signer): blanks are left and reported; never invent.",
     parameters: {
       type: "object",
       properties: {
@@ -28,78 +28,78 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
           type: "string",
           enum: DOC_TYPES as unknown as string[],
           description:
-            "cong_van has no title line and shows the subject as 'V/v …' under the number.",
+            "cong_van: no title line, subject shown as 'V/v …'.",
         },
         org: {
           type: "string",
           description:
-            "The organisation or unit that issues and signs this document (printed in bold), full official name.",
+            "Issuing organisation, full official name.",
         },
         parent_org: {
           type: "string",
           description:
-            "Organisation directly ABOVE the issuing one, printed on the line above it (e.g. the company when one of its departments issues the document). Omit if none.",
+            "Organisation directly above the issuing one, if any.",
         },
         number: {
           type: "string",
-          description: "Document number. Normally omit: the records clerk assigns it.",
+          description: "Normally omit.",
         },
         symbol: {
           type: "string",
           description:
-            "Symbol after the number, e.g. 'TTr-ABC' (type abbreviation + organisation) or 'ABC-PC' for a công văn.",
+            "e.g. 'TTr-ABC', 'ABC-PC'.",
         },
         place: { type: "string", description: "Place name, e.g. 'Hà Nội'." },
         date: {
           type: "string",
-          description: "e.g. 'ngày 05 tháng 01 năm 2026'. Omit to leave blanks.",
+          description: "e.g. 'ngày 05 tháng 01 năm 2026'. Omit = blanks.",
         },
         title: {
           type: "string",
           description:
-            "Document title in capitals; only needed for doc_type 'khac' or to override the default.",
+            "Only for doc_type 'khac' or to override.",
         },
         subject: {
           type: "string",
-          description: "Subject line (trích yếu). For công văn: the text after 'V/v'.",
+          description: "Trích yếu (công văn: text after 'V/v').",
         },
         to: { type: "array", items: { type: "string" }, description: "'Kính gửi' addressees." },
         body: {
           type: "string",
           description:
-            "Body text, one paragraph per line. Line markers: '# ' centred bold heading (e.g. '# QUYẾT ĐỊNH:'), '## ' bold heading (e.g. '## Điều 1. …', '## I. …', '## 1. …'), a whole line wrapped in _underscores_ is italic (legal bases 'Căn cứ …;'). No other markdown.",
+            "One paragraph per line. '# ' centred bold ('# QUYẾT ĐỊNH:'), '## ' bold heading ('## Điều 1. …', '## I. …'), a whole line in _underscores_ italic ('Căn cứ …;'). No other markdown.",
         },
         signer_authority: {
           type: "string",
           description:
-            "Signing authority line if any, e.g. 'TM. HỘI ĐỒNG QUẢN TRỊ', 'KT. GIÁM ĐỐC'.",
+            "e.g. 'TM. HỘI ĐỒNG QUẢN TRỊ', 'KT. GIÁM ĐỐC'.",
         },
         signer_title: {
           type: "string",
-          description: "Signer's position, e.g. 'GIÁM ĐỐC', 'PHÓ GIÁM ĐỐC'.",
+          description: "e.g. 'GIÁM ĐỐC'.",
         },
-        signer_name: { type: "string", description: "Signer's full name without academic titles." },
+        signer_name: { type: "string" },
         left_signer_title: {
           type: "string",
-          description: "Second signer on the left (biên bản: 'THƯ KÝ').",
+          description: "Left signer (biên bản: 'THƯ KÝ').",
         },
         left_signer_name: { type: "string" },
         recipients: {
           type: "array",
           items: { type: "string" },
-          description: "'Nơi nhận' lines. 'Như trên' and 'Lưu: VT, …' are added when missing.",
+          description: "Nơi nhận lines ('Như trên', 'Lưu: VT' auto-added).",
         },
         font_size: { type: "number", enum: [13, 14], description: "Body size (default 14)." },
         page_setup: {
           type: "boolean",
           description:
-            "Set A4, margins and page number for the whole document. Default: true on an empty document, false otherwise.",
+            "Set A4, margins, page number. Default: true only on an empty document.",
         },
         position: { type: "string", enum: ["end", "after_paragraph"], description: "Default end." },
         paragraph_index: { type: "number" },
         expect: {
           type: "string",
-          description: "With paragraph_index: first ~30 characters of that paragraph.",
+          description: "First ~30 characters of that paragraph.",
         },
       },
       required: ["doc_type", "org", "body"],
@@ -109,7 +109,7 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
   {
     name: "word_set_page_format",
     description:
-      "Set paper size and margins for the whole document (not a tracked change; undoable from the pane). Default: the Vietnamese administrative standard — A4 portrait, top 20 mm, bottom 20 mm, left 30 mm, right 20 mm. Use after word_check_page_format reports deviating margins or paper. page_number=true also puts the page number at the top centre, hidden on page 1.",
+      "Set paper and margins for the whole document (not tracked; undoable). Default: administrative standard, A4 portrait, top 20, bottom 20, left 30, right 20 mm. Use after word_check_page_format reports deviations.",
     parameters: {
       type: "object",
       properties: {
@@ -117,10 +117,10 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
         bottom_mm: { type: "number" },
         left_mm: { type: "number" },
         right_mm: { type: "number" },
-        a4: { type: "boolean", description: "Set A4 portrait (default true)." },
+        a4: { type: "boolean", description: "A4 portrait. Default true." },
         page_number: {
           type: "boolean",
-          description: "Add the page number at the top centre, hidden on page 1 (default false).",
+          description: "Page number at top centre, hidden on page 1. Default false.",
         },
       },
     },

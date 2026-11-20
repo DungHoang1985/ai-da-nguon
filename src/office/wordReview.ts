@@ -33,14 +33,14 @@ export const WORD_REVIEW_SPECS: ToolSpec[] = [
   {
     name: "word_check_consistency",
     description:
-      "Run the built-in consistency check on the whole document (done by code, instant, no reading needed): numbering gaps or duplicates; cross-references to clauses that do not exist; defined terms written inconsistently or capitalised terms that are never defined; a party called by several names; blanks left unfilled; amounts where the figure and the words disagree. Returns a list of points to look at, each with paragraph index, clause number and an excerpt. Use it FIRST when asked to check, proofread or review a contract before signing; then read only the flagged places. The checks are pattern-based: confirm each point before reporting it as an error.",
+      "Instant code check of the whole document: numbering gaps/duplicates, references to missing clauses, inconsistent or undefined terms, a party with several names, unfilled blanks, figure vs words mismatches. Returns points with paragraph index, clause number, excerpt. Use it FIRST to check or proofread before signing, then read only the flagged places to confirm (pattern-based). Report every point (count by total) with clause and paragraph numbers.",
     parameters: {
       type: "object",
       properties: {
         checks: {
           type: "array",
           items: { type: "string", enum: ALL_CHECKS },
-          description: "Which checks to run. Default: all (numbering, reference, term, party, blank, amount).",
+          description: "Default: all.",
         },
         start: { type: "number", description: "Skip the first N points (paging, from next_start). Default 0." },
       },
@@ -49,41 +49,41 @@ export const WORD_REVIEW_SPECS: ToolSpec[] = [
   {
     name: "word_read_parts",
     description:
-      "Read the parts of the document that are NOT in the body paragraphs: footnotes and endnotes (with the paragraph and clause they belong to), headers and footers, bookmarks, fields such as cross-references (code and current result), fill-in fields (content controls, with empty ones flagged) and text boxes. Call it when the user asks about any of these, and when reviewing a whole document.",
+      "Read what is NOT in body paragraphs: footnotes/endnotes (with their paragraph and clause), headers/footers, bookmarks, fields such as cross-references (code and result), content controls (empty ones flagged), text boxes. Use when the user asks about these and when reviewing a whole document.",
     parameters: {
       type: "object",
       properties: {
         parts: { type: "array", items: { type: "string", enum: PARTS as unknown as string[] }, description: "Which parts to read. Default: all." },
-        include_hidden_bookmarks: { type: "boolean", description: "Also list hidden bookmarks (names starting with _, created by Word for cross-references). Default false." },
-        start: { type: "number", description: "Skip the first N items of each requested list (paging: when a list comes back with truncated=true, call again with parts set to that one part and start=next_start)." },
+        include_hidden_bookmarks: { type: "boolean", description: "Also list hidden bookmarks (names starting with _). Default false." },
+        start: { type: "number", description: "Paging: when a list is truncated, call again with that one part and start=next_start." },
       },
     },
   },
   {
     name: "word_check_page_format",
     description:
-      "Check the page layout against a formatting standard: paper size and orientation, the four margins, fonts and font sizes. Default standard: Vietnamese administrative documents such as official letters (công văn) and submissions (tờ trình): A4 portrait, top and bottom margins 20–25 mm, left 30–35 mm, right 15–20 mm, Times New Roman, body size 13–14. Pass your own numbers to check against another standard. Returns the measured values and exactly which items deviate.",
+      "Check paper, orientation, margins, fonts and sizes against a standard. Default: Vietnamese administrative documents (A4 portrait, top/bottom 20–25 mm, left 30–35 mm, right 15–20 mm, Times New Roman 13–14). Pass numbers to use another standard. Returns measured values and the deviating items.",
     parameters: {
       type: "object",
       properties: {
-        top_mm: { type: "number", description: "Required top margin in mm (overrides the default standard)." },
+        top_mm: { type: "number" },
         bottom_mm: { type: "number" },
         left_mm: { type: "number" },
         right_mm: { type: "number" },
-        font: { type: "string", description: "Required font name (overrides the default standard)." },
-        font_size: { type: "number", description: "Required body font size in points (overrides the default standard)." },
+        font: { type: "string" },
+        font_size: { type: "number", description: "Body size in points." },
       },
     },
   },
   {
     name: "word_compare_versions",
     description:
-      "Compare the open document with another version of it: a .docx file the user attached in this chat. Returns every difference grouped by clause number (changed paragraphs with the exact words that differ, paragraphs only in the open document, paragraphs only in the other version, and clauses whose number shifted). The open document is NOT modified. Set open_redline=true only when the user wants to see Word's own redline: it opens the comparison in a NEW Word window and leaves the open document untouched.",
+      "Compare the open document with another version (a .docx attached in this chat). Returns every difference by clause: changed paragraphs with the differing words, paragraphs only in one version, renumbered clauses. Does NOT modify the open document. Summarise every difference by clause (count by differences). open_redline=true only when the user wants Word's own redline (opens in a NEW window).",
     parameters: {
       type: "object",
       properties: {
-        file: { type: "string", description: "Name of the attached .docx to compare with. Default: the most recently attached .docx." },
-        open_redline: { type: "boolean", description: "Also open Word's redline of the two versions in a new window. Default false." },
+        file: { type: "string", description: "Attached .docx name. Default: the latest." },
+        open_redline: { type: "boolean", description: "Default false." },
         start: { type: "number", description: "Skip the first N differences (paging, from next_start). Default 0." },
       },
     },

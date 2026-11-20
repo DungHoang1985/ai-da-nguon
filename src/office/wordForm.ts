@@ -34,18 +34,18 @@ export const WORD_FORM_SPECS: ToolSpec[] = [
   {
     name: "word_list_form_fields",
     description:
-      "List every spot to fill in a form/template, each with an id and the label written before it: content controls (id c<n>; type text/checkbox/dropdown with its allowed items/combobox/date with its format; locked ones are marked and cannot be filled), typed blanks inside paragraphs such as '……', '____', '[●]', 'ngày   tháng   năm' (id b<paragraph>.<k>; 'blank' is the exact blank text that will be replaced), and empty table cells with a label cell on their left (id t<table>.<row>.<col>). Call this first, then fill everything with ONE word_fill_form call.",
+      "List every spot to fill in a form/template with an id and its label: content controls (c<n>; text/checkbox/dropdown with items/combobox/date with format; locked ones cannot be filled), typed blanks '……', '____', '[●]', 'ngày   tháng   năm' (b<paragraph>.<k>; 'blank' = exact text replaced), empty table cells with a label on the left (t<table>.<row>.<col>). Call once, then fill everything with ONE word_fill_form call.",
     parameters: {
       type: "object",
       properties: {
-        start: { type: "integer", description: "Continue from this position when the previous result had next_start." },
+        start: { type: "integer", description: "From next_start." },
       },
     },
   },
   {
     name: "word_fill_form",
     description:
-      "Fill many spots listed by word_list_form_fields in ONE call (tracked changes; one Undo for the whole call). fields: [{id, value, label}] — label is REQUIRED and must be the label you got from the list for that id (the tool refuses a spot whose label does not match, so values never land in the wrong place). Checkbox: value 'true' or 'false'. Dropdown: exactly one of its items. Date: dd/MM/yyyy (written in the control's own format). Typed blank: value replaces the whole blank text, e.g. blank 'ngày   tháng   năm' → 'ngày 18 tháng 11 năm'. Ids change after filling: call word_list_form_fields again before another fill. Only fill spots you have real information for; never invent ID numbers, dates or amounts — leave them out and tell the user which spots are still empty.",
+      "Fill spots from word_list_form_fields in ONE call (tracked, one Undo). fields: [{id, value, label}]; label = the listed label for that id (a mismatch is refused). Checkbox 'true'/'false'; dropdown: one of its items; date dd/MM/yyyy; typed blank: value replaces the whole blank, e.g. 'ngày   tháng   năm' → 'ngày 18 tháng 11 năm'. Ids change after filling: list again before another fill. Fill only spots you have real information for; never invent ID numbers, dates, amounts; tell the user which spots stay empty.",
     parameters: {
       type: "object",
       properties: {
@@ -56,7 +56,7 @@ export const WORD_FORM_SPECS: ToolSpec[] = [
             properties: {
               id: { type: "string" },
               value: { type: "string" },
-              label: { type: "string", description: "The label from word_list_form_fields for this id." },
+              label: { type: "string" },
             },
             required: ["id", "value", "label"],
           },
