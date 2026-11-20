@@ -132,6 +132,8 @@ export interface RunAgentOptions {
   sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
   /** Chế độ Miễn phí: gọi model qua vòng xoay nguồn (nguồn, key, model, nhận ảnh lấy theo nguồn đang chạy) — Đợt 9 */
   rotation?: FreeRotation;
+  /** Nạp công cụ theo việc (Đợt 10): chọn bộ công cụ gửi model ở mỗi bước theo lịch sử hiện tại. Công cụ không gửi vẫn chạy được nếu model gọi đúng tên. */
+  toolFilter?: (all: ToolSpec[], msgs: AgentMessage[]) => ToolSpec[];
 }
 
 /** Ghi chú của add-in trong lịch sử (dừng vì chạm trần, vì lỗi lặp). Đặt ở vai người dùng có cờ fromTool, KHÔNG đặt ở vai trợ lý:
@@ -196,7 +198,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         key: o.key,
         model: o.model,
         messages: [{ role: "system", content: o.system }, ...msgs],
-        tools: allSpecs,
+        tools: o.toolFilter ? o.toolFilter(allSpecs, msgs) : allSpecs,
         signal: o.signal,
         onText: (d) => {
           partial += d;

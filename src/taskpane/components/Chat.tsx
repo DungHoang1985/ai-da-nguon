@@ -44,6 +44,7 @@ import { getKV } from "../../core/db";
 import { ConversationMeta, ConversationStore, MAX_CONVERSATIONS, newConversationId, slimForStorage, testModeOn, titleFrom } from "../../core/conversations";
 import { Command, Skill, SkillStore, resolveSlash, skillCatalog } from "../../core/skills";
 import { CORE_GUIDES, autoSelectSkills } from "../../core/skillpack";
+import { WORD_TOOL_GROUPS } from "../../core/toolgroups";
 import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, PDF_MIME, filesBase64Chars, readAttachment, withAttachments } from "../../core/attachments";
 import { attachmentPrivacyNote, canSeePages, routeScanPdf } from "../../core/pdfPages";
 import { clearAttachedFiles, registerAttachedFile } from "../../core/attachedFiles";
@@ -945,6 +946,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                 approve: askApproval,
                 log,
                 maxSteps: stepCapFor(host),
+                // Đợt 10: chế độ Miễn phí chỉ gửi công cụ lõi, nhóm chuyên bật theo việc (Trả phí gửi đủ để giữ bộ nhớ đệm)
+                toolGroups: mode === "free" && host === "Word" ? WORD_TOOL_GROUPS : undefined,
+                groupHints: [...(atts.some((a) => a.mime === PDF_MIME) ? ["ngoai"] : []), ...(atts.some((a) => a.mime === DOCX_MIME) ? ["soat"] : [])],
               }
             : undefined,
         webSearch: settings.webSearch && webCapable,

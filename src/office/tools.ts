@@ -5,6 +5,7 @@ import { createWordTools, reasonOf } from "./wordTools";
 import { pptTools } from "./pptTools";
 import { HostName } from "./host";
 import { withAuditTrail } from "./excelTrail";
+import { WORD_TOOL_GROUPS } from "../core/toolgroups";
 
 export function getHostTools(host: HostName, settings: () => unknown): HostToolSet | null {
   if (host === "Excel") return withAuditTrail(excelTools, { settings: () => settings() as any, describe: describeCall });
@@ -232,6 +233,10 @@ function describeBase(call: ToolCall): string {
     case "ppt_delete_shape":
       return `Xóa hình "${a.shape}" ở slide ${a.slide}`;
     // Dùng chung
+    case "load_tools": {
+      const g = WORD_TOOL_GROUPS.find((x) => x.id === String(a.group || ""));
+      return `Nạp thêm công cụ: ${g ? g.label : a.group || "?"}`;
+    }
     case "use_skill":
       return `Đọc kỹ năng ${a.name}${a.file ? ` (${a.file})` : ""}`;
     case "read_other_app":

@@ -8,6 +8,7 @@ import type { FreeRotation } from "./rotation";
 import { STOP_NOTE, runAgent } from "./loop";
 import { buildPlainSystem, buildSystemPrompt, buildTurnMessage } from "./prompt";
 import { AgentEvent, AgentMessage, ExtraTools, FilePart, HostToolSet, ToolCall, UndoEntry, Usage } from "./types";
+import { ToolGroup, groupsNote, requestGroups, usedGroups, visibleSpecs, withLoadTools } from "../toolgroups";
 
 export type TurnEvent = AgentEvent | { type: "compacted" };
 
@@ -28,6 +29,10 @@ export interface TurnAgentOptions {
   toolTimeoutMs?: number;
   /** Soát lập luận trước khi ghi sửa đổi vào điều khoản: mỗi lệnh ghi chữ được một lượt model riêng soát trước khi chạy */
   reviewEdits?: boolean;
+  /** Nạp công cụ theo việc (Đợt 10, chỉ chế độ Miễn phí): có thì mỗi bước chỉ gửi công cụ lõi + nhóm chuyên đang bật */
+  toolGroups?: ToolGroup[];
+  /** Nhóm bật sẵn theo tệp đính kèm của lượt (vd PDF → "ngoai", .docx → "soat") */
+  groupHints?: string[];
 }
 
 /** Lời nhắc của lượt soát lập luận. Cố định; không nằm trong hội thoại chính nên không ảnh hưởng lịch sử hay bộ nhớ đệm của nó. */
@@ -170,13 +175,20 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
     } catch (e: any) {
       ov = { error: "Không đọc được trạng thái tài liệu: " + (e?.message || String(e)) };
     }
+    const groups = a.toolGroups?.length ? a.toolGroups : undefined;
     const system = buildSystemPrompt({
       base: a.tools.systemPrompt(),
       guide: a.guide,
       host: o.host,
       instructions: o.instructions,
       skillCatalog: a.skillCatalog,
+      toolGroups: groups ? groupsNote(groups) : undefined,
     });
+    // Nhóm bật theo lượt này; nhóm đã dùng ở các lượt trước và trong lượt được đọc lại từ lịch sử ở mỗi bước
+    const turnGroups = groups ? requestGroups(groups, { text: o.request ?? o.text, skills: a.autoSkills?.map((k) => k.name), hints: a.groupHints }) : undefined;
+    const toolFilter = groups
+      ? (all: Parameters<typeof visibleSpecs>[0], msgs: AgentMessage[]) => visibleSpecs(all, groups, new Set([...turnGroups!, ...usedGroups(groups, msgs)]))
+      : undefined;
     const userMsg = userOf(buildTurnMessage({ text: o.text, state: a.tools.stateText?.(ov), skills: a.autoSkills }));
     const start = [...history, userMsg];
     let latest = start;
@@ -230,7 +242,8 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
         key: o.key,
         model: o.model,
         tools: a.tools,
-        extra: a.extra,
+        extra: groups ? withLoadTools(a.extra, groups) : a.extra,
+        toolFilter,
         system,
         messages: start,
         signal: o.signal,

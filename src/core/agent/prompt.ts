@@ -33,6 +33,8 @@ export interface SystemParts {
   instructions?: string;
   /** Danh mục kỹ năng (skillCatalog) */
   skillCatalog?: string;
+  /** Nạp công cụ theo việc (Đợt 10, chế độ Miễn phí): danh sách nhóm công cụ chuyên và cách xin (groupsNote) */
+  toolGroups?: string;
 }
 
 /** Lời nhắc hệ thống cho chế độ tác tử. Cùng đầu vào → cùng chuỗi (không có ngày giờ, không có trạng thái tài liệu). */
@@ -41,6 +43,7 @@ export function buildSystemPrompt(p: SystemParts): string {
   return [
     p.base,
     p.guide || "",
+    p.toolGroups || "",
     EFFICIENCY_RULES,
     SAFETY_RULES,
     instr ? `## Chỉ dẫn riêng của người dùng cho ${p.host} (luôn tuân theo)\n${instr}` : "",
