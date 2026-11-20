@@ -118,4 +118,4 @@ Chi tiết ở `dot-11-bang-chung/soat-ma-dot-11.md`. Mục cao: kết quả `pp
 
 ## 8. Trạng thái
 
-- 20/11: A + B xong; Chạy thật, Tự kiểm tra Excel 40/40, PowerPoint 25/25 trên bản cục bộ; soát mã độc lập đã xử lý. Sau khi anh đóng Excel: Tự kiểm tra Word 39/39 trên bản cục bộ 4.11 (`tu-kiem-tra-word.json`). Anh duyệt "đã đóng, làm đi" → gộp `main`, phát hành 4.11.0. PowerPoint chưa đạt ngưỡng T1 (−19,5% · −40,4%) và T2 (−14,7%) đã báo anh trước khi phát hành.
+- 20/11: A + B xong; Chạy thật, Tự kiểm tra Excel 40/40, PowerPoint 25/25 trên bản cục bộ; soát mã độc lập đã xử lý. Sau khi anh đóng Excel: Tự kiểm tra Word 39/39 trên bản cục bộ 4.11 (`tu-kiem-tra-word.json`). Anh duyệt "đã đóng, làm đi" → gộp `main`, phát hành 4.11.0 (`main@983bdab` → `gh-pages@cdcf370`). Tự kiểm tra trên bản phát hành (không nạp bản cục bộ, desktop ẩn): Word 39/39, Excel 40/40, PowerPoint 25/25 — `phat-hanh-4110-tu-kiem-tra-*.json`. PowerPoint chưa đạt ngưỡng T1 (−19,5% · −40,4%) và T2 (−14,7%) đã báo anh trước khi phát hành.
