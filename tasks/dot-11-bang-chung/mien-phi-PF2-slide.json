@@ -1,0 +1,3 @@
+{
+ "LOI": "RichApi.Error: InvalidArgument\n    at new n (https://officeapis.public.onecdn.static.microsoft/1/powerpoint-win32-16.01.js:26:257131)\n    at n.processRequestExecutorResponseMessage (https://officeapis.public.onecdn.static.microsoft/1/powerpoint-win32-16.01.js:26:326099)\n    at https://officeapis.public.onecdn.static.microsoft/1/powerpoint-win32-16.01.js:26:324156\n    at async <anonymous>:81:208"
+}

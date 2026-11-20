@@ -1,0 +1,24 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "free",
+ "model": {
+  "daChon": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi 🆓 Google Gemini · Gemini 3.8 Flash"
+ },
+ "daHoi": [
+  "AI muốn: Chuyển slide 4 tới vị trí 2 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 71,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nExcel — · Word —\nĐưa slide cuối cùng lên làm slide thứ hai.\n↪ Google Gemini · gemini-3.8-flash: không phản hồi — đổi sang Groq · openai/gpt-oss-120b.\n \n✅ Nạp thêm công cụ: sắp xếp, nhân bản, xóa slide, đổi bố cục\n↪ Groq · openai/gpt-oss-120b: hết lượt tạm thời — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free.\n \n✅ Chuyển slide 4 tới vị trí 2\n✅ Xem tổng quan bài trình chiếu\nĐã đưa slide \"Kiến nghị\" (slide cũ thứ 4) lên làm slide thứ 2. Thứ tự hiện tại:\n1. Trang tiêu đề\n2. Kiến nghị (đã di chuyển lên)\n3. Tổng quan dự án\n4. Tình hình bán hàng\n1 nhiệm vụ · 4 lần gọi AI · Token: vào 24.788 · ra 949 · đọc từ bộ nhớ đệm 8.768\nHoàn tác thay đổi (1)\nChèn vào slide\nSao chép\nHỏi trước\n🆓 Google Gemini · Gemini 3.8 Flash",
+ "buoc": [
+  "✅ Nạp thêm công cụ: sắp xếp, nhân bản, xóa slide, đổi bố cục",
+  "✅ Chuyển slide 4 tới vị trí 2",
+  "✅ Xem tổng quan bài trình chiếu"
+ ],
+ "doiNguon": [
+  "↪ Google Gemini · gemini-3.8-flash: không phản hồi — đổi sang Groq · openai/gpt-oss-120b.",
+  "↪ Groq · openai/gpt-oss-120b: hết lượt tạm thời — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free."
+ ],
+ "lanGoiAI": "4",
+ "token": "Token: vào 24.788 · ra 949 · đọc từ bộ nhớ đệm 8.768"
+}

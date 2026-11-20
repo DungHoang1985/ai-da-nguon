@@ -1,0 +1,22 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "paid",
+ "model": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5"
+ },
+ "daHoi": [
+  "AI muốn: Ghi dữ liệu vào 'Bán hàng'!F1 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 10,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nWord — · PowerPoint —\nThêm cột F có tiêu đề \"Giá bình quân (tỷ/căn)\" bằng công thức Doanh thu chia Số căn cho mọi dòng.\n✅ Đọc 'Bán hàng'!A1:F25\n✅ Ghi dữ liệu vào 'Bán hàng'!F1\n✅ Định dạng 'Bán hàng'!F1:F25\n✅ Quét lỗi công thức ở sheet Bán hàng\nĐã thêm cột F \"Giá bình quân (tỷ/căn)\" tại Bán hàng!F1, với công thức `=IFERROR(E/D, 0)` cho các dòng 2–25 (ví dụ Bán hàng!F2 = E2/D2 ≈ 2,15). Số hiển thị hai chữ số thập phân. Không có lỗi công thức. IFERROR chỉ trả 0 khi Số căn bằng 0 hoặc trống, hiện chưa có dòng nào như vậy.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 41.769 · ra 1.281 · đọc từ bộ nhớ đệm 26.739 · ghi vào bộ nhớ đệm 15.022\nHoàn tác thay đổi (2)\nGhi vào ô đang chọn\nSao chép\nHỏi trước\n💳 Anthropic · Claude Haiku 5.5",
+ "buoc": [
+  "✅ Đọc 'Bán hàng'!A1:F25",
+  "✅ Ghi dữ liệu vào 'Bán hàng'!F1",
+  "✅ Định dạng 'Bán hàng'!F1:F25",
+  "✅ Quét lỗi công thức ở sheet Bán hàng"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "3",
+ "token": "Token: vào 41.769 · ra 1.281 · đọc từ bộ nhớ đệm 26.739 · ghi vào bộ nhớ đệm 15.022"
+}

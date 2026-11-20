@@ -1,0 +1,19 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "paid",
+ "model": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5"
+ },
+ "daHoi": [
+  "AI muốn: Tạo PivotTable từ 'Bán hàng'!A1:E25 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 5,
+ "khung": "AI Đa Nguồn\nv4.10\nWord — · PowerPoint —\nTạo PivotTable tổng doanh thu và số căn theo khu vực và dự án.\nKỹ năng áp dụng: phan-tich-du-lieu\n✅ Tạo PivotTable từ 'Bán hàng'!A1:E25\nĐã tạo PivotTable \"PivotDoanhThu\" trên sheet mới PivotDoanhThu, lấy dữ liệu từ 'Bán hàng'!A1:E25.\n \n• Hàng: Khu vực, rồi Dự án lồng bên trong.\n• Giá trị: tổng Doanh thu (tỷ đồng) và tổng Số căn.\n \nBảng tự cập nhật khi nguồn thay đổi; nếu thêm dòng dữ liệu mới, bấm Refresh để cập nhật.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 31.881 · ra 537 · đọc từ bộ nhớ đệm 30.569 · ghi vào bộ nhớ đệm 1.306\nHoàn tác thay đổi (1)\nGhi vào ô đang chọn\nSao chép\nHỏi trước\n💳 Anthropic · Claude Haiku 5.5",
+ "buoc": [
+  "✅ Tạo PivotTable từ 'Bán hàng'!A1:E25"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "2",
+ "token": "Token: vào 31.881 · ra 537 · đọc từ bộ nhớ đệm 30.569 · ghi vào bộ nhớ đệm 1.306"
+}

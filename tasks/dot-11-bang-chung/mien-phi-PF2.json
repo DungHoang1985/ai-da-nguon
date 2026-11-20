@@ -1,0 +1,20 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "free",
+ "model": {
+  "daChon": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi 🆓 Google Gemini · Gemini 3.8 Flash"
+ },
+ "daHoi": [
+  "AI muốn: Chèn biểu đồ cột (slide mới) | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 18,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nExcel — · Word —\nThêm một slide biểu đồ cột doanh thu: năm 2024 là 120, năm 2025 là 150, năm 2026 là 198 tỷ đồng.\nKỹ năng áp dụng: thiet-ke-bieu-do\n✅ Chèn biểu đồ cột (slide mới)\n✅ Chụp ảnh slide 5 để tự kiểm — đã chụp ảnh slide 5 · số đo: 1 điểm bố cục cần xem\nĐã thêm slide 5 biểu đồ cột doanh thu 3 năm (2024: 120, 2025: 150, 2026: 198 tỷ đồng). Biểu đồ gốc, dùng màu chủ đề, có nhãn giá trị, tiêu đề slide nêu ý chính kèm đơn vị.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 24.764 · ra 665 · đọc từ bộ nhớ đệm 8.768\nHoàn tác thay đổi (1)\nChèn vào slide\nSao chép\nHỏi trước\n🆓 Google Gemini · Gemini 3.8 Flash",
+ "buoc": [
+  "✅ Chèn biểu đồ cột (slide mới)",
+  "✅ Chụp ảnh slide 5 để tự kiểm — đã chụp ảnh slide 5 · số đo: 1 điểm bố cục cần xem"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "3",
+ "token": "Token: vào 24.764 · ra 665 · đọc từ bộ nhớ đệm 8.768"
+}

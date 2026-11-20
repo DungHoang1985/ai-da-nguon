@@ -61,4 +61,53 @@ Ngưỡng T1, T2 thấp hơn Word (25% / 50% / 20%) vì mô tả công cụ Exce
 
 ## 5. Đã làm
 
-(cập nhật dần)
+- **A (mọi chế độ):** rút mô tả và tham số của 33 công cụ Excel, 27 công cụ PowerPoint (mô tả tham số dùng chung `addressProp`, `sheetProp`, `slideProp`, `shapeProp` lặp ở hầu hết công cụ); lời nhắc Excel, PowerPoint viết lại thành `EXCEL_SYSTEM_PROMPT`, `PPT_SYSTEM_PROMPT` với một dòng chỉ đường `EXCEL_SPECIAL_LINE`, `PPT_SPECIAL_LINE` (đặt ở `src/core/toolgroups.ts`, như `WORD_SPECIAL_LINE`); chuẩn làm việc Excel, PowerPoint bỏ phần trùng lời nhắc; `brief` cho 8 kỹ năng (5 Excel/PowerPoint riêng, `thiet-ke-bieu-do`, `kiem-tra-bai-trinh-chieu`, `trinh-chieu-tu-tai-lieu`) — nay mọi kỹ năng dựng sẵn đều có `brief`.
+- **B (chỉ Miễn phí):** `EXCEL_TOOL_GROUPS` (7 nhóm), `PPT_TOOL_GROUPS` (6 nhóm) như mục 3; `toolGroupsFor` trả nhóm của cả ba ứng dụng ở chế độ Miễn phí; `freeBasePrompt(base, groups)` thay đúng dòng chỉ đường của ứng dụng; `hideGroupTools` đổi tên công cụ chuyên trong chuẩn làm việc thành tên nhóm (chuẩn làm việc PowerPoint từng nêu `ppt_add_chart`…); nhãn bước `load_tools` tra trong mọi nhóm (`ALL_TOOL_GROUPS`, cùng id thì cùng nhãn: nhãn nhóm `ngoai` của Word đổi thành "ứng dụng Office khác"); ảnh đính kèm trong PowerPoint bật nhóm `hinh_anh`.
+- Từ khóa có dấu cho các chữ dễ lẫn khi bỏ dấu: "lọc" (không lẫn "Lộc"), "trùng" (không lẫn "trung bình"), "khóa" (không lẫn "khoa"), "ảnh" (không lẫn "anh"), "lỗi" (không lẫn "lời"), "bảng". Nhóm in của Excel chỉ dùng cụm ("in ra", "khổ giấy", "vùng in"…) để "in đậm", "in nghiêng" không bật.
+- Kiểm thử: `test/unit/dot11.test.ts` (26 ca: nhóm có thật và không trùng, nhóm lõi, từ khóa đúng và không bật nhầm, kỹ năng kéo theo nhóm, lời nhắc Miễn phí không nêu tên công cụ ẩn, một lượt Miễn phí xin nhóm rồi chạy, chặn phình lại); M5 của Đợt 10 sửa theo. Bài đo `kiem-thu/do-token.ts --free` chạy cho cả ba ứng dụng. Bài thử `kiem-thu/cdp-bai/dot-11-excel-du-lieu.js`, `dot-11-ppt-du-lieu.js` (dựng lại tài liệu thử trước mỗi bài, không phải mở lại ứng dụng), `dot-11-chay.js`.
+- Số bản: 4.11.0 (chưa phát hành).
+
+## 6. Kết quả (20/11/2026, desktop ẩn)
+
+### Phần cố định mỗi lượt (`kiem-thu/do-token.ts`, ký tự)
+
+| Ứng dụng | Mốc 4.10.0 | Trả phí (A) | Miễn phí, nhóm lõi (A + B) |
+|---|---|---|---|
+| Excel | 31.754 (33 công cụ) | 25.417 (**−20,0%**) | 14.710, 19 công cụ (**−53,7%**) |
+| PowerPoint | 23.293 (27 công cụ) | 18.745 (**−19,5%**) | 13.888, 17 công cụ (**−40,4%**) |
+| Word (đối chiếu) | 30.049 sau Đợt 10 | 30.049 (không đổi) | 18.604 (nhãn nhóm `ngoai` ngắn hơn) |
+
+### Chạy thật, Claude Haiku 5.5, Trả phí (cùng bài, cùng dữ liệu dựng lại, hội thoại mới mỗi bài)
+
+"Trước" = bản 4.10.0 đã phát hành; "sau" = bản cục bộ 4.11. Token vào gồm phần đọc từ và ghi vào bộ nhớ đệm.
+
+| Bài | Trước: lần gọi · token vào | Sau: lần gọi · token vào | Mỗi lần gọi | Kết quả |
+|---|---|---|---|---|
+| E1 Thêm cột giá bình quân bằng công thức | 3 · 49.120 | 3 · 41.769 | 16.373 → 13.923 (−15,0%) | Đúng cả hai; bản sau tự quét lỗi công thức |
+| E2 Biểu đồ cột tổng doanh thu theo khu vực | 3 · 52.477; lần 2: 4 · 71.100 | 4 · 60.658; lần 2: 4 · 60.615 | ~17.600 → ~15.160 (−14%) | Đúng cả hai (bảng SUMIF + biểu đồ, cùng số liệu). Bản cũ cũng có lần 4 lượt gọi: số lần gọi là dao động của model |
+| E3 PivotTable theo khu vực, dự án | 2 · 31.881 | 2 · 26.943 | 15.941 → 13.472 (−15,5%) | Đúng cả hai |
+| P1 Thêm 2 slide | 2 · 25.783 | 3 · 35.562 (tự chụp 2 slide để kiểm); lần 2: 2 · 21.983 | 12.892 → 10.992 (−14,7%, lần 2) | Đúng cả hai |
+| P2 Slide biểu đồ cột 3 năm | 2 · 27.517 | 4 · 52.301 (chụp, sửa chữ, chụp lại); lần 2: 2 · 25.056 (có chụp slide) | — (lần 2 có thêm ảnh slide) | Đúng cả hai |
+| P3 Kiểm bài, chỉ báo lỗi | 2 · 26.358 | 2 · 25.930 (thêm chụp 4 slide) | — | Cả hai: `ppt_check_deck` đủ 4 điểm cài sẵn (2 phông lệch mẫu, 1 chữ cỡ 9, 1 chữ mẫu sót) |
+
+Bản sau ở PowerPoint hay tự chụp slide để kiểm hơn (đúng dặn dò "TỰ KIỂM BẰNG MẮT" vốn có ở cả hai bản); ảnh slide tốn thêm token nên lần chạy có chụp không so được theo số mỗi lần gọi.
+
+### Chế độ Miễn phí (bản cục bộ)
+
+| Bài | Nguồn | Lần gọi · token vào | Kết quả |
+|---|---|---|---|
+| EF1 T4 Excel: "Chỉ hiện các dòng của khu vực Đà Nẵng thôi." (không khớp từ khóa) | Gemini im lặng → Groq đọc được (lần gọi đầu chạy) rồi hết lượt → OpenRouter Nemotron 3 Ultra free | 5 · 33.641 | Model gọi `load_tools(loc_dinh_dang)` → `excel_filter` cột B → đúng 6 dòng |
+| EF2 Excel: biểu đồ cột theo khu vực (khớp từ khóa) | Gemini 3.8 Flash | 5 · 39.961 | Nhóm `bieu_do` bật sẵn; bảng SUMIF + biểu đồ đúng số |
+| PF1 T4 PowerPoint: "Đưa slide cuối cùng lên làm slide thứ hai." (không khớp từ khóa) | Gemini im lặng → Groq hết lượt → OpenRouter Nemotron | 4 · 24.788 | `load_tools(sap_xep)` → `ppt_move_slide` 4 → 2; đọc lại bài: "Kiến nghị" ở slide 2 |
+| PF2 PowerPoint: slide biểu đồ (khớp từ khóa) | Gemini 3.8 Flash | 3 · 24.764 | Nhóm `bieu_do_so_do` bật sẵn; biểu đồ gốc đúng 3 năm |
+
+### Bảng nghiệm thu
+
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| T1 | Trả phí giảm ≥ 20%; Miễn phí nhóm lõi giảm ≥ 45% | Excel **Đạt** (−20,0% · −53,7%). PowerPoint **chưa đạt ngưỡng**: −19,5% · −40,4%. PowerPoint có ít công cụ chuyên (nhóm lõi giữ 17/27 công cụ, gồm chụp slide, đọc mẫu, định dạng mà lời nhắc dặn dùng thường xuyên); rút thêm thì phải ẩn công cụ tự kiểm, không nên | `do-token-*.json`; kiểm thử chặn phình lại |
+| T2 | Token mỗi lần gọi Haiku giảm ≥ 15% | Excel **Đạt** (−15,0%, −15,5%; E2 −14%). PowerPoint **sát ngưỡng**: −14,7% (P1 cùng bước) | `truoc-*.json`, `sau-*.json` |
+| T3 | Bài Haiku xong đúng, số lần gọi không tăng quá 1; mỗi ứng dụng một bài Miễn phí xong | **Đạt về kết quả**: 6/6 đúng, 4/4 bài Miễn phí xong. Số lần gọi: lần chạy đầu của P2 tăng 2 (tự chụp, sửa, chụp lại); lần chạy lại bằng bản cũ. E2 bản cũ cũng dao động 3–4 | như trên, `mien-phi-*.json` |
+| T4 | Miễn phí, bài không khớp từ khóa → `load_tools` rồi xong | **Đạt** cả Excel và PowerPoint | `mien-phi-EF1.json`, `mien-phi-PF1.json` |
+| T5 | Kiểm thử máy, kiểm kiểu; Tự kiểm tra | Kiểm thử máy 697/697, tsc sạch; Tự kiểm tra trên bản cục bộ: **Excel 40/40, PowerPoint 25/25**. **Word chưa chạy**: lúc tới lượt Word thì anh đang mở Excel (tệp của anh) trên desktop chính, quy định không mở Office thử lúc đó | `tu-kiem-tra-excel.json`, `tu-kiem-tra-powerpoint.json` |
+| T6 | Soát mã độc lập | xem mục 7 | `soat-ma-dot-11.md` |

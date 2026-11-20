@@ -1,0 +1,18 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "paid",
+ "model": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5"
+ },
+ "daHoi": [],
+ "daDung": false,
+ "giay": 9,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nExcel — · Word —\nKiểm tra bài trình chiếu này, chỉ báo các lỗi, chưa sửa.\nKỹ năng áp dụng: kiem-tra-bai-trinh-chieu\n✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 4 điểm cần xem: 2 phông lệch mẫu, 1 chữ quá nhỏ, 1 chữ mẫu còn sót\n✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 1, 2, 3, 4 · số đo: không thấy tràn, chồng\nTôi đã kiểm tra bài (4 slide), chưa sửa gì. Có 4 lỗi cần xử lý:\n \nSlide số\tVấn đề\tĐề xuất\n1\tTiêu đề \"Dự án Khu đô thị Ánh Dương\" dùng phông Times New Roman, lệch mẫu (Calibri Light).\tĐổi sang Calibri Light (phông của mẫu).\n2\tNội dung 3 gạch đầu dòng dùng phông Arial, lệch mẫu (Calibri).\tĐổi sang Calibri.\n3\tDòng \"Nguồn: Phòng Kinh doanh, số liệu đến 15/11/2026\" chỉ 9 pt, quá nhỏ (tối thiểu 12 pt).\tTăng lên 12 pt, hoặc rút gọn nội dung.\n4\tÔ nội dung còn chữ mẫu \"Click to add text\", slide \"Kiến nghị\" trống.\tThay bằng nội dung kiến nghị thật, hoặc xóa ô nếu chưa có.\n \nNgoài ra, tôi thấy một điểm cần xác nhận về số liệu: slide số 2 ghi 1.850 căn hộ và 320 nhà liền kề, còn slide số 3 ghi đã bán 1.120 căn đạt 52% kế hoạch. Nếu tính trên 1.850 căn hộ thì tỷ lệ là khoảng 61%; còn 52% khớp với tổng 2.170 sản phẩm (cả căn hộ và nhà liền kề). Nên ghi rõ \"kế hoạch\" tính trên phạm vi nào.\n \nBố cục, tiêu đề và hình ảnh không có chữ tràn khung hay hình chồng nhau.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 25.930 · ra 1.352 · đọc từ bộ nhớ đệm 20.267 · ghi vào bộ nhớ đệm 5.655\nChèn vào slide\nSao chép\nHỏi trước\n💳 Anthropic · Claude Haiku 5.5",
+ "buoc": [
+  "✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 4 điểm cần xem: 2 phông lệch mẫu, 1 chữ quá nhỏ, 1 chữ mẫu còn sót",
+  "✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 1, 2, 3, 4 · số đo: không thấy tràn, chồng"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "2",
+ "token": "Token: vào 25.930 · ra 1.352 · đọc từ bộ nhớ đệm 20.267 · ghi vào bộ nhớ đệm 5.655"
+}

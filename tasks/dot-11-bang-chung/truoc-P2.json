@@ -1,0 +1,19 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "paid",
+ "model": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5"
+ },
+ "daHoi": [
+  "AI muốn: Chèn biểu đồ cột (slide mới) | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 7,
+ "khung": "AI Đa Nguồn\nv4.10\nExcel — · Word —\nThêm một slide biểu đồ cột doanh thu: năm 2024 là 120, năm 2025 là 150, năm 2026 là 198 tỷ đồng.\nKỹ năng áp dụng: thiet-ke-bieu-do\n✅ Chèn biểu đồ cột (slide mới)\nĐã thêm slide số 4 là biểu đồ cột doanh thu, đặt sau slide số 3 và trước slide \"Kiến nghị\".\n \n• Tiêu đề: \"Doanh thu 2026 tăng 65% so với 2024 (tỷ đồng)\"\n• Số liệu: 2024 = 120, 2025 = 150, 2026 = 198 tỷ đồng (biểu đồ gốc, sửa được dữ liệu, có nhãn số trên từng cột)\n \nLưu ý: slide số 5 (\"Kiến nghị\") vẫn còn dòng chữ mẫu \"Click to add text\" ở phần nội dung. Bạn muốn tôi điền nội dung kiến nghị hoặc xóa ô đó không?\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 27.517 · ra 1.004 · đọc từ bộ nhớ đệm 24.405 · ghi vào bộ nhớ đệm 3.106\nHoàn tác thay đổi (1)\nChèn vào slide\nSao chép\nHỏi trước\n💳 Anthropic · Claude Haiku 5.5",
+ "buoc": [
+  "✅ Chèn biểu đồ cột (slide mới)"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "2",
+ "token": "Token: vào 27.517 · ra 1.004 · đọc từ bộ nhớ đệm 24.405 · ghi vào bộ nhớ đệm 3.106"
+}

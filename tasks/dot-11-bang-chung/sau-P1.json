@@ -1,0 +1,20 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "paid",
+ "model": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5"
+ },
+ "daHoi": [
+  "AI muốn: Thêm 2 slide (từ \"Đội ngũ dự án\") | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 10,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nExcel — · Word —\nThêm 2 slide vào cuối bài: \"Đội ngũ dự án\" gồm 3 ý và \"Liên hệ\" gồm 2 ý, nội dung tự soạn ngắn gọn.\n✅ Thêm 2 slide (từ \"Đội ngũ dự án\")\n✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 5, 6 · số đo: không thấy tràn, chồng\nĐã thêm 2 slide vào cuối bài:\n \n• Slide số 5 – Đội ngũ dự án: 3 ý gồm Ban quản lý dự án, Pháp lý và thi công, Kinh doanh.\n• Slide số 6 – Liên hệ: 2 ý gồm Phòng Kinh doanh và Ban quản lý dự án. Chưa có số điện thoại hay email thật, nên bạn có thể bổ sung nếu cần.\n \nẢnh chụp cho thấy chữ nằm gọn trong khung, không tràn hay chồng lên nhau.\n \nLưu ý: ở slide số 4 – Kiến nghị vẫn còn dòng chữ mẫu \"Click to add text\". Bạn muốn tôi điền nội dung hoặc xóa khung đó không?\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 35.562 · ra 1.209 · đọc từ bộ nhớ đệm 22.175 · ghi vào bộ nhớ đệm 13.377\nHoàn tác thay đổi (1)\nChèn vào slide\nSao chép\nHỏi trước\n💳 Anthropic · Claude Haiku 5.5",
+ "buoc": [
+  "✅ Thêm 2 slide (từ \"Đội ngũ dự án\")",
+  "✅ Chụp ảnh slide để tự kiểm — đã chụp ảnh slide 5, 6 · số đo: không thấy tràn, chồng"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "3",
+ "token": "Token: vào 35.562 · ra 1.209 · đọc từ bộ nhớ đệm 22.175 · ghi vào bộ nhớ đệm 13.377"
+}

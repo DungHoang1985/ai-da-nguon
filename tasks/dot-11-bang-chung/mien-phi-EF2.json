@@ -1,0 +1,22 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "free",
+ "model": {
+  "daChon": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi 🆓 Google Gemini · Gemini 3.8 Flash"
+ },
+ "daHoi": [
+  "AI muốn: Ghi dữ liệu vào Bán hàng!G1 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 38,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nWord — · PowerPoint —\nVẽ biểu đồ cột tổng doanh thu theo khu vực.\nKỹ năng áp dụng: thiet-ke-bieu-do\n✅ Đọc Bán hàng!A1:E25\n✅ Ghi dữ liệu vào Bán hàng!G1\n✅ Vẽ biểu đồ cột từ Bán hàng!G1:H5\n✅ Chọn Bán hàng!G1:H5\nĐã vẽ biểu đồ cột tổng doanh thu theo khu vực trên sheet Bán hàng:\n \n• Bảng tổng hợp ở `Bán hàng!G1:H5` (tổng 6 tháng):\n• TP.HCM: 183.7 tỷ\n• Đà Nẵng: 176.6 tỷ\n• Hải Phòng: 138.1 tỷ\n• Hà Nội: 123.0 tỷ\n• Biểu đồ cột \"Chart 1\" đặt ngay bên cạnh, tiêu đề: *\"Tổng doanh thu theo khu vực (tỷ đồng)\"*.\n \nTheo nguyên tắc thiết kế: dùng cột để so sánh độ lớn, đã sắp xếp từ lớn đến nhỏ, một trục tung, đơn vị ghi trong tiêu đề.\n1 nhiệm vụ · 5 lần gọi AI · Token: vào 39.961 · ra 872 · đọc từ bộ nhớ đệm 17.536\nHoàn tác thay đổi (2)\nGhi vào ô đang chọn\nSao chép\nHỏi trước\n🆓 Google Gemini · Gemini 3.8 Flash",
+ "buoc": [
+  "✅ Đọc Bán hàng!A1:E25",
+  "✅ Ghi dữ liệu vào Bán hàng!G1",
+  "✅ Vẽ biểu đồ cột từ Bán hàng!G1:H5",
+  "✅ Chọn Bán hàng!G1:H5"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "5",
+ "token": "Token: vào 39.961 · ra 872 · đọc từ bộ nhớ đệm 17.536"
+}

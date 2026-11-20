@@ -1,0 +1,17 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "paid",
+ "model": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5"
+ },
+ "daHoi": [],
+ "daDung": false,
+ "giay": 6,
+ "khung": "AI Đa Nguồn\nv4.10\nExcel — · Word —\nKiểm tra bài trình chiếu này, chỉ báo các lỗi, chưa sửa.\nKỹ năng áp dụng: kiem-tra-bai-trinh-chieu\n✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 4 điểm cần xem: 2 phông lệch mẫu, 1 chữ quá nhỏ, 1 chữ mẫu còn sót\nTôi đã kiểm tra bài bằng ppt_check_deck và chưa sửa gì. Bài có 4 slide và 4 điểm cần xử lý:\n \nSlide số\tVấn đề\tĐề xuất\n[slide 1](#)\tTiêu đề \"Dự án Khu đô thị Ánh Dương\" dùng phông Times New Roman, không đúng phông mẫu (Calibri Light/Calibri)\tĐổi sang Calibri Light\n[slide 2](#)\tNội dung 3 ý dùng phông Arial, không đúng phông mẫu\tĐổi sang Calibri\n[slide 3](#)\tGhi chú nguồn \"Nguồn: Phòng Kinh doanh, số liệu đến 15/11/2026\" cỡ 9pt, dưới mức tối thiểu 12pt\tTăng lên ≥12pt, hoặc chuyển sang vị trí dễ đọc hơn\n[slide 4](#)\tÔ nội dung còn chữ mẫu \"Click to add text\"\tNhập nội dung kiến nghị hoặc xóa ô trống\n \nNgoài công cụ dò, tôi thấy thêm: slide 4 \"Kiến nghị\" chưa có nội dung nào nên cần bổ sung trước khi gửi. Số liệu slide 3 khớp với slide 2: 1.120 căn bán được trên tổng 1.850 căn + 320 nhà liền kề (2.170) là khoảng 52%.\n \nNếu bạn muốn, tôi có thể sửa phông và cỡ chữ cho slide 1, 2, 3 ngay.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 26.358 · ra 889 · đọc từ bộ nhớ đệm 23.851 · ghi vào bộ nhớ đệm 2.501\nChèn vào slide\nSao chép\nHỏi trước\n💳 Anthropic · Claude Haiku 5.5",
+ "buoc": [
+  "✅ Kiểm bài theo mẫu: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài — 4 điểm cần xem: 2 phông lệch mẫu, 1 chữ quá nhỏ, 1 chữ mẫu còn sót"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "2",
+ "token": "Token: vào 26.358 · ra 889 · đọc từ bộ nhớ đệm 23.851 · ghi vào bộ nhớ đệm 2.501"
+}

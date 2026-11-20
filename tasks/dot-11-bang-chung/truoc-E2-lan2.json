@@ -1,0 +1,23 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "paid",
+ "model": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5"
+ },
+ "daHoi": [
+  "AI muốn: Ghi dữ liệu vào 'Bán hàng'!G1 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 12,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nWord — · PowerPoint —\nVẽ biểu đồ cột tổng doanh thu theo khu vực.\nKỹ năng áp dụng: thiet-ke-bieu-do\n✅ Đọc 'Bán hàng'!A1:E25\n✅ Ghi dữ liệu vào 'Bán hàng'!G1\n✅ Định dạng 'Bán hàng'!G1:H1\n✅ Định dạng 'Bán hàng'!H2:H6\n✅ Vẽ biểu đồ cột từ 'Bán hàng'!G1:H5\nĐã vẽ biểu đồ cột tổng doanh thu theo khu vực.\n \n• Bảng tổng hợp: `Bán hàng!G1:H6`, dùng công thức SUMIF trên cột Khu vực (B) và Doanh thu (E) của `Bán hàng!A2:E25`. Các khu vực được xếp từ cao xuống thấp. Dòng tổng ở `H6` là 621,4 tỷ đồng.\n• Kết quả: TP.HCM 183,7; Đà Nẵng 176,6; Hải Phòng 138,1; Hà Nội 123,0 (tỷ đồng).\n• Biểu đồ: cột \"Chart 1\", vẽ từ `G1:H5`, đặt bên phải bảng, tiêu đề \"TP.HCM và Đà Nẵng dẫn đầu doanh thu T1–T6/2026 (tỷ đồng)\".\n1 nhiệm vụ · 4 lần gọi AI · Token: vào 71.100 · ra 1.511 · đọc từ bộ nhớ đệm 68.693 · ghi vào bộ nhớ đệm 2.397\nHoàn tác thay đổi (4)\nGhi vào ô đang chọn\nSao chép\nHỏi trước\n💳 Anthropic · Claude Haiku 5.5",
+ "buoc": [
+  "✅ Đọc 'Bán hàng'!A1:E25",
+  "✅ Ghi dữ liệu vào 'Bán hàng'!G1",
+  "✅ Định dạng 'Bán hàng'!G1:H1",
+  "✅ Định dạng 'Bán hàng'!H2:H6",
+  "✅ Vẽ biểu đồ cột từ 'Bán hàng'!G1:H5"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "4",
+ "token": "Token: vào 71.100 · ra 1.511 · đọc từ bộ nhớ đệm 68.693 · ghi vào bộ nhớ đệm 2.397"
+}

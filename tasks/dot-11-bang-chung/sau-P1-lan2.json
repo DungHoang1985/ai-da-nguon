@@ -1,0 +1,19 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "paid",
+ "model": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5"
+ },
+ "daHoi": [
+  "AI muốn: Thêm 2 slide (từ \"Đội ngũ dự án\") | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 7,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nExcel — · Word —\nThêm 2 slide vào cuối bài: \"Đội ngũ dự án\" gồm 3 ý và \"Liên hệ\" gồm 2 ý, nội dung tự soạn ngắn gọn.\n✅ Thêm 2 slide (từ \"Đội ngũ dự án\")\nĐã thêm 2 slide vào cuối bài, dùng bố cục \"Title and Content\" của mẫu:\n \n• Slide số 5 – Đội ngũ dự án: 3 ý (Ban Quản lý dự án; Phòng Kinh doanh; Phòng Pháp lý và Kỹ thuật).\n• Slide số 6 – Liên hệ: 2 ý (đầu mối là Ban Quản lý dự án; số liệu bán hàng lấy từ Phòng Kinh doanh, xem slide số 3).\n \nNội dung tôi soạn chung chung, chưa có tên người hay số điện thoại cụ thể. Nếu bạn cung cấp thông tin đó, tôi sẽ cập nhật.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 21.983 · ra 895 · đọc từ bộ nhớ đệm 19.769 · ghi vào bộ nhớ đệm 2.208\nHoàn tác thay đổi (1)\nChèn vào slide\nSao chép\nHỏi trước\n💳 Anthropic · Claude Haiku 5.5",
+ "buoc": [
+  "✅ Thêm 2 slide (từ \"Đội ngũ dự án\")"
+ ],
+ "doiNguon": [],
+ "lanGoiAI": "2",
+ "token": "Token: vào 21.983 · ra 895 · đọc từ bộ nhớ đệm 19.769 · ghi vào bộ nhớ đệm 2.208"
+}

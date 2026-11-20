@@ -1,0 +1,25 @@
+{
+ "phienBan": "v4.10",
+ "cheDo": "free",
+ "model": {
+  "daChon": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi 🆓 Google Gemini · Gemini 3.8 Flash"
+ },
+ "daHoi": [
+  "AI muốn: Lọc Bán hàng!A1:E25 theo cột B | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 73,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nWord — · PowerPoint —\nChỉ hiện các dòng của khu vực Đà Nẵng thôi.\n↪ Google Gemini · gemini-3.8-flash: không phản hồi — đổi sang Groq · openai/gpt-oss-120b.\n \n✅ Đọc Bán hàng!A1:E25\n↪ Groq · openai/gpt-oss-120b: hết lượt tạm thời — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free.\n \n✅ Nạp thêm công cụ: lọc, định dạng có điều kiện, danh sách chọn\n✅ Lọc Bán hàng!A1:E25 theo cột B\n✅ Chọn Bán hàng!A1:E25\nĐã lọc sheet Bán hàng để chỉ hiển thị các dòng của khu vực Đà Nẵng (cột B = \"Đà Nẵng\"). Kết quả hiện tại còn 6 dòng (từ T1/2026 đến T6/2026).\n1 nhiệm vụ · 5 lần gọi AI · Token: vào 33.641 · ra 558 · đọc từ bộ nhớ đệm 8.768\nHoàn tác thay đổi (1)\nGhi vào ô đang chọn\nSao chép\nHỏi trước\n🆓 Google Gemini · Gemini 3.8 Flash",
+ "buoc": [
+  "✅ Đọc Bán hàng!A1:E25",
+  "✅ Nạp thêm công cụ: lọc, định dạng có điều kiện, danh sách chọn",
+  "✅ Lọc Bán hàng!A1:E25 theo cột B",
+  "✅ Chọn Bán hàng!A1:E25"
+ ],
+ "doiNguon": [
+  "↪ Google Gemini · gemini-3.8-flash: không phản hồi — đổi sang Groq · openai/gpt-oss-120b.",
+  "↪ Groq · openai/gpt-oss-120b: hết lượt tạm thời — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free."
+ ],
+ "lanGoiAI": "5",
+ "token": "Token: vào 33.641 · ra 558 · đọc từ bộ nhớ đệm 8.768"
+}
