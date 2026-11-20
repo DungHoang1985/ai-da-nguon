@@ -73,7 +73,7 @@ Ngưỡng T1, T2 thấp hơn Word (25% / 50% / 20%) vì mô tả công cụ Exce
 
 | Ứng dụng | Mốc 4.10.0 | Trả phí (A) | Miễn phí, nhóm lõi (A + B) |
 |---|---|---|---|
-| Excel | 31.754 (33 công cụ) | 25.417 (**−20,0%**) | 14.710, 19 công cụ (**−53,7%**) |
+| Excel | 31.754 (33 công cụ) | 25.417 (**−20,0%**); sau sửa theo soát mã 25.466 (−19,8%) | 14.710, 19 công cụ (**−53,7%**) |
 | PowerPoint | 23.293 (27 công cụ) | 18.745 (**−19,5%**) | 13.888, 17 công cụ (**−40,4%**) |
 | Word (đối chiếu) | 30.049 sau Đợt 10 | 30.049 (không đổi) | 18.604 (nhãn nhóm `ngoai` ngắn hơn) |
 
@@ -105,9 +105,18 @@ Bản sau ở PowerPoint hay tự chụp slide để kiểm hơn (đúng dặn d
 
 | # | Tiêu chí | Kết quả | Bằng chứng |
 |---|---|---|---|
-| T1 | Trả phí giảm ≥ 20%; Miễn phí nhóm lõi giảm ≥ 45% | Excel **Đạt** (−20,0% · −53,7%). PowerPoint **chưa đạt ngưỡng**: −19,5% · −40,4%. PowerPoint có ít công cụ chuyên (nhóm lõi giữ 17/27 công cụ, gồm chụp slide, đọc mẫu, định dạng mà lời nhắc dặn dùng thường xuyên); rút thêm thì phải ẩn công cụ tự kiểm, không nên | `do-token-*.json`; kiểm thử chặn phình lại |
+| T1 | Trả phí giảm ≥ 20%; Miễn phí nhóm lõi giảm ≥ 45% | Excel **Đạt** khi đo (−20,0% · −53,7%); sau sửa theo soát mã Trả phí −19,8% (thêm lại câu "hỏi người dùng rồi mới ghi" của `excel_what_if`). PowerPoint **chưa đạt ngưỡng**: −19,5% · −40,4%. PowerPoint có ít công cụ chuyên (nhóm lõi giữ 17/27 công cụ, gồm chụp slide, đọc mẫu, định dạng mà lời nhắc dặn dùng thường xuyên); rút thêm thì phải ẩn công cụ tự kiểm, không nên | `do-token-*.json`; kiểm thử chặn phình lại |
 | T2 | Token mỗi lần gọi Haiku giảm ≥ 15% | Excel **Đạt** (−15,0%, −15,5%; E2 −14%). PowerPoint **sát ngưỡng**: −14,7% (P1 cùng bước) | `truoc-*.json`, `sau-*.json` |
 | T3 | Bài Haiku xong đúng, số lần gọi không tăng quá 1; mỗi ứng dụng một bài Miễn phí xong | **Đạt về kết quả**: 6/6 đúng, 4/4 bài Miễn phí xong. Số lần gọi: lần chạy đầu của P2 tăng 2 (tự chụp, sửa, chụp lại); lần chạy lại bằng bản cũ. E2 bản cũ cũng dao động 3–4 | như trên, `mien-phi-*.json` |
 | T4 | Miễn phí, bài không khớp từ khóa → `load_tools` rồi xong | **Đạt** cả Excel và PowerPoint | `mien-phi-EF1.json`, `mien-phi-PF1.json` |
 | T5 | Kiểm thử máy, kiểm kiểu; Tự kiểm tra | Kiểm thử máy 697/697, tsc sạch; Tự kiểm tra trên bản cục bộ: **Excel 40/40, PowerPoint 25/25**. **Word chưa chạy**: lúc tới lượt Word thì anh đang mở Excel (tệp của anh) trên desktop chính, quy định không mở Office thử lúc đó | `tu-kiem-tra-excel.json`, `tu-kiem-tra-powerpoint.json` |
-| T6 | Soát mã độc lập | xem mục 7 | `soat-ma-dot-11.md` |
+| T6 | Soát mã độc lập, sửa hết mục cao và trung bình | **Đạt** — 1 cao · 3 trung bình · 5 thấp · 1 nit; sửa hết cao, trung bình và 5 mục thấp; kiểm thử máy 701/701 | `soat-ma-dot-11.md` |
+
+## 7. Soát mã độc lập — xử lý
+
+Chi tiết ở `dot-11-bang-chung/soat-ma-dot-11.md`. Mục cao: kết quả `ppt_check_deck` gợi ý `ppt_set_layout` (nhóm `sap_xep` có thể đang ẩn) → đã đổi thành tên nhóm. Mục trung bình: câu lỗi sheet bị bảo vệ nêu `excel_protect`; "PivotTable" viết liền không bật nhóm; thiếu kiểm thử chuỗi công cụ trả về → đã sửa, thêm 4 kiểm thử. Các sửa chỉ đổi chuỗi và từ khóa, **chưa Chạy thật lại** trong Office.
+
+## 8. Trạng thái
+
+- 20/11: A + B xong; Chạy thật, Tự kiểm tra Excel 40/40, PowerPoint 25/25 trên bản cục bộ; soát mã độc lập đã xử lý. Bản 4.11.0 **chưa phát hành**, chưa gộp vào `main`.
+- Còn lại trước khi phát hành: Tự kiểm tra Word trên bản cục bộ (lúc chạy, anh đang mở Excel trên desktop chính nên không mở Office thử); anh duyệt việc PowerPoint chưa đạt ngưỡng T1 (−19,5% · −40,4%) và T2 (−14,7%).

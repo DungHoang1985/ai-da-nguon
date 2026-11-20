@@ -77,14 +77,14 @@ export const EXCEL_TOOL_GROUPS: ToolGroup[] = [
     id: "pivot",
     label: "PivotTable",
     tools: ["excel_create_pivot", "excel_edit_pivot"],
-    keywords: ["pivot", "tong hop theo", "bang tong hop", "thong ke theo", "bao cao tong hop", "nhom theo"],
+    keywords: ["pivot", "pivottable", "pivot table", "tong hop theo", "bang tong hop", "thong ke theo", "bao cao tong hop", "nhom theo"],
     skills: ["phan-tich-du-lieu"],
   },
   {
     id: "loc_dinh_dang",
     label: "lọc, định dạng có điều kiện, danh sách chọn",
     tools: ["excel_filter", "excel_conditional_format", "excel_data_validation"],
-    keywords: ["lọc", "filter", "dinh dang co dieu kien", "tô màu", "to mau theo", "highlight", "lam noi bat", "bat thuong", "danh sach chon", "dropdown", "drop down", "chon tu danh sach", "gioi han nhap", "rang buoc nhap", "kiem soat nhap"],
+    keywords: ["lọc", "filter", "dinh dang co dieu kien", "tô màu", "to mau theo", "highlight", "lam noi bat", "bat thuong", "danh sach chon", "tha xuong", "dropdown", "drop down", "validation", "conditional formatting", "chon tu danh sach", "gioi han nhap", "rang buoc nhap", "kiem soat nhap"],
     skills: ["phan-tich-du-lieu", "kiem-tra-tuan-thu"],
   },
   {
@@ -97,7 +97,7 @@ export const EXCEL_TOOL_GROUPS: ToolGroup[] = [
     id: "mo_hinh",
     label: "soát mô hình tài chính, tên ô giả định, giải ngược, bảng độ nhạy",
     tools: ["excel_audit_model", "excel_named_range", "excel_what_if"],
-    keywords: ["mo hinh", "gia dinh", "do nhay", "goal seek", "tim nguoc", "giai nguoc", "what if", "dat ten", "ten vung", "named range", "npv", "irr", "dong tien", "hieu qua dau tu", "phuong an tai chinh", "so cung", "hard code", "kiem toan", "audit"],
+    keywords: ["mo hinh", "o gia dinh", "bang gia dinh", "cac gia dinh", "gia dinh dau vao", "do nhay", "goal seek", "tim nguoc", "giai nguoc", "what if", "dat ten vung", "dat ten o", "dat ten cho o", "ten vung", "named range", "npv", "irr", "dong tien", "hieu qua dau tu", "phuong an tai chinh", "so cung", "hard code", "kiem toan", "audit"],
     skills: ["mo-hinh-tai-chinh-du-an", "kiem-tra-loi-bang-tinh"],
   },
   {
@@ -130,7 +130,7 @@ export const PPT_TOOL_GROUPS: ToolGroup[] = [
     id: "sap_xep",
     label: "sắp xếp, nhân bản, xóa slide, đổi bố cục",
     tools: ["ppt_move_slide", "ppt_duplicate_slide", "ppt_delete_slide", "ppt_set_layout"],
-    keywords: ["di chuyen", "doi cho", "doi thu tu", "sap xep", "len truoc", "ra sau", "xuong cuoi", "nhan ban", "sao chep slide", "xoa slide", "bo slide", "bo cuc", "layout"],
+    keywords: ["di chuyen", "doi cho", "doi thu tu", "sap xep", "len truoc", "len dau", "ra sau", "xuong cuoi", "hoan doi", "doi vi tri", "nhan ban", "sao chep slide", "xoa slide", "bo slide", "bo cuc", "layout"],
     skills: ["kiem-tra-bai-trinh-chieu"],
   },
   {
@@ -172,7 +172,7 @@ export const WORD_SPECIAL_LINE_FREE =
 
 /** Dòng chỉ đường tới công cụ chuyên trong lời nhắc Excel (Đợt 11, chế độ Trả phí) */
 export const EXCEL_SPECIAL_LINE =
-  "- CÔNG CỤ CHUYÊN (làm theo mô tả của công cụ): lọc → excel_filter; tô màu theo điều kiện → excel_conditional_format; danh sách chọn → excel_data_validation; PivotTable → excel_create_pivot; sửa biểu đồ, PivotTable CÓ SẴN → excel_list_objects rồi excel_edit_chart, excel_edit_pivot (không tạo mới); in → MỘT lần excel_page_setup; soát mô hình tài chính → excel_audit_model (đọc ô được chỉ rồi mới kết luận); tên ô giả định → excel_named_range; giải ngược, bảng độ nhạy → excel_what_if (sổ tính không đổi); xóa dòng trùng, thay hàng loạt, điền chuỗi → excel_clean_data; khóa ô công thức → excel_protect (không đặt mật khẩu).";
+  "- CÔNG CỤ CHUYÊN (làm theo mô tả của công cụ): lọc → excel_filter; tô màu theo điều kiện → excel_conditional_format; danh sách chọn → excel_data_validation; PivotTable → excel_create_pivot; sửa biểu đồ, PivotTable CÓ SẴN → excel_list_objects rồi excel_edit_chart, excel_edit_pivot (không tạo mới); in → MỘT lần excel_page_setup; soát mô hình tài chính → excel_audit_model (đọc ô được chỉ rồi mới kết luận); tên ô giả định → excel_named_range; giải ngược, bảng độ nhạy → excel_what_if (sổ tính không đổi; muốn ghi kết quả thì hỏi người dùng rồi mới ghi); xóa dòng trùng, thay hàng loạt, điền chuỗi → excel_clean_data; khóa ô công thức → excel_protect (không đặt mật khẩu).";
 
 export const EXCEL_SPECIAL_LINE_FREE =
   "- CÔNG CỤ CHUYÊN (xem mục Nhóm công cụ chuyên): biểu đồ → nhóm bieu_do; PivotTable → nhóm pivot; lọc, tô màu theo điều kiện, danh sách chọn → nhóm loc_dinh_dang; in → nhóm in_an; soát mô hình tài chính, tên ô giả định, giải ngược, bảng độ nhạy → nhóm mo_hinh; xóa dòng trùng, thay hàng loạt, điền chuỗi, khóa ô công thức → nhóm lam_sach_khoa; ứng dụng Office khác → nhóm ngoai. Sửa biểu đồ, PivotTable CÓ SẴN: excel_list_objects rồi công cụ của nhóm, không tạo mới.";

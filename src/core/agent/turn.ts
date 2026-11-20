@@ -180,7 +180,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
     const groups = a.toolGroups?.length ? a.toolGroups : undefined;
     const system = buildSystemPrompt({
       base: groups ? freeBasePrompt(a.tools.systemPrompt(), groups) : a.tools.systemPrompt(),
-      // Chuẩn làm việc PowerPoint nêu tên công cụ chuyên (Đợt 11): ở chế độ Miễn phí đổi thành tên nhóm như lời nhắc riêng
+      // Phòng thủ (Đợt 11): chuẩn làm việc hiện không nêu tên công cụ chuyên; nếu sau này có thì ở chế độ Miễn phí đổi thành tên nhóm
       guide: groups && a.guide ? hideGroupTools(a.guide, groups) : a.guide,
       host: o.host,
       instructions: o.instructions,

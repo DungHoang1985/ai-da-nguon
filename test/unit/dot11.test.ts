@@ -190,6 +190,29 @@ describe("Đợt 11 — lời nhắc", () => {
   });
 });
 
+describe("Đợt 11 — sửa theo soát mã độc lập", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const src = (f: string) => fs.readFileSync(path.join(__dirname, "../../src", f), "utf8") as string;
+  const namedIn = (text: string, G: ToolGroup[]) => G.flatMap((g) => g.tools.filter((t) => new RegExp(`\\b${t}\\b`).test(text)).map((t) => `${g.id}:${t}`));
+  it("#1: chỗ sửa mà ppt_check_deck gợi ý chỉ nêu công cụ lõi hoặc cùng nhóm kiem_bai", () => {
+    assert.deepStrictEqual(namedIn(src("core/deckcheck.ts"), PPT_TOOL_GROUPS.filter((g) => g.id !== "kiem_bai")), []);
+  });
+  it("#2: câu lỗi của lớp nhật ký Excel (bọc mọi công cụ, kể cả lõi) không nêu tên công cụ chuyên", () => {
+    assert.deepStrictEqual(namedIn(src("office/excelTrail.ts"), EXCEL_TOOL_GROUPS), []);
+  });
+  it("#3, #5: PivotTable viết liền, thả xuống, đổi vị trí slide bật đúng nhóm; #6: gia đình, đặt tên sheet không bật mô hình", () => {
+    assert.deepStrictEqual(req(EXCEL_TOOL_GROUPS, "Tạo PivotTable từ bảng A1:D100"), ["pivot"]);
+    assert.deepStrictEqual(req(EXCEL_TOOL_GROUPS, "Thêm danh sách thả xuống cho cột C"), ["loc_dinh_dang"]);
+    assert.deepStrictEqual(req(PPT_TOOL_GROUPS, "Hoán đổi slide 2 và 3"), ["sap_xep"]);
+    assert.deepStrictEqual(req(EXCEL_TOOL_GROUPS, "Lập bảng chi tiêu gia đình tháng này"), []);
+    assert.deepStrictEqual(req(EXCEL_TOOL_GROUPS, "Đặt tên sheet là Tổng hợp"), []);
+  });
+  it("#7: câu ghi chú ảnh đính kèm không nêu tên công cụ chèn ảnh", () => {
+    assert.ok(!/Muốn đặt ảnh vào slide thì gọi ppt_insert_image/.test(src("taskpane/components/Chat.tsx")));
+  });
+});
+
 describe("Đợt 11 — chạy một lượt ở chế độ Miễn phí", () => {
   it("Excel: bước đầu chỉ gửi nhóm lõi + load_tools; model xin nhóm pivot thì bước sau có công cụ PivotTable và chạy được", async () => {
     const executed: string[] = [];

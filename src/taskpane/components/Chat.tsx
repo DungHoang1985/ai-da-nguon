@@ -47,7 +47,7 @@ import { CORE_GUIDES, autoSelectSkills } from "../../core/skillpack";
 import { toolGroupsFor } from "../../core/toolgroups";
 import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, PDF_MIME, filesBase64Chars, readAttachment, withAttachments } from "../../core/attachments";
 import { attachmentPrivacyNote, canSeePages, routeScanPdf } from "../../core/pdfPages";
-import { clearAttachedFiles, registerAttachedFile } from "../../core/attachedFiles";
+import { clearAttachedFiles, listAttachedImages, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
 import { REDO_WITH_TOOLS, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
@@ -797,7 +797,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     if (host === "PowerPoint" && useAgent) {
       const named = atts.filter((a) => a.kind === "image" && a.data);
       named.forEach((a) => registerAttachedFile(a.name, a.data!));
-      if (named.length) content = `${content}\n\n[Ảnh đính kèm: ${named.map((a) => `“${a.name}”`).join(", ")}. Muốn đặt ảnh vào slide thì gọi ppt_insert_image với image = tên ảnh.]`;
+      if (named.length) content = `${content}\n\n[Ảnh đính kèm: ${named.map((a) => `“${a.name}”`).join(", ")}. Muốn đặt ảnh vào slide thì gọi công cụ chèn ảnh đính kèm với image = tên ảnh.]`;
     }
     // PDF quét gửi nguyên tệp cho model tự đọc; nguồn không đọc được thì báo rõ (và model cũng được báo trong tin nhắn)
     const pdfs = whole.map((a) => ({ mime: a.mime || "application/pdf", data: a.data!, name: a.name }));
@@ -951,7 +951,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                 groupHints: [
                   ...(host === "Word" && atts.some((a) => a.mime === DOCX_MIME) ? ["soat"] : []),
                   // Đợt 11: ảnh đính kèm trong PowerPoint bật nhóm chèn ảnh
-                  ...(host === "PowerPoint" && images.length ? ["hinh_anh"] : []),
+                  // (cả ảnh đính kèm ở lượt trước còn trong phiên: lời "đặt hình đó vào slide 4" không có từ khóa — soát mã Đợt 11, #7)
+                  ...(host === "PowerPoint" && (images.length || listAttachedImages().length) ? ["hinh_anh"] : []),
                 ],
                 // Kỹ năng gọi bằng /tên kéo theo nhóm công cụ của nó (soát mã Đợt 10, H3)
                 groupSkills: [...auto.map((k) => k.name), ...(slash.label?.startsWith("/") ? [slash.label.slice(1)] : [])],

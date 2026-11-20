@@ -123,7 +123,7 @@ export function checkDeck(slides: DeckSlide[], o: DeckOptions): DeckReport {
     // Tiêu đề
     const title = s.shapes.find((sh) => sh.isTitle);
     if (!title || !(title.paragraphs || []).some((p) => p.text.trim())) {
-      add({ kind: "missing_title", slide: s.slide, message: `Slide ${s.slide} ${title ? "có ô tiêu đề nhưng để trống" : "không có tiêu đề"}.`, fix: title ? "ppt_set_shape_text vào ô tiêu đề" : "ppt_set_layout sang bố cục có tiêu đề rồi điền tiêu đề" });
+      add({ kind: "missing_title", slide: s.slide, message: `Slide ${s.slide} ${title ? "có ô tiêu đề nhưng để trống" : "không có tiêu đề"}.`, fix: title ? "ppt_set_shape_text vào ô tiêu đề" : "đổi bố cục slide sang bố cục có tiêu đề (chế độ Miễn phí: nhóm sap_xep) rồi điền tiêu đề" });
     }
     for (const sh of texty) {
       const paras = (sh.paragraphs || []).filter((p) => p.text.trim());

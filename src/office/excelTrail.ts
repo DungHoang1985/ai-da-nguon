@@ -182,7 +182,7 @@ export function withAuditTrail(base: HostToolSet, o: TrailOptions): HostToolSet 
         result = await base.execute(name, a, ctx);
       } catch (e: any) {
         if (e?.code === "AccessDenied" && write) {
-          const err: any = new Error(`${e.message || e} — Sheet có thể đang được bảo vệ (ô bị khóa). Nói rõ với người dùng; chỉ bỏ bảo vệ (excel_protect, action unprotect) khi họ đồng ý.`);
+          const err: any = new Error(`${e.message || e} — Sheet có thể đang được bảo vệ (ô bị khóa). Nói rõ với người dùng; chỉ bỏ bảo vệ khi họ đồng ý (công cụ khóa ô công thức, action unprotect; chế độ Miễn phí: nhóm lam_sach_khoa).`);
           err.code = e.code;
           throw err;
         }

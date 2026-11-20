@@ -2,19 +2,19 @@
  "host": "Excel",
  "mode": "full",
  "tools": 33,
- "system_chars": 6278,
+ "system_chars": 6327,
  "system_parts_chars": {
-  "base": 1390,
+  "base": 1439,
   "guide": 1654,
   "catalog": 1299,
   "rules_and_groups": 1935
  },
  "tools_chars": 19139,
- "total_chars": 25417,
+ "total_chars": 25466,
  "est_tokens": {
-  "system": 1962,
+  "system": 1977,
   "tools": 5981,
-  "total": 7943
+  "total": 7958
  },
  "per_tool": [
   {
