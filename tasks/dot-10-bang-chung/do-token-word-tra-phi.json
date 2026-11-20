@@ -1,0 +1,196 @@
+{
+ "host": "Word",
+ "mode": "full",
+ "tools": 35,
+ "system_chars": 7572,
+ "system_parts_chars": {
+  "base": 3281,
+  "guide": 536,
+  "catalog": 1820,
+  "rules_and_groups": 1935
+ },
+ "tools_chars": 22477,
+ "total_chars": 30049,
+ "est_tokens": {
+  "system": 2366,
+  "tools": 7024,
+  "total": 9390
+ },
+ "per_tool": [
+  {
+   "name": "word_create_admin_document",
+   "chars": 2629,
+   "desc": 486
+  },
+  {
+   "name": "word_format_text",
+   "chars": 1255,
+   "desc": 198
+  },
+  {
+   "name": "write_other_app",
+   "chars": 960,
+   "desc": 314
+  },
+  {
+   "name": "word_insert_paragraphs",
+   "chars": 950,
+   "desc": 206
+  },
+  {
+   "name": "word_replace_text",
+   "chars": 935,
+   "desc": 227
+  },
+  {
+   "name": "word_insert_clause",
+   "chars": 908,
+   "desc": 251
+  },
+  {
+   "name": "word_read_parts",
+   "chars": 845,
+   "desc": 292
+  },
+  {
+   "name": "word_fill_form",
+   "chars": 801,
+   "desc": 513
+  },
+  {
+   "name": "word_check_consistency",
+   "chars": 799,
+   "desc": 450
+  },
+  {
+   "name": "word_read_paragraphs",
+   "chars": 793,
+   "desc": 407
+  },
+  {
+   "name": "word_compare_versions",
+   "chars": 749,
+   "desc": 395
+  },
+  {
+   "name": "read_attachment_pages",
+   "chars": 693,
+   "desc": 263
+  },
+  {
+   "name": "word_fill_table",
+   "chars": 633,
+   "desc": 102
+  },
+  {
+   "name": "word_review_revision",
+   "chars": 609,
+   "desc": 156
+  },
+  {
+   "name": "word_check_page_format",
+   "chars": 596,
+   "desc": 292
+  },
+  {
+   "name": "word_set_page_format",
+   "chars": 596,
+   "desc": 210
+  },
+  {
+   "name": "word_set_paragraph_text",
+   "chars": 595,
+   "desc": 161
+  },
+  {
+   "name": "word_add_comment",
+   "chars": 593,
+   "desc": 171
+  },
+  {
+   "name": "word_list_form_fields",
+   "chars": 576,
+   "desc": 419
+  },
+  {
+   "name": "word_find",
+   "chars": 560,
+   "desc": 266
+  },
+  {
+   "name": "word_insert_table",
+   "chars": 557,
+   "desc": 104
+  },
+  {
+   "name": "word_delete_paragraphs",
+   "chars": 555,
+   "desc": 117
+  },
+  {
+   "name": "word_get_outline",
+   "chars": 499,
+   "desc": 268
+  },
+  {
+   "name": "word_list_revisions",
+   "chars": 472,
+   "desc": 242
+  },
+  {
+   "name": "use_skill",
+   "chars": 463,
+   "desc": 208
+  },
+  {
+   "name": "word_change_level",
+   "chars": 443,
+   "desc": 99
+  },
+  {
+   "name": "word_replace_selection",
+   "chars": 350,
+   "desc": 83
+  },
+  {
+   "name": "word_list_comments",
+   "chars": 338,
+   "desc": 116
+  },
+  {
+   "name": "read_other_app",
+   "chars": 305,
+   "desc": 142
+  },
+  {
+   "name": "word_read_tables",
+   "chars": 279,
+   "desc": 60
+  },
+  {
+   "name": "word_read_clause",
+   "chars": 252,
+   "desc": 111
+  },
+  {
+   "name": "word_resolve_comment",
+   "chars": 239,
+   "desc": 42
+  },
+  {
+   "name": "word_get_overview",
+   "chars": 233,
+   "desc": 139
+  },
+  {
+   "name": "word_reply_comment",
+   "chars": 225,
+   "desc": 58
+  },
+  {
+   "name": "word_go_to",
+   "chars": 192,
+   "desc": 39
+  }
+ ]
+}

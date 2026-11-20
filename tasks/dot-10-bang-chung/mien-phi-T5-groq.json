@@ -1,0 +1,16 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Groq GPT OSS 120B. Bấm để đổi 🆓 Groq · GPT OSS 120B"
+ },
+ "treo": 0,
+ "daHoi": [
+  "AI muốn: Chèn nội dung (end) — lý do: Chèn đoạn mới yêu cầu vào cuối tài liệu | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 7,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nChèn vào cuối văn bản một đoạn mới với nội dung đúng như sau: Bài thử Đợt 10.\n✅ Chèn nội dung (end) — lý do: Chèn đoạn mới yêu cầu vào cuối tài liệu\n↪ Groq · openai/gpt-oss-120b: hết lượt tạm thời — đổi sang Google Gemini · gemini-3.8-flash.\nĐã chèn đoạn mới vào cuối văn bản với nội dung: \"Bài thử Đợt 10.\"\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 10.240 · ra 251\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🆓 Groq · GPT OSS 120B",
+ "doiNguon": [
+  "↪ Groq · openai/gpt-oss-120b: hết lượt tạm thời — đổi sang Google Gemini · gemini-3.8-flash."
+ ],
+ "lanGoiAI": "2"
+}

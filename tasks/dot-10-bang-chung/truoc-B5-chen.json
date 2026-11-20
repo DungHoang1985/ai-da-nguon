@@ -1,0 +1,14 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5"
+ },
+ "treo": 0,
+ "daHoi": [
+  "AI muốn: Chèn nội dung (end) — lý do: Theo yêu cầu, chèn đoạn nội dung vào cuối văn bản. | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+ ],
+ "daDung": false,
+ "giay": 4,
+ "khung": "AI Đa Nguồn\nv4.9\nExcel — · PowerPoint —\nChèn vào cuối văn bản một đoạn mới với nội dung đúng như sau: Bài thử Đợt 10.\n✅ Chèn nội dung (end) — lý do: Theo yêu cầu, chèn đoạn nội dung vào cuối văn bản.\nĐã chèn đoạn \"Bài thử Đợt 10.\" vào cuối văn bản (đoạn ¶85), dưới dạng thay đổi được theo dõi để bạn duyệt.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 38.984 · ra 208 · đọc từ bộ nhớ đệm 37.428 · ghi vào bộ nhớ đệm 1.550\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n💳 Anthropic · Claude Haiku 5.5",
+ "doiNguon": [],
+ "lanGoiAI": "2"
+}

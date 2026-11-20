@@ -1,0 +1,12 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi 🆓 Google Gemini · Gemini 3.8 Flash"
+ },
+ "treo": 0,
+ "daHoi": [],
+ "daDung": false,
+ "giay": 15,
+ "khung": "AI Đa Nguồn\nv4.10\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nDòng chữ lặp lại ở trên cùng và dưới cùng mỗi trang của văn bản này ghi gì?\n✅ Nạp thêm công cụ: soát nhất quán, so phiên bản, phần ngoài thân văn bản\n✅ Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản — 1 đầu và chân trang\nDòng chữ lặp lại ở đầu trang (header) và chân trang (footer) của văn bản như sau:\n \n• Trên cùng mỗi trang (Header):\n> `Hợp đồng thuê văn phòng số 12/2026/HĐT-VP`\n \n• Dưới cùng mỗi trang (Footer):\n> `Bản dự thảo lần 3 ngày 10/11/2026 — Lưu hành nội bộ — Trang [số trang]` *(phần số trang được đánh số tự động theo từng trang).*\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 19.707 · ra 368 · đọc từ bộ nhớ đệm 4.755\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\n🆓 Google Gemini · Gemini 3.8 Flash",
+ "doiNguon": [],
+ "lanGoiAI": "3"
+}

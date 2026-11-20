@@ -78,6 +78,53 @@ Tiêu chí điều chỉnh theo lựa chọn trên (thay mục 5 ở các điể
 | T3 | 6 bài Word Chạy thật bằng Haiku (Trả phí) làm xong đúng, số lần gọi không tăng quá 1 so với 4.9.0; thêm 2 bài ở chế độ Miễn phí (điền mẫu, soạn công văn) bằng nguồn miễn phí làm xong nhờ nhóm tự bật |
 | T4 | Ở chế độ Miễn phí, bài cố ý không khớp từ khóa → model gọi `load_tools` rồi làm xong |
 
-## 7. Trạng thái
+## 7. Đã làm
 
-- 20/11: đo mốc xong (mục 2); anh chốt mục 6. Đang làm: bước A (viết gọn).
+- **A (mọi chế độ):** bỏ câu giải thích `expect` lặp ở 10 công cụ (lời nhắc đã giải thích một lần); rút mô tả và tham số của 35 công cụ; 5 dòng hướng dẫn công cụ chuyên trong lời nhắc Word gộp thành một dòng `WORD_SPECIAL_LINE`, phần hành vi riêng ("báo đủ mọi điểm theo total", "tóm tắt đủ theo differences") chuyển vào mô tả của chính công cụ đó; chuẩn làm việc Word bỏ phần trùng với lời nhắc Word; 11 kỹ năng Word có `brief` (≤ 200 ký tự) cho danh mục kỹ năng. Excel, PowerPoint chỉ đổi theo phần dùng chung (`read_other_app`, `write_other_app`, `read_attachment_pages`, câu đầu danh mục kỹ năng, `brief` của 3 kỹ năng dùng chung).
+- **B (chỉ Miễn phí, chỉ Word):** `src/core/toolgroups.ts` — 6 nhóm chuyên (`hanh_chinh`, `dien_mau`, `soat`, `nhan_xet_sua_doi`, `bang`, `ngoai`), nhóm lõi 16 công cụ. Nhóm bật khi: lời người dùng khớp từ khóa (chuỗi có dấu so trên câu gốc để "bảng" không lẫn "bằng"), kỹ năng tự chọn kéo theo, tệp PDF / .docx đính kèm, model gọi `load_tools`, model gọi thẳng công cụ của nhóm hoặc `use_skill` một kỹ năng của nhóm. Nhóm đang bật được suy ra lại từ lịch sử ở mỗi bước (không lưu trạng thái riêng), nên các lượt sau của cùng hội thoại vẫn có nhóm đã dùng. Lời nhắc thêm mục "Nhóm công cụ chuyên" (cố định trong hội thoại).
+- Bài đo `kiem-thu/do-token.ts` (`--free` cho nhóm lõi); bài thử `kiem-thu/cdp-bai/dot-10-moi.js`; 16 kiểm thử ở `test/unit/dot10.test.ts`, gồm kiểm thử chặn phình lại (Trả phí ≤ 30.700, Miễn phí ≤ 20.400 ký tự).
+
+## 8. Kết quả (bản cục bộ 4.10.0, desktop ẩn, 20/11/2026)
+
+### Số token thật, Claude Haiku 5.5, chế độ Trả phí (cùng bài, cùng tài liệu, hội thoại mới mỗi bài)
+
+"Token vào" là tổng đầu vào mọi lần gọi của bài (gồm phần đọc từ và ghi vào bộ nhớ đệm). Tệp: `truoc-*.json` (bản 4.9.0 đã phát hành), `sau-*.json` (bản cục bộ 4.10).
+
+| Bài | 4.9.0: lần gọi · token vào | 4.10: lần gọi · token vào | Giảm | Kết quả |
+|---|---|---|---|---|
+| B1 Soát nhất quán trước khi ký | 2 · 50.100 | 2 · 41.587 | 17% | Cả hai bản đều tìm đủ 9 lỗi cài sẵn |
+| B2 So với bản v2 đính kèm | 2 · 49.441 | 2 · 40.937 | 17% | Cả hai kê đủ các chỗ khác theo điều |
+| B3 Đối tác sửa gì, nhận xét gì | 3 · 61.940 | 3 · 49.145 | 21% | Cùng 4 bước đọc, cùng kết luận |
+| B4 Rà soát Điều 3, 5, ghi nhận xét | 6 · 142.104 | 4 · 69.023 | 51% | 4.9.0: 5 nhận xét (1 lần lỗi `expect` phải ghi lại); 4.10: 3 nhận xét gộp có mức Vàng/Đỏ, cùng các rủi ro chính |
+| B5 Chèn một đoạn cuối văn bản | 2 · 38.984 | 2 · 30.475 | **22%** | Đúng |
+| B6 Điền hợp đồng đặt cọc | 3 · 65.759 | 3 · 52.422 | 20% | 15/15 chỗ cả hai bản |
+| B7 Soạn công văn | 2 · 47.132 | 2 · 39.050 | 17% | Một lệnh dựng đúng thể thức cả hai bản |
+
+Mỗi lần gọi (B5): 19.492 → 15.238 token.
+
+### Chế độ Miễn phí (nạp theo việc)
+
+| Bài | Nguồn | Lần gọi · token vào | Kết quả |
+|---|---|---|---|
+| T4: "Dòng chữ lặp lại ở trên cùng và dưới cùng mỗi trang ghi gì?" (không khớp từ khóa nào) | Gemini 3.8 Flash | 3 · 19.707 | Model gọi `load_tools(soat)` → `word_read_parts` → trả đúng đầu trang, chân trang |
+| Điền hợp đồng đặt cọc | Gemini 3.8 Flash | 3 · 24.684 | 15/15 chỗ (nhóm `dien_mau` bật theo từ khóa) |
+| Soạn công văn | Gemini im lặng → Groq "yêu cầu quá lớn" → OpenRouter Nemotron 3 Ultra free | 3 · 32.211 | Dựng đúng thể thức, còn 2 chỗ cần điền |
+| Chèn một đoạn | Groq GPT OSS 120B → Gemini | 2 · 10.240 | Lần gọi đầu của **Groq chạy được** (trước đây lỗi 413 ngay lần đầu) và ghi đúng; lần gọi thứ hai chạm hạn 8.000 token/phút của Groq → tự đổi sang Gemini làm xong |
+
+### Bảng nghiệm thu
+
+| # | Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|---|
+| T1 | Phần cố định Word: Trả phí giảm ≥ 25%, Miễn phí nhóm lõi giảm ≥ 50% | **Đạt** — Trả phí 40.922 → 30.049 ký tự (−26,6%); Miễn phí 18.135 (−55,7%) | `do-token-word-moc-490.json`, `do-token-word-tra-phi.json`, `do-token-word-mien-phi.json`; kiểm thử chặn phình lại |
+| T2 | Token thật mỗi lần gọi (Haiku, bài chèn đoạn) giảm ≥ 20% | **Đạt** — 19.492 → 15.238 (−21,8%) | `truoc-B5-chen.json`, `sau-B5-chen.json` |
+| T3 | 7 bài Haiku làm xong đúng, số lần gọi không tăng quá 1; 2 bài Miễn phí làm xong | **Đạt** — 7/7 xong, số lần gọi bằng hoặc ít hơn; điền mẫu và công văn ở Miễn phí làm xong | bảng trên, `sau-*.json`, `mien-phi-B6-*.json`, `mien-phi-B7-*.json` |
+| T4 | Miễn phí: bài không khớp từ khóa → model gọi `load_tools` rồi làm xong | **Đạt** (Gemini 3.8 Flash) | `mien-phi-T4-load-tools.json` |
+| T5 | Ít nhất một nguồn miễn phí làm xong bài Word ngắn; ghi Groq có hết 413 không | **Đạt** — Groq hết 413 ở bài ngắn (lần gọi đầu chạy được); vẫn bị hạn 8.000 token/phút ở lần gọi thứ hai và vẫn "quá lớn" khi đã nạp nhóm văn bản hành chính → vòng xoay tự đổi nguồn | `mien-phi-T5-groq.json`, `mien-phi-B7-cong-van.json` |
+| T6 | Kiểm thử máy, kiểm kiểu; Tự kiểm tra Word 39/39, Excel 40/40, PowerPoint 25/25 | **Đạt** — 663/663, tsc sạch; Tự kiểm tra Word 39/39, Excel 40/40, PowerPoint 25/25 trên bản 4.10 cục bộ | `tu-kiem-tra-*.json` |
+| T7 | Soát mã độc lập, sửa hết mục cao và trung bình | Đang chạy | `soat-ma-dot-10.md` |
+
+Ghi chú: một lần chạy "sau" của B7 bị bỏ vì quên mở lại Word (văn bản còn công văn của lần chạy mốc); đã chạy lại trên văn bản trống. Câu trả lời của AI ở lần chạy hỏng có nhắc tên tài khoản Office của anh; tệp đó đã bị bản chạy lại ghi đè, đã `grep` lại toàn bộ bằng chứng: không còn tên.
+
+## 9. Trạng thái
+
+- 20/11: A + B xong, kiểm xong T1–T6. Đang chạy soát mã độc lập (T7), sau đó phát hành 4.10.0.
