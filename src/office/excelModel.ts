@@ -9,34 +9,34 @@ import { formulaRisksOf } from "../core/formularisk";
 import { auditModel } from "../core/modelaudit";
 import { cleanNumberList, goalSeek, tidy } from "../core/goalseek";
 
-const addressProp = { type: "string", description: "A1-style range, optionally with sheet, e.g. 'Sheet1!A1:D20'." };
-const sheetProp = { type: "string", description: "Sheet name (optional; defaults to the active sheet)." };
+const addressProp = { type: "string", description: "e.g. 'Sheet1!A1:D20'." };
+const sheetProp = { type: "string", description: "Default: active sheet." };
 const strList = { type: "array", items: { type: "string" } };
 
 export const EXCEL_MODEL_SPECS: ToolSpec[] = [
   {
     name: "excel_list_objects",
     description:
-      "List what already exists in the workbook: charts, PivotTables (with their fields), tables, named ranges, and the print setup and protection of each sheet. Call it before editing an existing chart or PivotTable.",
+      "List existing charts, PivotTables (with fields), tables, named ranges, print setup and protection of each sheet. Call before editing an existing chart or PivotTable.",
     parameters: { type: "object", properties: { sheet: sheetProp } },
   },
   {
     name: "excel_edit_chart",
     description:
-      "Edit an EXISTING chart: change type, title, data source, axis titles, legend; or delete it. Identify the chart by name (from excel_list_objects); omit when the sheet has a single chart.",
+      "Edit an EXISTING chart (type, title, data source, axis titles, legend) or delete it.",
     parameters: {
       type: "object",
       properties: {
         sheet: sheetProp,
-        chart: { type: "string", description: "Chart name, e.g. 'Chart 1'." },
+        chart: { type: "string", description: "Name from excel_list_objects; omit if the sheet has one chart." },
         chart_type: { type: "string", enum: ["column", "bar", "line", "pie", "area", "scatter", "doughnut", "stacked_column", "stacked_bar"] },
         title: { type: "string" },
-        source_address: { type: "string", description: "New contiguous data range (with header row)." },
+        source_address: { type: "string", description: "Contiguous, with header row." },
         series_by: { type: "string", enum: ["auto", "rows", "columns"] },
         x_axis_title: { type: "string" },
         y_axis_title: { type: "string" },
         legend: { type: "string", enum: ["top", "bottom", "left", "right", "none"] },
-        delete: { type: "boolean", description: "Delete the chart (asks the user)." },
+        delete: { type: "boolean" },
       },
     },
     write: true,
@@ -44,27 +44,27 @@ export const EXCEL_MODEL_SPECS: ToolSpec[] = [
   {
     name: "excel_edit_pivot",
     description:
-      "Edit an EXISTING PivotTable: add or remove fields, change the summary function, keep only some items of a field, clear filters, refresh after the source data changed. Field names = header texts of the source data.",
+      "Edit an EXISTING PivotTable: add/remove fields, change summary function, filter items, clear filters, refresh. Field names = source header texts.",
     parameters: {
       type: "object",
       properties: {
-        pivot: { type: "string", description: "PivotTable name (from excel_list_objects); omit when the workbook has a single PivotTable." },
+        pivot: { type: "string", description: "Name from excel_list_objects; omit if only one." },
         add_rows: strList,
         add_columns: strList,
         add_filters: strList,
         add_values: {
           type: "array",
-          description: "Value fields to add, or existing ones whose summary function should change.",
+          description: "Add, or change the summary function of existing ones.",
           items: {
             type: "object",
             properties: { field: { type: "string" }, summarize: { type: "string", enum: ["sum", "count", "average", "max", "min"] } },
             required: ["field"],
           },
         },
-        remove: { type: "array", items: { type: "string" }, description: "Source field names to remove from rows, columns, filters and values." },
+        remove: { type: "array", items: { type: "string" }, description: "Field names to remove everywhere." },
         filter: {
           type: "object",
-          description: "Show only these items of a row/column/filter field.",
+          description: "Show only these items of a field.",
           properties: { field: { type: "string" }, items: strList },
           required: ["field", "items"],
         },
@@ -77,28 +77,28 @@ export const EXCEL_MODEL_SPECS: ToolSpec[] = [
   {
     name: "excel_page_setup",
     description:
-      "Prepare a sheet for printing in ONE call: print area, repeated title rows/columns, orientation, paper size, fit to pages, margins, centering, header/footer, gridlines. Only the given options change.",
+      "Print setup in ONE call: print area, repeated title rows/columns, orientation, paper, fit to pages, margins, centering, header/footer, gridlines. Only given options change.",
     parameters: {
       type: "object",
       properties: {
         sheet: sheetProp,
-        print_area: { type: "string", description: "Range to print, e.g. 'A1:F40'; 'none' clears it." },
-        title_rows: { type: "string", description: "Rows repeated on every page, e.g. '1:1' or '1:2'; 'none' clears." },
-        title_columns: { type: "string", description: "Columns repeated on every page, e.g. 'A:A'; 'none' clears." },
+        print_area: { type: "string", description: "e.g. 'A1:F40'; 'none' clears." },
+        title_rows: { type: "string", description: "e.g. '1:2'; 'none' clears." },
+        title_columns: { type: "string", description: "e.g. 'A:A'; 'none' clears." },
         orientation: { type: "string", enum: ["portrait", "landscape"] },
         paper: { type: "string", enum: ["A4", "A3", "A5", "Letter", "Legal"] },
-        fit_width: { type: "number", description: "Fit to this many pages wide (1 = one page wide); 0 = no fit." },
-        fit_height: { type: "number", description: "Fit to this many pages tall; 0 or omitted = as many as needed." },
-        scale: { type: "number", description: "Print scale in percent (10–400); cancels fit_width/fit_height." },
+        fit_width: { type: "number", description: "Pages wide; 0 = no fit." },
+        fit_height: { type: "number", description: "Pages tall; 0 = as needed." },
+        scale: { type: "number", description: "Percent 10–400; cancels fit." },
         margins_cm: {
           type: "object",
           properties: { top: { type: "number" }, bottom: { type: "number" }, left: { type: "number" }, right: { type: "number" }, header: { type: "number" }, footer: { type: "number" } },
         },
         center_horizontally: { type: "boolean" },
         center_vertically: { type: "boolean" },
-        header: { type: "string", description: "Centre header text; '' clears." },
-        footer: { type: "string", description: "Centre footer text; use &P for page number and &N for page count, e.g. 'Trang &P / &N'." },
-        gridlines: { type: "boolean", description: "Print gridlines." },
+        header: { type: "string", description: "Centre text; '' clears." },
+        footer: { type: "string", description: "Centre text; &P page, &N pages: 'Trang &P / &N'." },
+        gridlines: { type: "boolean" },
       },
     },
     write: true,
@@ -106,13 +106,13 @@ export const EXCEL_MODEL_SPECS: ToolSpec[] = [
   {
     name: "excel_named_range",
     description:
-      "Create or delete a workbook name for a cell/range (e.g. name the assumption cell 'Lai_suat' so formulas read =Gia_ban*Lai_suat). Names: letters, digits, underscore, no spaces.",
+      "Create or delete a workbook name for a cell/range (e.g. assumption 'Lai_suat' so formulas read =Gia_ban*Lai_suat). Letters, digits, underscore.",
     parameters: {
       type: "object",
       properties: {
         action: { type: "string", enum: ["add", "delete"] },
         name: { type: "string" },
-        address: { type: "string", description: "For add: the cell or range, e.g. 'Giả định!B3'." },
+        address: { type: "string", description: "For add, e.g. 'Giả định!B3'." },
         comment: { type: "string" },
       },
       required: ["action", "name"],
@@ -122,26 +122,26 @@ export const EXCEL_MODEL_SPECS: ToolSpec[] = [
   {
     name: "excel_audit_model",
     description:
-      "Audit a model by code (no reading needed first): hard-coded numbers sitting inside a run of formulas, formulas that differ from their neighbours in the same row/column, rates typed inside formulas (e.g. *0.05), links to other files. Returns points to check — read the cells before telling the user.",
-    parameters: { type: "object", properties: { sheet: sheetProp, address: { type: "string", description: "Range to audit (default: the used range of the sheet)." } } },
+      "Audit a model by code (no reading first): hard-coded numbers among formulas, formulas differing from neighbours, rates typed in formulas (*0.05), links to other files. Read the flagged cells before telling the user.",
+    parameters: { type: "object", properties: { sheet: sheetProp, address: { type: "string", description: "Default: used range." } } },
   },
   {
     name: "excel_what_if",
     description:
-      "What-if analysis that leaves the workbook unchanged (inputs are restored afterwards). mode 'goal_seek': find the value of input_cell that makes target_cell equal target_value. mode 'sensitivity': table of output_cell for a list of values of input_cell (and optionally input_cell_2). Input cells must hold plain numbers, not formulas. To keep a result, write it afterwards with excel_write_range.",
+      "What-if, workbook left unchanged. goal_seek: input_cell value making target_cell = target_value. sensitivity: output_cell for values of input_cell (and input_cell_2). Input cells must hold plain numbers. To keep a result, write it with excel_write_range.",
     parameters: {
       type: "object",
       properties: {
         mode: { type: "string", enum: ["goal_seek", "sensitivity"] },
         input_cell: { type: "string", description: "e.g. 'Mô hình!B3'." },
-        target_cell: { type: "string", description: "goal_seek: formula cell that must reach target_value." },
+        target_cell: { type: "string" },
         target_value: { type: "number" },
-        min: { type: "number", description: "goal_seek: lowest allowed input (optional)." },
-        max: { type: "number", description: "goal_seek: highest allowed input (optional)." },
-        output_cell: { type: "string", description: "sensitivity: formula cell to observe." },
-        values: { type: "array", items: { type: "number" }, description: "sensitivity: values to try for input_cell (max 15)." },
+        min: { type: "number", description: "goal_seek: lowest input." },
+        max: { type: "number", description: "goal_seek: highest input." },
+        output_cell: { type: "string" },
+        values: { type: "array", items: { type: "number" }, description: "Max 15." },
         input_cell_2: { type: "string" },
-        values_2: { type: "array", items: { type: "number" }, description: "sensitivity: values for input_cell_2 (max 15)." },
+        values_2: { type: "array", items: { type: "number" }, description: "Max 15." },
       },
       required: ["mode", "input_cell"],
     },
@@ -149,20 +149,20 @@ export const EXCEL_MODEL_SPECS: ToolSpec[] = [
   {
     name: "excel_clean_data",
     description:
-      "Clean a data range. 'remove_duplicates': delete rows that repeat (by the given key columns; asks the user). 'replace_all': replace a text everywhere in the range. 'fill_series': extend a series (dates, numbers, text pattern) from the cells in address down/right to fill_to.",
+      "Clean a range. remove_duplicates: delete repeated rows (by key columns). replace_all: replace a text in the range. fill_series: extend the series in address (dates, numbers, pattern) to fill_to.",
     parameters: {
       type: "object",
       properties: {
         action: { type: "string", enum: ["remove_duplicates", "replace_all", "fill_series"] },
         address: addressProp,
         sheet: sheetProp,
-        columns: { type: "array", items: { type: "string" }, description: "remove_duplicates: key column letters, e.g. ['A']; default all columns." },
-        has_headers: { type: "boolean", description: "remove_duplicates: first row is a header (default true)." },
+        columns: { type: "array", items: { type: "string" }, description: "Key column letters; default all." },
+        has_headers: { type: "boolean", description: "Default true." },
         find: { type: "string" },
         replace: { type: "string" },
         match_case: { type: "boolean" },
         whole_cell: { type: "boolean" },
-        fill_to: { type: "string", description: "fill_series: destination range that includes address, e.g. 'A2:A31'." },
+        fill_to: { type: "string", description: "Range including address, e.g. 'A2:A31'." },
         fill_type: { type: "string", enum: ["default", "series", "days", "weekdays", "months", "years", "copy"] },
       },
       required: ["action", "address"],
@@ -172,13 +172,13 @@ export const EXCEL_MODEL_SPECS: ToolSpec[] = [
   {
     name: "excel_protect",
     description:
-      "'lock_formulas': lock every formula cell of the sheet, leave the other cells (inputs) editable, then protect the sheet WITHOUT a password (formatting, sorting and filtering stay allowed). 'unprotect': remove protection (only works when the sheet has no password).",
+      "lock_formulas: lock formula cells, leave inputs editable, protect the sheet WITHOUT password (format, sort, filter allowed). unprotect: only for sheets without password.",
     parameters: {
       type: "object",
       properties: {
         action: { type: "string", enum: ["lock_formulas", "unprotect"] },
         sheet: sheetProp,
-        input_ranges: { type: "array", items: { type: "string" }, description: "lock_formulas: if given, ONLY these ranges stay editable (everything else is locked)." },
+        input_ranges: { type: "array", items: { type: "string" }, description: "If given, ONLY these stay editable." },
       },
       required: ["action"],
     },

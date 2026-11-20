@@ -5,39 +5,39 @@ import { getRange, restoreFrom, snapshot } from "./excelCore";
 import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, topLeft, truncate } from "./util";
 import { formulaRiskMessage } from "../core/formularisk";
 
-const addressProp = { type: "string", description: "A1-style range, optionally with sheet, e.g. 'Sheet1!A1:D20'." };
-const sheetProp = { type: "string", description: "Sheet name (optional; defaults to the active sheet)." };
+const addressProp = { type: "string", description: "e.g. 'Sheet1!A1:D20'." };
+const sheetProp = { type: "string", description: "Default: active sheet." };
 
 export const EXCEL_ADV_SPECS: ToolSpec[] = [
   {
     name: "excel_find",
-    description: "Find cells containing a text or number across the workbook (or one sheet). Returns addresses.",
+    description: "Find cells containing a text or number in the workbook (or one sheet).",
     parameters: {
       type: "object",
       properties: {
         text: { type: "string" },
         sheet: sheetProp,
         match_case: { type: "boolean" },
-        whole_cell: { type: "boolean", description: "Match the entire cell content." },
+        whole_cell: { type: "boolean" },
       },
       required: ["text"],
     },
   },
   {
     name: "excel_find_errors",
-    description: "Scan all sheets (or one) for cells whose formulas return errors (#REF!, #DIV/0!, #N/A, #VALUE!, #NAME?…).",
+    description: "Scan sheets for formulas returning errors (#REF!, #DIV/0!, #N/A…).",
     parameters: { type: "object", properties: { sheet: sheetProp } },
   },
   {
     name: "excel_trace",
     description:
-      "Trace how a cell is calculated (precedents) or which cells depend on it (dependents), several levels deep, with formulas and values. Use to explain a number or find the root cause of an error.",
+      "Trace precedents (how a cell is calculated) or dependents, several levels, with formulas and values: explain a number, find an error's root.",
     parameters: {
       type: "object",
       properties: {
-        cell: { type: "string", description: "Single cell, e.g. 'Sheet1!C42'." },
-        direction: { type: "string", enum: ["precedents", "dependents"], description: "Default precedents." },
-        depth: { type: "number", description: "Levels to follow (default 3, max 6)." },
+        cell: { type: "string", description: "e.g. 'Sheet1!C42'." },
+        direction: { type: "string", enum: ["precedents", "dependents"] },
+        depth: { type: "number", description: "Default 3, max 6." },
       },
       required: ["cell"],
     },
@@ -45,16 +45,16 @@ export const EXCEL_ADV_SPECS: ToolSpec[] = [
   {
     name: "excel_filter",
     description:
-      "Apply an AutoFilter on a data range by one column, or clear filters. Criteria: list of values to show, or a condition like '>100', '<=5', '*text*' (contains), or top N.",
+      "AutoFilter a range by one column (values to show, a condition, or top N), or clear filters.",
     parameters: {
       type: "object",
       properties: {
         address: addressProp,
         sheet: sheetProp,
-        column: { type: "string", description: "Column letter to filter on, e.g. 'C'." },
-        values: { type: "array", items: { type: "string" }, description: "Show only rows with these values." },
-        condition: { type: "string", description: "e.g. '>100', '<>0', '*Cần Thơ*'." },
-        top: { type: "number", description: "Show top N items." },
+        column: { type: "string", description: "Letter, e.g. 'C'." },
+        values: { type: "array", items: { type: "string" } },
+        condition: { type: "string", description: "e.g. '>100', '<>0', '*Cần Thơ*' (contains)." },
+        top: { type: "number" },
         clear: { type: "boolean", description: "Remove all filters on the sheet." },
       },
     },
@@ -63,17 +63,16 @@ export const EXCEL_ADV_SPECS: ToolSpec[] = [
   {
     name: "excel_create_pivot",
     description:
-      "Create a PivotTable from a data range with headers. Field names must match the header texts exactly. Placed on a new sheet by default.",
+      "Create a PivotTable from a range with headers; field names = header texts exactly.",
     parameters: {
       type: "object",
       properties: {
         source_address: addressProp,
         sheet: sheetProp,
-        rows: { type: "array", items: { type: "string" }, description: "Header names for row fields." },
-        columns: { type: "array", items: { type: "string" }, description: "Header names for column fields (optional)." },
+        rows: { type: "array", items: { type: "string" } },
+        columns: { type: "array", items: { type: "string" } },
         values: {
           type: "array",
-          description: "Value fields with summary function.",
           items: {
             type: "object",
             properties: {
@@ -83,8 +82,8 @@ export const EXCEL_ADV_SPECS: ToolSpec[] = [
             required: ["field"],
           },
         },
-        filters: { type: "array", items: { type: "string" }, description: "Header names for report filters (optional)." },
-        destination: { type: "string", description: "'new_sheet' (default) or a top-left cell like 'Sheet2!H2'." },
+        filters: { type: "array", items: { type: "string" } },
+        destination: { type: "string", description: "'new_sheet' (default) or a cell like 'Sheet2!H2'." },
         name: { type: "string" },
       },
       required: ["source_address", "rows", "values"],
@@ -94,7 +93,7 @@ export const EXCEL_ADV_SPECS: ToolSpec[] = [
   {
     name: "excel_conditional_format",
     description:
-      "Add conditional formatting: color_scale, data_bar, cell_value (compare with value1/value2), text_contains, top_bottom (top/bottom N), duplicates.",
+      "Add conditional formatting: color_scale, data_bar, cell_value (value1/value2), text_contains, top_bottom (N), duplicates.",
     parameters: {
       type: "object",
       properties: {
@@ -108,10 +107,10 @@ export const EXCEL_ADV_SPECS: ToolSpec[] = [
         value1: { type: "string" },
         value2: { type: "string" },
         text: { type: "string" },
-        rank: { type: "number", description: "N for top_bottom (default 10)." },
-        bottom: { type: "boolean", description: "Bottom N instead of top N." },
-        fill_color: { type: "string", description: "Highlight fill, e.g. #FFC7CE." },
-        font_color: { type: "string", description: "Highlight font colour, e.g. #9C0006." },
+        rank: { type: "number", description: "Default 10." },
+        bottom: { type: "boolean" },
+        fill_color: { type: "string", description: "e.g. #FFC7CE" },
+        font_color: { type: "string", description: "e.g. #9C0006" },
       },
       required: ["address", "type"],
     },
@@ -119,17 +118,17 @@ export const EXCEL_ADV_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_data_validation",
-    description: "Add a dropdown list or number limits to cells, or clear validation.",
+    description: "Add a dropdown list or number limits to cells, or clear.",
     parameters: {
       type: "object",
       properties: {
         address: addressProp,
         sheet: sheetProp,
-        list: { type: "array", items: { type: "string" }, description: "Dropdown items." },
-        source_range: { type: "string", description: "Dropdown items from a range, e.g. 'Lists!A2:A10'." },
+        list: { type: "array", items: { type: "string" } },
+        source_range: { type: "string", description: "Items from a range, e.g. 'Lists!A2:A10'." },
         min: { type: "number" },
         max: { type: "number" },
-        whole_number: { type: "boolean", description: "With min/max: integers only." },
+        whole_number: { type: "boolean" },
         error_message: { type: "string" },
         clear: { type: "boolean" },
       },
@@ -139,23 +138,23 @@ export const EXCEL_ADV_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_add_comment",
-    description: "Add a comment (note) to a cell, e.g. to document a source or an assumption, or a review remark.",
+    description: "Add a comment (note) to a cell: source, assumption, review remark.",
     parameters: {
       type: "object",
-      properties: { cell: { type: "string", description: "e.g. 'Sheet1!B5'." }, text: { type: "string" } },
+      properties: { cell: { type: "string" }, text: { type: "string" } },
       required: ["cell", "text"],
     },
     write: true,
   },
   {
     name: "excel_insert_delete",
-    description: "Insert or delete whole rows or columns, or group / ungroup them (outline that the user can collapse).",
+    description: "Insert/delete whole rows or columns, or group/ungroup them.",
     parameters: {
       type: "object",
       properties: {
         action: { type: "string", enum: ["insert_rows", "delete_rows", "insert_columns", "delete_columns", "group_rows", "ungroup_rows", "group_columns", "ungroup_columns"] },
         sheet: sheetProp,
-        at: { type: "string", description: "Row number (e.g. '5') or column letter (e.g. 'C') where the action starts." },
+        at: { type: "string", description: "Row number ('5') or column letter ('C')." },
         count: { type: "number", description: "Default 1." },
       },
       required: ["action", "at"],
@@ -164,14 +163,14 @@ export const EXCEL_ADV_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_sheet",
-    description: "Sheet operations: rename, freeze top rows / first columns, unfreeze, activate, delete.",
+    description: "Rename, freeze rows/columns, unfreeze, activate or delete a sheet.",
     parameters: {
       type: "object",
       properties: {
         action: { type: "string", enum: ["rename", "freeze_rows", "freeze_columns", "unfreeze", "activate", "delete"] },
         sheet: sheetProp,
         new_name: { type: "string" },
-        count: { type: "number", description: "Rows/columns to freeze (default 1)." },
+        count: { type: "number", description: "Default 1." },
       },
       required: ["action"],
     },

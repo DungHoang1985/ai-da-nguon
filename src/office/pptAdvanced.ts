@@ -3,22 +3,22 @@
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { currentSlideId, deleteShapeUndo, findShape, remapSlide, restoreFont, shapeOn, slideAt, supports } from "./pptCore";
 
-const slideProp = { type: "number", description: "Slide number (1-based)." };
-const shapeProp = { type: "string", description: "Shape name (from the overview) or its number on the slide." };
+const slideProp = { type: "number" };
+const shapeProp = { type: "string", description: "Name, or number on the slide." };
 
 export const PPT_ADV_SPECS: ToolSpec[] = [
   {
     name: "ppt_add_chart",
     description:
-      "Insert a NATIVE PowerPoint chart (editable later with Edit Data) on a NEW slide after a given slide. Colours follow the presentation theme. Use the slide title to state the takeaway.",
+      "Insert a NATIVE chart (editable, theme colours) on a NEW slide; the slide title states the takeaway.",
     parameters: {
       type: "object",
       properties: {
         chart_type: { type: "string", enum: ["column", "stacked_column", "bar", "stacked_bar", "line", "area", "pie", "doughnut"] },
-        categories: { type: "array", items: { type: "string" }, description: "Category labels (x-axis or pie slices)." },
+        categories: { type: "array", items: { type: "string" } },
         series: {
           type: "array",
-          description: "One or more data series; each has as many values as categories.",
+          description: "Each with as many values as categories.",
           items: {
             type: "object",
             properties: { name: { type: "string" }, values: { type: "array", items: { type: "number" } } },
@@ -27,10 +27,10 @@ export const PPT_ADV_SPECS: ToolSpec[] = [
         },
         title: { type: "string", description: "Slide title, e.g. 'Doanh thu tăng 32% năm 2026'." },
         chart_title: { type: "string" },
-        after_slide: { type: "number", description: "Insert after this slide number (default: last slide)." },
-        number_format: { type: "string", description: "Excel number format for values, e.g. '#,##0' or '0.0%'." },
-        show_values: { type: "boolean", description: "Show data labels." },
-        layout: { type: "string", description: "Optional layout name from the overview; default: the deck's 'Title Only' layout." },
+        after_slide: { type: "number", description: "Default: last slide." },
+        number_format: { type: "string", description: "e.g. '#,##0', '0.0%'." },
+        show_values: { type: "boolean", description: "Data labels." },
+        layout: { type: "string", description: "Default 'Title Only'." },
       },
       required: ["chart_type", "categories", "series"],
     },
@@ -39,18 +39,18 @@ export const PPT_ADV_SPECS: ToolSpec[] = [
   {
     name: "ppt_add_process_flow",
     description:
-      "Draw a process/workflow/timeline diagram from ordered steps on an existing slide, laid out automatically and grouped. Styles: chevron (arrow band), boxes (boxes joined by arrows), timeline (line with milestones; write each step like '03/2026: Khởi công').",
+      "Draw a process or timeline diagram from ordered steps on an existing slide, laid out automatically. chevron (arrow band), boxes (joined by arrows), timeline (steps like '03/2026: Khởi công').",
     parameters: {
       type: "object",
       properties: {
         slide: slideProp,
-        steps: { type: "array", items: { type: "string" }, description: "2–8 short step labels in order." },
+        steps: { type: "array", items: { type: "string" }, description: "2–8 short labels." },
         style: { type: "string", enum: ["chevron", "boxes", "timeline"] },
         left: { type: "number" },
         top: { type: "number" },
         width: { type: "number" },
         height: { type: "number" },
-        fill_color: { type: "string", description: "Optional; default uses the theme colour." },
+        fill_color: { type: "string", description: "Default: theme colour." },
         font_color: { type: "string" },
         font_size: { type: "number" },
       },
@@ -61,12 +61,12 @@ export const PPT_ADV_SPECS: ToolSpec[] = [
   {
     name: "ppt_move_slide",
     description: "Move a slide to a new position.",
-    parameters: { type: "object", properties: { slide: slideProp, to: { type: "number", description: "New position (1-based)." } }, required: ["slide", "to"] },
+    parameters: { type: "object", properties: { slide: slideProp, to: { type: "number", description: "New position." } }, required: ["slide", "to"] },
     write: true,
   },
   {
     name: "ppt_duplicate_slide",
-    description: "Duplicate a slide (the copy is placed right after it).",
+    description: "Duplicate a slide (copy right after it).",
     parameters: { type: "object", properties: { slide: slideProp }, required: ["slide"] },
     write: true,
   },
@@ -79,7 +79,7 @@ export const PPT_ADV_SPECS: ToolSpec[] = [
   {
     name: "ppt_update_shape",
     description:
-      "Change a shape's position/size (points), fill, outline and text formatting. Colours as #RRGGBB; use 'none' to remove fill or outline.",
+      "Change a shape's position/size (points), fill, outline, text format. Colours #RRGGBB; 'none' removes fill or outline.",
     parameters: {
       type: "object",
       properties: {

@@ -221,11 +221,11 @@ describe("Đợt 10 — sửa theo soát mã độc lập", () => {
     assert.deepStrictEqual(req("Chỉnh lề trái 3 cm"), ["hanh_chinh"]);
     assert.deepStrictEqual(req("Cỡ chữ 14 cho toàn văn"), ["hanh_chinh"]);
   });
-  it("M5: chỉ chế độ Miễn phí của Word nạp theo việc", () => {
+  it("M5: chỉ chế độ Miễn phí nạp theo việc (Excel, PowerPoint từ Đợt 11: test/unit/dot11.test.ts)", () => {
     assert.strictEqual(toolGroupsFor("free", "Word"), G);
     assert.strictEqual(toolGroupsFor("paid", "Word"), undefined);
-    assert.strictEqual(toolGroupsFor("free", "Excel"), undefined);
-    assert.strictEqual(toolGroupsFor("free", "PowerPoint"), undefined);
+    assert.strictEqual(toolGroupsFor("paid", "Excel"), undefined);
+    assert.strictEqual(toolGroupsFor("paid", "PowerPoint"), undefined);
   });
 });
 

@@ -9,56 +9,56 @@ import { exportSlide, restoreSlideUndo, slideSizePt } from "./pptAdvanced";
 import { shapeOn, slideAt, supports } from "./pptCore";
 import { truncate } from "./util";
 
-const slideProp = { type: "number", description: "Slide number (1-based)." };
-const shapeProp = { type: "string", description: "Shape name (from the overview) or its number on the slide." };
+const slideProp = { type: "number" };
+const shapeProp = { type: "string", description: "Name, or number on the slide." };
 
 export const PPT_DESIGN_SPECS: ToolSpec[] = [
   {
     name: "ppt_get_slide_image",
     description:
-      "Take a picture of one or several slides (up to 4 in ONE call) so you can LOOK at them (text overflowing its box, overlapping shapes, crowded layout), plus a code-based measurement of each. Finish creating or changing ALL the slides first, then check them together in a single call with `slides`; fix what is wrong, then look once more only at the slides you changed. Only useful with a model that accepts images; otherwise you get the measurements only.",
+      "Picture of one or several slides (up to 4 in ONE call) to LOOK for overflowing text, overlaps, crowding, plus code measurements. Finish ALL slides first, check them in one call with `slides`, fix, then look once more only at changed slides. Without image input you get measurements only.",
     parameters: {
       type: "object",
-      properties: { slide: slideProp, slides: { type: "array", items: { type: "number" }, description: "Several slide numbers to capture in one call (max 4). Prefer this over one call per slide." } },
+      properties: { slide: slideProp, slides: { type: "array", items: { type: "number" }, description: "Max 4; prefer over one call per slide." } },
     },
   },
   {
     name: "ppt_check_deck",
     description:
-      "Check the whole deck against its template by code (no image needed): fonts that differ from the template fonts, text smaller than the minimum size, slides without a title, text estimated to overflow its box, shapes outside the slide, overlapping text boxes, leftover placeholder text. Returns every finding with slide number and shape name, and how to fix it.",
+      "Check the whole deck against its template by code: off-template fonts, text below min size, slides without title, overflowing text, shapes off the slide, overlapping text boxes, leftover placeholder text. Returns each finding with slide, shape and fix.",
     parameters: {
       type: "object",
       properties: {
-        min_font_size: { type: "number", description: "Smallest acceptable text size in points (default 12)." },
-        font: { type: "string", description: "Required font, if the user names one (default: the template's theme fonts)." },
-        slides: { type: "array", items: { type: "number" }, description: "Only these slide numbers (default: all, max 60)." },
+        min_font_size: { type: "number", description: "Points, default 12." },
+        font: { type: "string", description: "If the user names one; default theme fonts." },
+        slides: { type: "array", items: { type: "number" }, description: "Default all (max 60)." },
       },
     },
   },
   {
     name: "ppt_get_theme",
-    description: "Read the template: theme colours (accent 1–6, dark, light), theme fonts (headings, body), slide size, and every layout with its placeholders. Use before adding slides or shapes so new content follows the template.",
+    description: "Read the template: theme colours, theme fonts, slide size, layouts with placeholders. Use before adding slides or shapes.",
     parameters: { type: "object", properties: {} },
   },
   {
     name: "ppt_format_text",
     description:
-      "Format part of the text in a shape: one paragraph (paragraph = 1-based line number in the shape), or every occurrence of `find`, or the whole shape when neither is given. Font options, alignment and bullets.",
+      "Format text in a shape: one paragraph, every occurrence of `find`, or the whole shape. Font, alignment, bullets.",
     parameters: {
       type: "object",
       properties: {
         slide: slideProp,
         shape: shapeProp,
-        paragraph: { type: "number", description: "1-based paragraph (line) of the shape's text." },
-        find: { type: "string", description: "Format every occurrence of this text inside the shape." },
+        paragraph: { type: "number", description: "1-based line in the shape." },
+        find: { type: "string" },
         bold: { type: "boolean" },
         italic: { type: "boolean" },
         underline: { type: "boolean" },
         font_size: { type: "number" },
         font_name: { type: "string" },
-        font_color: { type: "string", description: "Hex colour like #C00000; prefer theme colours from ppt_get_theme." },
+        font_color: { type: "string", description: "#RRGGBB; prefer theme colours." },
         alignment: { type: "string", enum: ["Left", "Center", "Right", "Justify"] },
-        bullet: { type: "boolean", description: "Show or hide the bullet of the paragraph(s)." },
+        bullet: { type: "boolean" },
       },
       required: ["slide", "shape"],
     },
@@ -66,7 +66,7 @@ export const PPT_DESIGN_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_edit_table",
-    description: "Edit an existing table on a slide: set the text of given cells (0-based row and column; row 0 is the header) and optionally append rows. Read the table first with ppt_get_overview (tables include their values).",
+    description: "Edit an existing table: set cells (0-based row/col; row 0 = header), append rows. Its values are in ppt_get_overview.",
     parameters: {
       type: "object",
       properties: {
@@ -76,7 +76,7 @@ export const PPT_DESIGN_SPECS: ToolSpec[] = [
           type: "array",
           items: { type: "object", properties: { row: { type: "number" }, col: { type: "number" }, text: { type: "string" } }, required: ["row", "col", "text"] },
         },
-        add_rows: { type: "array", items: { type: "array", items: { type: "string" } }, description: "Rows to append at the bottom." },
+        add_rows: { type: "array", items: { type: "array", items: { type: "string" } } },
       },
       required: ["slide", "shape"],
     },
@@ -84,13 +84,13 @@ export const PPT_DESIGN_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_get_selection",
-    description: "Read what the user has selected in PowerPoint right now: the selected slide(s), shape(s) and text. Use when the user says 'this slide', 'this shape', 'the selected text'.",
+    description: "Read the user's current selection: slide(s), shape(s), text.",
     parameters: { type: "object", properties: {} },
   },
   {
     name: "ppt_set_layout",
-    description: "Change the layout of an existing slide to another layout of the template (names from ppt_get_theme or the overview), e.g. to give a slide a title placeholder.",
-    parameters: { type: "object", properties: { slide: slideProp, layout: { type: "string", description: "Layout name." } }, required: ["slide", "layout"] },
+    description: "Change a slide's layout to another layout of the template.",
+    parameters: { type: "object", properties: { slide: slideProp, layout: { type: "string" } }, required: ["slide", "layout"] },
     write: true,
   },
 ];

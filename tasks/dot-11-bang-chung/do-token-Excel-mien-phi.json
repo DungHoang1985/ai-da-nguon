@@ -1,0 +1,116 @@
+{
+ "host": "Excel",
+ "mode": "free (nhóm lõi)",
+ "tools": 19,
+ "system_chars": 6675,
+ "system_parts_chars": {
+  "base": 1390,
+  "guide": 1654,
+  "catalog": 1299,
+  "rules_and_groups": 2332
+ },
+ "tools_chars": 8035,
+ "total_chars": 14710,
+ "est_tokens": {
+  "system": 2086,
+  "tools": 2511,
+  "total": 4597
+ },
+ "per_tool": [
+  {
+   "name": "excel_format_range",
+   "chars": 987,
+   "desc": 120
+  },
+  {
+   "name": "read_attachment_pages",
+   "chars": 693,
+   "desc": 263
+  },
+  {
+   "name": "excel_write_range",
+   "chars": 609,
+   "desc": 193
+  },
+  {
+   "name": "excel_insert_delete",
+   "chars": 539,
+   "desc": 59
+  },
+  {
+   "name": "excel_sort_range",
+   "chars": 483,
+   "desc": 35
+  },
+  {
+   "name": "excel_create_table",
+   "chars": 479,
+   "desc": 42
+  },
+  {
+   "name": "use_skill",
+   "chars": 463,
+   "desc": 208
+  },
+  {
+   "name": "excel_trace",
+   "chars": 432,
+   "desc": 140
+  },
+  {
+   "name": "excel_sheet",
+   "chars": 429,
+   "desc": 66
+  },
+  {
+   "name": "excel_clear_range",
+   "chars": 406,
+   "desc": 56
+  },
+  {
+   "name": "excel_read_range",
+   "chars": 383,
+   "desc": 61
+  },
+  {
+   "name": "excel_find",
+   "chars": 330,
+   "desc": 70
+  },
+  {
+   "name": "load_tools",
+   "chars": 330,
+   "desc": 112
+  },
+  {
+   "name": "excel_list_objects",
+   "chars": 324,
+   "desc": 165
+  },
+  {
+   "name": "excel_select_range",
+   "chars": 291,
+   "desc": 35
+  },
+  {
+   "name": "excel_add_comment",
+   "chars": 236,
+   "desc": 66
+  },
+  {
+   "name": "excel_find_errors",
+   "chars": 224,
+   "desc": 66
+  },
+  {
+   "name": "excel_add_sheet",
+   "chars": 212,
+   "desc": 16
+  },
+  {
+   "name": "excel_get_overview",
+   "chars": 185,
+   "desc": 90
+  }
+ ]
+}

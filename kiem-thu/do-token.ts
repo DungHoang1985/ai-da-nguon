@@ -1,6 +1,6 @@
 /** Đo kích thước phần cố định của một lượt tác tử (lời nhắc hệ thống + bộ công cụ) theo từng ứng dụng.
  *  Chạy: TS_NODE_COMPILER_OPTIONS='{"module":"commonjs","moduleResolution":"node"}' npx ts-node --transpile-only kiem-thu/do-token.ts [Word|Excel|PowerPoint] [--free] [--json]
- *  --free: chế độ Miễn phí của Word (Đợt 10) — chỉ nhóm lõi + load_tools + dòng nhóm công cụ trong lời nhắc.
+ *  --free: chế độ Miễn phí (Đợt 10 Word, Đợt 11 Excel, PowerPoint) — chỉ nhóm lõi + load_tools + dòng nhóm công cụ trong lời nhắc.
  *  Số token là ƯỚC LƯỢNG (ký tự / 3,2 cho chữ Việt lẫn Anh); số thật lấy từ usage của nhà cung cấp khi Chạy thật. */
 (globalThis as any).Office = (globalThis as any).Office || { context: { requirements: { isSetSupported: () => true } } };
 import { getHostTools } from "../src/office/tools";
@@ -8,25 +8,32 @@ import { createCommonTools } from "../src/office/common";
 import { buildSystemPrompt } from "../src/core/agent/prompt";
 import { CORE_GUIDES, BUILTIN_SKILLS } from "../src/core/skillpack";
 import { skillCatalog } from "../src/core/skills";
-import { WORD_TOOL_GROUPS, freeBasePrompt, groupsNote, visibleSpecs, withLoadTools } from "../src/core/toolgroups";
+import { freeBasePrompt, groupsNote, hideGroupTools, toolGroupsFor, visibleSpecs, withLoadTools } from "../src/core/toolgroups";
 
 const host = (process.argv[2] || "Word") as any;
 const asJson = process.argv.includes("--json");
-const free = process.argv.includes("--free") && host === "Word";
+const groups = process.argv.includes("--free") ? toolGroupsFor("free", host) : undefined;
+const free = !!groups;
 const tok = (s: string) => Math.round(s.length / 3.2);
 
 const tools = getHostTools(host, () => ({}))!;
 const skills = (BUILTIN_SKILLS as any[]).filter((s) => !s.hosts || s.hosts.includes(host));
 const common = createCommonTools({ host, skills, shareContext: true });
-const extra = free ? withLoadTools(common, WORD_TOOL_GROUPS) : common;
+const extra = groups ? withLoadTools(common, groups) : common;
 const parts = {
   base: tools.systemPrompt(),
   guide: CORE_GUIDES[host] || "",
   catalog: skillCatalog(skills),
 };
-const system = buildSystemPrompt({ base: free ? freeBasePrompt(parts.base) : parts.base, guide: parts.guide, host, skillCatalog: parts.catalog, toolGroups: free ? groupsNote(WORD_TOOL_GROUPS) : undefined });
+const system = buildSystemPrompt({
+  base: groups ? freeBasePrompt(parts.base, groups) : parts.base,
+  guide: groups ? hideGroupTools(parts.guide, groups) : parts.guide,
+  host,
+  skillCatalog: parts.catalog,
+  toolGroups: groups ? groupsNote(groups) : undefined,
+});
 // Dạng gửi Anthropic: { name, description, input_schema }
-const specs = free ? visibleSpecs([...tools.specs, ...extra.specs], WORD_TOOL_GROUPS, new Set()) : [...tools.specs, ...extra.specs];
+const specs = groups ? visibleSpecs([...tools.specs, ...extra.specs], groups, new Set()) : [...tools.specs, ...extra.specs];
 const toolJson = (t: any) => JSON.stringify({ name: t.name, description: t.description, input_schema: t.parameters || {} });
 const perTool = specs
   .map((t) => ({ name: t.name, chars: toolJson(t).length, desc: String(t.description || "").length }))

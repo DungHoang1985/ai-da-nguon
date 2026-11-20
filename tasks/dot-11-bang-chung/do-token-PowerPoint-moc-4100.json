@@ -1,0 +1,156 @@
+{
+ "host": "PowerPoint",
+ "mode": "full",
+ "tools": 27,
+ "system_chars": 7498,
+ "system_parts_chars": {
+  "base": 2705,
+  "guide": 1365,
+  "catalog": 1493,
+  "rules_and_groups": 1935
+ },
+ "tools_chars": 15795,
+ "total_chars": 23293,
+ "est_tokens": {
+  "system": 2343,
+  "tools": 4936,
+  "total": 7279
+ },
+ "per_tool": [
+  {
+   "name": "ppt_add_chart",
+   "chars": 1323,
+   "desc": 182
+  },
+  {
+   "name": "ppt_format_text",
+   "chars": 1102,
+   "desc": 207
+  },
+  {
+   "name": "ppt_insert_image",
+   "chars": 1004,
+   "desc": 297
+  },
+  {
+   "name": "write_other_app",
+   "chars": 954,
+   "desc": 314
+  },
+  {
+   "name": "ppt_update_shape",
+   "chars": 876,
+   "desc": 133
+  },
+  {
+   "name": "ppt_add_process_flow",
+   "chars": 860,
+   "desc": 255
+  },
+  {
+   "name": "ppt_edit_table",
+   "chars": 792,
+   "desc": 210
+  },
+  {
+   "name": "ppt_check_deck",
+   "chars": 787,
+   "desc": 359
+  },
+  {
+   "name": "ppt_get_slide_image",
+   "chars": 773,
+   "desc": 453
+  },
+  {
+   "name": "ppt_add_slides",
+   "chars": 762,
+   "desc": 293
+  },
+  {
+   "name": "read_attachment_pages",
+   "chars": 693,
+   "desc": 263
+  },
+  {
+   "name": "ppt_add_shape",
+   "chars": 620,
+   "desc": 95
+  },
+  {
+   "name": "ppt_set_shape_text",
+   "chars": 555,
+   "desc": 98
+  },
+  {
+   "name": "ppt_add_textbox",
+   "chars": 538,
+   "desc": 80
+  },
+  {
+   "name": "ppt_add_slide",
+   "chars": 528,
+   "desc": 127
+  },
+  {
+   "name": "use_skill",
+   "chars": 463,
+   "desc": 208
+  },
+  {
+   "name": "ppt_add_table",
+   "chars": 412,
+   "desc": 48
+  },
+  {
+   "name": "ppt_set_layout",
+   "chars": 400,
+   "desc": 158
+  },
+  {
+   "name": "ppt_delete_shape",
+   "chars": 316,
+   "desc": 28
+  },
+  {
+   "name": "ppt_get_theme",
+   "chars": 303,
+   "desc": 213
+  },
+  {
+   "name": "read_other_app",
+   "chars": 299,
+   "desc": 142
+  },
+  {
+   "name": "ppt_move_slide",
+   "chars": 276,
+   "desc": 31
+  },
+  {
+   "name": "ppt_get_selection",
+   "chars": 264,
+   "desc": 170
+  },
+  {
+   "name": "ppt_get_overview",
+   "chars": 252,
+   "desc": 159
+  },
+  {
+   "name": "ppt_duplicate_slide",
+   "chars": 236,
+   "desc": 54
+  },
+  {
+   "name": "ppt_go_to_slide",
+   "chars": 213,
+   "desc": 35
+  },
+  {
+   "name": "ppt_delete_slide",
+   "chars": 194,
+   "desc": 15
+  }
+ ]
+}

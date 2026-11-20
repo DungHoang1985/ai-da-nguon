@@ -10,17 +10,15 @@ import type { Skill } from "./skills";
 /** Hướng dẫn nền luôn đưa vào lời nhắc hệ thống theo ứng dụng (giống chuyên môn sẵn có của add-in chính thức). */
 export const CORE_GUIDES: Record<string, string> = {
   Excel: `## Chuẩn làm việc với Excel (luôn áp dụng)
-- Dùng công thức, không ghi số tính sẵn: tổng, tỷ lệ, chênh lệch đều là công thức để bảng tự cập nhật.
-- Không để lỗi công thức: xem formula_errors sau mỗi lần ghi; trước khi kết thúc với bảng có công thức, chạy excel_find_errors.
+- Dùng công thức (tên hàm tiếng Anh, dấu phẩy), không ghi số tính sẵn: tổng, tỷ lệ, chênh lệch đều là công thức để bảng tự cập nhật.
+- Không để lỗi công thức: trước khi kết thúc với bảng có công thức, chạy excel_find_errors.
 - Làm đúng yêu cầu: đúng tên sheet, tên cột, công thức người dùng nêu.
-- Sửa tệp có sẵn: theo đúng quy ước của tệp (màu ô nhập liệu, định dạng); chỉ ghi vào ô nhập liệu, không động vào công thức có sẵn.
+- Không ghi đè, không xóa dữ liệu có sẵn khi chưa được yêu cầu; cần chỗ mới thì dùng vùng trống hoặc sheet mới. Sửa tệp có sẵn: theo đúng quy ước của tệp (màu ô nhập liệu, định dạng); chỉ ghi vào ô nhập liệu, không động vào công thức có sẵn.
 - Mỗi giả định nằm ở một ô riêng có nhãn, công thức tham chiếu tuyệt đối tới ô đó (=B5*(1+$B$2)), không viết số cứng trong công thức; công thức nhất quán theo hàng/cột; chặn chia cho 0 bằng IFERROR.
 - Ghi chú nguồn của số liệu nhập tay (excel_add_comment hoặc ô ghi chú cạnh bảng).
 - Mô hình tài chính (khi không có quy ước khác): chữ xanh dương cho số nhập tay, đen cho công thức, xanh lá cho liên kết sang sheet khác, nền vàng cho giả định chính; số "#,##0" có đơn vị ở tiêu đề (vd "Doanh thu (triệu đồng)"), số âm trong ngoặc, số 0 hiện "-", tỷ lệ lưu dạng thập phân định dạng "0.0%", hệ số "0.0x", năm là chữ.
-- Không ghi đè dữ liệu có sẵn khi chưa được yêu cầu; dùng vùng trống hoặc sheet mới.
 - Biểu đồ: chọn dạng theo mục đích (so sánh → cột/thanh xếp lớn đến nhỏ; xu hướng → đường; tỷ trọng → thanh ngang, biểu đồ tròn chỉ khi được yêu cầu và ≤ 5 phần); một trục tung; màu theo thứ tự màu chủ đề; chú giải khi ≥ 2 chuỗi; tiêu đề nêu ý chính kèm đơn vị (chi tiết: kỹ năng thiet-ke-bieu-do).
-- Định dạng có điều kiện: độ lớn → thang một màu nhạt đến đậm; có âm/dương hoặc so với mục tiêu → hai màu với điểm giữa trung tính; màu trạng thái luôn kèm chữ.
-- Khi trả lời về số liệu, dẫn địa chỉ ô (vd Sheet1!C12) để người dùng bấm kiểm tra.`,
+- Định dạng có điều kiện: độ lớn → thang một màu nhạt đến đậm; có âm/dương hoặc so với mục tiêu → hai màu với điểm giữa trung tính; màu trạng thái luôn kèm chữ.`,
   Word: `## Chuẩn làm việc với Word (luôn áp dụng)
 - Rà soát toàn diện thì đọc đủ văn bản trước khi kết luận, vì các điều khoản tác động lẫn nhau.
 - Sửa tối thiểu, đúng chỗ, giữ nguyên kiểu chữ, đánh số, định dạng; góp ý thì dùng nhận xét neo đúng cụm chữ.
@@ -31,10 +29,9 @@ export const CORE_GUIDES: Record<string, string> = {
 - Mỗi slide một thông điệp; bài dài theo cấu trúc kim tự tháp: kết luận chính → tóm tắt → các phần → kết luận/bước tiếp theo.
 - Dùng bố cục (layout) và màu, phông của mẫu đang mở; không tự thêm thanh màu trang trí, đường gạch dưới tiêu đề.
 - Tiêu đề ngắn (≤ 10 từ), không chấm cuối, cùng vị trí trên các slide nội dung; thân bài 14–16pt trở lên, căn trái; mỗi slide ≤ 6 ý.
-- Mỗi slide nên có yếu tố trực quan: biểu đồ gốc (ppt_add_chart) cho số liệu, sơ đồ (ppt_add_process_flow) cho quy trình/mốc thời gian, bảng cho so sánh.
-- Không để chữ tràn khỏi khung: nhiều chữ thì tách slide; lề ≥ 36pt, khoảng cách giữa khối đều nhau.
-- Kiểm tra lại sau khi tạo: ppt_get_overview để soát lỗi chính tả, thứ tự, chữ mẫu còn sót ("Click to add…", "[cần bổ sung]").
-- Bài có sẵn mẫu: xem mẫu bằng ppt_get_theme rồi dùng đúng bố cục, màu chủ đề, phông của mẫu. Slide nhiều chữ, có bảng hoặc hình: chụp bằng ppt_get_slide_image để tự nhìn, thấy tràn hoặc chồng thì sửa rồi chụp lại một lần. Kiểm cả bài: ppt_check_deck.
+- Mỗi slide nên có yếu tố trực quan: biểu đồ cho số liệu, sơ đồ cho quy trình/mốc thời gian, bảng cho so sánh.
+- Không để chữ tràn khỏi khung: nhiều chữ thì tách slide; hình và ô chữ không chồng nhau, lề ≥ 36pt, khoảng cách giữa khối đều nhau.
+- Soát lại khi xong: lỗi chính tả, thứ tự, chữ mẫu còn sót ("Click to add…", "[cần bổ sung]").
 - Biểu đồ: chọn dạng theo mục đích (so sánh → cột/thanh; xu hướng → đường; tỷ trọng → thanh ngang, tròn chỉ khi được yêu cầu và ≤ 5 phần); một trục tung; màu theo màu chủ đề; tiêu đề slide nêu ý chính kèm đơn vị (chi tiết: kỹ năng thiet-ke-bieu-do).
 - Khi nói tới slide, ghi "slide số N" để người dùng bấm tới.`,
 };
@@ -150,6 +147,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "chuan-hoa-bang-tinh",
+    brief: "Dọn, chuẩn hóa bảng dữ liệu: tiêu đề, kiểu dữ liệu, ngày, số dạng chữ, trùng lặp, định dạng. Dùng khi muốn dọn, chuẩn hóa, làm đẹp bảng.",
     description:
       "Làm sạch và chuẩn hóa bảng dữ liệu Excel: dòng tiêu đề, kiểu dữ liệu, ngày tháng, số lưu dạng chữ, khoảng trắng, trùng lặp, định dạng, chuyển thành Table, cố định dòng tiêu đề. Dùng khi người dùng muốn dọn, chuẩn hóa, làm đẹp một bảng.",
     hosts: ["Excel"],
@@ -167,6 +165,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "kiem-tra-loi-bang-tinh",
+    brief: "Soát lỗi sổ tính: ô lỗi, nguồn gốc lỗi, số gõ cứng, công thức lệch. Dùng khi kiểm tra, audit bảng tính hoặc hỏi số được tính ra sao.",
     description:
       "Rà soát sổ tính Excel: tìm ô lỗi (#REF!, #DIV/0!, #N/A…), lần nguồn gốc lỗi qua các ô tiền lệ, phát hiện số cứng trong vùng công thức, công thức không nhất quán, tham chiếu sai; đề xuất và sửa khi được đồng ý. Dùng khi người dùng muốn kiểm tra, soát lỗi, audit bảng tính hoặc hỏi một số liệu được tính ra sao.",
     hosts: ["Excel"],
@@ -182,6 +181,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "mo-hinh-tai-chinh-du-an",
+    brief: "Lập, điền mô hình tài chính dự án BĐS: giả định, doanh thu, chi phí, vốn vay, dòng tiền, NPV/IRR, độ nhạy. Dùng khi nói mô hình tài chính, hiệu quả đầu tư.",
     description:
       "Xây hoặc điền mô hình tài chính dự án (bất động sản) trong Excel: giả định, dòng thời gian, doanh thu, chi phí (đất, xây dựng, chi phí khác), vốn vay, dòng tiền, NPV/IRR, độ nhạy — đúng chuẩn mô hình (màu ô, công thức, kiểm tra). Dùng khi người dùng muốn lập, điền, cập nhật mô hình tài chính, hiệu quả đầu tư, dòng tiền dự án.",
     hosts: ["Excel"],
@@ -199,6 +199,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "phan-tich-du-lieu",
+    brief: "Phân tích bảng dữ liệu: tổng hợp, PivotTable, xu hướng, so sánh, tô điểm bất thường, biểu đồ, nhận định. Dùng khi phân tích, thống kê, báo cáo nhanh.",
     description:
       "Phân tích dữ liệu trong Excel: tóm tắt, PivotTable, tổng hợp theo nhóm, xu hướng, so sánh, tô màu điểm bất thường bằng định dạng có điều kiện, vẽ biểu đồ và nêu nhận định. Dùng khi người dùng muốn phân tích, tổng hợp, thống kê, báo cáo nhanh từ bảng dữ liệu.",
     hosts: ["Excel"],
@@ -215,6 +216,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "bao-cao-tien-do-du-an",
+    brief: "Dựng slide báo cáo tiến độ dự án BĐS: pháp lý, thi công, tài chính, vướng mắc, kế hoạch tiếp. Dùng khi làm hoặc cập nhật báo cáo tiến độ.",
     description:
       "Dựng bài trình chiếu báo cáo tiến độ dự án (bất động sản) trong PowerPoint: bìa, tổng quan, tiến độ pháp lý, tiến độ thi công, tài chính, vướng mắc – kiến nghị, kế hoạch tiếp theo. Dùng khi người dùng muốn tạo hoặc cập nhật slide báo cáo tiến độ.",
     hosts: ["PowerPoint"],
@@ -231,6 +233,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "trinh-chieu-tu-tai-lieu",
+    brief: "Chuyển tài liệu (tệp đính kèm, Word hoặc Excel đang mở) thành bài trình chiếu có cấu trúc. Dùng khi làm slide từ tài liệu, báo cáo, văn bản.",
     description:
       "Chuyển tài liệu (tệp đính kèm PDF/DOCX, văn bản Word hoặc số liệu Excel đang mở) thành bài trình chiếu PowerPoint có cấu trúc: thông điệp chính, tóm tắt, các phần, kết luận và bước tiếp theo. Dùng khi người dùng muốn làm slide từ một tài liệu, báo cáo, văn bản.",
     hosts: ["PowerPoint"],
@@ -247,6 +250,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "kiem-tra-bai-trinh-chieu",
+    brief: "Soát bài trình chiếu: chữ mẫu sót, chính tả, tiêu đề lệch, quá nhiều chữ, chữ nhỏ, số liệu lệch. Dùng khi kiểm tra, soát, hoàn thiện slide.",
     description:
       "Soát bài trình chiếu PowerPoint: chữ mẫu còn sót, lỗi chính tả, tiêu đề lệch vị trí/kiểu, slide quá nhiều chữ, cỡ chữ quá nhỏ, thứ tự và mạch nội dung, số liệu không khớp; sửa khi được đồng ý. Dùng khi người dùng muốn kiểm tra, soát, hoàn thiện bài trình chiếu trước khi gửi.",
     hosts: ["PowerPoint"],
@@ -410,6 +414,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "thiet-ke-bieu-do",
+    brief: "Chọn dạng và trình bày biểu đồ đúng: theo việc người xem cần, màu chủ đề, một trục tung, tiêu đề nêu ý chính. Dùng khi vẽ, sửa biểu đồ, hỏi nên dùng biểu đồ gì.",
     description:
       "Chọn dạng biểu đồ và trình bày biểu đồ cho đúng trong Excel và PowerPoint: chọn theo việc người xem cần (so sánh, xu hướng, cơ cấu, chênh lệch), màu theo thứ tự màu chủ đề, một trục tung, chú giải và nhãn số chọn lọc, tiêu đề nêu ý chính. Dùng khi người dùng muốn vẽ, sửa, làm đẹp biểu đồ hoặc hỏi nên dùng biểu đồ gì.",
     hosts: ["Excel", "PowerPoint"],

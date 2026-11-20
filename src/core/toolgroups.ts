@@ -1,4 +1,4 @@
-/** Nạp công cụ theo việc (Đợt 10): ở chế độ Miễn phí mỗi lần gọi model chỉ gửi nhóm công cụ lõi; nhóm chuyên được gửi khi
+/** Nạp công cụ theo việc (Đợt 10 Word, Đợt 11 Excel và PowerPoint): ở chế độ Miễn phí mỗi lần gọi model chỉ gửi nhóm công cụ lõi; nhóm chuyên được gửi khi
  *  yêu cầu của người dùng khớp từ khóa, kỹ năng tự chọn kéo theo, tệp đính kèm cần tới, khi model tự xin bằng load_tools,
  *  hoặc khi nhóm đã được dùng trước đó trong hội thoại. Chế độ Trả phí không dùng tới (gửi đủ công cụ, giữ bộ nhớ đệm).
  *  Nhóm đang bật được suy ra lại từ lịch sử ở mỗi bước: không có trạng thái riêng phải lưu. */
@@ -17,10 +17,6 @@ export interface ToolGroup {
 
 export const LOAD_TOOLS = "load_tools";
 
-/** Nhóm công cụ theo chế độ và ứng dụng: chỉ chế độ Miễn phí của Word nạp theo việc; Trả phí luôn gửi đủ (giữ bộ nhớ đệm lời nhắc) */
-export function toolGroupsFor(mode: string, host: string): ToolGroup[] | undefined {
-  return mode === "free" && host === "Word" ? WORD_TOOL_GROUPS : undefined;
-}
 
 export const WORD_TOOL_GROUPS: ToolGroup[] = [
   {
@@ -60,10 +56,108 @@ export const WORD_TOOL_GROUPS: ToolGroup[] = [
   },
   {
     id: "ngoai",
-    label: "ứng dụng khác (Excel, PowerPoint)",
+    label: "ứng dụng Office khác",
     tools: ["read_other_app", "write_other_app"],
     keywords: ["excel", "powerpoint", "slide", "trinh chieu", "bang tinh", "ung dung khac"],
     skills: ["kiem-tra-tuan-thu", "chuan-bi-hop", "dien-mau"],
+  },
+];
+
+/** Đợt 11: nhóm chuyên của Excel. Lõi (luôn gửi): tổng quan, đọc, ghi, định dạng, thêm sheet, tạo bảng, sắp xếp, xóa vùng, chọn vùng,
+ *  tìm, quét lỗi, lần công thức, nhận xét ô, chèn/xóa hàng cột, thao tác sheet, xem đối tượng có sẵn, kỹ năng, đọc trang tệp đính kèm */
+export const EXCEL_TOOL_GROUPS: ToolGroup[] = [
+  {
+    id: "bieu_do",
+    label: "biểu đồ",
+    tools: ["excel_create_chart", "excel_edit_chart"],
+    keywords: ["bieu do", "do thi", "chart", "ve bieu", "graph", "truc quan"],
+    skills: ["thiet-ke-bieu-do", "phan-tich-du-lieu"],
+  },
+  {
+    id: "pivot",
+    label: "PivotTable",
+    tools: ["excel_create_pivot", "excel_edit_pivot"],
+    keywords: ["pivot", "tong hop theo", "bang tong hop", "thong ke theo", "bao cao tong hop", "nhom theo"],
+    skills: ["phan-tich-du-lieu"],
+  },
+  {
+    id: "loc_dinh_dang",
+    label: "lọc, định dạng có điều kiện, danh sách chọn",
+    tools: ["excel_filter", "excel_conditional_format", "excel_data_validation"],
+    keywords: ["lọc", "filter", "dinh dang co dieu kien", "tô màu", "to mau theo", "highlight", "lam noi bat", "bat thuong", "danh sach chon", "dropdown", "drop down", "chon tu danh sach", "gioi han nhap", "rang buoc nhap", "kiem soat nhap"],
+    skills: ["phan-tich-du-lieu", "kiem-tra-tuan-thu"],
+  },
+  {
+    id: "in_an",
+    label: "thiết lập in",
+    tools: ["excel_page_setup"],
+    keywords: ["in ra", "ban in", "khi in", "de in", "vung in", "trang in", "print", "kho giay", "huong giay", "in ngang", "in doc", "vua trang", "vua mot trang", "vua 1 trang", "chuan bi in", "thiet lap in", "lap lai tieu de", "le trang"],
+  },
+  {
+    id: "mo_hinh",
+    label: "soát mô hình tài chính, tên ô giả định, giải ngược, bảng độ nhạy",
+    tools: ["excel_audit_model", "excel_named_range", "excel_what_if"],
+    keywords: ["mo hinh", "gia dinh", "do nhay", "goal seek", "tim nguoc", "giai nguoc", "what if", "dat ten", "ten vung", "named range", "npv", "irr", "dong tien", "hieu qua dau tu", "phuong an tai chinh", "so cung", "hard code", "kiem toan", "audit"],
+    skills: ["mo-hinh-tai-chinh-du-an", "kiem-tra-loi-bang-tinh"],
+  },
+  {
+    id: "lam_sach_khoa",
+    label: "xóa trùng, thay hàng loạt, điền chuỗi, khóa ô công thức",
+    tools: ["excel_clean_data", "excel_protect"],
+    keywords: ["trùng", "lam sach", "don dep", "chuan hoa", "thay the", "thay hang loat", "dien chuoi", "dien tiep", "dien ngay", "keo xuong", "khóa", "khoá", "bao ve", "protect", "lock"],
+    skills: ["chuan-hoa-bang-tinh"],
+  },
+  {
+    id: "ngoai",
+    label: "ứng dụng Office khác",
+    tools: ["read_other_app", "write_other_app"],
+    keywords: ["word", "powerpoint", "slide", "trinh chieu", "van ban dang mo", "ung dung khac"],
+    skills: ["mo-hinh-tai-chinh-du-an", "kiem-tra-tuan-thu"],
+  },
+];
+
+/** Đợt 11: nhóm chuyên của PowerPoint. Lõi (luôn gửi): tổng quan, thêm slide (một và nhiều), sửa chữ, ô chữ, hình, bảng mới, chuyển slide,
+ *  sửa / xóa hình, định dạng chữ, đọc vùng chọn, chụp slide, đọc mẫu, kỹ năng, đọc trang tệp đính kèm */
+export const PPT_TOOL_GROUPS: ToolGroup[] = [
+  {
+    id: "bieu_do_so_do",
+    label: "biểu đồ, sơ đồ quy trình và mốc thời gian",
+    tools: ["ppt_add_chart", "ppt_add_process_flow"],
+    keywords: ["bieu do", "do thi", "chart", "so lieu", "quy trinh", "cac buoc", "moc thoi gian", "timeline", "so do", "tien do", "lo trinh", "giai doan", "truc quan"],
+    skills: ["thiet-ke-bieu-do", "bao-cao-tien-do-du-an", "trinh-chieu-tu-tai-lieu"],
+  },
+  {
+    id: "sap_xep",
+    label: "sắp xếp, nhân bản, xóa slide, đổi bố cục",
+    tools: ["ppt_move_slide", "ppt_duplicate_slide", "ppt_delete_slide", "ppt_set_layout"],
+    keywords: ["di chuyen", "doi cho", "doi thu tu", "sap xep", "len truoc", "ra sau", "xuong cuoi", "nhan ban", "sao chep slide", "xoa slide", "bo slide", "bo cuc", "layout"],
+    skills: ["kiem-tra-bai-trinh-chieu"],
+  },
+  {
+    id: "kiem_bai",
+    label: "kiểm cả bài theo mẫu",
+    tools: ["ppt_check_deck"],
+    keywords: ["kiem tra", "soat", "ra soat", "hoan thien", "truoc khi gui", "dung mau", "phong chu", "co chu", "tran chu", "lỗi"],
+    skills: ["kiem-tra-bai-trinh-chieu"],
+  },
+  {
+    id: "hinh_anh",
+    label: "chèn ảnh đính kèm",
+    tools: ["ppt_insert_image"],
+    keywords: ["ảnh", "hinh anh", "logo", "photo", "picture"],
+  },
+  {
+    id: "bang",
+    label: "bảng",
+    tools: ["ppt_edit_table"],
+    keywords: ["bảng", "table", "cột"],
+  },
+  {
+    id: "ngoai",
+    label: "ứng dụng Office khác",
+    tools: ["read_other_app", "write_other_app"],
+    keywords: ["word", "excel", "van ban dang mo", "so tinh", "bang tinh", "ung dung khac"],
+    skills: ["bao-cao-tien-do-du-an", "trinh-chieu-tu-tai-lieu", "chuan-bi-hop"],
   },
 ];
 
@@ -76,12 +170,48 @@ export const WORD_SPECIAL_LINE =
 export const WORD_SPECIAL_LINE_FREE =
   "- CÔNG CỤ CHUYÊN (xem mục Nhóm công cụ chuyên): soát trước khi ký, rà lỗi, so với tệp .docx đính kèm, đầu/chân trang, bookmark, trường, hộp văn bản → nhóm soat; soạn văn bản hành chính (một lần gọi), lề, khổ giấy → nhóm hanh_chinh; điền mẫu → nhóm dien_mau; nhận xét, sửa đổi được theo dõi → nhóm nhan_xet_sua_doi; bảng → nhóm bang; ứng dụng Office khác → nhóm ngoai.";
 
-/** Lời nhắc riêng của Word cho chế độ Miễn phí: thay dòng chỉ đường theo tên công cụ bằng dòng theo tên nhóm */
-export function freeBasePrompt(base: string, groups: ToolGroup[] = WORD_TOOL_GROUPS): string {
-  let out = base.replace(WORD_SPECIAL_LINE, WORD_SPECIAL_LINE_FREE);
-  // Chỗ khác của lời nhắc còn nêu tên công cụ chuyên (vd word_list_revisions ở mục Track Changes): đổi thành tên nhóm
+/** Dòng chỉ đường tới công cụ chuyên trong lời nhắc Excel (Đợt 11, chế độ Trả phí) */
+export const EXCEL_SPECIAL_LINE =
+  "- CÔNG CỤ CHUYÊN (làm theo mô tả của công cụ): lọc → excel_filter; tô màu theo điều kiện → excel_conditional_format; danh sách chọn → excel_data_validation; PivotTable → excel_create_pivot; sửa biểu đồ, PivotTable CÓ SẴN → excel_list_objects rồi excel_edit_chart, excel_edit_pivot (không tạo mới); in → MỘT lần excel_page_setup; soát mô hình tài chính → excel_audit_model (đọc ô được chỉ rồi mới kết luận); tên ô giả định → excel_named_range; giải ngược, bảng độ nhạy → excel_what_if (sổ tính không đổi); xóa dòng trùng, thay hàng loạt, điền chuỗi → excel_clean_data; khóa ô công thức → excel_protect (không đặt mật khẩu).";
+
+export const EXCEL_SPECIAL_LINE_FREE =
+  "- CÔNG CỤ CHUYÊN (xem mục Nhóm công cụ chuyên): biểu đồ → nhóm bieu_do; PivotTable → nhóm pivot; lọc, tô màu theo điều kiện, danh sách chọn → nhóm loc_dinh_dang; in → nhóm in_an; soát mô hình tài chính, tên ô giả định, giải ngược, bảng độ nhạy → nhóm mo_hinh; xóa dòng trùng, thay hàng loạt, điền chuỗi, khóa ô công thức → nhóm lam_sach_khoa; ứng dụng Office khác → nhóm ngoai. Sửa biểu đồ, PivotTable CÓ SẴN: excel_list_objects rồi công cụ của nhóm, không tạo mới.";
+
+/** Dòng chỉ đường tới công cụ chuyên trong lời nhắc PowerPoint (Đợt 11, chế độ Trả phí) */
+export const PPT_SPECIAL_LINE =
+  "- CÔNG CỤ CHUYÊN: số liệu → ppt_add_chart (biểu đồ gốc theo màu chủ đề); quy trình, các bước, mốc thời gian → ppt_add_process_flow; sắp xếp slide → ppt_move_slide, ppt_duplicate_slide, ppt_delete_slide; đổi bố cục → ppt_set_layout; sửa bảng có sẵn → ppt_edit_table; ảnh người dùng đính kèm → ppt_insert_image; kiểm cả bài → ppt_check_deck.";
+
+export const PPT_SPECIAL_LINE_FREE =
+  "- CÔNG CỤ CHUYÊN (xem mục Nhóm công cụ chuyên): biểu đồ số liệu, quy trình, các bước, mốc thời gian → nhóm bieu_do_so_do; sắp xếp, nhân bản, xóa slide, đổi bố cục → nhóm sap_xep; sửa bảng có sẵn → nhóm bang; ảnh đính kèm → nhóm hinh_anh; kiểm cả bài → nhóm kiem_bai; ứng dụng Office khác → nhóm ngoai.";
+
+/** Cấu hình nạp theo việc của từng ứng dụng: nhóm chuyên và cặp dòng chỉ đường (Trả phí theo tên công cụ, Miễn phí theo tên nhóm) */
+const HOST_GROUPS: Record<string, { groups: ToolGroup[]; line: string; freeLine: string }> = {
+  Word: { groups: WORD_TOOL_GROUPS, line: WORD_SPECIAL_LINE, freeLine: WORD_SPECIAL_LINE_FREE },
+  Excel: { groups: EXCEL_TOOL_GROUPS, line: EXCEL_SPECIAL_LINE, freeLine: EXCEL_SPECIAL_LINE_FREE },
+  PowerPoint: { groups: PPT_TOOL_GROUPS, line: PPT_SPECIAL_LINE, freeLine: PPT_SPECIAL_LINE_FREE },
+};
+
+/** Nhóm công cụ theo chế độ và ứng dụng: chỉ chế độ Miễn phí nạp theo việc; Trả phí luôn gửi đủ (giữ bộ nhớ đệm lời nhắc) */
+export function toolGroupsFor(mode: string, host: string): ToolGroup[] | undefined {
+  return mode === "free" ? HOST_GROUPS[host]?.groups : undefined;
+}
+
+/** Mọi nhóm của mọi ứng dụng (nhãn bước của load_tools: cùng id thì cùng nhãn) */
+export const ALL_TOOL_GROUPS: ToolGroup[] = Object.values(HOST_GROUPS).flatMap((h) => h.groups);
+
+/** Đổi tên công cụ chuyên trong một đoạn lời nhắc thành tên nhóm (chế độ Miễn phí: không nêu tên công cụ có thể đang ẩn) */
+export function hideGroupTools(text: string, groups: ToolGroup[]): string {
+  let out = text;
   for (const g of groups) for (const t of g.tools) out = out.split(t).join(`công cụ nhóm ${g.id}`);
   return out;
+}
+
+/** Lời nhắc riêng của ứng dụng cho chế độ Miễn phí: thay dòng chỉ đường theo tên công cụ bằng dòng theo tên nhóm, rồi đổi
+ *  tên công cụ chuyên còn sót (vd word_list_revisions ở mục Track Changes) thành tên nhóm */
+export function freeBasePrompt(base: string, groups: ToolGroup[] = WORD_TOOL_GROUPS): string {
+  let out = base;
+  for (const h of Object.values(HOST_GROUPS)) if (h.groups === groups) out = out.replace(h.line, h.freeLine);
+  return hideGroupTools(out, groups);
 }
 
 /** Chữ thường, bỏ dấu tiếng Việt, gộp khoảng trắng */

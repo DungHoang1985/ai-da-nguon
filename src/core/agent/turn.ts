@@ -8,7 +8,7 @@ import type { FreeRotation } from "./rotation";
 import { STOP_NOTE, runAgent } from "./loop";
 import { buildPlainSystem, buildSystemPrompt, buildTurnMessage } from "./prompt";
 import { AgentEvent, AgentMessage, ExtraTools, FilePart, HostToolSet, ToolCall, UndoEntry, Usage } from "./types";
-import { ToolGroup, freeBasePrompt, groupsNote, requestGroups, usedGroups, visibleSpecs, withLoadTools } from "../toolgroups";
+import { ToolGroup, freeBasePrompt, groupsNote, hideGroupTools, requestGroups, usedGroups, visibleSpecs, withLoadTools } from "../toolgroups";
 
 export type TurnEvent = AgentEvent | { type: "compacted" };
 
@@ -31,7 +31,7 @@ export interface TurnAgentOptions {
   reviewEdits?: boolean;
   /** Nạp công cụ theo việc (Đợt 10, chỉ chế độ Miễn phí): có thì mỗi bước chỉ gửi công cụ lõi + nhóm chuyên đang bật */
   toolGroups?: ToolGroup[];
-  /** Nhóm bật sẵn theo tệp đính kèm của lượt (.docx → "soat") */
+  /** Nhóm bật sẵn theo tệp đính kèm của lượt (Word: .docx → "soat"; PowerPoint: ảnh → "hinh_anh") */
   groupHints?: string[];
   /** Tên kỹ năng của lượt (tự chọn + gọi bằng /tên) để bật nhóm công cụ kỹ năng cần; thiếu thì lấy theo autoSkills */
   groupSkills?: string[];
@@ -179,8 +179,9 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
     }
     const groups = a.toolGroups?.length ? a.toolGroups : undefined;
     const system = buildSystemPrompt({
-      base: groups ? freeBasePrompt(a.tools.systemPrompt()) : a.tools.systemPrompt(),
-      guide: a.guide,
+      base: groups ? freeBasePrompt(a.tools.systemPrompt(), groups) : a.tools.systemPrompt(),
+      // Chuẩn làm việc PowerPoint nêu tên công cụ chuyên (Đợt 11): ở chế độ Miễn phí đổi thành tên nhóm như lời nhắc riêng
+      guide: groups && a.guide ? hideGroupTools(a.guide, groups) : a.guide,
       host: o.host,
       instructions: o.instructions,
       skillCatalog: a.skillCatalog,

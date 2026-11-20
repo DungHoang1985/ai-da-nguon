@@ -5,35 +5,34 @@ import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress
 import { bulkTrail, getRange, restoreFrom, snapshot } from "./excelCore";
 import { EXCEL_ADV_SPECS, excelRisk, executeExcelAdvanced } from "./excelAdvanced";
 import { EXCEL_MODEL_SPECS, excelModelRisk, executeExcelModel } from "./excelModel";
+import { EXCEL_SPECIAL_LINE } from "../core/toolgroups";
 
 export { getRange, restoreFrom, settableProps, snapshot } from "./excelCore";
 export type { Snapshot } from "./excelCore";
 
 const MAX_READ_CELLS = 2500;
 
-const addressProp = {
-  type: "string",
-  description: "A1-style range, optionally with sheet name, e.g. 'Sheet1!A1:D20' or 'B2'.",
-};
-const sheetProp = { type: "string", description: "Sheet name (optional; defaults to the active sheet)." };
+/** Đợt 11: viết gọn mô tả tham số dùng chung (lặp ở hầu hết công cụ Excel) */
+const addressProp = { type: "string", description: "e.g. 'Sheet1!A1:D20' or 'B2'." };
+const sheetProp = { type: "string", description: "Default: active sheet." };
 
 export const EXCEL_SPECS: ToolSpec[] = [
   {
     name: "excel_get_overview",
     description:
-      "Get a workbook overview: sheet names, used range of each sheet, active sheet, current selection and the first rows of every sheet.",
+      "Workbook overview: sheets, used ranges, active sheet, selection, first rows of each sheet.",
     parameters: { type: "object", properties: {} },
   },
   {
     name: "excel_read_range",
     description:
-      "Read cell values (and formulas) of a range. Use the used range from the overview to read a whole table. Large ranges are truncated.",
+      "Read values and formulas of a range (large ranges truncated).",
     parameters: {
       type: "object",
       properties: {
         address: addressProp,
         sheet: sheetProp,
-        include_formulas: { type: "boolean", description: "Also return formulas (default true)." },
+        include_formulas: { type: "boolean", description: "Default true." },
       },
       required: ["address"],
     },
@@ -41,15 +40,15 @@ export const EXCEL_SPECS: ToolSpec[] = [
   {
     name: "excel_write_range",
     description:
-      "Write a 2D block of values starting at a cell. Strings starting with '=' are formulas (English function names, comma separators, e.g. '=SUM(B2:B10)'). Numbers as plain digits. Prefix with an apostrophe to force text (e.g. \"'0912\"). Write whole tables in one call.",
+      "Write a 2D block from a top-left cell; whole tables in one call. '=' starts a formula (English names, commas: '=SUM(B2:B10)'); numbers as plain digits; leading apostrophe forces text (\"'0912\").",
     parameters: {
       type: "object",
       properties: {
-        address: { type: "string", description: "Top-left cell where writing starts, e.g. 'Sheet1!B2'." },
+        address: { type: "string", description: "Top-left cell, e.g. 'Sheet1!B2'." },
         sheet: sheetProp,
         values: {
           type: "array",
-          description: "Rows of cells, e.g. [[\"Month\",\"Revenue\"],[\"1\",\"100\"],[\"Total\",\"=SUM(B2:B2)\"]].",
+          description: "Rows, e.g. [[\"Month\",\"Revenue\"],[\"1\",\"100\"]].",
           items: { type: "array", items: { type: "string" } },
         },
       },
@@ -60,7 +59,7 @@ export const EXCEL_SPECS: ToolSpec[] = [
   {
     name: "excel_format_range",
     description:
-      "Format a range: font, fill colour, number format, alignment, wrap, borders, column width / autofit. address may list several ranges separated by commas ('C2:D13,F2:F13') to format them in one call.",
+      "Format a range (or several: 'C2:D13,F2:F13'): font, fill, number format, alignment, wrap, borders, column width/autofit.",
     parameters: {
       type: "object",
       properties: {
@@ -69,16 +68,16 @@ export const EXCEL_SPECS: ToolSpec[] = [
         bold: { type: "boolean" },
         italic: { type: "boolean" },
         underline: { type: "boolean" },
-        font_color: { type: "string", description: "Hex colour like #1F4E79." },
+        font_color: { type: "string", description: "#RRGGBB" },
         font_size: { type: "number" },
         font_name: { type: "string" },
-        fill_color: { type: "string", description: "Hex colour like #DDEBF7, or 'none' to clear." },
-        number_format: { type: "string", description: "Excel number format, e.g. '#,##0', '0.0%', 'dd/mm/yyyy'." },
+        fill_color: { type: "string", description: "#RRGGBB or 'none'." },
+        number_format: { type: "string", description: "e.g. '#,##0', '0.0%', 'dd/mm/yyyy'." },
         horizontal_alignment: { type: "string", enum: ["Left", "Center", "Right"] },
         wrap_text: { type: "boolean" },
         borders: { type: "string", enum: ["all", "outside", "none"] },
         autofit_columns: { type: "boolean" },
-        column_width: { type: "number", description: "Column width in points." },
+        column_width: { type: "number", description: "Points." },
       },
       required: ["address"],
     },
@@ -86,7 +85,7 @@ export const EXCEL_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_add_sheet",
-    description: "Add a new worksheet (and activate it).",
+    description: "Add a worksheet.",
     parameters: {
       type: "object",
       properties: { name: { type: "string" }, activate: { type: "boolean", description: "Default true." } },
@@ -96,15 +95,15 @@ export const EXCEL_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_create_table",
-    description: "Convert a range into a formatted Excel table (with filter buttons).",
+    description: "Turn a range into a formatted Excel table.",
     parameters: {
       type: "object",
       properties: {
         address: addressProp,
         sheet: sheetProp,
-        has_headers: { type: "boolean", description: "First row contains headers (default true)." },
-        name: { type: "string", description: "Table name without spaces (optional)." },
-        style: { type: "string", description: "Table style, e.g. TableStyleMedium2 (optional)." },
+        has_headers: { type: "boolean", description: "Default true." },
+        name: { type: "string", description: "No spaces." },
+        style: { type: "string", description: "e.g. TableStyleMedium2." },
       },
       required: ["address"],
     },
@@ -113,7 +112,7 @@ export const EXCEL_SPECS: ToolSpec[] = [
   {
     name: "excel_create_chart",
     description:
-      "Create a chart from a data range (first row/column used as labels). When the label column and the numbers are not adjacent, pass both: 'A1:A13,C1:D13'. The chart is placed to the right of the data.",
+      "Create a chart from a data range (first row/column = labels), placed right of the data. Labels not adjacent to the numbers: 'A1:A13,C1:D13'.",
     parameters: {
       type: "object",
       properties: {
@@ -129,15 +128,15 @@ export const EXCEL_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_sort_range",
-    description: "Sort the rows of a range by one column.",
+    description: "Sort rows of a range by one column.",
     parameters: {
       type: "object",
       properties: {
         address: addressProp,
         sheet: sheetProp,
-        column: { type: "string", description: "Column letter of the sort key, e.g. 'C'." },
+        column: { type: "string", description: "Letter, e.g. 'C'." },
         ascending: { type: "boolean", description: "Default true." },
-        has_headers: { type: "boolean", description: "Keep the first row as header (default true)." },
+        has_headers: { type: "boolean", description: "Default true." },
       },
       required: ["address", "column"],
     },
@@ -145,7 +144,7 @@ export const EXCEL_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_clear_range",
-    description: "Clear contents and/or formats of a range. Only when the user asked to delete or clean data.",
+    description: "Clear contents and/or formats. Only when the user asked.",
     parameters: {
       type: "object",
       properties: {
@@ -159,7 +158,7 @@ export const EXCEL_SPECS: ToolSpec[] = [
   },
   {
     name: "excel_select_range",
-    description: "Select a range (and its sheet) so the user sees it. Use at the end to show the result.",
+    description: "Select a range so the user sees it.",
     parameters: { type: "object", properties: { address: addressProp, sheet: sheetProp }, required: ["address"] },
   },
 ];
@@ -507,6 +506,20 @@ const RISKY_NAMES = new Set(["excel_write_range", "excel_clear_range", "excel_in
 const MODEL_RISKY = new Set(["excel_edit_chart", "excel_named_range", "excel_clean_data", "excel_protect"]);
 const MODEL_NAMES = new Set(EXCEL_MODEL_SPECS.map((sp) => sp.name));
 
+/** Lời nhắc riêng của Excel. Đợt 11: viết gọn — các dòng kể từng công cụ nâng cao gộp thành EXCEL_SPECIAL_LINE (chế độ Miễn phí
+ *  thay bằng dòng theo tên nhóm); dòng trùng chuẩn làm việc Excel (ưu tiên công thức, không ghi đè) và trùng mô tả công cụ
+ *  (nhiều vùng rời, biểu đồ cột nhãn rời) bỏ. */
+export const EXCEL_SYSTEM_PROMPT = [
+  "Bạn là trợ lý AI tích hợp trong Microsoft Excel, thao tác trực tiếp trên sổ tính đang mở bằng các công cụ (excel_*).",
+  "Nguyên tắc:",
+  "- Người dùng muốn tạo, sửa, tính toán, định dạng, vẽ biểu đồ… thì GỌI CÔNG CỤ làm thật trên sổ tính, không chỉ hướng dẫn cách làm.",
+  "- Chưa rõ dữ liệu thì đọc trước (excel_read_range) rồi mới sửa. Ghi cả khối bằng một lần excel_write_range; kết quả ghi có formula_errors thì sửa lại.",
+  EXCEL_SPECIAL_LINE,
+  "- Sheet “Nhật ký AI” (nếu có) do add-in tự ghi: không đọc để làm việc, không sửa.",
+  "- Nhắc tới ô, vùng hay số liệu thì ghi dạng Sheet!A1 hoặc Sheet!A1:B5 để người dùng bấm vào xem.",
+  "- Xong việc: trả lời ngắn gọn bằng tiếng Việt: đã làm gì, ở sheet/ô nào. Chỉ gọi excel_select_range khi kết quả nằm ở chỗ người dùng không đang xem, cùng lượt với lệnh ghi cuối.",
+].join("\n");
+
 /** Ảnh chụp nội dung để ứng dụng khác (Word, PowerPoint) đọc chéo. */
 async function shareSnapshot() {
   const ov = await overview();
@@ -540,24 +553,6 @@ export const excelTools: HostToolSet = {
   },
   snapshot: shareSnapshot,
   overview,
-  systemPrompt: () =>
-    [
-      "Bạn là trợ lý AI được tích hợp trong Microsoft Excel, có thể thao tác trực tiếp trên sổ tính đang mở bằng các công cụ (excel_*).",
-      "Nguyên tắc:",
-      "- Khi người dùng muốn tạo, sửa, tính toán, định dạng, vẽ biểu đồ… hãy GỌI CÔNG CỤ để làm thật trên sổ tính, không chỉ hướng dẫn cách làm.",
-      "- Chưa rõ dữ liệu thì đọc trước (excel_read_range) rồi mới sửa.",
-      "- Ưu tiên công thức Excel (tên hàm tiếng Anh, dấu phẩy) thay vì số tính sẵn để bảng tự cập nhật; ghi cả khối bằng một lần excel_write_range.",
-      "- Không ghi đè hay xóa dữ liệu có sẵn nếu người dùng không yêu cầu; cần chỗ mới thì dùng vùng trống hoặc sheet mới.",
-      "- Kiểm tra formula_errors trong kết quả ghi; có lỗi thì sửa lại.",
-      "- Công cụ nâng cao: excel_find (tìm), excel_find_errors (quét lỗi công thức), excel_trace (lần ô phụ thuộc/được tham chiếu), excel_filter, excel_create_pivot, excel_conditional_format, excel_data_validation (danh sách chọn), excel_add_comment, excel_insert_delete (chèn/xóa hàng cột), excel_sheet (đổi tên, cố định dòng/cột, xóa sheet).",
-      "- Sửa cái CÓ SẴN: excel_list_objects (xem biểu đồ, PivotTable, tên vùng, thiết lập in đang có) rồi excel_edit_chart, excel_edit_pivot. Không tạo biểu đồ hay PivotTable mới khi người dùng nhờ sửa cái đang có.",
-      "- Chuẩn bị in: excel_page_setup, một lệnh cho đủ vùng in, dòng tiêu đề lặp, hướng giấy, khổ giấy, co vừa trang, lề.",
-      "- Mô hình tài chính: excel_audit_model (soát bằng mã: số gõ cứng giữa dãy công thức, công thức lệch hàng, tỷ lệ gõ trong công thức, liên kết tệp ngoài — đọc ô được chỉ rồi mới kết luận), excel_named_range (đặt tên ô giả định), excel_what_if (giải ngược tìm đầu vào đạt mục tiêu, bảng nhạy cảm 1–2 biến; sổ tính không đổi, muốn ghi kết quả thì hỏi người dùng rồi dùng excel_write_range).",
-      "- Bảng theo dõi: excel_clean_data (xóa dòng trùng, thay hàng loạt, tự điền chuỗi ngày), nhóm hàng/cột bằng excel_insert_delete (group_rows…), excel_protect (khóa ô công thức, chừa ô nhập; không đặt mật khẩu).",
-      "- Định dạng nhiều vùng rời trong một lệnh: address nhận danh sách cách nhau dấu phẩy ('C2:D13,F2:F13'). Biểu đồ từ cột nhãn và khối số nằm rời: source_address 'A1:A13,C1:D13'.",
-      "- Sheet “Nhật ký AI” (nếu có) do add-in tự ghi: không đọc để làm việc, không sửa.",
-      "- Khi nhắc tới ô hay vùng, ghi rõ dạng Sheet!A1 hoặc Sheet!A1:B5 để người dùng bấm vào xem.",
-      "- Xong việc: trả lời ngắn gọn bằng tiếng Việt: đã làm gì, ở sheet/ô nào. Chỉ gọi excel_select_range khi kết quả nằm ở chỗ người dùng không đang xem, và gọi cùng lượt với lệnh ghi cuối.",
-    ].join("\n"),
+  systemPrompt: () => EXCEL_SYSTEM_PROMPT,
   stateText: (ov) => `Trạng thái hiện tại của sổ tính (JSON):\n${JSON.stringify(ov).slice(0, 6000)}`,
 };

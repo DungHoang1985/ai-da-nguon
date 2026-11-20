@@ -7,27 +7,29 @@ import { PPT_ADV_SPECS, executePptAdvanced, pptRisk, slideSizePt } from "./pptAd
 import { findAttachedImage, listAttachedImages } from "../core/attachedFiles";
 import { imageBox } from "../core/imagefit";
 import { PPT_DESIGN_SPECS, executePptDesign } from "./pptDesign";
+import { PPT_SPECIAL_LINE } from "../core/toolgroups";
 
-const slideProp = { type: "number", description: "Slide number (1-based)." };
+/** Đợt 11: viết gọn (slide đánh số từ 1 đã nói ở lời nhắc) */
+const slideProp = { type: "number" };
 
 export const PPT_SPECS: ToolSpec[] = [
   {
     name: "ppt_get_overview",
     description:
-      "Get a presentation overview: slide size (points), slides (number, id, layout, shapes with name/type/text/position), selected slides and available layout names.",
+      "Presentation overview: slide size (points), slides (number, id, layout, shapes with name/type/text/position), selection, layout names.",
     parameters: { type: "object", properties: {} },
   },
   {
     name: "ppt_add_slide",
     description:
-      "Add a slide using one of the presentation's layouts and fill its title and body placeholders. Body: one bullet per line, short.",
+      "Add one slide with a layout of the deck, filling title and body placeholders.",
     parameters: {
       type: "object",
       properties: {
-        layout: { type: "string", description: "Layout name, e.g. 'Title and Content', 'Title Slide', 'Two Content'." },
+        layout: { type: "string", description: "e.g. 'Title and Content', 'Title Slide', 'Two Content'." },
         title: { type: "string" },
-        body: { type: "string", description: "Bullet lines separated by \\n." },
-        after_slide: { type: "number", description: "Insert after this slide number (default: at the end)." },
+        body: { type: "string", description: "Short bullet lines separated by \\n." },
+        after_slide: { type: "number", description: "Default: at the end." },
       },
     },
     write: true,
@@ -35,19 +37,18 @@ export const PPT_SPECS: ToolSpec[] = [
   {
     name: "ppt_add_slides",
     description:
-      "Add SEVERAL slides in one call (use this instead of ppt_add_slide whenever you add 2 or more slides). Slides are appended at the end in the given order; each uses one of the presentation's layouts and fills its title and body placeholders. Max 10 slides per call. Undo removes the whole batch.",
+      "Add SEVERAL slides (2 or more) in one call, appended at the end in order, each with a layout of the deck and its title/body. Max 10 per call.",
     parameters: {
       type: "object",
       properties: {
         slides: {
           type: "array",
-          description: "Slides in order.",
           items: {
             type: "object",
             properties: {
-              layout: { type: "string", description: "Layout name, e.g. 'Title and Content', 'Title Slide', 'Title Only'." },
+              layout: { type: "string", description: "e.g. 'Title and Content', 'Title Only'." },
               title: { type: "string" },
-              body: { type: "string", description: "Bullet lines separated by \\n. Omit for slides that will get a chart or table." },
+              body: { type: "string", description: "Bullet lines separated by \\n; omit for a chart or table slide." },
             },
           },
         },
@@ -59,16 +60,16 @@ export const PPT_SPECS: ToolSpec[] = [
   {
     name: "ppt_insert_image",
     description:
-      "Place an image the user ATTACHED in this chat onto a slide, keeping its aspect ratio. Only images attached in this session can be used (not web URLs). By default the image is fitted into the content area below the title; use place or left/top/width/height (points) to position it. Undo removes it.",
+      "Place an image the user ATTACHED in this chat (not web URLs) on a slide, keeping its aspect ratio; fitted below the title by default, or use place or left/top/width/height (points).",
     parameters: {
       type: "object",
       properties: {
-        slide: { type: "number", description: "Slide number (from 1)." },
-        image: { type: "string", description: "Attached image file name (or its position '1', '2'…). Omit to use the most recently attached image." },
-        place: { type: "string", enum: ["content", "left", "right", "center", "full"], description: "Where to fit the image: content area (default), left or right half, centered, or the whole slide." },
+        slide: { type: "number" },
+        image: { type: "string", description: "File name or position '1', '2'…; default the latest." },
+        place: { type: "string", enum: ["content", "left", "right", "center", "full"] },
         left: { type: "number" },
         top: { type: "number" },
-        width: { type: "number", description: "Give width OR height to set the size; the other side follows the aspect ratio." },
+        width: { type: "number", description: "Width OR height; the other follows the ratio." },
         height: { type: "number" },
       },
       required: ["slide"],
@@ -77,16 +78,16 @@ export const PPT_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_set_shape_text",
-    description: "Replace the text of a shape (title, placeholder, text box) on a slide; optionally change its font.",
+    description: "Replace the text of a shape (title, placeholder, text box); optionally its font.",
     parameters: {
       type: "object",
       properties: {
         slide: slideProp,
-        shape: { type: "string", description: "Shape name from the overview, or its 1-based number on the slide." },
+        shape: { type: "string", description: "Name, or 1-based number on the slide." },
         text: { type: "string" },
         font_size: { type: "number" },
         bold: { type: "boolean" },
-        font_color: { type: "string", description: "Hex colour like #1F4E79." },
+        font_color: { type: "string", description: "#RRGGBB" },
       },
       required: ["slide", "shape", "text"],
     },
@@ -94,7 +95,7 @@ export const PPT_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_add_textbox",
-    description: "Add a text box on a slide (positions in points; see slide_size in the overview).",
+    description: "Add a text box (positions in points).",
     parameters: {
       type: "object",
       properties: {
@@ -115,7 +116,7 @@ export const PPT_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_add_shape",
-    description: "Add a shape (rectangle, rounded rectangle, ellipse, arrow…) with optional text and fill colour.",
+    description: "Add a shape with optional text and fill.",
     parameters: {
       type: "object",
       properties: {
@@ -139,7 +140,7 @@ export const PPT_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_add_table",
-    description: "Add a table on a slide. First row is the header.",
+    description: "Add a table; first row is the header.",
     parameters: {
       type: "object",
       properties: {
@@ -156,7 +157,7 @@ export const PPT_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_go_to_slide",
-    description: "Select (show) a slide for the user.",
+    description: "Show a slide to the user.",
     parameters: { type: "object", properties: { slide: slideProp }, required: ["slide"] },
   },
 ];
@@ -630,6 +631,23 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
 const PPT_RISKY = new Set(["ppt_delete_slide", "ppt_delete_shape"]);
 const ALL_PPT_SPECS = [...PPT_SPECS, ...PPT_ADV_SPECS, ...PPT_DESIGN_SPECS];
 
+/** Lời nhắc riêng của PowerPoint. Đợt 11: viết gọn — các dòng kể công cụ chuyên gộp thành PPT_SPECIAL_LINE (chế độ Miễn phí thay bằng
+ *  dòng theo tên nhóm); dòng trùng chuẩn làm việc PowerPoint (độ dài tiêu đề, số ý, lề, "slide N") bỏ, giữ ở chuẩn làm việc. */
+export const PPT_SYSTEM_PROMPT = [
+  "Bạn là trợ lý AI tích hợp trong Microsoft PowerPoint, thao tác trực tiếp trên bài trình chiếu đang mở bằng các công cụ (ppt_*).",
+  "Nguyên tắc:",
+  "- Người dùng muốn tạo slide, sửa chữ, thêm hình, bảng… thì GỌI CÔNG CỤ làm thật, không chỉ đưa dàn ý.",
+  "- Slide đánh số từ 1; kích thước slide (điểm) ở slide_size. Dùng bố cục có sẵn của tệp (danh sách layouts).",
+  PPT_SPECIAL_LINE,
+  "- THEO MẪU: trước khi thêm slide hoặc hình vào bài có sẵn, xem mẫu bằng ppt_get_theme; dùng bố cục, màu, phông của mẫu, không tự đặt phông hay màu lạ.",
+  "- ÍT LƯỢT GỌI: từ 2 slide trở lên dùng ppt_add_slides (một lệnh cả lô); gọi các lệnh thêm slide, bảng, biểu đồ trong CÙNG một lượt (slide mới nối cuối bài theo thứ tự lệnh, nên biết trước số slide); làm xong HẾT rồi kiểm một lần mọi slide vừa tạo bằng ppt_get_slide_image với slides: [..]. Không gọi ppt_get_overview sau mỗi bước.",
+  "- TỰ KIỂM BẰNG MẮT: slide nhiều chữ, bảng, hình thì gọi ppt_get_slide_image để NHÌN; chữ tràn khung, hình chồng nhau thì sửa ĐÚNG hình có vấn đề (cỡ chữ: ppt_format_text; nới, dời khung: ppt_update_shape; hoặc tách slide) rồi chụp lại MỘT lần. Không dời, không đổi cỡ ô tiêu đề và ô nội dung của bố cục khi chúng không có vấn đề. Hình trùng tên thì chỉ bằng số thứ tự (n). Không chụp lại quá hai lần một slide; ảnh cho thấy ổn thì dừng, không sửa tiếp theo số đo.",
+  "- KIỂM BÀI: được nhờ kiểm tra, soát, hoàn thiện bài thì gọi ppt_check_deck trước, báo đủ từng điểm kèm số slide; chỉ sửa khi được nhờ.",
+  "- 'Slide này', 'hình này', 'chữ đang chọn' → ppt_get_selection.",
+  "- PowerPoint không cho add-in ghi chú diễn giả, sửa số liệu của biểu đồ đã có, tạo SmartArt, chuyển cảnh: được nhờ thì nói rõ là không làm được và gợi ý cách thay (biểu đồ: tạo mới bằng ppt_add_chart rồi xóa cái cũ sau khi người dùng đồng ý).",
+  "- Xong việc: trả lời ngắn gọn bằng tiếng Việt: đã tạo/sửa slide nào.",
+].join("\n");
+
 export const pptTools: HostToolSet = {
   host: "PowerPoint",
   specs: ALL_PPT_SPECS.map((sp) => (PPT_RISKY.has(sp.name) ? { ...sp, risky: (args: any) => pptRisk(sp.name, args) } : sp)),
@@ -640,23 +658,6 @@ export const pptTools: HostToolSet = {
   },
   snapshot: async () => ({ title: "Bài trình chiếu PowerPoint đang mở", data: await overview() }),
   overview,
-  systemPrompt: () =>
-    [
-      "Bạn là trợ lý AI được tích hợp trong Microsoft PowerPoint, có thể thao tác trực tiếp trên bài trình chiếu đang mở bằng các công cụ (ppt_*).",
-      "Nguyên tắc:",
-      "- Khi người dùng muốn tạo slide, sửa chữ, thêm hình/bảng… hãy GỌI CÔNG CỤ để làm thật, không chỉ đưa dàn ý.",
-      "- Slide đánh số từ 1; kích thước slide (điểm) ở slide_size. Dùng bố cục có sẵn của tệp (danh sách layouts) để giữ đúng giao diện.",
-      "- Số liệu cần so sánh → ppt_add_chart (biểu đồ gốc, sửa được dữ liệu, theo màu chủ đề). Quy trình/các bước/mốc thời gian → ppt_add_process_flow. Sắp xếp slide → ppt_move_slide / ppt_duplicate_slide / ppt_delete_slide. Chỉnh vị trí, màu, chữ của hình → ppt_update_shape.",
-      "- THEO MẪU: trước khi thêm slide hoặc hình vào một bài có sẵn, xem mẫu bằng ppt_get_theme (màu chủ đề, phông, bố cục và ô giữ chỗ); dùng bố cục và màu của mẫu, không tự đặt phông hay màu lạ.",
-      "- ÍT LƯỢT GỌI: từ 2 slide trở lên thì dùng ppt_add_slides (một lệnh thêm cả lô); gọi các lệnh thêm slide, bảng, biểu đồ trong CÙNG một lượt (slide mới nối vào cuối bài theo thứ tự lệnh, nên biết trước số slide); làm xong HẾT rồi mới kiểm, và kiểm một lần cho mọi slide vừa tạo bằng ppt_get_slide_image với slides: [..]. Không gọi ppt_get_overview sau mỗi bước.",
-      "- TỰ KIỂM BẰNG MẮT: sau khi tạo hoặc sửa slide có nhiều chữ, bảng, hình, gọi ppt_get_slide_image để NHÌN slide; thấy chữ tràn khung, hình chồng nhau thì sửa ĐÚNG hình có vấn đề (giảm cỡ chữ bằng ppt_format_text, nới hoặc dời khung bằng ppt_update_shape, tách slide) rồi chụp lại MỘT lần để xác nhận. Không dời, không đổi cỡ ô tiêu đề và ô nội dung của bố cục khi chúng không có vấn đề. Slide có hình trùng tên thì chỉ hình bằng số thứ tự (n). Không chụp lại quá hai lần cho một slide; ảnh cho thấy ổn thì dừng, không sửa tiếp theo số đo.",
-      "- KIỂM BÀI: khi người dùng nhờ kiểm tra, soát, hoàn thiện bài, gọi ppt_check_deck trước (phông lệch mẫu, chữ quá nhỏ, slide thiếu tiêu đề, chữ tràn, hình ra ngoài slide), báo đủ từng điểm kèm số slide; chỉ sửa khi được nhờ.",
-      "- Định dạng một đoạn hay một cụm chữ trong hình: ppt_format_text. Sửa bảng có sẵn: ppt_edit_table. Người dùng nói 'slide này', 'hình này', 'chữ đang chọn': ppt_get_selection. Đổi bố cục slide: ppt_set_layout.",
-      "- PowerPoint không cho add-in ghi chú diễn giả, sửa số liệu của biểu đồ đã có, tạo SmartArt, chuyển cảnh: được nhờ thì nói rõ là không làm được và gợi ý cách thay (biểu đồ: tạo biểu đồ mới bằng ppt_add_chart rồi xóa biểu đồ cũ sau khi người dùng đồng ý).",
-      "- Khi nhắc tới slide, ghi \"slide N\" để người dùng bấm vào xem.",
-      "- Nội dung slide ngắn gọn: tiêu đề ≤ 10 từ, mỗi slide 3–6 ý, mỗi ý một dòng.",
-      "- Đặt hình/ô chữ không chồng lên nhau, cách mép ≥ 40 điểm.",
-      "- Xong việc: trả lời ngắn gọn bằng tiếng Việt: đã tạo/sửa slide nào.",
-    ].join("\n"),
+  systemPrompt: () => PPT_SYSTEM_PROMPT,
   stateText: (ov) => `Trạng thái hiện tại của bài trình chiếu (JSON):\n${JSON.stringify(ov).slice(0, 6000)}`,
 };

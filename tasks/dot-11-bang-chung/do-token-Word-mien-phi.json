@@ -1,0 +1,111 @@
+{
+ "host": "Word",
+ "mode": "free (nhóm lõi)",
+ "tools": 18,
+ "system_chars": 8016,
+ "system_parts_chars": {
+  "base": 3281,
+  "guide": 536,
+  "catalog": 1820,
+  "rules_and_groups": 2379
+ },
+ "tools_chars": 10588,
+ "total_chars": 18604,
+ "est_tokens": {
+  "system": 2505,
+  "tools": 3309,
+  "total": 5814
+ },
+ "per_tool": [
+  {
+   "name": "word_format_text",
+   "chars": 1255,
+   "desc": 198
+  },
+  {
+   "name": "word_insert_paragraphs",
+   "chars": 950,
+   "desc": 206
+  },
+  {
+   "name": "word_replace_text",
+   "chars": 935,
+   "desc": 227
+  },
+  {
+   "name": "word_insert_clause",
+   "chars": 908,
+   "desc": 251
+  },
+  {
+   "name": "word_read_paragraphs",
+   "chars": 793,
+   "desc": 407
+  },
+  {
+   "name": "read_attachment_pages",
+   "chars": 693,
+   "desc": 263
+  },
+  {
+   "name": "word_set_paragraph_text",
+   "chars": 595,
+   "desc": 161
+  },
+  {
+   "name": "word_add_comment",
+   "chars": 593,
+   "desc": 171
+  },
+  {
+   "name": "word_find",
+   "chars": 560,
+   "desc": 266
+  },
+  {
+   "name": "word_delete_paragraphs",
+   "chars": 555,
+   "desc": 117
+  },
+  {
+   "name": "word_get_outline",
+   "chars": 499,
+   "desc": 268
+  },
+  {
+   "name": "use_skill",
+   "chars": 463,
+   "desc": 208
+  },
+  {
+   "name": "word_change_level",
+   "chars": 443,
+   "desc": 99
+  },
+  {
+   "name": "word_replace_selection",
+   "chars": 350,
+   "desc": 83
+  },
+  {
+   "name": "load_tools",
+   "chars": 319,
+   "desc": 112
+  },
+  {
+   "name": "word_read_clause",
+   "chars": 252,
+   "desc": 111
+  },
+  {
+   "name": "word_get_overview",
+   "chars": 233,
+   "desc": 139
+  },
+  {
+   "name": "word_go_to",
+   "chars": 192,
+   "desc": 39
+  }
+ ]
+}

@@ -946,9 +946,13 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                 approve: askApproval,
                 log,
                 maxSteps: stepCapFor(host),
-                // Đợt 10: chế độ Miễn phí chỉ gửi công cụ lõi, nhóm chuyên bật theo việc (Trả phí gửi đủ để giữ bộ nhớ đệm)
+                // Đợt 10 (Word), Đợt 11 (Excel, PowerPoint): chế độ Miễn phí chỉ gửi công cụ lõi, nhóm chuyên bật theo việc (Trả phí gửi đủ để giữ bộ nhớ đệm)
                 toolGroups: toolGroupsFor(mode, host),
-                groupHints: atts.some((a) => a.mime === DOCX_MIME) ? ["soat"] : [],
+                groupHints: [
+                  ...(host === "Word" && atts.some((a) => a.mime === DOCX_MIME) ? ["soat"] : []),
+                  // Đợt 11: ảnh đính kèm trong PowerPoint bật nhóm chèn ảnh
+                  ...(host === "PowerPoint" && images.length ? ["hinh_anh"] : []),
+                ],
                 // Kỹ năng gọi bằng /tên kéo theo nhóm công cụ của nó (soát mã Đợt 10, H3)
                 groupSkills: [...auto.map((k) => k.name), ...(slash.label?.startsWith("/") ? [slash.label.slice(1)] : [])],
               }
