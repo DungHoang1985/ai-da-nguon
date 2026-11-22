@@ -5,7 +5,7 @@
  *  Không có API cho ghi chú diễn giả và phông chủ đề: phông chủ đề đọc từ gói tệp của một slide xuất ra (chỉ đọc). */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { DeckPara, DeckShape, DeckSlide, checkDeck, deckBrief } from "../core/deckcheck";
-import { exportSlide, restoreSlideUndo, slideSizePt } from "./pptAdvanced";
+import { exportSlide, fitTableToSlide, restoreSlideUndo, slideSizePt } from "./pptAdvanced";
 import { shapeOn, slideAt, supports } from "./pptCore";
 import { truncate } from "./util";
 
@@ -66,7 +66,7 @@ export const PPT_DESIGN_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_edit_table",
-    description: "Edit an existing table: set cells (0-based row/col; row 0 = header), append rows. Its values are in ppt_get_overview.",
+    description: "Edit an existing table: set cells (0-based row/col; row 0 = header), append rows. Shrinks text to fit the slide. Its values are in ppt_get_overview.",
     parameters: {
       type: "object",
       properties: {
@@ -473,9 +473,21 @@ export async function executePptDesign(name: string, a: any, log: UndoEntry[]): 
           rows.forEach((r: any[], i: number) => r.slice(0, t.columnCount).forEach((v, k) => (t.getCellOrNullObject(first + i, k).text = String(v ?? ""))));
           await ctx.sync();
         }
-        t.load("rowCount,values");
+        t.load("rowCount,columnCount,values");
+        shp.load("left,top,width");
         await ctx.sync();
-        return { ok: true, rows: t.rowCount, values: t.values, message: `Đã sửa ${cells.length} ô${rows.length ? `, thêm ${rows.length} hàng` : ""} trong bảng ${shp.name} ở slide ${index}${undoable ? "" : " (không tạo được bản sao để Hoàn tác)"}` };
+        // 22/11/2026: thêm hàng hoặc chữ dài làm bảng tràn đáy slide → tự co chữ như ppt_add_table (bản sao Hoàn tác ở trên đã gồm cả cỡ chữ cũ)
+        const size = await slideSizePt(ctx);
+        const fit = await fitTableToSlide(ctx, shp, { rows: t.rowCount, cols: t.columnCount, top: shp.top, slideH: size.h });
+        const box = [shp.left, shp.top, shp.width, fit.height].map((v) => Math.round(v));
+        return {
+          ok: true,
+          rows: t.rowCount,
+          values: t.values,
+          box,
+          fits: fit.fits,
+          message: `Đã sửa ${cells.length} ô${rows.length ? `, thêm ${rows.length} hàng` : ""} trong bảng ${shp.name} ở slide ${index}: khung ${box.join(", ")} pt${fit.font !== null ? `, chữ ${fit.font} pt` : ""}${fit.fits ? ", nằm gọn trong slide" : ""}${fit.notes.length ? ` (${fit.notes.join("; ")})` : ""}${undoable ? "" : " (không tạo được bản sao để Hoàn tác)"}`,
+        };
       });
 
     case "ppt_set_layout":

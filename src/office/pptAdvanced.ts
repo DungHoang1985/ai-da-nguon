@@ -1,6 +1,7 @@
 /* global PowerPoint */
 /** Công cụ PowerPoint nâng cao: biểu đồ gốc (sửa được dữ liệu), sơ đồ quy trình tự dàn trang, di chuyển/nhân bản/xóa slide, sửa và xóa hình. */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
+import { nextTableFont, tableFits } from "../core/tablefit";
 import { currentSlideId, deleteShapeUndo, findShape, remapSlide, restoreFont, shapeOn, slideAt, supports } from "./pptCore";
 
 const slideProp = { type: "number" };
@@ -145,6 +146,51 @@ export async function slideSizePt(ctx: PowerPoint.RequestContext): Promise<{ w: 
   } catch {
     return fallback;
   }
+}
+
+// ---------- Bảng vừa slide (22/11/2026, tasks/sua-22-11.md) ----------
+
+/** Đặt cỡ chữ (nếu có `fontSize`) rồi tự co chữ bảng cho tới khi đáy bảng lọt slide, tối thiểu 10 pt.
+ *  Cỡ chữ đặt từng ô (PowerPointApi 1.9): giữ kiểu bảng và phông chủ đề của mẫu — `uniformCellProperties` làm mất kiểu bảng (đã thăm dò).
+ *  Dùng chung cho ppt_add_table và ppt_edit_table (thêm hàng). Trả chiều cao thật (`shape.height`), lọt hay không, ghi chú cho model. */
+export async function fitTableToSlide(
+  ctx: PowerPoint.RequestContext,
+  shp: PowerPoint.Shape,
+  o: { rows: number; cols: number; top: number; slideH: number; fontSize?: any },
+): Promise<{ height: number; fits: boolean; font: number | null; notes: string[] }> {
+  shp.load("height");
+  await ctx.sync();
+  const canFont = supports("1.9");
+  const want = Number(o.fontSize);
+  let font: number | null = null;
+  const setFont = async (s: number) => {
+    const t = shp.getTable();
+    for (let r = 0; r < o.rows; r++) for (let k = 0; k < o.cols; k++) t.getCellOrNullObject(r, k).font.size = s;
+    shp.load("height");
+    await ctx.sync();
+    font = s;
+  };
+  const notes: string[] = [];
+  if (want && !(want >= 6 && want <= 60)) notes.push(`bỏ qua font_size ${o.fontSize} (chỉ nhận 6–60)`);
+  else if (want && canFont) await setFont(want);
+  else if (want) notes.push("PowerPoint trên máy này chưa cho đặt cỡ chữ ô bảng (cần PowerPointApi 1.9)");
+  let startFont: number | null = font;
+  if (canFont && startFont === null) {
+    const c = shp.getTable().getCellOrNullObject(Math.min(1, o.rows - 1), 0);
+    c.font.load("size");
+    await ctx.sync();
+    startFont = Number(c.font.size) || 18;
+  }
+  if (canFont && !tableFits(o.top, shp.height, o.slideH)) {
+    for (let s = nextTableFont(startFont ?? 18); s !== null && !tableFits(o.top, shp.height, o.slideH); s = nextTableFont(s)) await setFont(s);
+    if (font !== null && startFont !== null && font < startFont) notes.push(`đã tự co chữ từ ${startFont} xuống ${font} pt cho vừa slide`);
+  }
+  const fits = tableFits(o.top, shp.height, o.slideH);
+  if (!fits)
+    notes.push(
+      `BẢNG VẪN TRÀN: đáy bảng ở ${Math.round(o.top + shp.height)} pt, slide cao ${Math.round(o.slideH)} pt${canFont ? ` dù chữ đã ${font ?? startFont} pt` : ""}. Đừng xóa dựng lại cùng nội dung: kéo bảng lên (top nhỏ hơn), bớt chữ, hoặc chia bảng sang hai slide.`,
+    );
+  return { height: shp.height, fits, font, notes };
 }
 
 // ---------- Chèn slide từ base64 ----------

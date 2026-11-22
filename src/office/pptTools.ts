@@ -3,10 +3,10 @@
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { normalize2D, truncate } from "./util";
 import { currentSlideId, deleteShapeUndo, findShape, loadShapeTexts, restoreFont, setTextKeepFont, shapeOn, slideAt, supports } from "./pptCore";
-import { PPT_ADV_SPECS, executePptAdvanced, pptRisk, slideSizePt } from "./pptAdvanced";
+import { PPT_ADV_SPECS, executePptAdvanced, fitTableToSlide, pptRisk, slideSizePt } from "./pptAdvanced";
 import { findAttachedImage, listAttachedImages } from "../core/attachedFiles";
 import { imageBox } from "../core/imagefit";
-import { nextTableFont, tableColumnWidths, tableFits } from "../core/tablefit";
+import { tableColumnWidths } from "../core/tablefit";
 import { PPT_DESIGN_SPECS, executePptDesign } from "./pptDesign";
 import { PPT_SPECIAL_LINE } from "../core/toolgroups";
 
@@ -618,39 +618,11 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         shp.load("id,name,height");
         await ctx.sync();
         log.push(deleteShapeUndo(slide.id, shp.id, `Bảng ${shp.name}`, shp.name));
-        // Cỡ chữ đặt từng ô SAU khi thêm (PowerPointApi 1.9): giữ kiểu bảng và phông chủ đề của mẫu (uniformCellProperties làm mất kiểu bảng — đã thăm dò)
-        const canFont = supports("1.9");
-        const want = Number(a.font_size);
-        let font: number | null = null;
-        const setFont = async (s: number) => {
-          const t = shp.getTable();
-          for (let r = 0; r < vals.length; r++) for (let k = 0; k < vals[0].length; k++) t.getCellOrNullObject(r, k).font.size = s;
-          shp.load("height");
-          await ctx.sync();
-          font = s;
-        };
-        const notes: string[] = [];
-        if (want && !(want >= 6 && want <= 60)) notes.push(`bỏ qua font_size ${a.font_size} (chỉ nhận 6–60)`);
-        else if (want && canFont) await setFont(want);
-        else if (want) notes.push("PowerPoint trên máy này chưa cho đặt cỡ chữ ô bảng (cần PowerPointApi 1.9)");
-        let startFont = font;
-        if (canFont && startFont === null) {
-          const c = shp.getTable().getCellOrNullObject(Math.min(1, vals.length - 1), 0);
-          c.font.load("size");
-          await ctx.sync();
-          startFont = Number(c.font.size) || 18;
-        }
-        if (canFont && !tableFits(top, shp.height, size.h)) {
-          for (let s = nextTableFont(startFont ?? 18); s !== null && !tableFits(top, shp.height, size.h); s = nextTableFont(s)) await setFont(s);
-          if (font !== null && font < startFont) notes.push(`đã tự co chữ từ ${startFont} xuống ${font} pt cho vừa slide`);
-        }
-        const h = Math.round(shp.height);
-        const bottom = Math.round(top + shp.height);
-        const fits = tableFits(top, shp.height, size.h);
-        if (!fits)
-          notes.push(
-            `BẢNG VẪN TRÀN: đáy bảng ở ${bottom} pt, slide cao ${Math.round(size.h)} pt${canFont ? ` dù chữ đã ${font ?? startFont} pt` : ""}. Đừng xóa dựng lại cùng nội dung: kéo bảng lên (top nhỏ hơn), bớt chữ, hoặc chia bảng sang hai slide.`,
-          );
+        const fit = await fitTableToSlide(ctx, shp, { rows: vals.length, cols: vals[0].length, top, slideH: size.h, fontSize: a.font_size });
+        const h = Math.round(fit.height);
+        const fits = fit.fits;
+        const font = fit.font;
+        const notes = fit.notes;
         return {
           ok: true,
           message: `Đã thêm bảng ${vals.length}×${vals[0].length} ở slide ${a.slide}: khung ${Math.round(left)}, ${Math.round(top)}, ${Math.round(width)} × ${h} pt${font !== null ? `, chữ ${font} pt` : ""}${fits ? ", nằm gọn trong slide" : ""}${notes.length ? ` (${notes.join("; ")})` : ""}`,

@@ -613,6 +613,12 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
           out = e.message;
         }
         expect(/ngoài bảng/.test(out), "Ô ngoài bảng mà không báo lỗi");
+        // 22/11/2026: thêm hàng làm bảng tràn đáy slide → công cụ tự co chữ, báo khung thật
+        if (Office.context.requirements.isSetSupported("PowerPointApi", "1.9")) {
+          const more = [1, 2, 3, 4, 5, 6].map((i) => [`Hạng mục bổ sung số ${i}`, String(100 * i)]);
+          const big = await go("ppt_edit_table", { slide: n, shape: tb.name, add_rows: more });
+          expect(big.rows === 9 && big.fits === true && /tự co chữ/.test(big.message), `Thêm hàng mà bảng không tự co cho vừa slide: ${big.message}`);
+        }
         // Bố cục
         const other = theme.layouts.find((l: any) => l.name !== lay.name && l.placeholders.some((p: string) => /Title/.test(p))) || theme.layouts.find((l: any) => l.name !== lay.name);
         const L = await go("ppt_set_layout", { slide: n, layout: other.name });
@@ -620,7 +626,7 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         // Vùng chọn
         const sel = await go("ppt_get_selection");
         expect(Array.isArray(sel.slides) && Array.isArray(sel.shapes), "Không đọc được vùng chọn");
-        return `Đoạn 2 đậm cỡ 22 rồi hoàn tác; bảng: ô (1,1) = 120, thêm hàng “Thân”; ${L.message}; vùng chọn: ${sel.brief}`;
+        return `Đoạn 2 đậm cỡ 22 rồi hoàn tác; bảng: ô (1,1) = 120, thêm hàng “Thân”, thêm 6 hàng thì tự co cho vừa slide; ${L.message}; vùng chọn: ${sel.brief}`;
       });
 
       await step("Ảnh slide cho AI tự nhìn; chữ cố ý tràn khung được đo ra, sửa xong thì hết", async () => {

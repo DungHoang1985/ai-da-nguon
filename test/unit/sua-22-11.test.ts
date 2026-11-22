@@ -5,6 +5,7 @@ import * as assert from "assert";
 import { TABLE_MIN_FONT, nextTableFont, tableColumnWidths, tableFits } from "../../src/core/tablefit";
 import { mergeTaskFacts, taskSoFar, unverifiedWriteClaim } from "../../src/core/claims";
 import { PPT_SPECS } from "../../src/office/pptTools";
+import { PPT_DESIGN_SPECS } from "../../src/office/pptDesign";
 
 const P3 = [
   ["Thủ tục", "Cơ quan", "Trạng thái", "Hạn"],
@@ -21,6 +22,10 @@ describe("22/11 · ppt_add_table vừa slide", () => {
     const s = PPT_SPECS.find((x) => x.name === "ppt_add_table")!;
     assert.ok(s.parameters.properties.font_size);
     assert.match(s.description, /fit/i);
+  });
+  it("ppt_edit_table: mô tả nói công cụ tự co khi thêm hàng làm bảng tràn", () => {
+    const s = PPT_DESIGN_SPECS.find((x) => x.name === "ppt_edit_table")!;
+    assert.match(s.description, /fit the slide/i);
   });
   it("Cỡ chữ thử giảm dần, dừng ở 10", () => {
     const seq: number[] = [];
