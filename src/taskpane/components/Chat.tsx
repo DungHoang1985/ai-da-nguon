@@ -59,7 +59,7 @@ import { parseMarkdownTable } from "../../core/table";
 import { HostName, INSERT_LABEL, insertAnswer, readSelection } from "../../office/host";
 import { QUICK_PROMPTS, describeCall, getHostTools } from "../../office/tools";
 import { createCommonTools } from "../../office/common";
-import { MemoryProposal, buildMemoryBlock, memoryCapFor } from "../../core/memory";
+import { MemoryItem, MemoryProposal, memoryCapFor, memoryForTurn, memorySnapshot } from "../../core/memory";
 import { navigateTo } from "../../office/navigate";
 import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { inputKeyAction } from "../../core/keys";
@@ -390,7 +390,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
   const convIdRef = React.useRef("");
   /** Đợt 12 phần E: khối bộ nhớ chụp khi hội thoại bắt đầu; undefined = chưa chụp (hội thoại mới). Giữ nguyên cả hội thoại để
    *  lời nhắc hệ thống không đổi giữa các lượt (bộ nhớ đệm lời nhắc); mục nhớ mới có hiệu lực từ hội thoại sau. */
-  const memSnapRef = React.useRef<string | undefined>(undefined);
+  const memSnapRef = React.useRef<MemoryItem[] | undefined>(undefined);
   const saveChain = React.useRef<Promise<void>>(Promise.resolve());
   const lastSaveAt = React.useRef(0);
   /** Token đầu vào thực đo của bước gần nhất: đo độ đầy ngữ cảnh để quyết định tóm tắt */
@@ -592,7 +592,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       updatedAt: Date.now(),
       items: its.map((it) => ({ ...it, undo: undefined, undoCount: it.undo?.length || it.undoCount })),
       history: slimForStorage(historyRef.current),
-      ...(memSnapRef.current ? { memory: memSnapRef.current } : {}),
+      ...(memSnapRef.current?.length ? { memory: memSnapRef.current } : {}),
     };
     lastSaveAt.current = Date.now();
     // Xếp hàng để hai lần lưu không ghi đè chỉ mục của nhau
@@ -859,12 +859,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     abortRef.current = ac;
     const key = storage.getKey(p.id);
     const instr = (settings.instructions || {})[host]?.trim();
-    // Hội thoại mới: chụp bộ nhớ một lần (trần theo chế độ — nguồn miễn phí sức chứa nhỏ)
-    if (memSnapRef.current === undefined) {
-      const mb = buildMemoryBlock(storage.getMemory(), host, memoryCapFor(mode));
-      memSnapRef.current = mb.text;
-      if (mb.used || mb.skipped) patchLast((it) => ({ ...it, memUsed: { used: mb.used, skipped: mb.skipped, free: mode === "free" || undefined } }));
-    }
+    // Hội thoại mới: chụp bộ nhớ một lần; mỗi lượt dựng khối từ bản chụp theo trần của chế độ đang dùng (nguồn miễn phí sức chứa nhỏ)
+    const isNewConv = memSnapRef.current === undefined;
+    if (isNewConv) memSnapRef.current = memorySnapshot(storage.getMemory(), host);
+    const mb = memoryForTurn(memSnapRef.current!, storage.getMemory(), host, memoryCapFor(mode));
+    if (isNewConv && (mb.used || mb.skipped)) patchLast((it) => ({ ...it, memUsed: { used: mb.used, skipped: mb.skipped, free: mode === "free" || undefined } }));
     const log: UndoEntry[] = [];
     const extraTools = createCommonTools({
       host,
@@ -875,6 +874,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       seesPages: canSeePages({ pdfCapable: pdfCapable(p), vision }),
       onRemember: (mp) => patchLast((it) => ({ ...it, memProps: [...(it.memProps || []).filter((x) => x.text !== mp.text), mp] })),
       memory: () => storage.getMemory(),
+      request,
     });
     /** Công cụ đã gọi trong lượt và số lệnh ghi không thành công — để nhận ra ca "nói đã sửa mà không ghi" */
     const called: string[] = [];
@@ -966,7 +966,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         files: pdfs.length ? pdfs : undefined,
         think: !!settings.deepThink,
         instructions: instr,
-        memory: memSnapRef.current || undefined,
+        memory: mb.text || undefined,
         agent:
           useAgent && hostTools
             ? {
@@ -1188,7 +1188,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       setItems(c.items as Item[]);
       historyRef.current = c.history || [];
       // Hội thoại cũ dùng đúng bộ nhớ đã chụp lúc nó bắt đầu (hội thoại từ trước khi có bộ nhớ: không có)
-      memSnapRef.current = c.memory || "";
+      memSnapRef.current = Array.isArray(c.memory) ? c.memory : [];
       lastInputRef.current = undefined;
       setConv(c.id);
       setHistWarn("");

@@ -15,7 +15,7 @@ export interface Conversation extends ConversationMeta {
   /** Hội thoại gửi model */
   history: AgentMessage[];
   /** Đợt 12 phần E: khối bộ nhớ chụp lúc hội thoại bắt đầu (giữ nguyên lời nhắc hệ thống khi mở lại) */
-  memory?: string;
+  memory?: import("./memory").MemoryItem[];
 }
 
 export const MAX_CONVERSATIONS = 60;

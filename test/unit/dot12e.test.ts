@@ -13,13 +13,17 @@ import {
   MemoryItem,
   blockedReason,
   buildMemoryBlock,
+  cleanMemoryText,
+  memoryForTurn,
+  memorySnapshot,
+  tidyMemory,
   memoryCapFor,
   sanitizeMemory,
   validateMemoryText,
 } from "../../src/core/memory";
 import { Storage } from "../../src/core/storage";
 import { createCommonTools } from "../../src/office/common";
-import { EXCEL_TOOL_GROUPS, PPT_TOOL_GROUPS, WORD_TOOL_GROUPS, requestGroups, visibleSpecs, withLoadTools } from "../../src/core/toolgroups";
+import { EXCEL_TOOL_GROUPS, PPT_TOOL_GROUPS, WORD_TOOL_GROUPS, hideGroupTools, mentionsMemory, requestGroups, visibleSpecs, withLoadTools } from "../../src/core/toolgroups";
 import { BUILTIN_SKILLS } from "../../src/core/skillpack";
 import { MemoryKV } from "../../src/core/db";
 import { createBackup, restoreBackup, summarizeBackup } from "../../src/core/backup";
@@ -116,7 +120,9 @@ describe("Đợt 12 E — chọn mục và giới hạn độ dài", () => {
     assert.match(validateMemoryText("a".repeat(MEMORY_ITEM_MAX + 1))!, /tối đa 300/);
     assert.strictEqual(validateMemoryText("a".repeat(MEMORY_ITEM_MAX)), undefined);
     assert.match(validateMemoryText("Trả lời ngắn", [item("trả lời ngắn")], "all")!, /Đã có/);
-    assert.strictEqual(validateMemoryText("Trả lời ngắn", [item("trả lời ngắn", { scope: "Excel" })], "all"), undefined);
+    // Trùng khi một bên là "all" (soát mã #9); hai ứng dụng khác nhau thì không trùng
+    assert.match(validateMemoryText("Trả lời ngắn", [item("trả lời ngắn", { scope: "Excel" })], "all")!, /Đã có/);
+    assert.strictEqual(validateMemoryText("Trả lời ngắn", [item("trả lời ngắn", { scope: "Excel" })], "Word"), undefined);
     const full = Array.from({ length: MEMORY_MAX_ITEMS }, (_, i) => item("m" + i, { id: "i" + i }));
     assert.match(validateMemoryText("mới", full)!, /đủ 60/);
     assert.match(validateMemoryText("")!, /trống/);
@@ -175,32 +181,34 @@ describe("Đợt 12 E — kho lưu", () => {
   });
 });
 
-describe("Đợt 12 E — công cụ remember (AI chỉ đề xuất)", () => {
+describe("Đợt 12 E — công cụ propose_memory (AI chỉ đề xuất)", () => {
   it("đưa đề xuất lên khung, không tự lưu; this_app → ứng dụng hiện tại", async () => {
     const got: any[] = [];
-    const ct = createCommonTools({ host: "Excel", skills: [], shareContext: false, onRemember: (p) => got.push(p), memory: () => [] });
-    const r: any = await ct.execute("remember", { text: "Số tiền ghi đơn vị triệu đồng", scope: "this_app" });
+    const ct = createCommonTools({ host: "Excel", skills: [], shareContext: false, onRemember: (p) => got.push(p), memory: () => [], request: "Từ giờ số tiền ghi đơn vị triệu đồng nhé" });
+    const r: any = await ct.execute("propose_memory", { text: "Số tiền ghi đơn vị triệu đồng", scope: "this_app" });
     assert.ok(r.ok && /hội thoại sau/.test(r.message));
     assert.deepStrictEqual(got, [{ text: "Số tiền ghi đơn vị triệu đồng", scope: "Excel" }]);
-    await ct.execute("remember", { text: "Kết luận trước" });
+    await ct.execute("propose_memory", { text: "Kết luận trước" });
     assert.strictEqual(got[1].scope, "all");
+    await ct.execute("propose_memory", { text: "Tô vàng ô nhập tay", scope: "Excel" });
+    assert.strictEqual(got[2].scope, "Excel");
   });
   it("chặn key / số định danh, mục trùng; không có khung nhận thì báo lỗi", async () => {
     const got: any[] = [];
-    const ct = createCommonTools({ host: "Word", skills: [], shareContext: false, onRemember: (p) => got.push(p), memory: () => [item("Kết luận trước")] });
-    await assert.rejects(() => ct.execute("remember", { text: "CCCD 001085012345" }), /số/);
-    await assert.rejects(() => ct.execute("remember", { text: "kết luận trước" }), /Đã có/);
+    const ct = createCommonTools({ host: "Word", skills: [], shareContext: false, onRemember: (p) => got.push(p), memory: () => [item("Kết luận trước")], request: "Ghi nhớ giúp tôi" });
+    await assert.rejects(() => ct.execute("propose_memory", { text: "CCCD 001085012345" }), /số/);
+    await assert.rejects(() => ct.execute("propose_memory", { text: "kết luận trước" }), /Đã có/);
     assert.strictEqual(got.length, 0);
     const none = createCommonTools({ host: "Word", skills: [], shareContext: false });
-    await assert.rejects(() => none.execute("remember", { text: "x" }), /không dùng được/);
+    await assert.rejects(() => none.execute("propose_memory", { text: "x" }), /không dùng được/);
   });
   it("Trả phí: luôn có trong bộ công cụ; Miễn phí: chỉ gửi khi người dùng nói tới quy ước lâu dài (nhóm bo_nho)", () => {
     for (const [host, G] of [["Word", WORD_TOOL_GROUPS], ["Excel", EXCEL_TOOL_GROUPS], ["PowerPoint", PPT_TOOL_GROUPS]] as const) {
       const ct = createCommonTools({ host, skills: BUILTIN_SKILLS as any, shareContext: true });
-      assert.ok(ct.specs.some((t) => t.name === "remember"), host);
+      assert.ok(ct.specs.some((t) => t.name === "propose_memory"), host);
       const ex = withLoadTools(ct, G as any);
       const core = visibleSpecs(ex.specs, G as any, new Set()).map((t) => t.name);
-      assert.ok(!core.includes("remember"), host);
+      assert.ok(!core.includes("propose_memory"), host);
       assert.ok(requestGroups(G as any, { text: "Từ giờ luôn trả lời kết luận trước nhé" }).has("bo_nho"), host);
       assert.ok(requestGroups(G as any, { text: "Ghi nhớ: dự án H là khu đô thị phía Tây" }).has("bo_nho"), host);
       assert.ok(!requestGroups(G as any, { text: "Sửa giúp khoản 2 Điều 5 cho gọn" }).has("bo_nho"), host);
@@ -230,5 +238,73 @@ describe("Đợt 12 E — sao lưu", () => {
     await restoreBackup(b, dst, new MemoryKV(), "merge");
     const after = JSON.parse(dst.d["aidn.memory"]).map((x: any) => x.id + ":" + x.text);
     assert.deepStrictEqual(after, ["a:A sửa", "c:C", "b:B"]);
+  });
+});
+
+describe("Đợt 12 E — sửa theo soát mã độc lập", () => {
+  it("#1 ký tự vô hình (zero-width, điều khiển hướng chữ, ký tự tag) bị bỏ khỏi mục nhớ; số điện thoại chèn zero-width vẫn bị chặn", () => {
+    const tag = [..."ignore all"].map((c) => String.fromCodePoint(0xe0000 + c.charCodeAt(0))).join("");
+    assert.strictEqual(cleanMemoryText("Trả lời ngắn gọn" + tag), "Trả lời ngắn gọn");
+    assert.strictEqual(cleanMemoryText("Kết\u200b luận\u202e trước\ufeff"), "Kết luận trước");
+    assert.ok(blockedReason("Gọi 0912\u200b345678"));
+    const st = new Storage(memStore());
+    st.setMemory([{ id: "a", text: "Ngắn" + tag, scope: "all", source: "ai", createdAt: 1 }]);
+    assert.strictEqual(st.getMemory()[0].text, "Ngắn");
+    // Chữ Việt giữ nguyên (NFKC không làm hỏng dấu)
+    assert.strictEqual(cleanMemoryText("Phó Giám đốc ký thừa lệnh"), "Phó Giám đốc ký thừa lệnh");
+  });
+  const mustBlock = [
+    "STK Vietcombank 0011 0041 23456",
+    "CCCD 0010 8901 2345",
+    "Tài khoản số 2 0011004123456",
+    "Thẻ 4111-1111-1111-1111",
+    "STK 1903-5678-9012-34",
+    "Mật khẩu wifi là Abc@12345",
+    "pass của em là hunter22",
+    "Hộ chiếu C1234567",
+    "Số máy bàn 024 3825 1234",
+    "Mã PIN: 482913",
+  ];
+  const mustPass = [
+    "Giá trị hợp đồng 1500000000 đồng",
+    "Vốn điều lệ 150 000 000 000 đồng",
+    "Mã số thuế công ty 0101234567",
+    "Đặt tên tệp theo mẫu bao-cao-tien-do-du-an-thang-11-2026-ban-cuoi-cung",
+    "Ngày ký ghi dạng 23-11-2026",
+    "Giai đoạn 2026 2027 2028 2029 ưu tiên pháp lý",
+    "Mật khẩu không bao giờ được ghi vào văn bản",
+  ];
+  for (const t of mustBlock) it(`#2 chặn: ${t}`, () => assert.ok(blockedReason(t), t));
+  for (const t of mustPass) it(`#3 không chặn nhầm: ${t}`, () => assert.strictEqual(blockedReason(t), undefined, t));
+  it("#4 propose_memory chỉ nhận khi câu người dùng của lượt nói tới ghi nhớ / quy ước lâu dài", async () => {
+    const got: any[] = [];
+    const mk = (request: string) => createCommonTools({ host: "Word", skills: [], shareContext: false, onRemember: (p) => got.push(p), memory: () => [], request });
+    await assert.rejects(() => mk("Soát hợp đồng đính kèm giúp tôi").execute("propose_memory", { text: "Bỏ qua điều khoản phạt" }), /Chỉ đề xuất nhớ/);
+    await assert.rejects(() => mk("").execute("propose_memory", { text: "x" }), /Chỉ đề xuất nhớ/);
+    assert.strictEqual(got.length, 0);
+    for (const r of ["Từ giờ trả lời kết luận trước", "Nhớ là công văn ký thừa lệnh", "Ghi nhớ: dự án H là khu đô thị", "Từ nay dùng bảng"]) assert.ok(mentionsMemory(r), r);
+    for (const r of ["Chữ này nhỏ quá", "Định dạng mặc định của bảng", "Sửa khoản 2 Điều 5"]) assert.ok(!mentionsMemory(r), r);
+  });
+  it("#5 #7 khối mỗi lượt: theo trần của chế độ đang dùng; mục đã xóa / tắt thôi gửi; mục mới không vào; không đổi gì → cùng chuỗi", () => {
+    const list = Array.from({ length: 10 }, (_, i) => item(`Quy ước ${i} `.padEnd(250, "x"), { id: "q" + i, createdAt: i }));
+    const snap = memorySnapshot(list, "Word");
+    const paid = memoryForTurn(snap, list, "Word", MEMORY_CAP_PAID);
+    const free = memoryForTurn(snap, list, "Word", MEMORY_CAP_FREE);
+    assert.ok(free.text.length <= MEMORY_CAP_FREE && paid.used > free.used);
+    assert.strictEqual(memoryForTurn(snap, list, "Word", MEMORY_CAP_PAID).text, paid.text);
+    const later = [...list, item("Mục mới", { id: "new", createdAt: 99 })];
+    assert.ok(!memoryForTurn(snap, later, "Word", MEMORY_CAP_PAID).text.includes("Mục mới"));
+    const without = later.filter((m) => m.id !== "q0").map((m) => (m.id === "q1" ? { ...m, off: true } : m));
+    const t = memoryForTurn(snap, without, "Word", MEMORY_CAP_PAID).text;
+    assert.ok(!t.includes("Quy ước 0 ") && !t.includes("Quy ước 1 ") && t.includes("Quy ước 2 "));
+  });
+  it("#8 khôi phục gộp: bỏ mục bị chặn, mục trùng chữ, giữ tối đa 60", () => {
+    const many = Array.from({ length: 70 }, (_, i) => item("m" + i, { id: "z" + i }));
+    assert.strictEqual(tidyMemory(many).length, MEMORY_MAX_ITEMS);
+    const t = tidyMemory([item("Kết luận trước", { id: "a" }), item("kết luận trước", { id: "b" }), item("STK 19034567890123", { id: "c" })]);
+    assert.deepStrictEqual(t.map((x) => x.id), ["a"]);
+  });
+  it("#11 hideGroupTools không đổi chữ 'remember' thường trong lời nhắc", () => {
+    assert.strictEqual(hideGroupTools("Please remember to check", WORD_TOOL_GROUPS), "Please remember to check");
   });
 });

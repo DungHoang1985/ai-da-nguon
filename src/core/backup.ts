@@ -2,6 +2,7 @@
  *  Lý do: Office lưu dữ liệu add-in theo từng tài khoản Office; đổi tài khoản hoặc sau một bản cập nhật Office,
  *  key và lịch sử có thể "biến mất" (thực ra nằm ở kho khác). Tệp sao lưu chứa API key nên là tệp bí mật. */
 import type { AsyncKV } from "./db";
+import { tidyMemory } from "./memory";
 
 export const BACKUP_FORMAT = "ai-da-nguon-sao-luu";
 export const BACKUP_FORMAT_VERSION = 1;
@@ -160,7 +161,7 @@ export async function restoreBackup(b: BackupFile, ls: LocalLike, kv: AsyncKV, m
     const inc = readJson(v);
     // Bộ nhớ (mảng mục): giữ mục hiện có, thêm mục chỉ có trong tệp (theo mã mục)
     if (k === "aidn.memory" && Array.isArray(a) && Array.isArray(inc)) {
-      ls.setItem(k, JSON.stringify(unionBy(a, inc, (x: any) => String(x?.id))));
+      ls.setItem(k, JSON.stringify(tidyMemory(unionBy(a, inc, (x: any) => String(x?.id)))));
       nLocal++;
       continue;
     }

@@ -17,9 +17,9 @@ export interface ToolGroup {
 
 export const LOAD_TOOLS = "load_tools";
 
-/** Đợt 12 phần E: nhóm bo_nho (công cụ remember) ở chế độ Miễn phí chỉ gửi khi người dùng nói tới một quy ước lâu dài —
+/** Đợt 12 phần E: nhóm bo_nho (công cụ propose_memory) ở chế độ Miễn phí chỉ gửi khi người dùng nói tới một quy ước lâu dài —
  *  nguồn miễn phí sức chứa nhỏ, không gửi mô tả công cụ này ở mọi lượt */
-export const MEMORY_KEYWORDS = ["tu gio", "tu nay", "tu lan sau", "lan sau", "ve sau", "ghi nho", "hay nho", "nho giup", "nho rang", "nho la", "luon luon", "lan nao cung", "mac dinh", "quy uoc"];
+export const MEMORY_KEYWORDS = ["tu gio", "tu nay", "tu lan sau", "lan sau", "ve sau", "ghi nho", "hay nho", "nho giup", "nho rang", "nho la", "luon luon", "lan nao cung", "quy uoc", "nhớ"];
 
 
 export const WORD_TOOL_GROUPS: ToolGroup[] = [
@@ -68,7 +68,7 @@ export const WORD_TOOL_GROUPS: ToolGroup[] = [
   {
     id: "bo_nho",
     label: "ghi nhớ cho hội thoại sau",
-    tools: ["remember"],
+    tools: ["propose_memory"],
     keywords: MEMORY_KEYWORDS,
   },
 ];
@@ -127,7 +127,7 @@ export const EXCEL_TOOL_GROUPS: ToolGroup[] = [
   {
     id: "bo_nho",
     label: "ghi nhớ cho hội thoại sau",
-    tools: ["remember"],
+    tools: ["propose_memory"],
     keywords: MEMORY_KEYWORDS,
   },
 ];
@@ -178,7 +178,7 @@ export const PPT_TOOL_GROUPS: ToolGroup[] = [
   {
     id: "bo_nho",
     label: "ghi nhớ cho hội thoại sau",
-    tools: ["remember"],
+    tools: ["propose_memory"],
     keywords: MEMORY_KEYWORDS,
   },
 ];
@@ -251,6 +251,14 @@ const isAscii = (s: string) => /^[\x00-\x7f]*$/.test(s);
 const escRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 /** Khớp trọn từ (không khớp chuỗi con: "số điện thoại" không chứa "ô điền", "lại sửa" không chứa "ai sửa") */
 const hasWord = (text: string, kw: string) => new RegExp(`(^|[^\\p{L}\\p{N}])${escRe(kw)}($|[^\\p{L}\\p{N}])`, "u").test(text);
+
+/** Đợt 12 E: câu người dùng gõ có nói tới việc ghi nhớ / quy ước lâu dài không (cùng từ khóa của nhóm bo_nho).
+ *  Công cụ propose_memory chỉ nhận đề xuất khi có — chỉ dẫn ẩn trong tài liệu không tự sinh được đề xuất nhớ (soát mã phần E, #4). */
+export function mentionsMemory(text: string): boolean {
+  const raw = String(text || "").normalize("NFC").toLowerCase();
+  const folded = fold(raw);
+  return MEMORY_KEYWORDS.some((k) => (isAscii(k) ? hasWord(folded, k) : hasWord(raw, k.normalize("NFC").toLowerCase())));
+}
 
 /** Nhóm bật theo lời người dùng của lượt này, kỹ năng (tự chọn hoặc gọi bằng /tên) và gợi ý từ tệp đính kèm (id nhóm) */
 export function requestGroups(groups: ToolGroup[], o: { text: string; skills?: string[]; hints?: string[] }): Set<string> {

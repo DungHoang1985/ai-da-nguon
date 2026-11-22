@@ -41,7 +41,7 @@ window.fetch = async (input, init) => {
     if (fakeRemember && /"messages"/.test(body) && !/"role":"tool"/.test(body)) {
       const ev = (o) => `data: ${JSON.stringify(o)}\n\n`;
       const txt =
-        ev({ choices: [{ delta: { tool_calls: [{ index: 0, id: "c1", function: { name: "remember", arguments: JSON.stringify({ text: P }) } }] } }] }) +
+        ev({ choices: [{ delta: { tool_calls: [{ index: 0, id: "c1", function: { name: "propose_memory", arguments: JSON.stringify({ text: P }) } }] } }] }) +
         ev({ choices: [{ delta: {}, finish_reason: "tool_calls" }] }) +
         "data: [DONE]\n\n";
       return new Response(txt, { status: 200, headers: { "content-type": "text/event-stream" } });

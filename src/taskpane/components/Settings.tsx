@@ -524,8 +524,17 @@ const MemoryCard: React.FC<Props> = ({ storage, host }) => {
   const [editText, setEditText] = React.useState("");
   const [confirmAll, setConfirmAll] = React.useState(false);
   const [msg, setMsg] = React.useState<{ text: string; err?: boolean } | null>(null);
-  const save = (next: MemoryItem[], note?: string) => {
-    storage.setMemory(next);
+  // Khung ở ứng dụng khác (dùng chung kho) vừa lưu mục nhớ → làm mới danh sách (soát mã phần E, #6)
+  React.useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (!e.key || e.key === "aidn.memory") setList(storage.getMemory());
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [storage]);
+  /** Áp một thao tác lên danh sách ĐỌC LẠI từ kho (không dùng danh sách đang hiện, có thể đã cũ) */
+  const save = (op: (cur: MemoryItem[]) => MemoryItem[], note?: string) => {
+    storage.setMemory(op(storage.getMemory()));
     setList(storage.getMemory());
     if (note) setMsg({ text: note });
   };
@@ -538,9 +547,9 @@ const MemoryCard: React.FC<Props> = ({ storage, host }) => {
   };
   const saveEdit = (m: MemoryItem) => {
     const t = cleanMemoryText(editText);
-    const err = validateMemoryText(t, list.filter((x) => x.id !== m.id), m.scope);
+    const err = validateMemoryText(t, storage.getMemory().filter((x) => x.id !== m.id), m.scope);
     if (err) return setMsg({ text: err, err: true });
-    save(list.map((x) => (x.id === m.id ? { ...x, text: t } : x)), "Đã sửa. Có hiệu lực từ hội thoại mới.");
+    save((cur) => cur.map((x) => (x.id === m.id ? { ...x, text: t } : x)), "Đã sửa. Hội thoại đang mở vẫn dùng chữ cũ; chữ mới có hiệu lực từ hội thoại mới.");
     setEditId("");
   };
   const h = host && SCOPE_LABEL[host as MemoryScope] ? host : "Word";
@@ -551,7 +560,7 @@ const MemoryCard: React.FC<Props> = ({ storage, host }) => {
     <div className={s.card} data-memory-card="1">
       <Text weight="semibold">Bộ nhớ (giữ qua các hội thoại)</Text>
       <Text size={200} className={s.muted}>
-        Mục ngắn về cách anh muốn AI làm việc, thuật ngữ, tên dự án, quy ước văn bản. Gửi kèm lời nhắc khi mở hội thoại mới; trong một hội thoại không đổi.
+        Mục ngắn về cách anh muốn AI làm việc, thuật ngữ, tên dự án, quy ước văn bản. Gửi kèm lời nhắc khi mở hội thoại mới: mục thêm hoặc sửa có hiệu lực từ hội thoại sau; xóa hoặc tắt thì thôi gửi ngay.
         AI chỉ đề xuất, anh bấm Nhớ mới lưu. Không ghi key, mật khẩu, số định danh, số tài khoản. Lưu trên máy, đi theo bản sao lưu.
       </Text>
       <Text size={200} className={s.muted} data-memory-usage="1">
@@ -582,11 +591,11 @@ const MemoryCard: React.FC<Props> = ({ storage, host }) => {
             {m.off ? " · đang tắt" : ""}
           </Text>
           <div className={s.row}>
-            <Switch checked={!m.off} label={m.off ? "Tắt" : "Bật"} onChange={(_, d) => save(list.map((x) => (x.id === m.id ? { ...x, off: d.checked ? undefined : true } : x)))} />
+            <Switch checked={!m.off} label={m.off ? "Tắt" : "Bật"} onChange={(_, d) => save((cur) => cur.map((x) => (x.id === m.id ? { ...x, off: d.checked ? undefined : true } : x)), d.checked ? "Đã bật: có hiệu lực từ hội thoại mới." : "Đã tắt: thôi gửi ngay từ lượt sau, kể cả hội thoại đang mở.")} />
             <Button size="small" appearance="subtle" onClick={() => (setEditId(m.id), setEditText(m.text))}>
               Sửa
             </Button>
-            <Button size="small" appearance="subtle" data-memory-delete={m.id} onClick={() => save(list.filter((x) => x.id !== m.id), "Đã xóa mục.")}>
+            <Button size="small" appearance="subtle" data-memory-delete={m.id} onClick={() => save((cur) => cur.filter((x) => x.id !== m.id), "Đã xóa: thôi gửi ngay từ lượt sau, kể cả hội thoại đang mở.")}>
               Xóa
             </Button>
           </div>
@@ -613,7 +622,7 @@ const MemoryCard: React.FC<Props> = ({ storage, host }) => {
           {confirmAll ? (
             <>
               <Text size={200}>Xóa hết {list.length} mục? Không lấy lại được (trừ khi có bản sao lưu).</Text>
-              <Button size="small" onClick={() => (save([], "Đã xóa hết bộ nhớ."), setConfirmAll(false))}>
+              <Button size="small" onClick={() => (save(() => [], "Đã xóa hết bộ nhớ."), setConfirmAll(false))}>
                 Xóa hết
               </Button>
               <Button size="small" appearance="subtle" onClick={() => setConfirmAll(false)}>
