@@ -272,7 +272,9 @@ describe("Đợt 11 — chạy một lượt ở chế độ Miễn phí", () =>
 
 describe("Đợt 11 — chặn phình lại (số ký tự phần cố định của một lượt)", () => {
   // Mốc 4.10.0: Excel 31.754, PowerPoint 23.293 (tasks/dot-11-bang-chung/do-token-*-moc-4100.json)
-  const CAP: Record<string, { paid: number; free: number }> = { Excel: { paid: 25600, free: 14900 }, PowerPoint: { paid: 18900, free: 14100 } };
+  // Đợt 12 (22/11/2026): Excel nâng trần +400 / +350 cho tham số `more` của excel_format_range (định dạng nhiều vùng khác kiểu trong một lệnh,
+  // bài X6 chạm trần 12 bước vì 7 lệnh định dạng rời) — đo: Trả phí 25.891, Miễn phí 15.135
+  const CAP: Record<string, { paid: number; free: number }> = { Excel: { paid: 26000, free: 15250 }, PowerPoint: { paid: 18900, free: 14100 } };
   for (const h of HOSTS) {
     const parts = { base: h.prompt, guide: CORE_GUIDES[h.host], host: h.host, skillCatalog: skillCatalog(skillsOf(h.host)) };
     it(`${h.host}, Trả phí: ≤ ${CAP[h.host].paid} ký tự`, () => {

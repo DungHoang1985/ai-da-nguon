@@ -156,3 +156,15 @@ describe("Đợt 12 · B · X3: chữ dạng ngày thành ngày thật khi đặ
     assert.deepStrictEqual(fix.leftText, [[0, 0], [5, 0], [6, 0]]);
   });
 });
+
+import { EXCEL_SPECS } from "../../src/office/excelTools";
+
+describe("Đợt 12 · B · X6: định dạng nhiều vùng khác kiểu trong một lệnh", () => {
+  it("excel_format_range có `more` (mục cần address); mô tả nói cùng một lệnh", () => {
+    const s = EXCEL_SPECS.find((x) => x.name === "excel_format_range")!;
+    const more = s.parameters.properties.more;
+    assert.strictEqual(more.type, "array");
+    assert.deepStrictEqual(more.items.required, ["address"]);
+    assert.match(s.description, /more/);
+  });
+});

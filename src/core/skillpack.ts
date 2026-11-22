@@ -175,9 +175,10 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
     body: `# Kiểm tra lỗi bảng tính
 
 1. excel_find_errors cho toàn sổ; với mỗi ô lỗi dùng excel_trace (direction precedents) để lần tới gốc.
-2. Đọc các vùng công thức chính (excel_read_range include_formulas) để tìm: số cứng trong hàng công thức, công thức lệch mẫu so với ô bên cạnh, tham chiếu tới ô trống, tham chiếu vòng, đơn vị không khớp.
-3. Giải thích một số liệu: lần tiền lệ nhiều cấp, trình bày chuỗi tính từ ô nhập liệu tới kết quả, dẫn địa chỉ từng ô.
-4. Báo bảng: Ô | Vấn đề | Nguyên nhân | Cách sửa. Chỉ sửa khi người dùng đồng ý (có Hoàn tác); sửa xong chạy lại excel_find_errors.`,
+2. Soát số gõ cứng, công thức lệch mẫu so với ô bên cạnh, tỷ lệ gõ trong công thức (*0.03), liên kết tệp ngoài: gọi excel_audit_model trước (soát bằng mã, không bỏ sót ô), rồi đọc các ô nó nêu (excel_read_range include_formulas) để xác nhận và tìm thêm tham chiếu lệch cột, vùng SUM thiếu ô, tham chiếu vòng, đơn vị không khớp.
+3. Chỉ báo ô có sai rõ ràng, nêu được cách sửa cụ thể. Không báo ô trống, tiêu đề, ô "nên kiểm tra lại", và không nhắc lại một ô hai lần.
+4. Giải thích một số liệu: lần tiền lệ nhiều cấp, trình bày chuỗi tính từ ô nhập liệu tới kết quả, dẫn địa chỉ từng ô.
+5. Báo bảng: Ô | Vấn đề | Nguyên nhân | Cách sửa. Chỉ sửa khi người dùng đồng ý (có Hoàn tác); sửa xong chạy lại excel_find_errors.`,
   },
   {
     name: "mo-hinh-tai-chinh-du-an",
@@ -194,7 +195,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 2. Cấu trúc sheet: "Gia dinh" (mọi số nhập tay, có nhãn, đơn vị, nguồn) → "Tinh toan" (dòng thời gian, doanh thu, chi phí, vốn vay, thuế, dòng tiền) → "Ket qua" (NPV, IRR, thời gian hoàn vốn, biểu đồ) → "Kiem tra" (cân đối, tổng khớp).
 3. Công thức nhất quán theo kỳ; tham chiếu tuyệt đối tới giả định; NPV/IRR dùng =NPV, =IRR (hoặc =XNPV, =XIRR theo ngày).
 4. Độ nhạy: bảng hai chiều dựng bằng công thức (không dùng Data Table vì add-in không hỗ trợ) cho 2 biến chính (giá bán, chi phí xây dựng…).
-5. Áp dụng quy ước màu và định dạng số của mô hình tài chính; chạy excel_find_errors trước khi báo xong.
+5. Áp dụng quy ước màu và định dạng số của mô hình tài chính — định dạng cả mô hình trong MỘT lệnh excel_format_range (vùng khác kiểu đưa vào more), không định dạng từng hàng; chạy excel_find_errors trước khi báo xong.
 6. Báo: các giả định chính, kết quả [ô], các chỗ cần người dùng bổ sung.`,
   },
   {

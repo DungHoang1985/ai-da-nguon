@@ -60,7 +60,7 @@ export const EXCEL_SPECS: ToolSpec[] = [
   {
     name: "excel_format_range",
     description:
-      "Format a range (or several: 'C2:D13,F2:F13'): font, fill, number format, alignment, wrap, borders, column width/autofit.",
+      "Format a range (or several: 'C2:D13,F2:F13'): font, fill, number format, alignment, wrap, borders, column width/autofit. `more`: other ranges with own formats, same call.",
     parameters: {
       type: "object",
       properties: {
@@ -79,6 +79,22 @@ export const EXCEL_SPECS: ToolSpec[] = [
         borders: { type: "string", enum: ["all", "outside", "none"] },
         autofit_columns: { type: "boolean" },
         column_width: { type: "number", description: "Points." },
+        more: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              address: { type: "string" },
+              bold: { type: "boolean" },
+              fill_color: { type: "string" },
+              font_color: { type: "string" },
+              number_format: { type: "string" },
+              horizontal_alignment: { type: "string" },
+              borders: { type: "string" },
+            },
+            required: ["address"],
+          },
+        },
       },
       required: ["address"],
     },
@@ -312,6 +328,19 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
       });
 
     case "excel_format_range": {
+      // Đợt 12 (bài X6): `more` = các vùng khác với định dạng khác, làm trong CÙNG một lệnh (model miễn phí gọi một công cụ mỗi bước,
+      // mỗi bước ~75 giây khi Nghĩ kỹ: 7 lệnh định dạng rời làm chạm trần 12 bước). Mỗi mục chạy như một lệnh riêng, có Hoàn tác riêng.
+      if (Array.isArray(a.more) && a.more.length) {
+        if (a.more.length > 20) throw new Error(`more tối đa 20 mục (nhận ${a.more.length}). Chia thành nhiều lệnh.`);
+        const { more, ...first } = a;
+        const msgs: string[] = [];
+        for (const it of [first, ...more]) {
+          if (!it || !it.address) throw new Error("Mỗi mục của more cần address.");
+          const r = await execute("excel_format_range", { ...it, sheet: it.sheet ?? a.sheet }, { log });
+          msgs.push(String(r.message).replace(/^Đã định dạng /, ""));
+        }
+        return { ok: true, message: `Đã định dạng ${msgs.join(" · ")}` };
+      }
       // Nhiều vùng rời ("C2:D13,F2:F13"): định dạng lần lượt từng vùng trong cùng một lệnh
       const parts = splitAreas(a.address);
       if (parts.length > 20) throw new Error(`Tối đa 20 vùng trong một lệnh (nhận ${parts.length}). Chia thành nhiều lệnh.`);
@@ -359,7 +388,12 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
             if (fix.leftText.length) dateNote += `; ${fix.leftText.length} ô vẫn là chữ, không đọc được thành ngày (${left.join(", ")}${fix.leftText.length > 5 ? ", …" : ""}) — định dạng ngày không áp được cho các ô này`;
           }
         }
-        if (a.horizontal_alignment) f.horizontalAlignment = a.horizontal_alignment;
+        if (a.horizontal_alignment) {
+          // Mục trong `more` không có enum (giữ lược đồ gọn): nhận cả "center", "giữa"
+          const h = String(a.horizontal_alignment).toLowerCase();
+          const al = /^(left|trái|trai)$/.test(h) ? "Left" : /^(center|centre|giữa|giua)$/.test(h) ? "Center" : /^(right|phải|phai)$/.test(h) ? "Right" : null;
+          if (al) f.horizontalAlignment = al as any;
+        }
         if (a.wrap_text !== undefined) f.wrapText = !!a.wrap_text;
         if (a.borders) {
           const edges: string[] = ["EdgeTop", "EdgeBottom", "EdgeLeft", "EdgeRight"];
@@ -543,7 +577,7 @@ export const EXCEL_SYSTEM_PROMPT = [
   "Bạn là trợ lý AI tích hợp trong Microsoft Excel, thao tác trực tiếp trên sổ tính đang mở bằng các công cụ (excel_*).",
   "Nguyên tắc:",
   "- Người dùng muốn tạo, sửa, tính toán, định dạng, vẽ biểu đồ… thì GỌI CÔNG CỤ làm thật trên sổ tính, không chỉ hướng dẫn cách làm.",
-  "- Chưa rõ dữ liệu thì đọc trước (excel_read_range) rồi mới sửa. Ghi cả khối bằng một lần excel_write_range; kết quả ghi có formula_errors thì sửa lại.",
+  "- Chưa rõ dữ liệu thì đọc trước (excel_read_range) rồi mới sửa. Ghi cả khối bằng một lần excel_write_range (có formula_errors thì sửa); định dạng cả bảng trong MỘT lệnh excel_format_range (vùng khác kiểu đưa vào more).",
   EXCEL_SPECIAL_LINE,
   "- Sheet “Nhật ký AI” (nếu có) do add-in tự ghi: không đọc để làm việc, không sửa.",
   "- Nhắc tới ô, vùng hay số liệu thì ghi dạng Sheet!A1 hoặc Sheet!A1:B5 để người dùng bấm vào xem.",

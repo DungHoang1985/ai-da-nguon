@@ -23,6 +23,7 @@ import { findRefs } from "../../src/core/refs";
 import { publishSnapshot, readOtherApp, readSnapshot } from "../../src/core/share";
 import { docxXmlToText, withAttachments } from "../../src/core/attachments";
 import { EXCEL_SPECS } from "../../src/office/excelTools";
+import { EXCEL_MODEL_SPECS } from "../../src/office/excelModel";
 import { EXCEL_ADV_SPECS } from "../../src/office/excelAdvanced";
 import { WORD_SPECS } from "../../src/office/wordTools";
 import { PPT_SPECS } from "../../src/office/pptTools";
@@ -50,7 +51,7 @@ class MemStorage {
   }
 }
 
-const ALL_SPECS: ToolSpec[] = [...EXCEL_SPECS, ...EXCEL_ADV_SPECS, ...WORD_SPECS, ...PPT_SPECS, ...PPT_ADV_SPECS, ...PPT_DESIGN_SPECS];
+const ALL_SPECS: ToolSpec[] = [...EXCEL_SPECS, ...EXCEL_ADV_SPECS, ...EXCEL_MODEL_SPECS, ...WORD_SPECS, ...PPT_SPECS, ...PPT_ADV_SPECS, ...PPT_DESIGN_SPECS];
 
 describe("v3 · Ảnh và tìm kiếm web trong yêu cầu gửi nhà cung cấp", () => {
   const msgs: AgentMessage[] = [{ role: "user", content: "Ảnh này là gì?", images: [{ mime: "image/png", data: "QUJD" }] }];

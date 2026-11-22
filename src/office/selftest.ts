@@ -107,6 +107,24 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(bold === true, "Chữ tiêu đề chưa đậm");
       return "Đậm, tô nền, kẻ viền, định dạng số";
     });
+    // Đợt 12 (bài X6): nhiều vùng khác kiểu định dạng trong MỘT lệnh (`more`)
+    await step("Định dạng nhiều vùng khác kiểu trong một lệnh (more)", async () => {
+      const r = await run("excel_format_range", { sheet, address: "A4:B4", bold: true, more: [{ address: "B2:B3", number_format: "0.0" }, { address: "A2:A3", fill_color: "#FFF2CC", horizontal_alignment: "center" }] });
+      const got = await Excel.run(async (ctx) => {
+        const ws = ctx.workbook.worksheets.getItem(sheet);
+        const a = ws.getRange("A4").format.font;
+        const b = ws.getRange("B2");
+        const c = ws.getRange("A2").format;
+        a.load("bold");
+        b.load("numberFormat");
+        c.load("horizontalAlignment");
+        c.fill.load("color");
+        await ctx.sync();
+        return { bold: a.bold, nf: b.numberFormat[0][0], fill: c.fill.color, al: c.horizontalAlignment };
+      });
+      expect(got.bold === true && got.nf === "0.0" && /FFF2CC/i.test(String(got.fill)) && got.al === "Center", `Định dạng trong more chưa áp: ${JSON.stringify(got)} (${r.message})`);
+      return r.message;
+    });
     // Đợt 12 (bài X3, 22/11/2026): cột ngày ở ô định dạng chữ "@" — đặt định dạng ngày phải đổi chữ thành ngày thật;
     // công thức ghi vào ô chữ phải chạy; Hoàn tác trả lại chữ cũ
     await step("Ngày đang là chữ → định dạng ngày đổi thành ngày thật; công thức ghi vào ô chữ vẫn chạy", async () => {
