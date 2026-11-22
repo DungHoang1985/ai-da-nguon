@@ -110,6 +110,8 @@ Kỹ năng chuẩn hóa bảng: trước đây mặc định ghi bản sạch sa
 | D2 Tự kiểm tra Word có bước đọc tệp đính kèm theo điều | Đạt | 40/40 trên bản cục bộ (`tu-kiem-tra-word-d-cuc-bo.json`): "2.1(a)" → "[¶4] a) MOC-TU-KIEM-DOCX điện" |
 | D3 Chạy thật hợp đồng 50 trang (168.000 ký tự) với Nemotron Miễn phí, token giảm | Đạt | Câu hỏi nằm sau mốc 120.000 ký tự (Điều 33.2, Phụ lục 01): bản 4.11.5 **không trả lời được** (tệp bị cắt), 52 giây, 197.482 token (`WD1-D1-truoc-4115.json`); bản mới lần 1 đúng nhưng đọc dò dải đoạn vì mục lục bị cắt ở Điều 20, 28 giây, 121.865 token (`WD1-D2-sau-muc-luc-cat.json`) → sửa mục lục; lần 2 **đúng cả hai ý, tra thẳng Điều 33 và Phụ lục 01, 16 giây, 2 lần gọi AI, 19.756 token (−90%)** (`WD1-D3-sau.json`) |
 
+Phát hành **4.11.6** ngày 23/11/2026 (anh duyệt): `main@faf37d3` → `gh-pages@49bbcb0`. Trên bản phát hành: Tự kiểm tra Word 40/40 (`tu-kiem-tra-word-phat-hanh-4116.json`); Chạy thật WD1 đúng cả hai ý, 15 giây, 2 lần gọi AI, 19.761 token (`WD1-D4-phat-hanh-4116.json`).
+
 ### Phần E — thiết kế bộ nhớ dài hạn (23/11/2026)
 
 Bản thiết kế ở `tasks/dot-12-bo-nho.md`, chờ anh duyệt; chưa viết mã.
