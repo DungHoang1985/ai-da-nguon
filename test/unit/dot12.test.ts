@@ -168,3 +168,53 @@ describe("Đợt 12 · B · X6: định dạng nhiều vùng khác kiểu trong 
     assert.match(s.description, /more/);
   });
 });
+
+import { auditModel } from "../../src/core/modelaudit";
+import { cellAddress } from "../../src/office/util";
+
+describe("Đợt 12 · B · X5: kiểm toán mô hình bắt đủ 5 lỗi cài sẵn, không báo nhầm", () => {
+  // Lưới R1C1 đúng như may/xl/mo-hinh-loi.js của buổi so sánh 22/11 (A1:K13)
+  const C = 8;
+  const row = (f: (k: number) => any) => Array.from({ length: C }, (_, k) => f(k));
+  const g: any[][] = [
+    ["Chỉ tiêu (tỷ đồng)", "", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Tổng"],
+    ["Số căn bán", "", 0, 10, 15, 12, 20, 18, 14, 9, ""],
+    ["Giá bán bình quân (tỷ/căn)", "", ...row(() => "=R12C2"), ""],
+    ["Doanh thu", "", ...row((k) => (k === 3 ? 38.4 : "=R[-2]C*R[-1]C")), "=SUM(RC[-8]:RC[-1])"],
+    ["Chi phí xây dựng", "", 45, 40, 35, 30, 20, 10, 5, 2, "=SUM(RC[-8]:RC[-1])"],
+    ["Chi phí bán hàng", "", ...row((k) => (k === 5 ? "=R[-2]C*0.03" : "=R[-2]C*R13C2")), "=SUM(RC[-8]:RC[-1])"],
+    ["Tổng chi phí", "", ...row((k) => (k === 4 ? "=R[-2]C+R[-1]C[-1]" : "=R[-2]C+R[-1]C")), "=SUM(RC[-8]:RC[-1])"],
+    ["Dòng tiền thuần", "", ...row(() => "=R[-4]C-R[-1]C"), "=SUM(RC[-8]:RC[-2])"],
+    ["Lũy kế", "", ...row((k) => (k === 0 ? "=R[-1]C" : k === 2 ? "=RC[-2]+R[-1]C" : "=RC[-1]+R[-1]C")), ""],
+    Array(11).fill(""),
+    Array(11).fill(""),
+    ["Giá bán (tỷ/căn)", 3.2, ...Array(9).fill("")],
+    ["Tỷ lệ chi phí bán hàng", 0.03, ...Array(9).fill("")],
+  ];
+  const run = (grid: any[][]) => auditModel({ r1c1: grid, origin: { col: 0, row: 0 }, addr: cellAddress });
+
+  it("F4 số gõ cứng (ô dưới là hàng nhập tay), H6 tỷ lệ gõ, G7 lệch cột, E9 lũy kế bỏ quý, K8 SUM thiếu cột J", () => {
+    const r = run(g);
+    assert.deepStrictEqual(r.findings.filter((f) => f.kind === "hardcoded").map((f) => f.cell), ["F4"]);
+    assert.deepStrictEqual(r.findings.filter((f) => f.kind === "inconsistent").map((f) => f.cell).sort(), ["E9", "G7", "H6", "K8"]);
+    assert.deepStrictEqual(r.findings.filter((f) => f.kind === "embedded_rate").map((f) => f.cell), ["H6"]);
+    assert.match(r.findings.find((f) => f.cell === "K8")!.detail, /cuối dãy/);
+  });
+  it("Mô hình đã sửa hết: không báo gì", () => {
+    const ok = g.map((r) => r.slice());
+    ok[3][5] = "=R[-2]C*R[-1]C";
+    ok[5][7] = "=R[-2]C*R13C2";
+    ok[6][6] = "=R[-2]C+R[-1]C";
+    ok[7][10] = "=SUM(RC[-8]:RC[-1])";
+    ok[8][4] = "=RC[-1]+R[-1]C";
+    assert.deepStrictEqual(run(ok).findings, []);
+  });
+  it("Ca dễ báo nhầm của luật ô cuối dãy: dòng tổng khác hàm, dãy ngắn (2 ô), ô cuối còn công thức phía sau", () => {
+    assert.strictEqual(run([["=R[-1]C*2"], ["=R[-1]C*2"], ["=R[-1]C*2"], ["=SUM(R[-3]C:R[-1]C)"]]).findings.length, 0);
+    assert.strictEqual(run([["=R[-1]C*2"], ["=R[-1]C*2"], ["=R[-1]C*3"]]).findings.length, 0);
+    assert.strictEqual(run([["x", "=RC[-1]*2", "=RC[-1]*2", "=RC[-1]*2", "=RC[-1]*2", "=AVERAGE(RC[-4]:RC[-1])"]]).findings.length, 0);
+    // Cột nhập tay xen giữa các cột công thức vẫn không bị báo (ô liền kề cũng kẹp giữa công thức)
+    const colInput = [["KH1", "TH1", "KH2"], ["=RC[5]*2", 10, "=RC[5]*2"], ["=RC[5]*2", 20, "=RC[5]*2"], ["=RC[5]*2", 30, "=RC[5]*2"]];
+    assert.strictEqual(run(colInput).counts.hardcoded, 0);
+  });
+});

@@ -61,6 +61,11 @@ export function auditModel(input: AuditInput): AuditResult {
     const f = String(a1[i]?.[j] ?? g[i]?.[j] ?? "");
     return f.length > 80 ? f.slice(0, 79) + "…" : f;
   };
+  /** Ô (i, j) nằm kẹp giữa hai công thức cùng mẫu theo hàng / theo cột */
+  const sandH = (i: number, j: number) => isF(at(i, j - 1)) && at(i, j - 1) === at(i, j + 1);
+  const sandV = (i: number, j: number) => isF(at(i - 1, j)) && at(i - 1, j) === at(i + 1, j);
+  /** Khung công thức: bỏ số (trong địa chỉ R1C1 và hằng số) để so hai công thức chỉ khác địa chỉ */
+  const skel = (f: string) => f.replace(/\d+/g, "#");
   const findings: AuditFinding[] = [];
   let formulas = 0;
   let constants = 0;
@@ -79,8 +84,10 @@ export function auditModel(input: AuditInput): AuditResult {
         // Hằng số nằm giữa hai công thức cùng mẫu (theo hàng hoặc theo cột): nhiều khả năng một ô công thức bị gõ đè.
         // Nhưng nếu ô liền kề theo chiều kia cũng là số nhập tay thì đây là cả một hàng / cột số liệu nhập (hàng "Số căn" giữa hai hàng
         // công thức, cột "Thực hiện" xen giữa các cột "Kế hoạch", hàng tiêu đề năm): không phải gõ đè — soát mã 16/11/2026, #13
-        const h = isF(L) && isF(R) && L === R && !isNum(U) && !isNum(D);
-        const vv = isF(U) && isF(D) && U === D && !isNum(L) && !isNum(R);
+        // Đợt 12 (bài X5): chỉ coi là cột / hàng nhập liệu khi ô số liền kề CŨNG nằm kẹp giữa hai công thức cùng mẫu như ô này.
+        // Trước đây hễ ô trên hoặc dưới là số thì bỏ qua → bỏ sót F4 (38,4 giữa hàng Doanh thu) vì F5 thuộc hàng chi phí nhập tay.
+        const h = sandH(i, j) && !(isNum(U) && sandH(i - 1, j)) && !(isNum(D) && sandH(i + 1, j));
+        const vv = sandV(i, j) && !(isNum(L) && sandV(i, j - 1)) && !(isNum(R) && sandV(i, j + 1));
         if (h || vv) {
           const [pi, pj] = h ? [i, j - 1] : [i - 1, j];
           findings.push({
@@ -102,6 +109,20 @@ export function auditModel(input: AuditInput): AuditResult {
       const vOdd = vRun && v !== U;
       const hMatch = v === L || v === R;
       const vMatch = v === U || v === D;
+      // Đợt 12 (bài X5, K8 =SUM(C8:I8) thiếu cột J): ô CUỐI một dãy ≥ 3 ô cùng mẫu, cùng khung công thức nhưng khác địa chỉ
+      // (vùng SUM hụt một ô, tham chiếu trượt). Khung khác (dòng tổng SUM sau dãy nhân) thì không báo — ưu tiên không báo nhầm.
+      const endV = !vRun && isF(U) && v !== U && at(i - 2, j) === U && at(i - 3, j) === U && !isF(D) && skel(v) === skel(U);
+      const endH = !hRun && isF(L) && v !== L && at(i, j - 2) === L && at(i, j - 3) === L && !isF(R) && skel(v) === skel(L);
+      if ((endV && !hMatch) || (endH && !vMatch)) {
+        const [pi, pj] = endV && !hMatch ? [i - 1, j] : [i, j - 1];
+        findings.push({
+          kind: "inconsistent",
+          cell: name(i, j),
+          count: 1,
+          cells: [name(i, j)],
+          detail: `Công thức cuối dãy ở ${name(i, j)} (${show(i, j)}) khác địa chỉ so với các ô cùng ${endV && !hMatch ? "cột" : "hàng"} phía trước (${show(pi, pj)}): vùng hoặc tham chiếu có thể bị hụt, trượt`,
+        });
+      }
       if ((hOdd && !vMatch) || (vOdd && !hMatch)) {
         const [pi, pj] = hOdd && !vMatch ? [i, j - 1] : [i - 1, j];
         findings.push({
