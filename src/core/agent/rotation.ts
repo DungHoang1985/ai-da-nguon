@@ -5,6 +5,7 @@
  *  - Hết lượt theo ngày / tháng → nghỉ đến mốc đặt lại của nguồn; lưu lại để mở khung lại vẫn nhớ.
  *  - Yêu cầu quá lớn (413, vượt sức chứa), lỗi key / tiền, model không gọi được công cụ, lỗi khác → bỏ nguồn đó trong lượt này.
  *  - Hết nguồn → báo từng nguồn vì sao, khi nào dùng lại; không bao giờ chuyển sang trả phí. */
+import { estimateInputTokens } from "../inputsize";
 import { ApiError, isRetryable, maskSecrets } from "../errors";
 import type { Provider } from "../providers";
 import { CallModelOptions, callModelStep, isToolUnsupportedError } from "./llm";
@@ -213,14 +214,19 @@ export class FreeRotation {
 
   private exhausted(): ApiError {
     const lines = this.candidates.map((c) => `${c.provider.name}: ${this.notes.get(c.provider.id) || "không dùng được"}`);
+    // Đợt 12: mọi nguồn đều bị bỏ vì lượt quá lớn → nói rõ cách làm nhỏ lượt lại
+    const allTooBig = this.candidates.length > 0 && this.candidates.every((c) => /sức chứa|quá lớn/.test(this.notes.get(c.provider.id) || ""));
+    const tip = allTooBig ? " Lượt này quá lớn cho mọi nguồn miễn phí: bớt tệp đính kèm, bắt đầu hội thoại mới, hoặc chuyển sang chế độ Trả phí với model sức chứa lớn." : "";
     return new ApiError(
-      `Đã thử hết các nguồn miễn phí — ${lines.join("; ")}. Add-in không tự chuyển sang nguồn trả phí. Hội thoại vẫn còn nguyên: chờ nguồn dùng lại được, nhập thêm key miễn phí trong Cài đặt, hoặc tự chuyển sang chế độ Trả phí rồi gửi lại.`
+      `Đã thử hết các nguồn miễn phí — ${lines.join("; ")}.${tip} Add-in không tự chuyển sang nguồn trả phí. Hội thoại vẫn còn nguyên: chờ nguồn dùng lại được, nhập thêm key miễn phí trong Cài đặt, hoặc tự chuyển sang chế độ Trả phí rồi gửi lại.`
     );
   }
 
   /** Gọi model một bước qua vòng xoay. `input` giữ nguyên mọi thứ trừ nguồn, key, model, nhận ảnh, trần đầu ra (lấy theo ứng viên). */
   async call(input: Omit<CallModelOptions, "provider" | "key" | "model"> & Partial<CallModelOptions>, onSwitch?: (i: SwitchInfo) => void): Promise<StepResult> {
-    const need = estimateTokens(input.messages);
+    // Đợt 12: tính cả bộ công cụ gửi kèm (trước chỉ đếm tin nhắn, thiếu tới khoảng 10.000 token ở Word Trả phí)
+    // Ước lượng theo họ model của từng nguồn (Claude đếm chữ tiếng Việt dày gấp đôi): đo lại cho mỗi ứng viên
+    const needOf = (c: Candidate) => estimateInputTokens(input.messages, input.tools || [], c.model);
     const n = this.candidates.length;
     let shown = false;
     let lastLabel = "";
@@ -230,7 +236,7 @@ export class FreeRotation {
     for (let tried = 0; tried < n; tried++) {
       const i = (start + tried) % n;
       const c = this.candidates[i];
-      const why = this.blocked(c, need);
+      const why = this.blocked(c, needOf(c));
       if (why) {
         this.notes.set(c.provider.id, why);
         continue;

@@ -1,0 +1,60 @@
+{
+ "bai": "XA1",
+ "ben": "D",
+ "lan": 1,
+ "ngay": "2026-11-22T10:54:57.322Z",
+ "yc": "Sổ tính này có những sheet nào? Trả lời một câu, không sửa gì.",
+ "tepDau": "xl.xlsx",
+ "bamTepDau": "db1d760dc92a899c",
+ "chay": {
+  "ben": "D",
+  "phienBan": "v4.11.2",
+  "model": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "nghiKy": true,
+  "giay": 4,
+  "daHoi": [],
+  "lamTiep": 0,
+  "buoc": [],
+  "doiNguon": [],
+  "lanGoiAI": null,
+  "token": "Token: vào 5.686 · ra 70",
+  "doToken": [
+   {
+    "uoc": 5035,
+    "that": 5686
+   }
+  ],
+  "traLoi": "ì.\nSổ tính chỉ có 1 sheet: Sheet1 (đang rỗng).\nToken: vào 5.686 · ra 70\nGhi vào ô đang chọn\nSao chép\nHỏi trước\n🧠 Nghĩ kỹ ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "vbTruoc": {
+  "sheets": [
+   {
+    "ten": "Sheet1",
+    "an": "Visible",
+    "vung": null,
+    "giaTri": null,
+    "congThuc": null,
+    "dinhDang": null,
+    "bieuDo": [],
+    "pivot": []
+   }
+  ],
+  "ten": []
+ },
+ "vb": {
+  "sheets": [
+   {
+    "ten": "Sheet1",
+    "an": "Visible",
+    "vung": null,
+    "giaTri": null,
+    "congThuc": null,
+    "dinhDang": null,
+    "bieuDo": [],
+    "pivot": []
+   }
+  ],
+  "ten": []
+ },
+ "ghiChu": "A1 lần đầu, một hệ số"
+}

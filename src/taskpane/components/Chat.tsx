@@ -50,6 +50,7 @@ import { attachmentPrivacyNote, canSeePages, routeScanPdf } from "../../core/pdf
 import { clearAttachedFiles, listAttachedImages, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
+import { SHOW_SIZE_FROM, sizeNote } from "../../core/inputsize";
 import { REDO_WITH_TOOLS, TaskSoFar, mergeTaskFacts, taskSoFar, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
 import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, claimCommand, clearBeat, connectionLine, connections, describePayload, normalizeApp, reply, sweep, takeCommand } from "../../core/crossapp";
 import { executeIncoming } from "../../office/crossExec";
@@ -217,6 +218,9 @@ interface Item {
   incoming?: string;
   /** AI nói đã thay đổi tài liệu nhưng lượt này không có thao tác ghi nào thành công (chỉ để hiện; không gửi cho model) */
   claimWarning?: string;
+  /** Đợt 12: số token đầu vào ước lượng của lần gửi đầu tiên và số thật nhà cung cấp báo cho lần đó (chỉ để hiện và đối chiếu) */
+  inputEst?: number;
+  firstInput?: number;
   /** Lệnh ghi, công cụ đã gọi và yêu cầu gốc của cả nhiệm vụ tới hết lượt này: lượt "Làm tiếp" kế đó gộp vào khi xét cảnh báo trên (chỉ để hiện) */
   task?: TaskSoFar;
   /** Lượt dừng vì chạm trần số bước hoặc vì một công cụ lặp cùng một lỗi: hiện thẻ "Làm tiếp?" (chỉ để hiện) */
@@ -928,6 +932,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         model: modelId,
         context: model?.context,
         maxOutput: model?.maxOutput,
+        alternatives: models.map((m) => ({ id: m.id, name: m.name, context: m.context })),
         vision,
         host,
         history: historyRef.current,
@@ -972,7 +977,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
           if (Date.now() - lastSaveAt.current > 1500) setTimeout(saveConversation, 0);
         },
         onEvent: (ev) => {
-          if (ev.type === "compacted") {
+          if (ev.type === "input_size") {
+            // Đợt 12: lượt lớn thì báo số đo (chỉ để hiện, không vào lịch sử)
+            patchLast((it) => ({ ...it, inputEst: ev.tokens }));
+            if (ev.tokens >= SHOW_SIZE_FROM) setNotice({ text: sizeNote(ev.tokens, rotation ? undefined : ev.context) });
+          } else if (ev.type === "compacted") {
             setNotice({ text: "Cuộc trò chuyện dài: đã tự tóm tắt phần đầu để AI nhớ gọn hơn." });
           } else if (ev.type === "step") {
             if (ev.step > 1) needSep = true;
@@ -1035,7 +1044,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
             setNotice({ text: `${why}: đang thử lại lần ${ev.attempt}/${ev.max} sau ${Math.round(ev.waitMs / 1000)} giây… Bấm Dừng để hủy.` });
           } else if (ev.type === "usage") {
             clearRetry();
-            patchLast((it) => ({ ...it, usage: addUsage(it.usage || {}, ev.usage) }));
+            patchLast((it) => ({ ...it, usage: addUsage(it.usage || {}, ev.usage), ...(it.firstInput === undefined && ev.step === 1 && ev.usage?.input ? { firstInput: ev.usage.input } : {}) }));
           } else if (ev.type === "truncated") {
             if (!ev.skipped) appendText("\n(Câu trả lời bị cắt vì quá dài. Gửi “tiếp tục” để AI viết tiếp.)");
             else if (ev.gaveUp)
@@ -1362,6 +1371,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                     size={100}
                     className={s.muted}
                     data-calls={(it.callsBase || 0) + (it.calls || 0) || undefined}
+                    data-input-est={it.inputEst}
+                    data-first-input={it.firstInput}
                     title="Một nhiệm vụ anh giao được AI làm qua nhiều bước nối tiếp: mỗi bước là một lần gọi AI (AI ra lệnh công cụ → add-in làm trên tài liệu → trả kết quả cho AI). Lần gọi nào cũng kèm toàn bộ yêu cầu và các bước trước, nên AI không mất mạch. Nhà cung cấp tính mỗi bước là một lượt dùng. Số token là tổng mọi bước; phần đọc từ bộ nhớ đệm được tính rẻ hơn nhiều."
                   >
                     {(it.callsBase || 0) + (it.calls || 0) > 1 ? `1 nhiệm vụ · ${(it.callsBase || 0) + (it.calls || 0)} lần gọi AI · ` : ""}
@@ -1408,9 +1419,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                 )}
                 {it.error && it.errorReason && !isLastBusy(i) && i === items.length - 1 && (
                   <div className={s.row}>
-                    {available.length > 1 && (
+                    {(available.length > 1 || it.errorReason === "too_large") && (
                       <Button size="small" appearance="primary" onClick={() => openPickerRef.current?.()}>
-                        Đổi nguồn
+                        {it.errorReason === "too_large" ? "Đổi model" : "Đổi nguồn"}
                       </Button>
                     )}
                     <Button size="small" onClick={onOpenSettings}>

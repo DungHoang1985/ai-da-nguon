@@ -1,0 +1,660 @@
+{
+ "bai": "PC3",
+ "ben": "C",
+ "lan": 1,
+ "ngay": "2026-11-22T11:09:37.320Z",
+ "yc": "Tóm tắt đoạn sau trong một câu, không sửa bài trình chiếu:\nĐiều khoản thử nghiệm số 0: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 1: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số  … (rút gọn, 886949 ký tự)",
+ "tepDau": "ppt-sach.pptx",
+ "bamTepDau": "6d3706c2e0942f48",
+ "chay": {
+  "ben": "C",
+  "phienBan": "v4.11.2",
+  "model": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5",
+  "nghiKy": true,
+  "giay": 8,
+  "daHoi": [],
+  "lamTiep": 0,
+  "buoc": [],
+  "doiNguon": [],
+  "lanGoiAI": null,
+  "token": "Token: vào 554.610 · ra 487 · ghi vào bộ nhớ đệm 554.606",
+  "doToken": [
+   {
+    "uoc": 254640,
+    "that": 554610
+   }
+  ],
+  "traLoi": "đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7860: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7861: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7862: … ệm số 7990: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7991: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7992: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7993: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7994: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7995: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7996: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7997: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7998: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Điều khoản thử nghiệm số 7999: Bên Thuê có nghĩa vụ thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng.\nĐoạn văn là chuỗi khoảng 8.000 \"điều khoản thử nghiệm\" giống hệt nhau, mỗi điều khoản quy định Bên Thuê phải thanh toán đúng hạn và giữ gìn tài sản thuê theo hợp đồng. Tôi chưa chỉnh sửa bài trình chiếu nào.\nToken: vào 554.610 · ra 487 · ghi vào bộ nhớ đệm 554.606\nChèn vào slide\nSao chép\nLượt này khoảng 254.640 token đầu vào — model chứa 1.000.000 token.\nHỏi trước\n🧠 Nghĩ kỹ ✕\n💳 Anthropic · Claude Haiku 5.5"
+ },
+ "vbTruoc": {
+  "soSlide": 10,
+  "slides": [
+   {
+    "so": 1,
+    "id": "256#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Tổng quan dự án Khu nhà ở Sông Hồng",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Quy mô 12,4 ha, 3 khối nhà, 1.150 căn\rTổng mức đầu tư 3.200 tỷ đồng\rKhởi công tháng 3/2026",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 2,
+    "id": "257#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Pháp lý dự án",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Chấp thuận chủ trương đầu tư: đã có\rQuy hoạch chi tiết 1/500: đã phê duyệt\rGiấy phép xây dựng khối A: đã cấp",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 3,
+    "id": "258#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Tiến độ thi công",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "San nền: hoàn thành\rHạ tầng kỹ thuật: 62% (kế hoạch 80%)\rMóng khối A: 55% (kế hoạch 60%)",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 4,
+    "id": "259#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Tiến độ giải ngân",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Đã giải ngân 1.120 tỷ đồng\rKế hoạch quý IV: 380 tỷ đồng\rNguồn: vốn chủ sở hữu và tín dụng",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 5,
+    "id": "260#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Kinh doanh",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Đã ký 412 hợp đồng đặt cọc\rGiá bán bình quân 48 triệu đồng/m²\rDự kiến mở bán đợt 2 tháng 1/2027",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 6,
+    "id": "261#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Rủi ro chính",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Chậm bàn giao mặt bằng đợt 2\rThiếu nhân công thi công phần thân\rBiến động giá vật liệu",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 7,
+    "id": "262#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Kế hoạch quý tới",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Slide này cố ý không có tiêu đề\rNội dung về kế hoạch quý tới\rBa mốc cần phê duyệt",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 8,
+    "id": "263#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Kế hoạch quý IV/2026",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Hoàn thành hạ tầng kỹ thuật giai đoạn 1\rCất nóc khối A\rNộp hồ sơ nghiệm thu phòng cháy",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 9,
+    "id": "264#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Kiến nghị",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Gia hạn tiến độ hạ tầng 06 tháng\rBổ sung nhà thầu phụ phần thân\rPhê duyệt chi phí phát sinh 4,2 tỷ đồng",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 10,
+    "id": "265#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Liên hệ và bước tiếp theo",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Họp Hội đồng quản trị ngày 28/11\rĐầu mối: Ban Pháp chế\rTài liệu kèm: báo cáo tiến độ tháng 11",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   }
+  ]
+ },
+ "vb": {
+  "soSlide": 10,
+  "slides": [
+   {
+    "so": 1,
+    "id": "256#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Tổng quan dự án Khu nhà ở Sông Hồng",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Quy mô 12,4 ha, 3 khối nhà, 1.150 căn\rTổng mức đầu tư 3.200 tỷ đồng\rKhởi công tháng 3/2026",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 2,
+    "id": "257#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Pháp lý dự án",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Chấp thuận chủ trương đầu tư: đã có\rQuy hoạch chi tiết 1/500: đã phê duyệt\rGiấy phép xây dựng khối A: đã cấp",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 3,
+    "id": "258#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Tiến độ thi công",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "San nền: hoàn thành\rHạ tầng kỹ thuật: 62% (kế hoạch 80%)\rMóng khối A: 55% (kế hoạch 60%)",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 4,
+    "id": "259#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Tiến độ giải ngân",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Đã giải ngân 1.120 tỷ đồng\rKế hoạch quý IV: 380 tỷ đồng\rNguồn: vốn chủ sở hữu và tín dụng",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 5,
+    "id": "260#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Kinh doanh",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Đã ký 412 hợp đồng đặt cọc\rGiá bán bình quân 48 triệu đồng/m²\rDự kiến mở bán đợt 2 tháng 1/2027",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 6,
+    "id": "261#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Rủi ro chính",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Chậm bàn giao mặt bằng đợt 2\rThiếu nhân công thi công phần thân\rBiến động giá vật liệu",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 7,
+    "id": "262#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Kế hoạch quý tới",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Slide này cố ý không có tiêu đề\rNội dung về kế hoạch quý tới\rBa mốc cần phê duyệt",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 8,
+    "id": "263#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Kế hoạch quý IV/2026",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Hoàn thành hạ tầng kỹ thuật giai đoạn 1\rCất nóc khối A\rNộp hồ sơ nghiệm thu phòng cháy",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 9,
+    "id": "264#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Kiến nghị",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Gia hạn tiến độ hạ tầng 06 tháng\rBổ sung nhà thầu phụ phần thân\rPhê duyệt chi phí phát sinh 4,2 tỷ đồng",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   },
+   {
+    "so": 10,
+    "id": "265#0",
+    "boCuc": "Tiêu đề và nội dung",
+    "hinh": [
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 25.2,
+      "r": 648,
+      "c": 57.6,
+      "chu": "Liên hệ và bước tiếp theo",
+      "phong": "Georgia",
+      "co": 28,
+      "tuCo": "AutoSizeNone"
+     },
+     {
+      "ten": "Text 2",
+      "loai": "Placeholder",
+      "x": 36,
+      "y": 93.6,
+      "r": 648,
+      "c": 230.4,
+      "chu": "Họp Hội đồng quản trị ngày 28/11\rĐầu mối: Ban Pháp chế\rTài liệu kèm: báo cáo tiến độ tháng 11",
+      "phong": "Verdana",
+      "co": 18,
+      "tuCo": "AutoSizeNone"
+     }
+    ]
+   }
+  ]
+ },
+ "ghiChu": "A3 lần 1: Haiku 5.5 sức chứa 1.000.000 nên KHÔNG chặn, đã gửi thật 554.610 token (lỗi chọn model của bài thử)"
+}

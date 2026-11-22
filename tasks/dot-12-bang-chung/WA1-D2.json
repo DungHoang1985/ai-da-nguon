@@ -1,0 +1,70 @@
+{
+ "bai": "WA1",
+ "ben": "D",
+ "lan": 2,
+ "ngay": "2026-11-22T11:08:18.159Z",
+ "yc": "Điều 18.2(b) của hợp đồng đính kèm nói gì? Trả lời ngắn gọn, không sửa văn bản đang mở.",
+ "tepDau": "trong.docx",
+ "bamTepDau": "a0a90cf141c42803",
+ "chay": {
+  "ben": "D",
+  "phienBan": "v4.11.2",
+  "model": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "nghiKy": true,
+  "giay": 108,
+  "daHoi": [],
+  "lamTiep": 0,
+  "buoc": [],
+  "doiNguon": [],
+  "lanGoiAI": null,
+  "token": "Token: vào 39.039 · ra 6.208 · đọc từ bộ nhớ đệm 35.072",
+  "doToken": [
+   {
+    "uoc": 41653,
+    "that": 39039
+   }
+  ],
+  "traLoi": "không sửa văn bản đang mở.\n📎 aidn-thu-hd.docx\nDựa trên nội dung tệp đính kèm, Điều 18 (Quyền của Bên Thuê), khoản 2, điểm (b) quy định:\n \n> Bên Thuê có quyền yêu cầu Bên Cho Thuê giảm Tiền Thuê khi nguồn điện hoặc nước bị gián đoạn quá 72 giờ liên tục do lỗi của Bên Cho Thuê.\nToken: vào 39.039 · ra 6.208 · đọc từ bộ nhớ đệm 35.072\nChèn vào chỗ con trỏ\nSao chép\nLượt này khoảng 41.653 token đầu vào.\nHỏi trước\n🧠 Nghĩ kỹ ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "vbTruoc": {
+  "soDoan": 1,
+  "doan": [
+   {
+    "i": 0,
+    "so": null,
+    "cap": null,
+    "kieu": "Normal",
+    "can": "Left",
+    "nay": "",
+    "phong": "Calibri",
+    "co": 11,
+    "dam": false,
+    "nghieng": false
+   }
+  ],
+  "suaDoi": [],
+  "nhanXet": [],
+  "oDien": []
+ },
+ "vb": {
+  "soDoan": 1,
+  "doan": [
+   {
+    "i": 0,
+    "so": null,
+    "cap": null,
+    "kieu": "Normal",
+    "can": "Left",
+    "nay": "",
+    "phong": "Calibri",
+    "co": 11,
+    "dam": false,
+    "nghieng": false
+   }
+  ],
+  "suaDoi": [],
+  "nhanXet": [],
+  "oDien": []
+ },
+ "ghiChu": "A1+A2 Word + hợp đồng 50 trang đính kèm, Nemotron Miễn phí"
+}

@@ -106,6 +106,8 @@ export interface ExtraTools {
 
 export type AgentEvent =
   | { type: "text"; delta: string }
+  /** Số đo token đầu vào của lần gửi đầu tiên của lượt (Đợt 12) — chỉ để hiện */
+  | { type: "input_size"; tokens: number; context?: number }
   | { type: "step"; step: number }
   | { type: "tool_start"; call: ToolCall }
   | { type: "tool_end"; call: ToolCall; result: any; error?: string }

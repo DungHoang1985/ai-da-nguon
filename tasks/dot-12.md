@@ -59,4 +59,16 @@ Làm theo thứ tự anh xếp: A → B → C → D → E. Riêng D có liên qu
 
 ## Nghiệm thu
 
-(điền khi làm)
+### Phần A — đo token đầu vào (làm 22/11/2026, nhánh `claude/sua-bang-ppt-va-canh-bao`, chưa phát hành)
+
+Đã làm: `src/core/inputsize.ts` (đo đủ lời nhắc + công cụ + lịch sử + tệp; hai hệ số chữ / JSON; hệ số riêng cho họ Claude; gợi ý model đủ sức chứa; câu báo); vòng xoay Miễn phí đo theo họ model của từng nguồn và tính cả bộ công cụ; `runTurn` đo lần gửi đầu, phát sự kiện `input_size`, chế độ Trả phí mà model không chứa nổi thì KHÔNG gửi, báo lỗi `too_large` kèm gợi ý (anh chọn "chỉ báo và gợi ý"); khung hiện dòng số đo khi lượt từ 20.000 token, nút "Đổi model" ở lỗi quá lớn; mọi nguồn miễn phí đều quá nhỏ thì câu lỗi nói cách làm nhỏ lượt. Đã bỏ khỏi kế hoạch: bảng hạn token mỗi phút của Groq (con số theo từng model, chưa đối chiếu được tài liệu chính thức; vòng xoay vẫn bỏ nguồn sau lần bị từ chối "quá lớn" như trước).
+
+| Tiêu chí | Kết quả | Bằng chứng (`tasks/dot-12-bang-chung/`) |
+|---|---|---|
+| A1 Số đo lệch ≤ 15% so với `usage` thật (Nemotron, 3 lượt) | Đạt | Một hệ số (3) lệch −14,9% · −11,4% · +21,2% (`PA1-D1`, `XA1-D1`, `WA1-D1`) → hai hệ số: PowerPoint 6.420 / 6.952 (−7,7%), Excel 5.763 / 5.686 (+1,4%), Word + hợp đồng 50 trang 41.653 / 39.039 (+6,7%) (`PA1-D2`, `XA1-D2`, `WA1-D2`) |
+| A1 bổ sung: họ Claude | Đạt | Hệ số chung đếm thiếu 29–54% với Haiku 5.5 (`PA1-C3`, `PA2-C3`, `PC3-C1`); hệ số riêng: 11.490 / 11.629 (−1,2%), 24.442 / 23.378 (+4,6%) (`PA1-C4`, `PA2-C4`). Gemini chưa đo riêng được (lượt chọn Gemini ra đúng số của Nemotron — nghi vòng xoay dùng OpenRouter trước), dùng hệ số chung |
+| A2 Miễn phí, hợp đồng 50 trang đính kèm: không lần gửi nào bị "quá lớn" | Đạt | `WA1-D2`: Nemotron trả lời đúng Điều 18.2(b), không đổi nguồn, không lỗi; khung hiện "Lượt này khoảng 41.653 token đầu vào" |
+| A3 Trả phí, model không chứa nổi: báo trước khi gửi, kèm gợi ý | Đạt | `PC3-C2`: OpenRouter Llama 3.1 8B (131.072) + 887.000 ký tự → "Chưa gửi: lượt này khoảng 254.640 token … Model cùng nguồn chứa được: Nova Lite, Nova Pro, Llama 4 Scout", nút "Đổi model", không có dòng token (không gửi) |
+| A4 Không đổi lời nhắc hệ thống, không đổi lịch sử | Đạt | Kiểm thử máy 723/723 gồm `dot0b` (bộ nhớ đệm) và `test/unit/dot12.test.ts` (lịch sử giữ nguyên khi chặn) |
+
+Sự cố trong lúc kiểm: lần thử A3 đầu tiên chọn Claude Haiku 5.5, tưởng sức chứa nhỏ nhưng thật là 1.000.000 token, nên lượt 887.000 ký tự được gửi thật: 554.610 token vào key Anthropic của anh (`PC3-C1`, dưới 1 USD theo giá Haiku). Lần sau chọn model sức chứa nhỏ đã biết trước khi gửi.

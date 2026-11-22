@@ -1,0 +1,73 @@
+{
+ "bai": "WA1",
+ "ben": "D",
+ "lan": 1,
+ "ngay": "2026-11-22T10:56:55.213Z",
+ "yc": "Điều 18.2(b) của hợp đồng đính kèm nói gì? Trả lời ngắn gọn, không sửa văn bản đang mở.",
+ "tepDau": "trong.docx",
+ "bamTepDau": "a0a90cf141c42803",
+ "chay": {
+  "ben": "D",
+  "phienBan": "v4.11.2",
+  "model": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "nghiKy": true,
+  "giay": 32,
+  "daHoi": [],
+  "lamTiep": 0,
+  "buoc": [
+   "✅ So với phiên bản khác (aidn-thu-hd.docx) — 164 chỗ khác (0 sửa, 0 chỉ ở bản đang mở, 164 chỉ ở phiên bản khác); văn bản đang mở không đổi",
+   "✅ So với phiên bản khác (aidn-thu-hd.docx) — 164 chỗ khác (0 sửa, 0 chỉ ở bản đang mở, 164 chỉ ở phiên bản khác); văn bản đang mở không đổi"
+  ],
+  "doiNguon": [],
+  "lanGoiAI": "3",
+  "token": "Token: vào 140.912 · ra 1.858 · đọc từ bộ nhớ đệm 83.296",
+  "doToken": [
+   {
+    "uoc": 47297,
+    "that": 39039
+   }
+  ],
+  "traLoi": "không sửa văn bản đang mở.\n📎 aidn-thu-hd.docx\n✅ So với phiên bản khác (aidn-thu-hd.docx) — 164 chỗ khác (0 sửa, 0 chỉ ở bản đang mở, 164 chỉ ở phiên bản khác); văn bản đang mở không đổi\n✅ So với phiên bản khác (aidn-thu-hd.docx) — 164 chỗ khác (0 sửa, 0 chỉ ở bản đang mở, 164 chỉ ở phiên bản khác); văn bản đang mở không đổi\nĐiều 18.2(b) của tệp đính kèm quy định:\n \n> “nguồn điện hoặc nước bị gián đoạn quá 72 giờ liên tục do lỗi của Bên Cho Thuê;”\n \nĐây là một trong ba trường hợp (khoản 18.2) Bên Thuê được quyền yêu cầu Bên Cho Thuê giảm Tiền Thuê.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 140.912 · ra 1.858 · đọc từ bộ nhớ đệm 83.296\nChèn vào chỗ con trỏ\nSao chép\nLượt này khoảng 47.297 token đầu vào.\nHỏi trước\n🧠 Nghĩ kỹ ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "vbTruoc": {
+  "soDoan": 1,
+  "doan": [
+   {
+    "i": 0,
+    "so": null,
+    "cap": null,
+    "kieu": "Normal",
+    "can": "Left",
+    "nay": "",
+    "phong": "Calibri",
+    "co": 11,
+    "dam": false,
+    "nghieng": false
+   }
+  ],
+  "suaDoi": [],
+  "nhanXet": [],
+  "oDien": []
+ },
+ "vb": {
+  "soDoan": 1,
+  "doan": [
+   {
+    "i": 0,
+    "so": null,
+    "cap": null,
+    "kieu": "Normal",
+    "can": "Left",
+    "nay": "",
+    "phong": "Calibri",
+    "co": 11,
+    "dam": false,
+    "nghieng": false
+   }
+  ],
+  "suaDoi": [],
+  "nhanXet": [],
+  "oDien": []
+ },
+ "ghiChu": "A1 lần đầu, một hệ số"
+}

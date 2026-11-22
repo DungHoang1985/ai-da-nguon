@@ -8,6 +8,8 @@ import type { FreeRotation } from "./rotation";
 import { STOP_NOTE, runAgent } from "./loop";
 import { buildPlainSystem, buildSystemPrompt, buildTurnMessage } from "./prompt";
 import { AgentEvent, AgentMessage, ExtraTools, FilePart, HostToolSet, ToolCall, UndoEntry, Usage } from "./types";
+import { ApiError } from "../errors";
+import { ModelInfo, biggerModels, estimateInputTokens, fitsContext, tooLargeMessage } from "../inputsize";
 import { ToolGroup, freeBasePrompt, groupsNote, hideGroupTools, requestGroups, usedGroups, visibleSpecs, withLoadTools } from "../toolgroups";
 
 export type TurnEvent = AgentEvent | { type: "compacted" };
@@ -88,6 +90,8 @@ export interface TurnOptions {
   fetchFn?: typeof fetch;
   retryDelaysMs?: number[];
   sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
+  /** Các model cùng nguồn (kèm sức chứa nếu biết): gợi ý khi model đang chọn không chứa nổi lượt gửi (Đợt 12) */
+  alternatives?: ModelInfo[];
   /** Chế độ Miễn phí: mọi lần gọi model của lượt (tóm tắt, soát lập luận, tác tử, trò chuyện) đi qua vòng xoay nguồn — Đợt 9 */
   rotation?: FreeRotation;
 }
@@ -162,6 +166,15 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
     return result(history, e);
   }
 
+  /** Đợt 12: đo token đầu vào của lần gửi đầu tiên; chế độ Trả phí mà model đang chọn không chứa nổi thì KHÔNG gửi, báo kèm gợi ý
+   *  (anh chọn "chỉ báo và gợi ý"). Chế độ Miễn phí: vòng xoay tự bỏ nguồn không chứa nổi. Không đổi lịch sử, không đổi lời nhắc. */
+  const sizeCheck = (msgs: AgentMessage[], specs: Parameters<typeof estimateInputTokens>[1]): ApiError | null => {
+    const tokens = estimateInputTokens(msgs, specs, o.model);
+    o.onEvent({ type: "input_size", tokens, context: o.context });
+    if (o.rotation || fitsContext(tokens, o.context)) return null;
+    return new ApiError(tooLargeMessage({ tokens, context: o.context!, model: o.model, alternatives: biggerModels(o.alternatives || [], tokens, o.model) }), undefined, undefined, "too_large");
+  };
+
   const userOf = (content: string): AgentMessage => ({
     role: "user",
     content,
@@ -195,6 +208,10 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
     const userMsg = userOf(buildTurnMessage({ text: o.text, state: a.tools.stateText?.(ov), skills: a.autoSkills }));
     const start = [...history, userMsg];
     let latest = start;
+    const extraNow = groups ? withLoadTools(a.extra, groups) : a.extra;
+    const allSpecs = [...a.tools.specs, ...(extraNow?.specs || [])];
+    const big = sizeCheck([{ role: "system", content: system }, ...start], toolFilter ? toolFilter(allSpecs, start) : allSpecs);
+    if (big) return result(history, big);
     const review = a.reviewEdits
       ? async (call: ToolCall) => {
           let current = "";
@@ -245,7 +262,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
         key: o.key,
         model: o.model,
         tools: a.tools,
-        extra: groups ? withLoadTools(a.extra, groups) : a.extra,
+        extra: extraNow,
         toolFilter,
         system,
         messages: start,
@@ -283,6 +300,9 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
   }
 
   const userMsg = userOf(o.text);
+  const plainMsgs: AgentMessage[] = [{ role: "system", content: buildPlainSystem(o.instructions) }, ...plainHistory(history), userMsg];
+  const bigPlain = sizeCheck(plainMsgs, []);
+  if (bigPlain) return result(history, bigPlain);
   let partial = "";
   try {
     const res = await (o.rotation
@@ -296,7 +316,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
       key: o.key,
       model: o.model,
       tools: [],
-      messages: [{ role: "system", content: buildPlainSystem(o.instructions) }, ...plainHistory(history), userMsg],
+      messages: plainMsgs,
       signal: o.signal,
       onText: (d) => {
         partial += d;
