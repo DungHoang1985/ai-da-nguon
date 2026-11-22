@@ -1438,7 +1438,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                   </div>
                 )}
                 {it.memUsed && (
-                  <Text size={100} className={s.muted} data-mem-used={it.memUsed.used}>
+                  <Text size={100} className={s.muted} data-mem-used={it.memUsed.used} style={{ display: "block" }}>
                     🧠 Gửi kèm {it.memUsed.used} mục bộ nhớ
                     {it.memUsed.skipped ? ` (${it.memUsed.skipped} mục không gửi vì vượt trần ${memoryCapFor(it.memUsed.free ? "free" : "paid")} ký tự)` : ""}
                     {it.memUsed.free ? " · bộ nhớ được gửi kèm tới nguồn miễn phí" : ""}
@@ -1446,13 +1446,17 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                 )}
                 {it.memProps?.map((mp, k) => (
                   <div key={"mem" + k} className={s.approve} data-mem-proposal={mp.state || "open"}>
-                    <Text size={200}>
-                      🧠 AI muốn nhớ{mp.scope === "all" ? "" : ` (chỉ ${mp.scope})`}: “{mp.text}”
-                    </Text>
-                    {mp.state ? (
-                      <Text size={100} className={mp.note ? s.err : s.muted}>
-                        {mp.note || (mp.state === "saved" ? "Đã nhớ — có hiệu lực từ hội thoại sau. Xem, sửa, xóa ở Cài đặt → Bộ nhớ." : "Đã bỏ.")}
+                    <div>
+                      <Text size={200}>
+                        🧠 AI muốn nhớ{mp.scope === "all" ? "" : ` (chỉ ${mp.scope})`}: “{mp.text}”
                       </Text>
+                    </div>
+                    {mp.state ? (
+                      <div>
+                        <Text size={100} className={mp.note ? s.err : s.muted}>
+                          {mp.note || (mp.state === "saved" ? "Đã nhớ — có hiệu lực từ hội thoại sau. Xem, sửa, xóa ở Cài đặt → Bộ nhớ." : "Đã bỏ.")}
+                        </Text>
+                      </div>
                     ) : (
                       <div className={s.row} style={{ marginTop: 4 }}>
                         <Button size="small" appearance="primary" data-mem-save="1" onClick={() => answerMemory(i, k, true)}>

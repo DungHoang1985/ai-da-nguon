@@ -114,4 +114,25 @@ Phát hành **4.11.6** ngày 23/11/2026 (anh duyệt): `main@faf37d3` → `gh-pa
 
 ### Phần E — thiết kế bộ nhớ dài hạn (23/11/2026)
 
-Bản thiết kế ở `tasks/dot-12-bo-nho.md`, chờ anh duyệt; chưa viết mã.
+Bản thiết kế ở `tasks/dot-12-bo-nho.md`.
+
+Anh duyệt 23/11/2026, chọn cả ba phương án khuyến nghị: AI đề xuất, anh bấm Nhớ · chung cho ba ứng dụng kèm mục riêng · hiệu lực từ hội thoại sau. Anh dặn thêm cùng ngày: lưu ý sức chứa ngữ cảnh của model miễn phí. Đã làm trên nhánh `claude/dot-12-bo-nho-phan-e-17bee2`, **chưa phát hành** (chờ anh duyệt bản 4.11.7).
+
+Mã: `src/core/memory.ts` (mục nhớ, bộ lọc, dựng khối có trần); lời nhắc (`prompt.ts`: sau chỉ dẫn riêng, cả tác tử lẫn trò chuyện thường); công cụ `remember` ở `src/office/common.ts` (chỉ đề xuất, chặn key / số định danh / mục trùng); khung chat chụp khối bộ nhớ khi hội thoại bắt đầu và lưu kèm hội thoại (`memory` trong `conversations.ts`), thẻ "AI muốn nhớ … [Nhớ] [Bỏ]", dòng "🧠 Gửi kèm N mục bộ nhớ"; Cài đặt → Bộ nhớ (thêm, sửa, bật / tắt, xóa, xóa hết, số mục gửi được ở mỗi chế độ); sao lưu gộp mục nhớ theo mã mục.
+
+Theo lưu ý sức chứa của model miễn phí:
+- Trần khối bộ nhớ: Trả phí 2.000 ký tự, **Miễn phí 800 ký tự** (≈ 220 token); vượt trần thì bỏ mục mới nhất, Cài đặt báo số mục không gửi.
+- Chế độ Miễn phí **không gửi công cụ `remember` ở mọi lượt**: nằm trong nhóm `bo_nho` (cả Word, Excel, PowerPoint), chỉ bật khi câu của anh có "từ giờ / từ nay / lần sau / ghi nhớ / nhớ giúp / mặc định / quy ước…". Phần cố định mỗi lượt của chế độ Miễn phí chỉ tăng 45 ký tự (dòng tên nhóm): Word 19.152 → 19.197, Excel 15.135 → 15.180, PowerPoint 13.987 → 14.032.
+- Trả phí luôn gửi `remember` (bộ công cụ cố định để giữ bộ nhớ đệm): +433 ký tự mỗi ứng dụng (Word 30.597 → 31.030, Excel 25.891 → 26.324, PowerPoint 18.875 → 19.308); trần kiểm thử chặn phình nâng tương ứng (31.100 / 26.400 / 19.350).
+- Khối bộ nhớ nằm trong lời nhắc hệ thống nên được đo trong số ước token đầu vào (Đợt 12 A) và vòng xoay Miễn phí tự bỏ qua model không chứa nổi.
+
+### Nghiệm thu phần E
+
+| Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|
+| E1 Kiểm thử máy: bộ nhớ vào lời nhắc đúng chỗ, đóng băng trong hội thoại, giới hạn độ dài, bộ lọc (ca phải chặn và ca dễ chặn nhầm) | Đạt | `test/unit/dot12e.test.ts` 39 ca: vị trí sau chỉ dẫn riêng; hai lượt cùng hội thoại gửi đúng một lời nhắc; trần 800 / 2.000; 16 ca phải chặn (key, Bearer, mật khẩu, số điện thoại có / không cách, CCCD, CMND, số tài khoản, số thẻ) và 11 ca không chặn nhầm (số hiệu văn bản, ngày, số tiền có dấu chấm, số điều); kiểm thử chặn bộ nhớ đệm `dot0b` vẫn xanh. Toàn bộ **779/779**, kiểm kiểu sạch |
+| E2 Tự kiểm tra (Word): thêm mục, hội thoại mới thấy trong lời nhắc, xóa mục | Đạt | Bản cục bộ trong Word trên desktop ẩn, chặn lời gọi model ngay trong khung (không gửi gì đi): 11/11 bước (`tasks/dot-12-bang-chung/e2-bo-nho-word.json`) — thêm mục; mục có CCCD bị chặn; hội thoại mới có mục trong lời nhắc; thêm mục giữa hội thoại → lượt sau lời nhắc **giống hệt**; hội thoại mới kế tiếp có mục mới; thẻ đề xuất hiện, chưa tự lưu, bấm Nhớ thì lưu với nguồn "AI đề xuất"; xóa qua nút Xóa về đúng 0 mục. Ảnh: `e2-the-de-xuat-nho.png`, `e2-cai-dat-bo-nho.png`. Tự kiểm tra Word 40/40 trên cùng bản |
+| E3 Chạy thật (Nemotron 3 Ultra miễn phí): theo bộ nhớ "trả lời kết luận trước, dùng bảng Tiêu chí · Kết quả" | **Đạt một phần** | 3 lần (`e3-chay-that.json` là lần 3). Cả 3 lần: khung báo gửi kèm 1 mục, câu trả lời **mở bằng kết luận** ("Không bắt buộc."). Bảng: lần 1, 2 **không có bảng** (lần 1 câu hỏi có "trả lời ngắn"; lần 2 đã sửa tiêu đề khối bộ nhớ thành "luôn tuân theo"; mục nhớ có tiền tố thử "E3-thu:"); lần 3 (ghi đúng câu của anh) **có bảng nhưng model tự đặt tên cột** ("Loại hợp đồng · … · Bắt buộc công chứng?"), không phải "Tiêu chí · Kết quả". Dừng sau 3 lần theo quy tắc. Nội dung pháp lý trong câu trả lời của Nemotron dẫn văn bản đã hết hiệu lực — lỗi của model, không thuộc phần này |
+| E3 AI đề xuất nhớ một quy ước, bấm Nhớ / Bỏ | Đạt (bài thử bấm, chưa phải anh bấm) | 3/3 lần nói "Từ giờ, công văn… luôn ký thừa lệnh Giám đốc…": Nemotron gọi `remember` đúng nội dung, thẻ hiện, bấm Bỏ không lưu; bấm Nhớ đã kiểm ở E2 |
+
+Chưa làm: soát mã độc lập cho phần E; Chạy thật ở chế độ Trả phí (Claude) để so mức tuân theo bộ nhớ.

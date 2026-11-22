@@ -1,6 +1,6 @@
-# Đợt 12, phần E — thiết kế bộ nhớ dài hạn giữa các hội thoại (BẢN ĐỀ XUẤT, CHỜ ANH DUYỆT)
+# Đợt 12, phần E — thiết kế bộ nhớ dài hạn giữa các hội thoại
 
-Chưa viết mã. Anh duyệt (hoặc sửa) các lựa chọn ở cuối tệp rồi mới làm.
+**Anh duyệt 23/11/2026**: cả ba câu ở cuối tệp chọn phương án khuyến nghị; anh dặn thêm lưu ý sức chứa của model miễn phí (Miễn phí: trần 800 ký tự, công cụ `remember` chỉ gửi khi câu có "từ giờ / ghi nhớ…"). Đã làm; kết quả và bảng nghiệm thu ở mục "Phần E" của `tasks/dot-12.md`.
 
 ## Vấn đề
 

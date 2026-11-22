@@ -243,6 +243,8 @@ function describeBase(call: ToolCall): string {
       return `Đọc nội dung đang mở ở ${a.app}`;
     case "read_attachment_pages":
       return `Đọc trang ${a.pages ?? "?"} của tệp đính kèm${a.file ? ` ${a.file}` : ""}`;
+    case "remember":
+      return "Đề xuất ghi nhớ cho hội thoại sau";
   }
   return call.name;
 }

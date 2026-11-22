@@ -1,0 +1,31 @@
+{
+ "buoc": [
+  {
+   "ten": "Lượt 1 (hội thoại mới): khung báo gửi kèm bộ nhớ",
+   "dat": true,
+   "chiTiet": "🧠 Gửi kèm 1 mục bộ nhớ · bộ nhớ được gửi kèm tới nguồn miễn phí"
+  },
+  {
+   "ten": "Câu trả lời có bảng cột Tiêu chí | Kết quả",
+   "dat": false,
+   "chiTiet": "Loại hợp đồng | Bên là tổ chức (doanh nghiệp) | Bắt buộc công chứng?"
+  },
+  {
+   "ten": "AI tự đề xuất nhớ (thẻ AI muốn nhớ)",
+   "dat": true,
+   "chiTiet": "🧠 AI muốn nhớ: “Công văn luôn ký thừa lệnh Giám đốc, chức danh người ký là Phó Giám đốc.” | Nhớ | Bỏ"
+  },
+  {
+   "ten": "Bấm Bỏ: không lưu",
+   "dat": true
+  },
+  {
+   "ten": "Dọn: không còn mục thử",
+   "dat": true
+  }
+ ],
+ "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "traLoi1": "AI Đa Nguồn\nv4.11.6\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nHợp đồng thuê văn phòng 3 năm giữa hai doanh nghiệp có bắt buộc công chứng không? Không cần đọc tài liệu.\nKhông bắt buộc. Theo luật Việt Nam hiện hành:\n \nLoại hợp đồng\tBên là tổ chức (doanh nghiệp)\tBắt buộc công chứng?\nThuê nhà/đất (quyền sử dụng đất) ≥ 5 năm\tCó\tCó (Luật Đất đai 2013, ĐK 167; BLHT 2015, ĐK 440)\nThuê nhà/văn phòng (tài sản gắn liền đất)\tCó\tKhông (Luật Nhà ở 2014, Luật Công chứng 2014)\n \nHợp đồng thuê văn phòng 3 năm giữa hai doanh nghiệp thuộc trường hợp thuê nhà/tài sản, không thuộc trường hợp phải công chứng theo quy định pháp luật. Hai bên có thể tự nguyện công chứng để tăng tính chứng minh, nhưng không bắt buộc.\n \n> Nếu hợp đồng bao gồm cả chuyển nhượng/cho thuê quyền sử dụng đất và thời hạn ≥ 5 năm → lúc đó mới bắt buộc công chứng.\nToken: vào 7.093 · ra 595\n🧠 Gửi kèm 1 mục bộ nhớ · bộ nhớ được gửi kèm tới nguồn miễn phí\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\n🧠 Nghĩ kỹ ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "traLoi2": "AI Đa Nguồn\nv4.11.6\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nTừ giờ, công văn của tôi luôn ký thừa lệnh Giám đốc, chức danh người ký là Phó Giám đốc. Ghi nhớ giúp tôi.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Đề xuất ghi nhớ cho hội thoại sau — đề xuất nhớ\nĐã gửi đề xuất ghi nhớ. Bạn hãy bấm Nhớ trên khung thông báo để lưu quy tắc này cho các hội thoại sau.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 23.931 · ra 247 · đọc từ bộ nhớ đệm 8.768\n🧠 Gửi kèm 1 mục bộ nhớ · bộ nhớ được gửi kèm tới nguồn miễn phí\n🧠 AI muốn nhớ: “Công văn luôn ký thừa lệnh Giám đốc, chức danh người ký là Phó Giám đốc.”\nNhớ\nBỏ\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\n🧠 Nghĩ kỹ ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "soMucConLai": 0
+}

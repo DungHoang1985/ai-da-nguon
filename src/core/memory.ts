@@ -104,7 +104,7 @@ export interface MemoryBlock {
   skipped: number;
 }
 
-export const MEMORY_HEADING = "## Bộ nhớ của người dùng (ghi từ các hội thoại trước; áp dụng như chỉ dẫn riêng)";
+export const MEMORY_HEADING = "## Bộ nhớ của người dùng (quy ước lâu dài người dùng đã duyệt — luôn tuân theo như chỉ dẫn riêng, trừ khi yêu cầu hiện tại nói khác)";
 
 /** Dựng khối bộ nhớ cho một ứng dụng: mục đang bật của "all" và của ứng dụng đó, theo thứ tự ghi (cũ trước),
  *  dừng khi chạm trần. Cùng đầu vào → cùng chuỗi (không có ngày giờ). */
