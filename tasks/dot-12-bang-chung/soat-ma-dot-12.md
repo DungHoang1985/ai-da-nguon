@@ -24,3 +24,5 @@ Phạm vi: `git diff 8546999..d1b4eb9 -- src` (bảng PowerPoint tự co, cảnh
 | L5 Gộp lệnh ghi qua Làm tiếp có thể làm mất cảnh báo đúng | Đúng nguyên tắc "ưu tiên không báo nhầm" của `claims.ts` |
 
 Kiểm sau khi sửa: kiểm thử máy 734/734, kiểm kiểu sạch; Tự kiểm tra trên bản cục bộ (desktop ẩn): Excel 42/42 (`tu-kiem-tra-excel-soat-ma-cuc-bo.json`), PowerPoint 26/26 (`tu-kiem-tra-ppt-soat-ma-cuc-bo.json`). Chưa thử trong PowerPoint một bảng 14 cột thật.
+
+Phát hành **4.11.5** ngày 22/11/2026 (anh duyệt): `main@5289054` → `gh-pages@d0022d4`. Tự kiểm tra trên bản phát hành v4.11.5: Excel 42/42, PowerPoint 26/26 (`tu-kiem-tra-*-phat-hanh-4115.json`).
