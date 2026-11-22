@@ -4,8 +4,10 @@ import type { Provider } from "./providers";
 
 export type UsageMode = "free" | "paid";
 
-/** Thứ tự xoay vòng mặc định của chế độ Miễn phí (anh duyệt 19/11/2026); người dùng sửa được trong Cài đặt. */
-export const DEFAULT_FREE_ORDER = ["gemini", "groq", "openrouter", "cohere"];
+/** Thứ tự xoay vòng mặc định của chế độ Miễn phí; người dùng sửa được trong Cài đặt. OpenRouter đứng đầu từ 22/11/2026 (anh duyệt):
+ *  so với add-in Claude chính thức, OpenRouter Nemotron 3 Ultra :free có Nghĩ kỹ đạt 97% điểm ở Excel, 94% ở PowerPoint; Gemini Flash
+ *  ở Excel chỉ đạt 63% (so-sanh-openrouter/ket-qua/BAO-CAO-22-11.md). Trước đó (19/11): Gemini → Groq → OpenRouter → Cohere. */
+export const DEFAULT_FREE_ORDER = ["openrouter", "gemini", "groq", "cohere"];
 
 /** Gemini: chỉ dòng Flash, Flash-Lite và Gemma có bậc miễn phí; dòng Pro, ảnh, giọng nói thì không (R2 của dot-9). */
 const GEMINI_FREE = /^(models\/)?(gemini-[\w.-]*flash|gemma)/i;
