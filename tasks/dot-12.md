@@ -156,4 +156,6 @@ Một tác tử soát độc lập đọc `git diff 0fd4635..HEAD -- src test` (
 
 Sau khi sửa: kiểm thử máy **801/801**, kiểm kiểu sạch; E2 lại 11/11 (`e2-bo-nho-word-sau-soat.json`), Tự kiểm tra Word 40/40 (`tu-kiem-tra-word-e-cuc-bo.json`) trên bản cục bộ.
 
-Chưa làm: Chạy thật ở chế độ Trả phí (Claude) để so mức tuân theo bộ nhớ.
+Phát hành **4.11.7** ngày 23/11/2026 (anh duyệt "soát mã rồi phát hành"): `main@abd73bf` → `gh-pages@ae19e1b`. Trên bản phát hành (Word, desktop ẩn): E2 11/11 (`e2-bo-nho-word-phat-hanh-4117.json`), Tự kiểm tra Word 40/40 (`tu-kiem-tra-word-phat-hanh-4117.json`).
+
+Chưa làm: Chạy thật ở chế độ Trả phí (Claude) để so mức tuân theo bộ nhớ; Tự kiểm tra Excel, PowerPoint trên 4.11.7 (phần E không đổi công cụ của hai ứng dụng này, chỉ thêm `propose_memory` vào bộ chung — có kiểm thử máy).
