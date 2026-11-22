@@ -99,8 +99,11 @@ export function restoreFrom(snap: Snapshot | null, label: string): UndoEntry | n
         const r = ws.getRange(snap.address);
         // Định dạng số TRƯỚC rồi mới ghi nội dung: ghi chữ "05/03/2026" vào ô còn định dạng ngày thì Excel đổi ngay thành ngày
         // (Đợt 12, Tự kiểm tra bài X3); trả ô về "@" trước thì chữ được giữ là chữ
-        r.numberFormat = snap.numberFormat;
+        // Soát mã 22/11: ô công thức có định dạng "@" — ghi công thức vào ô "@" thì Excel giữ thành chữ, nên trả General trước,
+        // ghi nội dung, rồi mới đặt lại đúng định dạng số cũ
+        r.numberFormat = snap.numberFormat.map((row, i) => row.map((f, j) => (f === "@" && typeof snap.formulas[i]?.[j] === "string" && String(snap.formulas[i][j]).startsWith("=") ? "General" : f)));
         r.formulas = snap.formulas;
+        r.numberFormat = snap.numberFormat;
         await ctx.sync();
       });
       // Bước 2: định dạng ô và độ rộng cột (cố gắng hết mức)

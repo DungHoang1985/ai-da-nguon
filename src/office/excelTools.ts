@@ -319,6 +319,10 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         // Đợt 12 (bài X3): ghi bảng đã làm sạch (ít hàng hơn) đè lên bảng cũ mà quên xóa phần thừa bên dưới, rồi báo "còn 9 dòng".
         // Nhắc lại nếu ngay dưới vùng vừa ghi (cùng các cột) còn dữ liệu cũ.
         let below = "";
+        // Soát mã 22/11: chỉ nhắc khi đây là ghi đè cả một bảng từ đầu bảng (≥ 2 hàng, vùng cũ kín dữ liệu, hàng ngay trên trống),
+        // không nhắc khi sửa vài ô giữa bảng
+        const blank = (v: any) => v === "" || v === null || v === undefined;
+        const oldFull = !!snap && snap.formulas.length >= 2 && snap.formulas.every((row) => row.some((v) => !blank(v)));
         try {
           const ws = target.worksheet;
           const used = ws.getUsedRangeOrNullObject(true);
@@ -326,7 +330,14 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           await ctx.sync();
           const last = used.isNullObject ? -1 : used.rowIndex + used.rowCount - 1;
           const first = target.rowIndex + target.rowCount;
-          if (last >= first) {
+          let topOfBlock = target.rowIndex === 0;
+          if (!topOfBlock && oldFull) {
+            const above = ws.getRangeByIndexes(target.rowIndex - 1, target.columnIndex, 1, target.columnCount);
+            above.load("values");
+            await ctx.sync();
+            topOfBlock = above.values[0].every(blank);
+          }
+          if (oldFull && topOfBlock && target.rowCount >= 2 && last >= first) {
             const n = Math.min(last - first + 1, 500);
             const rest = ws.getRangeByIndexes(first, target.columnIndex, n, target.columnCount);
             rest.load("values,address");
@@ -359,7 +370,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           address: target.address,
           result_preview: target.values.slice(0, 12).map((row) => row.slice(0, 10)),
           ...(errors.length ? { formula_errors: errors.slice(0, 20) } : {}),
-          ...(below ? { note_below: `Ngay dưới vùng vừa ghi còn dữ liệu cũ ở ${below}. Nếu bảng mới thay cho bảng cũ thì phần này là thừa: xóa đi (excel_clear_range) trước khi báo xong.` } : {}),
+          ...(below ? { note_below: `Ngay dưới bảng vừa ghi vẫn còn dữ liệu cũ liền mạch ở ${below}. Nếu bảng mới thay cho cả bảng cũ thì đó là phần thừa của bảng cũ; nếu không thì bỏ qua lời nhắc này.` } : {}),
           ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }),
           // Cho lớp dấu vết soát lại (excelTrail): nội dung trước và sau; bị gỡ khỏi kết quả trước khi trả cho model
           __trail: { sheet: where.sheet || "", address: where.address, before: snap ? snap.formulas : null, after: vals, undoable: !!snap },
@@ -428,7 +439,11 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
               dateNote += `; Excel đổi "${want}" thành kiểu ngày ngắn của máy nên đã đặt "${want};@" để mọi máy đều hiện đúng ${want}`;
             }
             const fix = convertDateTexts(range.formulas);
-            if (fix.converted) range.formulas = fix.formulas;
+            // Soát mã 22/11: chỉ ghi các ô đã đổi (ghi cả ma trận có thể đụng ô tràn của mảng động, mảng CSE)
+            if (fix.converted)
+              fix.formulas.forEach((row, i) => row.forEach((v, j) => {
+                if (v !== range.formulas[i][j]) range.getCell(i, j).values = [[v]];
+              }));
             const tl = topLeft(range.address);
             const left = fix.leftText.slice(0, 5).map(([i, j]) => cellAddress(tl.col + j, tl.row + i));
             if (fix.converted) dateNote += `; đổi ${fix.converted} ô chữ dạng ngày thành ngày thật (đọc theo ngày/tháng/năm)`;

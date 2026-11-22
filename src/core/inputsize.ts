@@ -19,6 +19,24 @@ export interface TokenRatio {
 const DEFAULT_RATIO: TokenRatio = { struct: CHARS_PER_TOKEN_STRUCT, text: CHARS_PER_TOKEN_TEXT };
 const CLAUDE_RATIO: TokenRatio = { struct: 2.1, text: 1.5 };
 
+/** Chữ tiếng Việt có khoảng 20–23% ký tự ngoài bảng mã ASCII (đo trên hợp đồng thử), tiếng Anh gần 0 */
+const VI_SHARE = 0.2;
+/** Ký tự một token của chữ tiếng Anh với họ Claude (soát mã 22/11: hệ số 1,5 đo trên tiếng Việt làm chặn nhầm tệp tiếng Anh dài) */
+const CLAUDE_EN_TEXT = 3.8;
+
+function countNonAscii(s: string): number {
+  let n = 0;
+  for (let i = 0; i < s.length; i++) if (s.charCodeAt(i) > 127) n++;
+  return n;
+}
+
+/** Hệ số chữ theo tỷ lệ ký tự ngoài ASCII: họ Claude đi từ 3,8 (tiếng Anh) tới 1,5 (tiếng Việt); họ khác giữ hệ số đo được */
+function textRatio(r: TokenRatio, share: number): number {
+  if (r.text >= CHARS_PER_TOKEN_TEXT) return r.text;
+  const vi = Math.min(1, Math.max(0, share / VI_SHARE));
+  return CLAUDE_EN_TEXT - (CLAUDE_EN_TEXT - r.text) * vi;
+}
+
 /** Hệ số theo họ model (tên model; Claude qua Anthropic, OpenRouter "anthropic/…", Bedrock "…claude…" đều nhận ra) */
 export function tokenRatio(model?: string): TokenRatio {
   return /claude|anthropic/i.test(String(model || "")) ? CLAUDE_RATIO : DEFAULT_RATIO;
@@ -39,13 +57,17 @@ export function estimateInputTokens(messages: AgentMessage[], tools: ToolSpec[] 
   const r = tokenRatio(model);
   let struct = 0;
   let text = 0;
+  let nonAscii = 0;
   for (const m of messages as any[]) {
     if (m.role === "system" || m.role === "tool") struct += contentChars(m.content);
-    else text += contentChars(m.content);
+    else {
+      text += contentChars(m.content);
+      if (typeof m.content === "string") nonAscii += countNonAscii(m.content);
+    }
     for (const tc of m.toolCalls || []) struct += JSON.stringify(tc.args || {}).length + 40;
   }
   for (const t of tools) struct += JSON.stringify({ name: t.name, description: t.description, parameters: t.parameters }).length;
-  return Math.ceil(struct / r.struct + text / r.text);
+  return Math.ceil(struct / r.struct + text / textRatio(r, text ? nonAscii / text : 1));
 }
 
 /** Model chứa nổi số token này không (không biết sức chứa thì coi như chứa nổi) */

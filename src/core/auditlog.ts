@@ -148,6 +148,8 @@ export function namesSheet(args: any): boolean {
 /** Lệnh công cụ có nhắm vào sheet nhật ký không (qua tham số sheet hoặc phần sheet của các tham số địa chỉ). */
 export function targetsLogSheet(args: any, logSheet = LOG_SHEET): boolean {
   if (!args || typeof args !== "object") return false;
+  // Lệnh gộp nhiều mục (excel_format_range `more`, Đợt 12): mục nào nhắm sheet nhật ký cũng tính (soát mã 22/11)
+  if (Array.isArray(args.more) && args.more.some((it: any) => targetsLogSheet(it, logSheet))) return true;
   if (isLogSheet(args.sheet, logSheet) || isLogSheet(args.new_name, logSheet) || isLogSheet(args.name, logSheet) || isLogSheet(args.sheet_name, logSheet)) return true;
   for (const k of ["address", "cell", "source_address", "destination", "fill_to", "print_area", "target_cell", "input_cell", "input_cell_2", "output_cell"]) {
     const v = args[k];

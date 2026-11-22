@@ -65,7 +65,8 @@ export function auditModel(input: AuditInput): AuditResult {
   const sandH = (i: number, j: number) => isF(at(i, j - 1)) && at(i, j - 1) === at(i, j + 1);
   const sandV = (i: number, j: number) => isF(at(i - 1, j)) && at(i - 1, j) === at(i + 1, j);
   /** Khung công thức: bỏ số (trong địa chỉ R1C1 và hằng số) để so hai công thức chỉ khác địa chỉ */
-  const skel = (f: string) => f.replace(/\d+/g, "#");
+  // Chỉ bỏ số trong địa chỉ R1C1 (R5, C[-2]); hằng số giữ nguyên: "*1.05" ở năm cuối khác "*1.03" là chủ ý, không phải vùng hụt (soát mã 22/11)
+  const skel = (f: string) => f.replace(/([RC])(\[-?\d+\]|\d+)/g, "$1#");
   const findings: AuditFinding[] = [];
   let formulas = 0;
   let constants = 0;

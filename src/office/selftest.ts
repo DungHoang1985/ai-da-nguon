@@ -164,6 +164,9 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       // Ghi bảng ngắn hơn đè lên bảng cũ: phải nhắc phần dữ liệu cũ còn lại bên dưới
       const shortW = await tools.execute("excel_write_range", { sheet, address: "F1", values: [["Ngày"], ["x"]] }, { log: mine });
       expect(/F3:F5/.test(String(shortW.note_below || "")), `Không nhắc dữ liệu cũ còn bên dưới: ${JSON.stringify(shortW.note_below)}`);
+      // Sửa một ô giữa bảng: KHÔNG nhắc (soát mã 22/11 — trước đây nhắc ở gần như mọi lần sửa ô và thúc AI xóa dữ liệu)
+      const oneW = await tools.execute("excel_write_range", { sheet, address: "F4", values: [["y"]] }, { log: mine });
+      expect(!oneW.note_below, `Sửa một ô mà vẫn nhắc dữ liệu cũ bên dưới: ${oneW.note_below}`);
       for (const u of [...mine].reverse()) await u.undo();
       const back = await Excel.run(async (ctx) => {
         const r = ctx.workbook.worksheets.getItem(sheet).getRange("F2:F3");

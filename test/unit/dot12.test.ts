@@ -40,9 +40,15 @@ describe("Đợt 12 · A · đo token đầu vào", () => {
   it("Hệ số theo họ model: Claude đếm chữ tiếng Việt dày hơn (đo 22/11: Haiku 5.5 đếm 23.378 token khi hệ số chung ước 13.689)", () => {
     for (const m of ["claude-haiku-5-5", "anthropic/claude-sonnet-5.5", "us.anthropic.claude-opus-5-5"]) assert.deepStrictEqual(tokenRatio(m), { struct: 2.1, text: 1.5 });
     for (const m of ["nvidia/nemotron-3-ultra-550b-a55b:free", "gemini-3.8-flash", "openai/gpt-oss-120b", undefined]) assert.deepStrictEqual(tokenRatio(m), { struct: 2.6, text: 3.6 });
-    const msgs: any[] = [{ role: "user", content: "c".repeat(3000) }];
-    assert.strictEqual(estimateInputTokens(msgs, [], "claude-haiku-5-5"), 2000);
-    assert.strictEqual(estimateInputTokens(msgs, [], "gemini-3.8-flash"), Math.ceil(3000 / 3.6));
+    // Chữ tiếng Việt (≈ 1/5 ký tự ngoài ASCII): Claude 1,5 ký tự một token
+    const vi = "Bên Thuê có nghĩa vụ thanh toán đúng hạn ".repeat(75);
+    const share = [...vi].filter((c) => c.charCodeAt(0) > 127).length / vi.length;
+    assert.ok(share >= 0.2, `tỷ lệ ${share}`);
+    assert.strictEqual(estimateInputTokens([{ role: "user", content: vi } as any], [], "claude-haiku-5-5"), Math.ceil(vi.length / 1.5));
+    assert.strictEqual(estimateInputTokens([{ role: "user", content: vi } as any], [], "gemini-3.8-flash"), Math.ceil(vi.length / 3.6));
+    // Soát mã 22/11: chữ tiếng Anh với Claude khoảng 3,8 ký tự một token (không chặn nhầm hợp đồng tiếng Anh dài)
+    const en = "The Lessee shall pay the rent on time ".repeat(80);
+    assert.strictEqual(estimateInputTokens([{ role: "user", content: en } as any], [], "claude-haiku-5-5"), Math.ceil(en.length / 3.8));
   });
   it("Sức chứa: chừa 10%; không biết sức chứa thì coi như chứa nổi", () => {
     assert.strictEqual(fitsContext(90000, 100000), true);
@@ -216,5 +222,31 @@ describe("Đợt 12 · B · X5: kiểm toán mô hình bắt đủ 5 lỗi cài 
     // Cột nhập tay xen giữa các cột công thức vẫn không bị báo (ô liền kề cũng kẹp giữa công thức)
     const colInput = [["KH1", "TH1", "KH2"], ["=RC[5]*2", 10, "=RC[5]*2"], ["=RC[5]*2", 20, "=RC[5]*2"], ["=RC[5]*2", 30, "=RC[5]*2"]];
     assert.strictEqual(run(colInput).counts.hardcoded, 0);
+  });
+});
+
+import { targetsLogSheet } from "../../src/core/auditlog";
+import { tableColumnWidths } from "../../src/core/tablefit";
+
+describe("Đợt 12 · Soát mã độc lập 22/11 (mã từ 4.11.0)", () => {
+  it("C1: bảng nhiều cột không ra bề ngang âm; tổng vẫn đúng; không cột nào dưới phần chia đều khi sàn chiếm hết", () => {
+    for (const n of [12, 13, 14, 20, 40]) {
+      const vals = [Array.from({ length: n }, () => "ab"), Array.from({ length: n }, (_, k) => "x".repeat(k % 5))];
+      const w = tableColumnWidths(vals, 600);
+      assert.strictEqual(w.length, n);
+      assert.ok(w.every((x) => x > 0), `${n} cột: ${w}`);
+      assert.ok(Math.abs(w.reduce((a, b) => a + b, 0) - 600) < 0.05, `${n} cột tổng ${w.reduce((a, b) => a + b, 0)}`);
+    }
+  });
+  it("C2: mục trong `more` nhắm sheet nhật ký cũng bị chặn; mục bình thường thì không", () => {
+    assert.ok(targetsLogSheet({ address: "A1", more: [{ address: "'Nhật ký AI'!A1:F50", fill_color: "none" }] }));
+    assert.ok(targetsLogSheet({ address: "A1", more: [{ address: "B2", sheet: "Nhật ký AI" }] }));
+    assert.ok(!targetsLogSheet({ address: "A1", more: [{ address: "B2:B9", bold: true }, { address: "'Dòng tiền'!C3" }] }));
+  });
+  it("L6: ô cuối dãy cố ý khác HẰNG SỐ (tăng giá năm cuối) không bị báo là vùng hụt; khác địa chỉ thì vẫn báo", () => {
+    const run = (g: any[][]) => auditModel({ r1c1: g, origin: { col: 0, row: 0 }, addr: cellAddress });
+    assert.strictEqual(run([["=RC[-1]*1.03", "=RC[-1]*1.03", "=RC[-1]*1.03", "=RC[-1]*1.05"]].map((r) => ["Giá", ...r])).counts.inconsistent, 0);
+    assert.strictEqual(run([["x", "=SUM(R1C2:R5C2)", "=SUM(R1C3:R5C3)", "=SUM(R1C4:R5C4)", "=SUM(R1C5:R4C5)"]]).counts.inconsistent, 0, "R1C1 tuyệt đối mỗi cột một khác: không phải một dãy cùng mẫu");
+    assert.strictEqual(run([["=SUM(RC[-8]:RC[-1])"], ["=SUM(RC[-8]:RC[-1])"], ["=SUM(RC[-8]:RC[-1])"], ["=SUM(RC[-8]:RC[-2])"]]).counts.inconsistent, 1);
   });
 });

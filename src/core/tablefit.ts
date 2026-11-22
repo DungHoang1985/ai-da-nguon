@@ -38,7 +38,13 @@ export function tableColumnWidths(values: string[][], total: number): number[] {
     weight.push(Math.max(word * 1.2, Math.sqrt(Math.max(cell, 1)) * 4, 4));
   }
   const sum = weight.reduce((a, b) => a + b, 0);
-  const floor = total * 0.08;
+  // Soát mã 22/11: từ 13 cột trở lên, sàn 8% × số cột vượt 100% → cột cuối ra âm. Sàn không quá phần chia đều; chia đều khi sàn chiếm hết.
+  const floor = Math.min(total * 0.08, total / n);
+  if (floor * n >= total - 0.01) {
+    const eq = Array(n).fill(Math.round((total / n) * 10) / 10);
+    eq[n - 1] = Math.round((total - eq.slice(0, -1).reduce((a: number, b: number) => a + b, 0)) * 10) / 10;
+    return eq;
+  }
   let w = weight.map((x) => Math.max(floor, (total * x) / sum));
   const over = w.reduce((a, b) => a + b, 0) - total;
   if (over > 0) {

@@ -1,5 +1,6 @@
 /** Tự thu gọn hội thoại dài: tóm tắt phần cũ MỘT LẦN bằng chính model đang dùng, giữ nguyên các lượt gần nhất.
  *  Ngưỡng tính theo sức chứa của model. Giữa hai lần tóm tắt, lịch sử không bị sửa (để bộ nhớ đệm lời nhắc có tác dụng). */
+import { estimateInputTokens } from "../inputsize";
 import { Provider } from "../providers";
 import { callModelStep } from "./llm";
 import type { FreeRotation } from "./rotation";
@@ -86,7 +87,10 @@ export async function compactIfNeeded(o: {
   rotation?: FreeRotation;
 }): Promise<{ history: AgentMessage[]; compacted: boolean }> {
   const limit = o.limitChars ?? compactLimitChars(o.context);
-  if (!needsCompaction({ chars: historyChars(o.history), context: o.context, lastInputTokens: o.lastInputTokens, limitChars: limit })) {
+  // Soát mã 22/11 (Đợt 12): đo bằng cùng bộ ước token với lượt gửi (hệ số theo họ model) — với Claude, ngưỡng ký tự cũ đến sau
+  // ngưỡng chặn "model không chứa nổi" nên hội thoại dài bị chặn thay vì được tóm tắt
+  const estBig = !!o.context && estimateInputTokens(o.history, [], o.model) >= o.context * HISTORY_SHARE;
+  if (!estBig && !needsCompaction({ chars: historyChars(o.history), context: o.context, lastInputTokens: o.lastInputTokens, limitChars: limit })) {
     return { history: o.history, compacted: false };
   }
   // Giữ 2 lượt gần nhất; nếu riêng 2 lượt đó đã quá lớn thì chỉ giữ 1
