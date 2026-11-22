@@ -119,10 +119,10 @@ describe("Đợt 9 — chế độ Miễn phí / Trả phí (T1, T4)", () => {
     assert.strictEqual(freeKeyWarning(P("openrouter")), "");
     assert.strictEqual(freeKeyWarning(P("anthropic")), "");
   });
-  it("Thứ tự xoay vòng: mặc định Gemini → Groq → OpenRouter → Cohere; bỏ mã lạ, nguồn trả phí, mã trùng", () => {
-    assert.deepStrictEqual(DEFAULT_FREE_ORDER, ["gemini", "groq", "openrouter", "cohere"]);
+  it("Thứ tự xoay vòng: mặc định OpenRouter → Gemini → Groq → Cohere (từ 22/11/2026); bỏ mã lạ, nguồn trả phí, mã trùng", () => {
+    assert.deepStrictEqual(DEFAULT_FREE_ORDER, ["openrouter", "gemini", "groq", "cohere"]);
     assert.deepStrictEqual(normalizeFreeOrder(undefined, allProviders()), DEFAULT_FREE_ORDER);
-    assert.deepStrictEqual(normalizeFreeOrder(["cohere", "anthropic", "la", "cohere", "groq"], allProviders()), ["cohere", "groq", "gemini", "openrouter"]);
+    assert.deepStrictEqual(normalizeFreeOrder(["cohere", "anthropic", "la", "cohere", "groq"], allProviders()), ["cohere", "groq", "openrouter", "gemini"]);
   });
   it("Lưu chế độ, thứ tự xoay vòng, thời điểm nghỉ trong kho cục bộ", () => {
     const mem: Record<string, string> = {};
@@ -158,8 +158,8 @@ describe("Đợt 9 — dựng vòng xoay (T4)", () => {
     });
     assert.deepStrictEqual(list.map((c) => `${c.provider.id}:${c.model}`), [
       "groq:openai/gpt-oss-120b",
-      "gemini:gemini-3.8-flash",
       "openrouter:nvidia/nemotron-3-ultra:free",
+      "gemini:gemini-3.8-flash",
       "cohere:command-a-03-2025",
     ]);
     assert.ok(list.every((c) => providerInMode(c.provider, "free")), "không có nguồn trả phí nào trong vòng");

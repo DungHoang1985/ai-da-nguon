@@ -4,7 +4,7 @@ import { allProviders, getProvider } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { fetchModels, isStale } from "../../core/models";
 import { describeError, keyProblem } from "../../core/errors";
-import { UsageMode, modelInMode, providerInMode } from "../../core/modes";
+import { UsageMode, modelInMode, normalizeFreeOrder, providerInMode } from "../../core/modes";
 import { CatalogState, applyFailed, applyLoaded, filterModels, pickModel, sendBlockReason, startCatalog } from "../../core/catalog";
 
 export function useCatalog(storage: Storage, o: { agentOn: boolean; toolsOnly: boolean; version: number; mode?: UsageMode }) {
@@ -15,9 +15,12 @@ export function useCatalog(storage: Storage, o: { agentOn: boolean; toolsOnly: b
     return !!p && (!o.mode || providerInMode(p, o.mode));
   };
   const available = allProviders().filter((p) => keys[p.id] && inMode(p.id));
+  /** Nguồn mặc định khi chưa chọn: chế độ Miễn phí theo thứ tự xoay vòng (nguồn đầu vòng là nguồn dùng trước), chế độ khác theo danh sách nguồn */
+  const firstUsable = (ks: Record<string, string>) =>
+    (o.mode === "free" ? normalizeFreeOrder(storage.getSelection().freeOrder, allProviders()) : allProviders().map((p) => p.id)).find((id) => ks[id] && inMode(id)) || "";
   const firstPid = (() => {
     const sel = storage.getSelection();
-    return sel.providerId && keys[sel.providerId] && inMode(sel.providerId) ? sel.providerId : available[0]?.id || "";
+    return sel.providerId && keys[sel.providerId] && inMode(sel.providerId) ? sel.providerId : firstUsable(keys);
   })();
 
   const tokenRef = React.useRef(0);
@@ -61,7 +64,7 @@ export function useCatalog(storage: Storage, o: { agentOn: boolean; toolsOnly: b
     const sel = storage.getSelection();
     const back = o.mode ? sel.providerByMode?.[o.mode] : undefined;
     const ok = (id?: string) => !!id && !!ks[id] && inMode(id);
-    const pid = ok(back) ? back! : ok(providerId) ? providerId : allProviders().find((p) => ks[p.id] && inMode(p.id))?.id || "";
+    const pid = ok(back) ? back! : ok(providerId) ? providerId : firstUsable(ks);
     if (pid !== providerId) {
       setModelIdState(storage.getModelFor(pid));
       if (pid) storage.setSelection({ providerId: pid });
