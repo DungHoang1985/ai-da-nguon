@@ -158,4 +158,6 @@ Sau khi sửa: kiểm thử máy **801/801**, kiểm kiểu sạch; E2 lại 11/
 
 Phát hành **4.11.7** ngày 23/11/2026 (anh duyệt "soát mã rồi phát hành"): `main@abd73bf` → `gh-pages@ae19e1b`. Trên bản phát hành (Word, desktop ẩn): E2 11/11 (`e2-bo-nho-word-phat-hanh-4117.json`), Tự kiểm tra Word 40/40 (`tu-kiem-tra-word-phat-hanh-4117.json`).
 
-Chưa làm: Chạy thật ở chế độ Trả phí (Claude) để so mức tuân theo bộ nhớ; Tự kiểm tra Excel, PowerPoint trên 4.11.7 (phần E không đổi công cụ của hai ứng dụng này, chỉ thêm `propose_memory` vào bộ chung — có kiểm thử máy).
+Chạy thật ở chế độ Trả phí trên bản 4.11.7 (anh chọn "Chạy thử Haiku", 23/11/2026), Claude Haiku 5.5, cùng bài `dot-12e-chay-that.js` (`e3-chay-that-haiku.json`): **5/5 đạt** — khung báo gửi kèm 1 mục; câu trả lời mở bằng "Kết luận: Thường không bắt buộc công chứng…" rồi **bảng đúng hai cột Tiêu chí | Kết quả**; nói "Từ giờ… Ghi nhớ giúp tôi" → `propose_memory` đúng nội dung, thẻ hiện, bấm Bỏ không lưu; dọn về 0 mục. Lượt 1: vào 14.764 token, ra 2.872. So với Nemotron (đạt một phần): mức làm theo bộ nhớ phụ thuộc model, phần bộ nhớ của add-in đã gửi đúng. Sau bài thử đã trả lại chế độ Miễn phí và Nemotron 3 Ultra như anh đang dùng; hội thoại thử không vào Lịch sử.
+
+Chưa làm: Tự kiểm tra Excel, PowerPoint trên 4.11.7 (phần E không đổi công cụ của hai ứng dụng này, chỉ thêm `propose_memory` vào bộ chung — có kiểm thử máy).

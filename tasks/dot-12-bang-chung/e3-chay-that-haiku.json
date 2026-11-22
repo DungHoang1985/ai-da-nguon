@@ -1,0 +1,31 @@
+{
+ "buoc": [
+  {
+   "ten": "Lượt 1 (hội thoại mới): khung báo gửi kèm bộ nhớ",
+   "dat": true,
+   "chiTiet": "🧠 Gửi kèm 1 mục bộ nhớ"
+  },
+  {
+   "ten": "Câu trả lời có bảng cột Tiêu chí | Kết quả",
+   "dat": true,
+   "chiTiet": "Tiêu chí | Kết quả"
+  },
+  {
+   "ten": "AI tự đề xuất nhớ (thẻ AI muốn nhớ)",
+   "dat": true,
+   "chiTiet": "🧠 AI muốn nhớ: “Công văn của người dùng luôn ký thừa lệnh Giám đốc (phần ký ghi \"TL. GIÁM ĐỐC\"); chức danh người ký là Phó Giám đốc.” | Nhớ | Bỏ"
+  },
+  {
+   "ten": "Bấm Bỏ: không lưu",
+   "dat": true
+  },
+  {
+   "ten": "Dọn: không còn mục thử",
+   "dat": true
+  }
+ ],
+ "nguon": "Model đang dùng: Anthropic (Claude) Claude Haiku 5.5. Bấm để đổi 💳 Anthropic · Claude Haiku 5.5",
+ "traLoi1": "AI Đa Nguồn\nv4.11.7\nExcel — · PowerPoint —\nHợp đồng thuê văn phòng 3 năm giữa hai doanh nghiệp có bắt buộc công chứng không? Không cần đọc tài liệu.\nKết luận: Thường không bắt buộc công chứng. Hợp đồng thuê văn phòng giữa hai doanh nghiệp chỉ cần lập thành văn bản. Công chứng hoặc chứng thực trở thành bắt buộc nếu có quy định riêng cho loại giao dịch bất động sản cụ thể hoặc nếu hai bên tự thỏa thuận. Câu trả lời này dựa trên kiến thức chung, không dựa trên tài liệu đang mở, và cần đối chiếu văn bản gốc trước khi áp dụng.\n \nTiêu chí\tKết quả\nHình thức bắt buộc theo BLDS 2015 (thuê tài sản)\tPhải lập thành văn bản (cần đối chiếu Điều 502 BLDS 2015 bản gốc)\nCông chứng/chứng thực có bắt buộc theo luật chung?\tKhông, với hợp đồng thuê văn phòng thông thường\nTrường hợp có thể phải công chứng/chứng thực\t(1) Bên cho thuê kinh doanh bất động sản và luật chuyên ngành yêu cầu (cần kiểm tra Luật Kinh doanh bất động sản 2023 và văn bản hướng dẫn); (2) hai bên tự thỏa thuận công chứng; (3) người thuê yêu cầu để làm căn cứ đăng ký, thế chấp hoặc thủ tục hành chính khác\nHậu quả nếu không công chứng\tThường không làm hợp đồng vô hiệu chỉ vì thiếu công chứng, nhưng có thể ảnh hưởng đến khả năng đăng ký hoặc thủ tục liên quan (cần đối chiếu từng trường hợp)\nThời hạn 3 năm\tKhông tự làm phát sinh yêu cầu công chứng; có ý nghĩa khi xem xét đăng ký hợp đồng thuê, nếu tài sản là đất hoặc nhà gắn với quyền sử dụng đất\n \nKhuyến nghị: Trước khi ký, nên kiểm tra ba điểm: bên cho thuê có đăng ký ngành nghề kinh doanh bất động sản hay không; tài sản đã có Giấy chứng nhận quyền sở hữu hoặc quyền sử dụng đất chưa; và trong hợp đồng có điều khoản nào yêu cầu công chứng không. Nếu muốn, tôi có thể rà soát hợp đồng đang mở để xem các điều khoản liên quan.\nToken: vào 14.764 · ra 2.872 · ghi vào bộ nhớ đệm 14.760\n🧠 Gửi kèm 1 mục bộ nhớ\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\n🧠 Nghĩ kỹ ✕\n💳 Anthropic · Claude Haiku 5.5",
+ "traLoi2": "AI Đa Nguồn\nv4.11.7\nExcel — · PowerPoint —\nTừ giờ, công văn của tôi luôn ký thừa lệnh Giám đốc, chức danh người ký là Phó Giám đốc. Ghi nhớ giúp tôi.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Đề xuất ghi nhớ cho hội thoại sau — đề xuất nhớ\nTôi đã gửi đề xuất ghi nhớ lên khung. Bạn bấm Nhớ để lưu; khi được lưu, nó áp dụng từ các cuộc trò chuyện sau.\n \nNội dung đề xuất: công văn của bạn luôn ký \"TL. GIÁM ĐỐC\", chức danh người ký là Phó Giám đốc.\n \nLưu ý trước khi bạn bấm Nhớ: theo thông lệ thể thức, \"TL.\" (thừa lệnh) thường dùng cho người đứng đầu một đơn vị hoặc người được giao quyền ký theo phạm vi, còn Phó Giám đốc thường ký \"KT. GIÁM ĐỐC\" (ký thay). Nếu cơ quan bạn đang áp dụng cách này, bạn có thể giữ nguyên. Nếu muốn đúng thông lệ, bạn cho tôi biết để lưu là \"KT. GIÁM ĐỐC\".\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 38.894 · ra 1.610 · đọc từ bộ nhớ đệm 33.079 · ghi vào bộ nhớ đệm 5.809\n🧠 Gửi kèm 1 mục bộ nhớ\n🧠 AI muốn nhớ: “Công văn của người dùng luôn ký thừa lệnh Giám đốc (phần ký ghi \"TL. GIÁM ĐỐC\"); chức danh người ký là Phó Giám đốc.”\nNhớ\nBỏ\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\n🧠 Nghĩ kỹ ✕\n💳 Anthropic · Claude Haiku 5.5",
+ "soMucConLai": 0
+}
