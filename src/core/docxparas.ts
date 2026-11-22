@@ -197,21 +197,24 @@ export const DOCX_INLINE_MAX_CHARS = 21600;
 /** Mỗi lần đọc theo điều trả tối đa chừng này ký tự */
 export const DOCX_READ_MAX_CHARS = 20000;
 
-/** Mục lục gọn để gửi kèm tin nhắn: các mục cấp 0–1 (Điều, khoản cấp một), mỗi dòng "Điều 5 [¶40–52] Tiêu đề" */
+/** Mục lục gọn để gửi kèm tin nhắn, mỗi dòng "Điều 5 [¶40–52] Tiêu đề": các mục cấp 0–1 (Điều, khoản cấp một); dài quá maxChars thì
+ *  chỉ kê cấp 0 (Điều, Phụ lục) để luôn thấy đủ cả văn bản (Chạy thật 22/11: mục lục cắt ở Điều 20, AI phải đọc dò từng dải đoạn) */
 export function docxOutlineText(items: OutlineItem[], maxChars = 6000): string {
-  const lines: string[] = [];
+  const line = (it: OutlineItem, w: number) => `${it.num} [¶${it.i}–${it.end}] ${it.title.slice(0, w)}`;
+  const two = items.filter((it) => it.level <= 1 && it.num).map((it) => line(it, it.level ? 50 : 70));
+  if (two.join("\n").length <= maxChars) return two.join("\n");
+  const top = items.filter((it) => it.level === 0 && it.num).map((it) => line(it, 70));
+  const out: string[] = [];
   let n = 0;
-  for (const it of items) {
-    if (it.level > 1 || !it.num) continue;
-    const line = `${it.num} [¶${it.i}–${it.end}] ${it.title.slice(0, 70)}`;
-    if (n + line.length + 1 > maxChars) {
-      lines.push("… (mục lục còn tiếp — đọc theo dải đoạn để xem phần sau)");
+  for (const l of top) {
+    if (n + l.length + 1 > maxChars) {
+      out.push("… (mục lục còn tiếp — đọc theo dải đoạn để xem phần sau)");
       break;
     }
-    lines.push(line);
-    n += line.length + 1;
+    out.push(l);
+    n += l.length + 1;
   }
-  return lines.join("\n");
+  return out.join("\n") + (out.length ? "\n(Mục lục chỉ kê cấp Điều; đọc một Điều để thấy các khoản của nó.)" : "");
 }
 
 /** Dải đoạn "120-160" hoặc "87" → [đầu, cuối] trong giới hạn số đoạn */

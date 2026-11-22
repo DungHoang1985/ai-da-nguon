@@ -1,0 +1,75 @@
+{
+ "bai": "WD1",
+ "ben": "D",
+ "lan": 2,
+ "ngay": "2026-11-22T15:50:57.271Z",
+ "yc": "Theo hợp đồng đính kèm: tranh chấp được giải quyết ở đâu, và nhà xưởng số 2 trong Phụ lục 01 có diện tích bao nhiêu? Trả lời ngắn, dẫn số điều, không sửa văn bản đang mở.",
+ "tepDau": "trong.docx",
+ "bamTepDau": "a0a90cf141c42803",
+ "chay": {
+  "ben": "D",
+  "phienBan": "v4.11.5",
+  "model": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "nghiKy": true,
+  "giay": 28,
+  "daHoi": [],
+  "lamTiep": 0,
+  "buoc": [
+   "✅ read_attachment_text — đã đọc Điều 20 của aidn-thu-hd.docx",
+   "✅ read_attachment_text — đã đọc ¶97–111 của aidn-thu-hd.docx",
+   "✅ read_attachment_text — đã đọc ¶112–128 của aidn-thu-hd.docx",
+   "✅ read_attachment_text — đã đọc ¶129–144 của aidn-thu-hd.docx",
+   "✅ read_attachment_text — đã đọc ¶145–164 của aidn-thu-hd.docx"
+  ],
+  "doiNguon": [],
+  "lanGoiAI": "6",
+  "token": "Token: vào 121.865 · ra 883 · đọc từ bộ nhớ đệm 74.528",
+  "doToken": [
+   {
+    "uoc": 10291,
+    "that": 10529
+   }
+  ],
+  "traLoi": "nhà xưởng số 2 trong Phụ lục 01 có diện tích bao nhiêu? Trả lời ngắn, dẫn số điều, không sửa văn bản đang mở.\n📎 aidn-thu-hd.docx\n✅ read_attachment_text — đã đọc Điều 20 của aidn-thu-hd.docx\n✅ read_attachment_text — đã đọc ¶97–111 của aidn-thu-hd.docx\n✅ read_attachment_text — đã đọc ¶112–128 của aidn-thu-hd.docx\n✅ read_attachment_text — đã đọc ¶129–144 của aidn-thu-hd.docx\n✅ read_attachment_text — đã đọc ¶145–164 của aidn-thu-hd.docx\n1. Giải quyết tranh chấp – Điều 33 [¶142–145]:\n• Trước hết thương lượng trong 30 ngày kể từ ngày thông báo tranh chấp (khoản 33.1).\n• Nếu không thành, giải quyết tại Trung tâm Trọng tài Thương mại Phương Nam theo quy tắc tố tụng của trung tâm, hội đồng 3 trọng tài viên, tại Thành phố Hồ Chí Minh (khoản 33.2).\n• Ngôn ngữ trọng tài tiếng Việt, phán quyết chung thẩm (khoản 33.3).\n \n2. Diện tích nhà xưởng số 2 trong Phụ lục 01 – Phụ lục 01, mục 1.2 [¶152]: 4.100 m².\n1 nhiệm vụ · 6 lần gọi AI · Token: vào 121.865 · ra 883 · đọc từ bộ nhớ đệm 74.528\nChèn vào chỗ con trỏ\nSao chép\nTệp đính kèm được gửi qua OpenRouter tới một model miễn phí: nhà cung cấp model miễn phí thường được phép lưu và dùng nội dung để huấn luyện. Tài liệu thật, có thông tin mật thì nên dùng nguồn trả tiền.\nHỏi trước\n🧠 Nghĩ kỹ ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "vbTruoc": {
+  "soDoan": 1,
+  "doan": [
+   {
+    "i": 0,
+    "so": null,
+    "cap": null,
+    "kieu": "Normal",
+    "can": "Left",
+    "nay": "",
+    "phong": "Calibri",
+    "co": 11,
+    "dam": false,
+    "nghieng": false
+   }
+  ],
+  "suaDoi": [],
+  "nhanXet": [],
+  "oDien": []
+ },
+ "vb": {
+  "soDoan": 1,
+  "doan": [
+   {
+    "i": 0,
+    "so": null,
+    "cap": null,
+    "kieu": "Normal",
+    "can": "Left",
+    "nay": "",
+    "phong": "Calibri",
+    "co": 11,
+    "dam": false,
+    "nghieng": false
+   }
+  ],
+  "suaDoi": [],
+  "nhanXet": [],
+  "oDien": []
+ }
+}

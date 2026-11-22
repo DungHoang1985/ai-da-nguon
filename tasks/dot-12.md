@@ -92,3 +92,20 @@ Sự cố trong lúc kiểm: lần thử A3 đầu tiên chọn Claude Haiku 5.5
 Phát hành **4.11.4** ngày 22/11/2026 (anh duyệt): `main@d55ac44` → `gh-pages@31957e0`; Tự kiểm tra Excel trên bản phát hành v4.11.4: 42/42 (`tu-kiem-tra-excel-phat-hanh-4114.json`).
 
 Kỹ năng chuẩn hóa bảng: trước đây mặc định ghi bản sạch sang sheet "<tên>_chuan" kể cả khi anh nói "làm sạch sheet Khách hàng". Theo lựa chọn "sửa tại chỗ khi nêu tên sheet" (anh trả lời qua một phiên khác, 22/11/2026), kỹ năng nay sửa ngay trên sheet được nêu và xóa phần thừa; chỉ ghi sheet mới khi không nói rõ chỗ hoặc muốn giữ bản gốc. Chạy thật X3-D8: **37/37**, sửa tại chỗ, tự xóa A11:D13, 128 giây (máy chấm chỉ còn trừ mục chuỗi định dạng "dd/mm/yyyy;@").
+
+### Phần C — dọn HANDOFF và soát mã độc lập (22/11/2026)
+
+| Tiêu chí | Kết quả | Bằng chứng |
+|---|---|---|
+| C1 HANDOFF không còn việc đã xong ở Vấn đề mở / Bước tiếp theo | Đạt | commit "Đợt 12 phần C: dọn HANDOFF" — bỏ mục đã xong (toạ độ tiêu đề biểu đồ, chữ “ư”, soát mã Đợt 7 đã chạy 18/11), viết lại Bước tiếp theo, thêm 4.11.0–4.11.4 vào bảng Đã xong, Bài học 22/11 |
+| C2 Soát mã độc lập, sửa hết mục cao và trung bình | Đạt | `tasks/dot-12-bang-chung/soat-ma-dot-12.md`: 2 cao, 3 trung bình, 3 thấp đã sửa, 3 thấp để lại có lý do; phát hành **4.11.5**, Tự kiểm tra trên bản phát hành Excel 42/42, PowerPoint 26/26 |
+
+### Phần D — tệp .docx đính kèm đọc theo điều (22–23/11/2026, chưa phát hành)
+
+Đã làm: `src/core/docxparas.ts` dựng lại số điều như Word hiện (danh sách tự động trong `numbering.xml`, gắn qua đoạn hoặc kiểu đoạn có kế thừa `basedOn`; bỏ chữ đã xóa có theo dõi); chữ gửi kèm nay có số điều. Ở Word (chế độ tác tử), tệp .docx dài hơn 21.600 ký tự (≈ 6.000 token) không chép nguyên vào tin nhắn mà gửi mục lục điều khoản (cấp Điều + khoản cấp một; dài quá thì chỉ cấp Điều) và cách đọc; công cụ mới `read_attachment_text` (chỉ ở Word, luôn có mặt) đọc theo điều ("Điều 33", "18.2(b)", "Phụ lục 01") hoặc dải đoạn, tối đa 20.000 ký tự mỗi lần. Trước đây tệp dài bị cắt lặng lẽ ở 120.000 ký tự. Đo token: Word Trả phí 30.597 / 30.700, Miễn phí 19.152 / 20.400 ký tự; Excel, PowerPoint không đổi. Công cụ đọc tệp: `kiem-thu/doc-dieu-docx.ts`.
+
+| Tiêu chí | Kết quả | Bằng chứng (`tasks/dot-12-bang-chung/`) |
+|---|---|---|
+| D1 Kiểm thử máy: ngưỡng, mục lục, đọc theo điều | Đạt | 740/740 (`test/unit/dot12.test.ts`: số "Điều 1.", "1.1.", "a)" theo kiểu đoạn kế thừa, bỏ chữ đã xóa, đoạn trong bảng, tra "2.2(b)", dải đoạn, phần đọc dài có `next`, mục lục dài chỉ cấp Điều nhưng đủ tới Điều cuối và Phụ lục, tệp ngắn / ngoài Word như cũ) |
+| D2 Tự kiểm tra Word có bước đọc tệp đính kèm theo điều | Đạt | 40/40 trên bản cục bộ (`tu-kiem-tra-word-d-cuc-bo.json`): "2.1(a)" → "[¶4] a) MOC-TU-KIEM-DOCX điện" |
+| D3 Chạy thật hợp đồng 50 trang (168.000 ký tự) với Nemotron Miễn phí, token giảm | Đạt | Câu hỏi nằm sau mốc 120.000 ký tự (Điều 33.2, Phụ lục 01): bản 4.11.5 **không trả lời được** (tệp bị cắt), 52 giây, 197.482 token (`WD1-D1-truoc-4115.json`); bản mới lần 1 đúng nhưng đọc dò dải đoạn vì mục lục bị cắt ở Điều 20, 28 giây, 121.865 token (`WD1-D2-sau-muc-luc-cat.json`) → sửa mục lục; lần 2 **đúng cả hai ý, tra thẳng Điều 33 và Phụ lục 01, 16 giây, 2 lần gọi AI, 19.756 token (−90%)** (`WD1-D3-sau.json`) |

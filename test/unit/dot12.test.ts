@@ -329,3 +329,22 @@ describe("Đợt 12 · D · .docx đính kèm: số điều như Word hiện, m�
     assert.match(withAttachments("q", [{ ...long, data: undefined }], { docTool: true }), /x{50}/);
   });
 });
+
+describe("Đợt 12 · D · mục lục dài vẫn đủ cả văn bản", () => {
+  it("Quá giới hạn thì chỉ kê cấp Điều, có đủ tới Điều cuối và Phụ lục", () => {
+    const items: any[] = [];
+    for (let a = 1; a <= 34; a++) {
+      items.push({ i: a * 4, end: a * 4 + 3, num: `Điều ${a}`, level: 0, title: `Tiêu đề điều ${a} khá dài để chiếm chỗ trong mục lục` });
+      for (let k = 1; k <= 3; k++) items.push({ i: a * 4 + k, end: a * 4 + k, num: `${a}.${k}`, level: 1, title: "Nội dung khoản rất dài ".repeat(4) });
+    }
+    items.push({ i: 149, end: 162, num: "Phụ lục 01", level: 0, title: "MÔ TẢ MẶT BẰNG" });
+    const ol = docxOutlineText(items, 6000);
+    assert.ok(ol.length <= 6200, String(ol.length));
+    assert.match(ol, /^Điều 34 \[¶136–139\]/m);
+    assert.match(ol, /^Phụ lục 01 \[¶149–162\]/m);
+    assert.ok(!/^\d+\.\d+ /m.test(ol), "không kê khoản khi đã quá giới hạn");
+    assert.match(ol, /chỉ kê cấp Điều/);
+    // Vừa giới hạn thì kê cả khoản cấp một như trước
+    assert.match(docxOutlineText(items.slice(0, 8), 6000), /^1\.1 /m);
+  });
+});
