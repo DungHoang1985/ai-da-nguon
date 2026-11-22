@@ -1,0 +1,472 @@
+[
+ {
+  "id": "X3-D4",
+  "bai": "X3",
+  "ben": "D",
+  "lan": 4,
+  "giay": 928,
+  "canThiep": 3,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "12",
+  "token": "Token: vào 117.907 · ra 3.123 · đọc từ bộ nhớ đệm 92.064",
+  "c1": [
+   23,
+   37,
+   [
+    "✗ còn đúng 9 dòng (hiện 14)",
+    "✓ dòng 1 họ tên Nguyễn Văn An",
+    "✗ dòng 1 SĐT",
+    "✗ dòng 1 ngày 5/03",
+    "✓ dòng 1 dự án",
+    "✓ dòng 2 họ tên Trần Thị Bình",
+    "✗ dòng 2 SĐT",
+    "✗ dòng 2 ngày 7/03",
+    "✓ dòng 2 dự án",
+    "✓ dòng 3 họ tên Lê Minh Châu",
+    "✗ dòng 3 SĐT",
+    "✗ dòng 3 ngày 7/03",
+    "✓ dòng 3 dự án",
+    "✓ dòng 4 họ tên Phạm Quốc Dũng",
+    "✗ dòng 4 SĐT",
+    "✗ dòng 4 ngày 12/03",
+    "✓ dòng 4 dự án",
+    "✓ dòng 5 họ tên Hoàng Thị E",
+    "✗ dòng 5 SĐT",
+    "✓ dòng 5 ngày 15/03",
+    "✓ dòng 5 dự án",
+    "✓ dòng 6 họ tên Võ Thanh Giang",
+    "✗ dòng 6 SĐT",
+    "✓ dòng 6 ngày 18/03",
+    "✓ dòng 6 dự án",
+    "✓ dòng 7 họ tên Đặng Hữu Hùng",
+    "✗ dòng 7 SĐT",
+    "✓ dòng 7 ngày 20/03",
+    "✓ dòng 7 dự án",
+    "✓ dòng 8 họ tên Bùi Thu Hà",
+    "✗ dòng 8 SĐT",
+    "✓ dòng 8 ngày 22/03",
+    "✓ dòng 8 dự án",
+    "✓ dòng 9 họ tên Ngô Bảo Khánh",
+    "✗ dòng 9 SĐT",
+    "✓ dòng 9 ngày 25/03",
+    "✓ dòng 9 dự án"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   0,
+   1,
+   [
+    "✗ cột ngày hiển thị đúng dd/mm/yyyy"
+   ]
+  ],
+  "cong": []
+ },
+ {
+  "id": "X3-D5",
+  "bai": "X3",
+  "ben": "D",
+  "lan": 5,
+  "giay": 50,
+  "canThiep": 2,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "5",
+  "token": "Token: vào 43.054 · ra 2.153 · đọc từ bộ nhớ đệm 30.688",
+  "c1": [
+   36,
+   37,
+   [
+    "✗ còn đúng 9 dòng (hiện 12)",
+    "✓ dòng 1 họ tên Nguyễn Văn An",
+    "✓ dòng 1 SĐT",
+    "✓ dòng 1 ngày 5/03",
+    "✓ dòng 1 dự án",
+    "✓ dòng 2 họ tên Trần Thị Bình",
+    "✓ dòng 2 SĐT",
+    "✓ dòng 2 ngày 7/03",
+    "✓ dòng 2 dự án",
+    "✓ dòng 3 họ tên Lê Minh Châu",
+    "✓ dòng 3 SĐT",
+    "✓ dòng 3 ngày 7/03",
+    "✓ dòng 3 dự án",
+    "✓ dòng 4 họ tên Phạm Quốc Dũng",
+    "✓ dòng 4 SĐT",
+    "✓ dòng 4 ngày 12/03",
+    "✓ dòng 4 dự án",
+    "✓ dòng 5 họ tên Hoàng Thị E",
+    "✓ dòng 5 SĐT",
+    "✓ dòng 5 ngày 15/03",
+    "✓ dòng 5 dự án",
+    "✓ dòng 6 họ tên Võ Thanh Giang",
+    "✓ dòng 6 SĐT",
+    "✓ dòng 6 ngày 18/03",
+    "✓ dòng 6 dự án",
+    "✓ dòng 7 họ tên Đặng Hữu Hùng",
+    "✓ dòng 7 SĐT",
+    "✓ dòng 7 ngày 20/03",
+    "✓ dòng 7 dự án",
+    "✓ dòng 8 họ tên Bùi Thu Hà",
+    "✓ dòng 8 SĐT",
+    "✓ dòng 8 ngày 22/03",
+    "✓ dòng 8 dự án",
+    "✓ dòng 9 họ tên Ngô Bảo Khánh",
+    "✓ dòng 9 SĐT",
+    "✓ dòng 9 ngày 25/03",
+    "✓ dòng 9 dự án"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   0,
+   1,
+   [
+    "✗ cột ngày hiển thị đúng dd/mm/yyyy"
+   ]
+  ],
+  "cong": []
+ },
+ {
+  "id": "X3-D6",
+  "bai": "X3",
+  "ben": "D",
+  "lan": 6,
+  "giay": 51,
+  "canThiep": 1,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "11",
+  "token": "Token: vào 106.363 · ra 3.039 · đọc từ bộ nhớ đệm 87.680",
+  "c1": [
+   32,
+   37,
+   [
+    "✗ còn đúng 9 dòng (hiện 13)",
+    "✓ dòng 1 họ tên Nguyễn Văn An",
+    "✓ dòng 1 SĐT",
+    "✗ dòng 1 ngày 5/03",
+    "✓ dòng 1 dự án",
+    "✓ dòng 2 họ tên Trần Thị Bình",
+    "✓ dòng 2 SĐT",
+    "✗ dòng 2 ngày 7/03",
+    "✓ dòng 2 dự án",
+    "✓ dòng 3 họ tên Lê Minh Châu",
+    "✓ dòng 3 SĐT",
+    "✗ dòng 3 ngày 7/03",
+    "✓ dòng 3 dự án",
+    "✓ dòng 4 họ tên Phạm Quốc Dũng",
+    "✓ dòng 4 SĐT",
+    "✗ dòng 4 ngày 12/03",
+    "✓ dòng 4 dự án",
+    "✓ dòng 5 họ tên Hoàng Thị E",
+    "✓ dòng 5 SĐT",
+    "✓ dòng 5 ngày 15/03",
+    "✓ dòng 5 dự án",
+    "✓ dòng 6 họ tên Võ Thanh Giang",
+    "✓ dòng 6 SĐT",
+    "✓ dòng 6 ngày 18/03",
+    "✓ dòng 6 dự án",
+    "✓ dòng 7 họ tên Đặng Hữu Hùng",
+    "✓ dòng 7 SĐT",
+    "✓ dòng 7 ngày 20/03",
+    "✓ dòng 7 dự án",
+    "✓ dòng 8 họ tên Bùi Thu Hà",
+    "✓ dòng 8 SĐT",
+    "✓ dòng 8 ngày 22/03",
+    "✓ dòng 8 dự án",
+    "✓ dòng 9 họ tên Ngô Bảo Khánh",
+    "✓ dòng 9 SĐT",
+    "✓ dòng 9 ngày 25/03",
+    "✓ dòng 9 dự án"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   0,
+   1,
+   [
+    "✗ cột ngày hiển thị đúng dd/mm/yyyy"
+   ]
+  ],
+  "cong": []
+ },
+ {
+  "id": "X3-D7",
+  "bai": "X3",
+  "ben": "D",
+  "lan": 7,
+  "giay": 80,
+  "canThiep": 1,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "10",
+  "token": "Token: vào 101.749 · ra 3.974 · đọc từ bộ nhớ đệm 74.528",
+  "c1": [
+   36,
+   37,
+   [
+    "✗ còn đúng 9 dòng (hiện 11)",
+    "✓ dòng 1 họ tên Nguyễn Văn An",
+    "✓ dòng 1 SĐT",
+    "✓ dòng 1 ngày 5/03",
+    "✓ dòng 1 dự án",
+    "✓ dòng 2 họ tên Trần Thị Bình",
+    "✓ dòng 2 SĐT",
+    "✓ dòng 2 ngày 7/03",
+    "✓ dòng 2 dự án",
+    "✓ dòng 3 họ tên Lê Minh Châu",
+    "✓ dòng 3 SĐT",
+    "✓ dòng 3 ngày 7/03",
+    "✓ dòng 3 dự án",
+    "✓ dòng 4 họ tên Phạm Quốc Dũng",
+    "✓ dòng 4 SĐT",
+    "✓ dòng 4 ngày 12/03",
+    "✓ dòng 4 dự án",
+    "✓ dòng 5 họ tên Hoàng Thị E",
+    "✓ dòng 5 SĐT",
+    "✓ dòng 5 ngày 15/03",
+    "✓ dòng 5 dự án",
+    "✓ dòng 6 họ tên Võ Thanh Giang",
+    "✓ dòng 6 SĐT",
+    "✓ dòng 6 ngày 18/03",
+    "✓ dòng 6 dự án",
+    "✓ dòng 7 họ tên Đặng Hữu Hùng",
+    "✓ dòng 7 SĐT",
+    "✓ dòng 7 ngày 20/03",
+    "✓ dòng 7 dự án",
+    "✓ dòng 8 họ tên Bùi Thu Hà",
+    "✓ dòng 8 SĐT",
+    "✓ dòng 8 ngày 22/03",
+    "✓ dòng 8 dự án",
+    "✓ dòng 9 họ tên Ngô Bảo Khánh",
+    "✓ dòng 9 SĐT",
+    "✓ dòng 9 ngày 25/03",
+    "✓ dòng 9 dự án"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   0,
+   1,
+   [
+    "✗ cột ngày hiển thị đúng dd/mm/yyyy"
+   ]
+  ],
+  "cong": []
+ },
+ {
+  "id": "X5-D5",
+  "bai": "X5",
+  "ben": "D",
+  "lan": 5,
+  "giay": 46,
+  "canThiep": 0,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "4",
+  "token": "Token: vào 34.249 · ra 1.349 · đọc từ bộ nhớ đệm 13.152",
+  "c1": [
+   3,
+   5,
+   [
+    "✗ F4 số gõ cứng",
+    "✓ H6 tỷ lệ gõ trong công thức",
+    "✓ G7 tham chiếu lệch cột",
+    "✓ E9 lũy kế bỏ quý",
+    "✗ K8 tổng thiếu cột J"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   1,
+   1,
+   [
+    "(không chấm định dạng ở bài này)"
+   ]
+  ],
+  "cong": []
+ },
+ {
+  "id": "X5-D6",
+  "bai": "X5",
+  "ben": "D",
+  "lan": 6,
+  "giay": 37,
+  "canThiep": 0,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "3",
+  "token": "Token: vào 26.585 · ra 1.399 · đọc từ bộ nhớ đệm 13.152",
+  "c1": [
+   5,
+   5,
+   [
+    "✓ F4 số gõ cứng",
+    "✓ H6 tỷ lệ gõ trong công thức",
+    "✓ G7 tham chiếu lệch cột",
+    "✓ E9 lũy kế bỏ quý",
+    "✓ K8 tổng thiếu cột J"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   1,
+   1,
+   [
+    "(không chấm định dạng ở bài này)"
+   ]
+  ],
+  "cong": []
+ },
+ {
+  "id": "X6-D4",
+  "bai": "X6",
+  "ben": "D",
+  "lan": 4,
+  "giay": 915,
+  "canThiep": 2,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "12",
+  "token": "Token: vào 119.385 · ra 2.554 · đọc từ bộ nhớ đệm 87.680",
+  "c1": [
+   5,
+   5,
+   [
+    "✓ có sheet Dòng tiền",
+    "✓ dòng tiền thuần đúng 8/8 quý",
+    "✓ NPV 21.734",
+    "✓ IRR quý 5.126%",
+    "✓ IRR năm 22.14%"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   4,
+   4,
+   [
+    "✓ công thức tham chiếu sheet Giả định",
+    "✓ dòng tiền thuần là công thức",
+    "✓ dùng hàm NPV",
+    "✓ dùng hàm IRR"
+   ]
+  ],
+  "cong": []
+ },
+ {
+  "id": "X6-D5",
+  "bai": "X6",
+  "ben": "D",
+  "lan": 5,
+  "giay": 159,
+  "canThiep": 1,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "11",
+  "token": "Token: vào 115.374 · ra 3.761 · đọc từ bộ nhớ đệm 65.760",
+  "c1": [
+   5,
+   5,
+   [
+    "✓ có sheet Dòng tiền",
+    "✓ dòng tiền thuần đúng 8/8 quý",
+    "✓ NPV 21.734",
+    "✓ IRR quý 5.126%",
+    "✓ IRR năm 22.14%"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   4,
+   4,
+   [
+    "✓ công thức tham chiếu sheet Giả định",
+    "✓ dòng tiền thuần là công thức",
+    "✓ dùng hàm NPV",
+    "✓ dùng hàm IRR"
+   ]
+  ],
+  "cong": []
+ },
+ {
+  "id": "X6-D6",
+  "bai": "X6",
+  "ben": "D",
+  "lan": 6,
+  "giay": 76,
+  "canThiep": 1,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "8",
+  "token": "Token: vào 81.305 · ra 3.143 · đọc từ bộ nhớ đệm 56.992",
+  "c1": [
+   3,
+   5,
+   [
+    "✓ có sheet Dòng tiền",
+    "✗ dòng tiền thuần đúng 0/8 quý",
+    "✓ NPV 21.734",
+    "✓ IRR quý 5.126%",
+    "✗ IRR năm 22.14%"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   3,
+   4,
+   [
+    "✓ công thức tham chiếu sheet Giả định",
+    "✗ dòng tiền thuần là công thức",
+    "✓ dùng hàm NPV",
+    "✓ dùng hàm IRR"
+   ]
+  ],
+  "cong": []
+ },
+ {
+  "id": "X6-D7",
+  "bai": "X6",
+  "ben": "D",
+  "lan": 7,
+  "giay": 83,
+  "canThiep": 2,
+  "loiChay": null,
+  "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "doiNguon": [],
+  "lanGoiAI": "8",
+  "token": "Token: vào 83.573 · ra 4.189 · đọc từ bộ nhớ đệm 56.992",
+  "c1": [
+   5,
+   5,
+   [
+    "✓ có sheet Dòng tiền",
+    "✓ dòng tiền thuần đúng 8/8 quý",
+    "✓ NPV 21.734",
+    "✓ IRR quý 5.126%",
+    "✓ IRR năm 22.14%"
+   ]
+  ],
+  "c3": 4,
+  "c4": [
+   4,
+   4,
+   [
+    "✓ công thức tham chiếu sheet Giả định",
+    "✓ dòng tiền thuần là công thức",
+    "✓ dùng hàm NPV",
+    "✓ dùng hàm IRR"
+   ]
+  ],
+  "cong": []
+ }
+]

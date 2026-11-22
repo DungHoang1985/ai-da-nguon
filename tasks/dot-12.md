@@ -74,3 +74,19 @@ Làm theo thứ tự anh xếp: A → B → C → D → E. Riêng D có liên qu
 Phát hành **4.11.3** ngày 22/11/2026 (anh duyệt): `main@aecac6c` → `gh-pages@3934dc6`. Trên bản phát hành: Chạy thật PowerPoint bằng Nemotron ước 6.420 / thật 6.952 token (`PA1-D5-phat-hanh-4113.json`); Tự kiểm tra PowerPoint 26/26 (`tu-kiem-tra-ppt-phat-hanh-4113.json`).
 
 Sự cố trong lúc kiểm: lần thử A3 đầu tiên chọn Claude Haiku 5.5, tưởng sức chứa nhỏ nhưng thật là 1.000.000 token, nên lượt 887.000 ký tự được gửi thật: 554.610 token vào key Anthropic của anh (`PC3-C1`, dưới 1 USD theo giá Haiku). Lần sau chọn model sức chứa nhỏ đã biết trước khi gửi.
+
+### Phần B — Excel X3, X5, X6 (làm 22/11/2026, chưa phát hành)
+
+Đã làm (nhánh `claude/sua-bang-ppt-va-canh-bao`):
+- **X3, ngày:** (1) `excel_format_range` đặt định dạng ngày cho ô đang là CHỮ dạng ngày thì đổi chữ thành ngày thật, đọc ngày/tháng/năm (`src/core/datetext.ts`); ô không đọc được thì báo. (2) Chạy thật tìm ra lỗi nặng hơn: Office.js đọc chữ "05/03/2026" ghi vào ô thường theo kiểu Mỹ → **3 tháng 5** (lượt X3-D6: 4/9 ngày sai) — `excel_write_range` nay tự ghi chữ dạng ngày thành ngày thật theo ngày/tháng/năm, ô General thì đặt dd/mm/yyyy. (3) Thăm dò: "dd/mm/yyyy" trùng kiểu ngày ngắn của Windows thì Excel lưu thành định dạng dựng sẵn (đọc ra "m/d/yyyy", máy vùng Mỹ hiện 3/5/2026) → đặt "dd/mm/yyyy;@" (Excel giữ nguyên). (4) Công thức ghi vào ô chữ "@" thì ô đó về General để công thức chạy. (5) Ghi bảng ngắn hơn đè bảng cũ thì kết quả nhắc dữ liệu cũ còn bên dưới. (6) Hoàn tác Excel trả định dạng số trước rồi mới ghi nội dung (trước đây ghi chữ cũ vào ô còn định dạng ngày làm chữ thành ngày).
+- **X6, số bước:** `excel_format_range` nhận `more` (nhiều vùng khác kiểu trong MỘT lệnh); lời nhắc Excel và kỹ năng mô hình tài chính nói định dạng trong một lệnh. Trần ký tự Excel nâng: Trả phí 25.600 → 26.000 (đo 25.891), Miễn phí 14.900 → 15.250 (đo 15.135).
+- **X5, báo nhầm:** model không gọi `excel_audit_model` (kỹ năng kiểm tra lỗi không nhắc) → kỹ năng nay gọi công cụ trước, không báo ô trống / ô "nên kiểm tra lại". Chạy thật lộ hai chỗ bỏ sót của `modelaudit.ts`, đã sửa: số gõ cứng có ô bên dưới thuộc hàng nhập tay (F4); ô cuối dãy cùng khung nhưng khác địa chỉ (K8 `SUM(C8:I8)`). Kiểm thử ca phải bắt và ca dễ báo nhầm ở `test/unit/dot12.test.ts`.
+
+| Tiêu chí | Kết quả | Bằng chứng (`tasks/dot-12-bang-chung/`, điểm máy `diem-may-phan-b.json`) |
+|---|---|---|
+| B1 Tự kiểm tra Excel đạt đủ, có bước mới | Đạt | 42/42 trên bản cục bộ (`tu-kiem-tra-excel-b-cuc-bo.json`): bước "ngày là chữ → ngày thật, công thức trong ô chữ chạy, định dạng giữ dd/mm/yyyy, ngày ghi vào ô thường đúng ngày/tháng, nhắc dữ liệu cũ bên dưới, Hoàn tác trả lại chữ cũ"; bước "định dạng nhiều vùng trong một lệnh (more)" |
+| B2 X6 không phải Làm tiếp hoặc dưới 8 phút | Đạt | Trước: 915 giây, Làm tiếp (X6-D4). Sau: 159 giây (D5), 76 giây (D6), 83 giây (D7), không Làm tiếp. Điểm máy D5, D7: 5/5 · 4/4; D6 3/5 (model xếp quý theo hàng, máy chấm không đọc được; NPV 21,73 và IRR 5,13% vẫn đúng) |
+| B2 X5 không báo nhầm, đủ 5 lỗi | Đạt | D6: 5/5 đúng ô, không báo ô nào khác, 37 giây (trước: 5/5 + 2 báo nhầm; D5 sau sửa kỹ năng nhưng trước sửa `modelaudit.ts`: 3/5) |
+| B2 X3 định dạng ngày đúng khi đọc lại | Đạt (máy chấm trừ 2 mục do cách chấm) | D7: 9/9 dòng đúng họ tên, SĐT, ngày (ngày thật, đúng ngày/tháng), dự án; máy chấm đếm 11 dòng vì tính cả 2 dòng "Kiểm tra" kỹ năng thêm, và chỉ nhận chuỗi định dạng đúng "dd/mm/yyyy" (add-in đặt "dd/mm/yyyy;@" — hiện 05/03/2026). Trước: ngày vẫn là chữ (X3-D1 của buổi so sánh), 928 giây có Làm tiếp (D4) |
+
+Chưa làm / để ý: kỹ năng chuẩn hóa bảng mặc định ghi bản sạch sang sheet "<tên>_chuan" (chủ ý từ trước); bài X3 nói "làm sạch sheet Khách hàng" nhưng model vẫn ghi sang sheet mới — chưa đổi, cần anh quyết.

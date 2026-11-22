@@ -1,0 +1,1114 @@
+{
+ "bai": "X6",
+ "ben": "D",
+ "lan": 5,
+ "ngay": "2026-11-22T12:28:38.503Z",
+ "yc": "Dựa trên sheet Giả định, lập sheet mới \"Dòng tiền\" theo quý Q1–Q8 gồm: số căn bán, doanh thu, chi phí đất, chi phí xây dựng, chi phí bán hàng, dòng tiền thuần. Tính NPV bằng hàm NPV của Excel cho Q1–Q8 với lãi suất chiết khấu ở sheet Giả định, IRR theo quý bằng hàm IRR, và IRR năm = (1+IRR quý)^4−1. Mọi ô tính phải là công thức tham chiếu sheet Giả định, không gõ số.",
+ "tepDau": "xl.xlsx",
+ "bamTepDau": "db1d760dc92a899c",
+ "chay": {
+  "ben": "D",
+  "phienBan": "v4.11.3",
+  "model": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "nghiKy": true,
+  "giay": 159,
+  "daHoi": [
+   "AI muốn: Tạo sheet \"Dòng tiền\" | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "lamTiep": 0,
+  "buoc": [
+   "✅ Đọc Giả định!A1:I20",
+   "✅ Tạo sheet \"Dòng tiền\"",
+   "✅ Ghi dữ liệu vào Dòng tiền!A1",
+   "✅ Định dạng Dòng tiền!A1:I11",
+   "✅ Quét lỗi công thức ở sheet Dòng tiền",
+   "✅ Định dạng Dòng tiền!B10",
+   "✅ Định dạng Dòng tiền!B11",
+   "✅ Định dạng Dòng tiền!B4:I8",
+   "✅ Định dạng Dòng tiền!B9:I9",
+   "✅ Chọn Dòng tiền!A1:I11"
+  ],
+  "doiNguon": [],
+  "lanGoiAI": "11",
+  "token": "Token: vào 115.374 · ra 3.761 · đọc từ bộ nhớ đệm 65.760",
+  "doToken": [
+   {
+    "uoc": 7578,
+    "that": 7630
+   }
+  ],
+  "traLoi": "Q1–Q8 gồm: số căn bán, doanh thu, chi phí đất, chi phí xây dựng, chi phí bán hàng, dòng tiền thuần. Tính NPV bằng hàm NPV của Excel cho Q1–Q8 với lãi suất chiết khấu ở sheet Giả định, IRR theo quý bằng hàm IRR, và IRR năm = (1+IRR quý)^4−1. Mọi ô tính phải là công thức tham chiếu sheet Giả định, không gõ số.\nKỹ năng áp dụng: mo-hinh-tai-chinh-du-an\n✅ Đọc Giả định!A1:I20\n✅ Tạo sheet \"Dòng tiền\"\n✅ Ghi dữ liệu vào Dòng tiền!A1\n✅ Định dạng Dòng tiền!A1:I11\n✅ Quét lỗi công thức ở sheet Dòng tiền\n✅ Định dạng Dòng tiền!B10\n✅ Định dạng Dòng tiền!B11\n✅ Định dạng Dòng tiền!B4:I8\n✅ Định dạng Dòng tiền!B9:I9\n✅ Chọn Dòng tiền!A1:I11\nĐã tạo sheet Dòng tiền theo quý Q1–Q8 với toàn bộ công thức tham chiếu sheet Giả định:\n \nHàng\tNội dung\tCông thức chính\n3\tSố căn bán\t`='Giả định'!B10:I10` (Q1: 0, Q2: 0, Q3: 30, Q4: 40, Q5: 50, Q6: 40, Q7: 30, Q8: 10)\n4\tDoanh thu\t`=Số căn bán * 'Giả định'!$B$4` (Giá bán 2.6 tỷ/căn)\n5\tChi phí đất\tQ1: 150 tỷ (`='Giả định'!$B$2`), Q2–Q8: 0\n6\tChi phí xây dựng\tQ2–Q5: 75 tỷ/quý (`='Giả định'!$B$3/4`), Q1,Q6–Q8: 0\n7\tChi phí bán hàng\t`=Doanh thu * 'Giả định'!$B$5` (2% doanh thu)\n8\tDòng tiền thuần\t`=Doanh thu − Chi phí đất − Chi phí xây dựng − Chi phí bán hàng`\n9\tNPV\t`=NPV('Giả định'!$B$6, B8:I8)` → 21.7 tỷ đồng (lãi suất 3%/quý)\n10\tIRR quý\t`=IRR(B8:I8)` → 5.13%/quý\n11\tIRR năm\t`=(1+IRR quý)^4−1` → 22.14%/năm\n \nĐịnh dạng: tiêu đề xanh đậm, tiêu đề cột xám, số `#,##0.0` (âm trong ngoặc), IRR dạng `%`, có viền, tự co cột. Không có lỗi công thức.\n1 nhiệm vụ · 11 lần gọi AI · Token: vào 115.374 · ra 3.761 · đọc từ bộ nhớ đệm 65.760\nHoàn tác thay đổi (13)\nGhi vào ô đang chọn\nSao chép\nHỏi trước\n🧠 Nghĩ kỹ ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "vbTruoc": {
+  "sheets": [
+   {
+    "ten": "Giả định",
+    "an": "Visible",
+    "vung": "'Giả định'!A1:I10",
+    "giaTri": [
+     [
+      "Giả định dự án Khu nhà ở Ánh Dương",
+      "",
+      "Ghi chú",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Chi phí đất (tỷ đồng)",
+      150,
+      "Trả toàn bộ trong Q1",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Chi phí xây dựng (tỷ đồng)",
+      300,
+      "Chia đều 4 quý Q2–Q5",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Giá bán (tỷ đồng/căn)",
+      2.6,
+      "Thu đủ trong quý bán",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tỷ lệ chi phí bán hàng",
+      0.02,
+      "Trên doanh thu, cùng quý",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Lãi suất chiết khấu (mỗi quý)",
+      0.03,
+      "Dòng tiền phát sinh cuối mỗi quý",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tổng số căn",
+      200,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tiến độ bán",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q6",
+      "Q7",
+      "Q8"
+     ],
+     [
+      "Số căn bán",
+      0,
+      0,
+      30,
+      40,
+      50,
+      40,
+      30,
+      10
+     ]
+    ],
+    "congThuc": [
+     [
+      "Giả định dự án Khu nhà ở Ánh Dương",
+      "",
+      "Ghi chú",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Chi phí đất (tỷ đồng)",
+      150,
+      "Trả toàn bộ trong Q1",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Chi phí xây dựng (tỷ đồng)",
+      300,
+      "Chia đều 4 quý Q2–Q5",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Giá bán (tỷ đồng/căn)",
+      2.6,
+      "Thu đủ trong quý bán",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tỷ lệ chi phí bán hàng",
+      0.02,
+      "Trên doanh thu, cùng quý",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Lãi suất chiết khấu (mỗi quý)",
+      0.03,
+      "Dòng tiền phát sinh cuối mỗi quý",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tổng số căn",
+      200,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tiến độ bán",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q6",
+      "Q7",
+      "Q8"
+     ],
+     [
+      "Số căn bán",
+      0,
+      0,
+      30,
+      40,
+      50,
+      40,
+      30,
+      10
+     ]
+    ],
+    "dinhDang": [
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ]
+    ],
+    "bieuDo": [],
+    "pivot": []
+   }
+  ],
+  "ten": []
+ },
+ "vb": {
+  "sheets": [
+   {
+    "ten": "Giả định",
+    "an": "Visible",
+    "vung": "'Giả định'!A1:I10",
+    "giaTri": [
+     [
+      "Giả định dự án Khu nhà ở Ánh Dương",
+      "",
+      "Ghi chú",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Chi phí đất (tỷ đồng)",
+      150,
+      "Trả toàn bộ trong Q1",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Chi phí xây dựng (tỷ đồng)",
+      300,
+      "Chia đều 4 quý Q2–Q5",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Giá bán (tỷ đồng/căn)",
+      2.6,
+      "Thu đủ trong quý bán",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tỷ lệ chi phí bán hàng",
+      0.02,
+      "Trên doanh thu, cùng quý",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Lãi suất chiết khấu (mỗi quý)",
+      0.03,
+      "Dòng tiền phát sinh cuối mỗi quý",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tổng số căn",
+      200,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tiến độ bán",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q6",
+      "Q7",
+      "Q8"
+     ],
+     [
+      "Số căn bán",
+      0,
+      0,
+      30,
+      40,
+      50,
+      40,
+      30,
+      10
+     ]
+    ],
+    "congThuc": [
+     [
+      "Giả định dự án Khu nhà ở Ánh Dương",
+      "",
+      "Ghi chú",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Chi phí đất (tỷ đồng)",
+      150,
+      "Trả toàn bộ trong Q1",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Chi phí xây dựng (tỷ đồng)",
+      300,
+      "Chia đều 4 quý Q2–Q5",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Giá bán (tỷ đồng/căn)",
+      2.6,
+      "Thu đủ trong quý bán",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tỷ lệ chi phí bán hàng",
+      0.02,
+      "Trên doanh thu, cùng quý",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Lãi suất chiết khấu (mỗi quý)",
+      0.03,
+      "Dòng tiền phát sinh cuối mỗi quý",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tổng số căn",
+      200,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Tiến độ bán",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q6",
+      "Q7",
+      "Q8"
+     ],
+     [
+      "Số căn bán",
+      0,
+      0,
+      30,
+      40,
+      50,
+      40,
+      30,
+      10
+     ]
+    ],
+    "dinhDang": [
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General",
+      "General"
+     ]
+    ],
+    "bieuDo": [],
+    "pivot": []
+   },
+   {
+    "ten": "Dòng tiền",
+    "an": "Visible",
+    "vung": "'Dòng tiền'!A1:I11",
+    "giaTri": [
+     [
+      "Dòng tiền dự án Khu nhà ở Ánh Dương (tỷ đồng)",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q6",
+      "Q7",
+      "Q8"
+     ],
+     [
+      "Số căn bán",
+      0,
+      0,
+      30,
+      40,
+      50,
+      40,
+      30,
+      10
+     ],
+     [
+      "Doanh thu",
+      0,
+      0,
+      78,
+      104,
+      130,
+      104,
+      78,
+      26
+     ],
+     [
+      "Chi phí đất",
+      150,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      "Chi phí xây dựng",
+      0,
+      75,
+      75,
+      75,
+      75,
+      0,
+      0,
+      0
+     ],
+     [
+      "Chi phí bán hàng",
+      0,
+      0,
+      1.56,
+      2.08,
+      2.6,
+      2.08,
+      1.56,
+      0.52
+     ],
+     [
+      "Dòng tiền thuần",
+      -150,
+      -75,
+      1.44,
+      26.92,
+      52.4,
+      101.92,
+      76.44,
+      25.48
+     ],
+     [
+      "NPV (tỷ đồng)",
+      21.7340723334955,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "IRR quý",
+      0.0512624426728412,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "IRR năm",
+      0.221362541982005,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    ],
+    "congThuc": [
+     [
+      "Dòng tiền dự án Khu nhà ở Ánh Dương (tỷ đồng)",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "",
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "Q5",
+      "Q6",
+      "Q7",
+      "Q8"
+     ],
+     [
+      "Số căn bán",
+      "='Giả định'!B10",
+      "='Giả định'!C10",
+      "='Giả định'!D10",
+      "='Giả định'!E10",
+      "='Giả định'!F10",
+      "='Giả định'!G10",
+      "='Giả định'!H10",
+      "='Giả định'!I10"
+     ],
+     [
+      "Doanh thu",
+      "=B3*'Giả định'!$B$4",
+      "=C3*'Giả định'!$B$4",
+      "=D3*'Giả định'!$B$4",
+      "=E3*'Giả định'!$B$4",
+      "=F3*'Giả định'!$B$4",
+      "=G3*'Giả định'!$B$4",
+      "=H3*'Giả định'!$B$4",
+      "=I3*'Giả định'!$B$4"
+     ],
+     [
+      "Chi phí đất",
+      "='Giả định'!$B$2",
+      "=0",
+      "=0",
+      "=0",
+      "=0",
+      "=0",
+      "=0",
+      "=0"
+     ],
+     [
+      "Chi phí xây dựng",
+      "=0",
+      "='Giả định'!$B$3/4",
+      "='Giả định'!$B$3/4",
+      "='Giả định'!$B$3/4",
+      "='Giả định'!$B$3/4",
+      "=0",
+      "=0",
+      "=0"
+     ],
+     [
+      "Chi phí bán hàng",
+      "=B4*'Giả định'!$B$5",
+      "=C4*'Giả định'!$B$5",
+      "=D4*'Giả định'!$B$5",
+      "=E4*'Giả định'!$B$5",
+      "=F4*'Giả định'!$B$5",
+      "=G4*'Giả định'!$B$5",
+      "=H4*'Giả định'!$B$5",
+      "=I4*'Giả định'!$B$5"
+     ],
+     [
+      "Dòng tiền thuần",
+      "=B4-B5-B6-B7",
+      "=C4-C5-C6-C7",
+      "=D4-D5-D6-D7",
+      "=E4-E5-E6-E7",
+      "=F4-F5-F6-F7",
+      "=G4-G5-G6-G7",
+      "=H4-H5-H6-H7",
+      "=I4-I5-I6-I7"
+     ],
+     [
+      "NPV (tỷ đồng)",
+      "=NPV('Giả định'!$B$6,B8:I8)",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "IRR quý",
+      "=IRR(B8:I8)",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "IRR năm",
+      "=(1+B10)^4-1",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    ],
+    "dinhDang": [
+     [
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0"
+     ],
+     [
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0"
+     ],
+     [
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0"
+     ],
+     [
+      "#,##0.0",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)"
+     ],
+     [
+      "#,##0.0",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)"
+     ],
+     [
+      "#,##0.0",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)"
+     ],
+     [
+      "#,##0.0",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)"
+     ],
+     [
+      "#,##0.0",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)",
+      "#,##0.0;(#,##0.0)"
+     ],
+     [
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0"
+     ],
+     [
+      "#,##0.0",
+      "0.00%",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0"
+     ],
+     [
+      "#,##0.0",
+      "0.00%",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0",
+      "#,##0.0"
+     ]
+    ],
+    "bieuDo": [],
+    "pivot": []
+   }
+  ],
+  "ten": []
+ }
+}

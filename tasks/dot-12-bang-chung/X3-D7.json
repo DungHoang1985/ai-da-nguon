@@ -1,0 +1,797 @@
+{
+ "bai": "X3",
+ "ben": "D",
+ "lan": 7,
+ "ngay": "2026-11-22T12:58:34.316Z",
+ "yc": "Làm sạch sheet Khách hàng: bỏ khoảng trắng thừa và viết hoa chữ cái đầu mỗi từ của họ tên; đưa số điện thoại về dạng 10 chữ số liền nhau bắt đầu bằng 0; đưa cột Ngày đặt cọc về kiểu ngày hiển thị dd/mm/yyyy (các ngày đều thuộc tháng 3/2026); xóa các dòng trùng lặp hoàn toàn. Giữ nguyên thứ tự các dòng còn lại.",
+ "tepDau": "xl.xlsx",
+ "bamTepDau": "db1d760dc92a899c",
+ "chay": {
+  "ben": "D",
+  "phienBan": "v4.11.3",
+  "model": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+  "nghiKy": true,
+  "giay": 80,
+  "daHoi": [
+   "AI muốn: Tạo sheet \"Khách hàng_chuan\" | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "lamTiep": 0,
+  "buoc": [
+   "✅ Đọc Khách hàng!A1:D13",
+   "✅ Tạo sheet \"Khách hàng_chuan\"",
+   "✅ Ghi dữ liệu vào Khách hàng_chuan!A1",
+   "✅ Định dạng Khách hàng_chuan!A1:D10",
+   "✅ Tạo bảng Khách hàng_chuan!A1:D10",
+   "✅ Cố định 1 dòng đầu",
+   "✅ Ghi dữ liệu vào Khách hàng_chuan!A12",
+   "✅ Quét lỗi công thức ở sheet Khách hàng_chuan",
+   "✅ Chọn Khách hàng_chuan!A1:D10"
+  ],
+  "doiNguon": [],
+  "lanGoiAI": "10",
+  "token": "Token: vào 101.749 · ra 3.974 · đọc từ bộ nhớ đệm 74.528",
+  "doToken": [
+   {
+    "uoc": 6849,
+    "that": 6920
+   }
+  ],
+  "traLoi": "chữ cái đầu mỗi từ của họ tên; đưa số điện thoại về dạng 10 chữ số liền nhau bắt đầu bằng 0; đưa cột Ngày đặt cọc về kiểu ngày hiển thị dd/mm/yyyy (các ngày đều thuộc tháng 3/2026); xóa các dòng trùng lặp hoàn toàn. Giữ nguyên thứ tự các dòng còn lại.\nKỹ năng áp dụng: chuan-hoa-bang-tinh\n✅ Đọc Khách hàng!A1:D13\n✅ Tạo sheet \"Khách hàng_chuan\"\n✅ Ghi dữ liệu vào Khách hàng_chuan!A1\n✅ Định dạng Khách hàng_chuan!A1:D10\n✅ Tạo bảng Khách hàng_chuan!A1:D10\n✅ Cố định 1 dòng đầu\n✅ Ghi dữ liệu vào Khách hàng_chuan!A12\n✅ Quét lỗi công thức ở sheet Khách hàng_chuan\n✅ Chọn Khách hàng_chuan!A1:D10\nĐã làm sạch dữ liệu và ghi sang sheet \"Khách hàng_chuan\" (A1:D10):\n \nThay đổi thực hiện:\n1. Họ tên (A): Bỏ khoảng trắng thừa, viết hoa chữ cái đầu mỗi từ\n• VD: `\" nguyễn văn an\"` → `Nguyễn Văn An`, `\"TRẦN THỊ BÌNH \"` → `Trần Thị Bình`\n \n2. Số điện thoại (B): Đưa về 10 chữ số liền nhau bắt đầu bằng `0`\n• Loại bỏ dấu cách, chấm, gạch ngang, ngoặc, `+84` → `0`\n• VD: `\"+84 903 111 222\"` → `0903111222`, `\"(+84) 977 999 000\"` → `0977999000`\n \n3. Ngày đặt cọc (D): Chuẩn hóa hiển thị `dd/mm/yyyy` (tháng 3/2026)\n• VD: `\"2026-03-07\"` → `07/03/2026`, `\"7-3-2026\"` → `07/03/2026`, `\"18.03.2026\"` → `18/03/2026`\n \n4. Xóa trùng lặp: 3 dòng trùng hoàn toàn (Nguyễn Văn An, Trần Thị Bình, Võ Thanh Giang) → còn 9 dòng dữ liệu duy nhất, giữ thứ tự xuất hiện đầu tiên.\n \nĐịnh dạng: Tiêu đề đậm + nền xanh nhạt + viền, cột số điện thoại định dạng `0000000000`, cột ngày `dd/mm/yyyy`, tự giãn cột, tạo Table `tblKhachHangChuan`, cố định dòng tiêu đề.\n \nÔ kiểm tra (A12:B13):\n• Số dòng dữ liệu: `=COUNTA(A2:A10)` → 9\n• Số dự án khác nhau: `=COUNTA(UNIQUE(C2:C10))` → 3 (Ánh Dương, Cảng Xanh, Sông Hàn)\n• Không có lỗi công thức.\n1 nhiệm vụ · 10 lần gọi AI · Token: vào 101.749 · ra 3.974 · đọc từ bộ nhớ đệm 74.528\nHoàn tác thay đổi (9)\nGhi vào ô đang chọn\nSao chép\nHỏi trước\n🧠 Nghĩ kỹ ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "vbTruoc": {
+  "sheets": [
+   {
+    "ten": "Khách hàng",
+    "an": "Visible",
+    "vung": "'Khách hàng'!A1:D13",
+    "giaTri": [
+     [
+      "Họ tên",
+      "Số điện thoại",
+      "Dự án",
+      "Ngày đặt cọc"
+     ],
+     [
+      "  nguyễn văn an",
+      "0912 345 678",
+      "Ánh Dương",
+      "05/03/2026"
+     ],
+     [
+      "TRẦN THỊ BÌNH ",
+      "0987.654.321",
+      "Cảng Xanh",
+      "2026-03-07"
+     ],
+     [
+      "lê  minh châu",
+      "+84 903 111 222",
+      "Sông Hàn",
+      "7-3-2026"
+     ],
+     [
+      "Phạm Quốc   Dũng",
+      "0904-555-666",
+      "Ánh Dương",
+      "12/3/2026"
+     ],
+     [
+      "hoàng thị e",
+      "0911222333",
+      "Cảng Xanh",
+      "2026/03/15"
+     ],
+     [
+      "TRẦN THỊ BÌNH ",
+      "0987.654.321",
+      "Cảng Xanh",
+      "2026-03-07"
+     ],
+     [
+      "Võ Thanh  Giang",
+      "0935 777 888",
+      "Sông Hàn",
+      "18.03.2026"
+     ],
+     [
+      "  nguyễn văn an",
+      "0912 345 678",
+      "Ánh Dương",
+      "05/03/2026"
+     ],
+     [
+      "đặng hữu hùng",
+      "(+84) 977 999 000",
+      "Ánh Dương",
+      "20/03/2026"
+     ],
+     [
+      "Bùi Thu  Hà ",
+      "0388 123 456",
+      "Cảng Xanh",
+      "2026-03-22"
+     ],
+     [
+      "Võ Thanh  Giang",
+      "0935 777 888",
+      "Sông Hàn",
+      "18.03.2026"
+     ],
+     [
+      "ngô bảo khánh",
+      "0866.246.810",
+      "Sông Hàn",
+      "25-03-2026"
+     ]
+    ],
+    "congThuc": [
+     [
+      "Họ tên",
+      "Số điện thoại",
+      "Dự án",
+      "Ngày đặt cọc"
+     ],
+     [
+      "  nguyễn văn an",
+      "0912 345 678",
+      "Ánh Dương",
+      "05/03/2026"
+     ],
+     [
+      "TRẦN THỊ BÌNH ",
+      "0987.654.321",
+      "Cảng Xanh",
+      "2026-03-07"
+     ],
+     [
+      "lê  minh châu",
+      "+84 903 111 222",
+      "Sông Hàn",
+      "7-3-2026"
+     ],
+     [
+      "Phạm Quốc   Dũng",
+      "0904-555-666",
+      "Ánh Dương",
+      "12/3/2026"
+     ],
+     [
+      "hoàng thị e",
+      "0911222333",
+      "Cảng Xanh",
+      "2026/03/15"
+     ],
+     [
+      "TRẦN THỊ BÌNH ",
+      "0987.654.321",
+      "Cảng Xanh",
+      "2026-03-07"
+     ],
+     [
+      "Võ Thanh  Giang",
+      "0935 777 888",
+      "Sông Hàn",
+      "18.03.2026"
+     ],
+     [
+      "  nguyễn văn an",
+      "0912 345 678",
+      "Ánh Dương",
+      "05/03/2026"
+     ],
+     [
+      "đặng hữu hùng",
+      "(+84) 977 999 000",
+      "Ánh Dương",
+      "20/03/2026"
+     ],
+     [
+      "Bùi Thu  Hà ",
+      "0388 123 456",
+      "Cảng Xanh",
+      "2026-03-22"
+     ],
+     [
+      "Võ Thanh  Giang",
+      "0935 777 888",
+      "Sông Hàn",
+      "18.03.2026"
+     ],
+     [
+      "ngô bảo khánh",
+      "0866.246.810",
+      "Sông Hàn",
+      "25-03-2026"
+     ]
+    ],
+    "dinhDang": [
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ]
+    ],
+    "bieuDo": [],
+    "pivot": []
+   }
+  ],
+  "ten": []
+ },
+ "vb": {
+  "sheets": [
+   {
+    "ten": "Khách hàng",
+    "an": "Visible",
+    "vung": "'Khách hàng'!A1:D13",
+    "giaTri": [
+     [
+      "Họ tên",
+      "Số điện thoại",
+      "Dự án",
+      "Ngày đặt cọc"
+     ],
+     [
+      "  nguyễn văn an",
+      "0912 345 678",
+      "Ánh Dương",
+      "05/03/2026"
+     ],
+     [
+      "TRẦN THỊ BÌNH ",
+      "0987.654.321",
+      "Cảng Xanh",
+      "2026-03-07"
+     ],
+     [
+      "lê  minh châu",
+      "+84 903 111 222",
+      "Sông Hàn",
+      "7-3-2026"
+     ],
+     [
+      "Phạm Quốc   Dũng",
+      "0904-555-666",
+      "Ánh Dương",
+      "12/3/2026"
+     ],
+     [
+      "hoàng thị e",
+      "0911222333",
+      "Cảng Xanh",
+      "2026/03/15"
+     ],
+     [
+      "TRẦN THỊ BÌNH ",
+      "0987.654.321",
+      "Cảng Xanh",
+      "2026-03-07"
+     ],
+     [
+      "Võ Thanh  Giang",
+      "0935 777 888",
+      "Sông Hàn",
+      "18.03.2026"
+     ],
+     [
+      "  nguyễn văn an",
+      "0912 345 678",
+      "Ánh Dương",
+      "05/03/2026"
+     ],
+     [
+      "đặng hữu hùng",
+      "(+84) 977 999 000",
+      "Ánh Dương",
+      "20/03/2026"
+     ],
+     [
+      "Bùi Thu  Hà ",
+      "0388 123 456",
+      "Cảng Xanh",
+      "2026-03-22"
+     ],
+     [
+      "Võ Thanh  Giang",
+      "0935 777 888",
+      "Sông Hàn",
+      "18.03.2026"
+     ],
+     [
+      "ngô bảo khánh",
+      "0866.246.810",
+      "Sông Hàn",
+      "25-03-2026"
+     ]
+    ],
+    "congThuc": [
+     [
+      "Họ tên",
+      "Số điện thoại",
+      "Dự án",
+      "Ngày đặt cọc"
+     ],
+     [
+      "  nguyễn văn an",
+      "0912 345 678",
+      "Ánh Dương",
+      "05/03/2026"
+     ],
+     [
+      "TRẦN THỊ BÌNH ",
+      "0987.654.321",
+      "Cảng Xanh",
+      "2026-03-07"
+     ],
+     [
+      "lê  minh châu",
+      "+84 903 111 222",
+      "Sông Hàn",
+      "7-3-2026"
+     ],
+     [
+      "Phạm Quốc   Dũng",
+      "0904-555-666",
+      "Ánh Dương",
+      "12/3/2026"
+     ],
+     [
+      "hoàng thị e",
+      "0911222333",
+      "Cảng Xanh",
+      "2026/03/15"
+     ],
+     [
+      "TRẦN THỊ BÌNH ",
+      "0987.654.321",
+      "Cảng Xanh",
+      "2026-03-07"
+     ],
+     [
+      "Võ Thanh  Giang",
+      "0935 777 888",
+      "Sông Hàn",
+      "18.03.2026"
+     ],
+     [
+      "  nguyễn văn an",
+      "0912 345 678",
+      "Ánh Dương",
+      "05/03/2026"
+     ],
+     [
+      "đặng hữu hùng",
+      "(+84) 977 999 000",
+      "Ánh Dương",
+      "20/03/2026"
+     ],
+     [
+      "Bùi Thu  Hà ",
+      "0388 123 456",
+      "Cảng Xanh",
+      "2026-03-22"
+     ],
+     [
+      "Võ Thanh  Giang",
+      "0935 777 888",
+      "Sông Hàn",
+      "18.03.2026"
+     ],
+     [
+      "ngô bảo khánh",
+      "0866.246.810",
+      "Sông Hàn",
+      "25-03-2026"
+     ]
+    ],
+    "dinhDang": [
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ]
+    ],
+    "bieuDo": [],
+    "pivot": []
+   },
+   {
+    "ten": "Khách hàng_chuan",
+    "an": "Visible",
+    "vung": "'Khách hàng_chuan'!A1:D13",
+    "giaTri": [
+     [
+      "Họ tên",
+      "Số điện thoại",
+      "Dự án",
+      "Ngày đặt cọc"
+     ],
+     [
+      "Nguyễn Văn An",
+      912345678,
+      "Ánh Dương",
+      46086
+     ],
+     [
+      "Trần Thị Bình",
+      987654321,
+      "Cảng Xanh",
+      46088
+     ],
+     [
+      "Lê Minh Châu",
+      903111222,
+      "Sông Hàn",
+      46088
+     ],
+     [
+      "Phạm Quốc Dũng",
+      904555666,
+      "Ánh Dương",
+      46093
+     ],
+     [
+      "Hoàng Thị E",
+      911222333,
+      "Cảng Xanh",
+      46096
+     ],
+     [
+      "Võ Thanh Giang",
+      935777888,
+      "Sông Hàn",
+      46099
+     ],
+     [
+      "Đặng Hữu Hùng",
+      977999000,
+      "Ánh Dương",
+      46101
+     ],
+     [
+      "Bùi Thu Hà",
+      388123456,
+      "Cảng Xanh",
+      46103
+     ],
+     [
+      "Ngô Bảo Khánh",
+      866246810,
+      "Sông Hàn",
+      46106
+     ],
+     [
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Kiểm tra:",
+      "Số dòng dữ liệu:",
+      9,
+      ""
+     ],
+     [
+      "",
+      "Số dự án khác nhau:",
+      3,
+      ""
+     ]
+    ],
+    "congThuc": [
+     [
+      "Họ tên",
+      "Số điện thoại",
+      "Dự án",
+      "Ngày đặt cọc"
+     ],
+     [
+      "Nguyễn Văn An",
+      912345678,
+      "Ánh Dương",
+      46086
+     ],
+     [
+      "Trần Thị Bình",
+      987654321,
+      "Cảng Xanh",
+      46088
+     ],
+     [
+      "Lê Minh Châu",
+      903111222,
+      "Sông Hàn",
+      46088
+     ],
+     [
+      "Phạm Quốc Dũng",
+      904555666,
+      "Ánh Dương",
+      46093
+     ],
+     [
+      "Hoàng Thị E",
+      911222333,
+      "Cảng Xanh",
+      46096
+     ],
+     [
+      "Võ Thanh Giang",
+      935777888,
+      "Sông Hàn",
+      46099
+     ],
+     [
+      "Đặng Hữu Hùng",
+      977999000,
+      "Ánh Dương",
+      46101
+     ],
+     [
+      "Bùi Thu Hà",
+      388123456,
+      "Cảng Xanh",
+      46103
+     ],
+     [
+      "Ngô Bảo Khánh",
+      866246810,
+      "Sông Hàn",
+      46106
+     ],
+     [
+      "",
+      "",
+      "",
+      ""
+     ],
+     [
+      "Kiểm tra:",
+      "Số dòng dữ liệu:",
+      "=COUNTA(A2:A10)",
+      ""
+     ],
+     [
+      "",
+      "Số dự án khác nhau:",
+      "=COUNTA(UNIQUE(C2:C10))",
+      ""
+     ]
+    ],
+    "dinhDang": [
+     [
+      "@",
+      "@",
+      "@",
+      "@"
+     ],
+     [
+      "@",
+      "0000000000",
+      "@",
+      "dd/mm/yyyy;@"
+     ],
+     [
+      "@",
+      "0000000000",
+      "@",
+      "dd/mm/yyyy;@"
+     ],
+     [
+      "@",
+      "0000000000",
+      "@",
+      "dd/mm/yyyy;@"
+     ],
+     [
+      "@",
+      "0000000000",
+      "@",
+      "dd/mm/yyyy;@"
+     ],
+     [
+      "@",
+      "0000000000",
+      "@",
+      "dd/mm/yyyy;@"
+     ],
+     [
+      "@",
+      "0000000000",
+      "@",
+      "dd/mm/yyyy;@"
+     ],
+     [
+      "@",
+      "0000000000",
+      "@",
+      "dd/mm/yyyy;@"
+     ],
+     [
+      "@",
+      "0000000000",
+      "@",
+      "dd/mm/yyyy;@"
+     ],
+     [
+      "@",
+      "0000000000",
+      "@",
+      "dd/mm/yyyy;@"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General"
+     ],
+     [
+      "General",
+      "General",
+      "General",
+      "General"
+     ]
+    ],
+    "bieuDo": [],
+    "pivot": []
+   }
+  ],
+  "ten": [
+   {
+    "ten": "_xlfn.UNIQUE",
+    "ct": "=#NAME?"
+   }
+  ]
+ }
+}
