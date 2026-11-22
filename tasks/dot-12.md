@@ -89,4 +89,6 @@ Sự cố trong lúc kiểm: lần thử A3 đầu tiên chọn Claude Haiku 5.5
 | B2 X5 không báo nhầm, đủ 5 lỗi | Đạt | D6: 5/5 đúng ô, không báo ô nào khác, 37 giây (trước: 5/5 + 2 báo nhầm; D5 sau sửa kỹ năng nhưng trước sửa `modelaudit.ts`: 3/5) |
 | B2 X3 định dạng ngày đúng khi đọc lại | Đạt (máy chấm trừ 2 mục do cách chấm) | D7: 9/9 dòng đúng họ tên, SĐT, ngày (ngày thật, đúng ngày/tháng), dự án; máy chấm đếm 11 dòng vì tính cả 2 dòng "Kiểm tra" kỹ năng thêm, và chỉ nhận chuỗi định dạng đúng "dd/mm/yyyy" (add-in đặt "dd/mm/yyyy;@" — hiện 05/03/2026). Trước: ngày vẫn là chữ (X3-D1 của buổi so sánh), 928 giây có Làm tiếp (D4) |
 
+Phát hành **4.11.4** ngày 22/11/2026 (anh duyệt): `main@d55ac44` → `gh-pages@31957e0`; Tự kiểm tra Excel trên bản phát hành v4.11.4: 42/42 (`tu-kiem-tra-excel-phat-hanh-4114.json`).
+
 Kỹ năng chuẩn hóa bảng: trước đây mặc định ghi bản sạch sang sheet "<tên>_chuan" kể cả khi anh nói "làm sạch sheet Khách hàng". Theo lựa chọn "sửa tại chỗ khi nêu tên sheet" (anh trả lời qua một phiên khác, 22/11/2026), kỹ năng nay sửa ngay trên sheet được nêu và xóa phần thừa; chỉ ghi sheet mới khi không nói rõ chỗ hoặc muốn giữ bản gốc. Chạy thật X3-D8: **37/37**, sửa tại chỗ, tự xóa A11:D13, 128 giây (máy chấm chỉ còn trừ mục chuỗi định dạng "dd/mm/yyyy;@").
