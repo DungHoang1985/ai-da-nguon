@@ -43,7 +43,7 @@ const BackupCard: React.FC<{ host?: string; onRestored: () => void }> = ({ host,
       setMsg(
         ok
           ? {
-              text: `Đã tạo tệp “${name}” (thư mục Tải xuống): ${sum.keys} key, ${sum.conversations} hội thoại, ${sum.skills} kỹ năng, ${sum.commands} lệnh. Nếu không thấy tệp, dùng “Chép vào bộ nhớ tạm”.`,
+              text: `Đã tạo tệp “${name}” (thư mục Tải xuống): ${sum.keys} key, ${sum.conversations} hội thoại, ${sum.skills} kỹ năng, ${sum.commands} lệnh, ${sum.memory} mục bộ nhớ. Nếu không thấy tệp, dùng “Chép vào bộ nhớ tạm”.`,
             }
           : { text: "Khung add-in không cho tải tệp. Dùng “Chép vào bộ nhớ tạm” rồi dán vào một tệp .json.", err: true }
       );
@@ -146,7 +146,7 @@ const BackupCard: React.FC<{ host?: string; onRestored: () => void }> = ({ host,
         <div className={s.box}>
           <Text size={200}>
             Tệp tạo lúc {new Date(pending.createdAt).toLocaleString("vi-VN")} (bản {pending.appVersion}): {sum.keys} key, {sum.instructions} chỉ dẫn riêng,{" "}
-            {sum.conversations} hội thoại, {sum.skills} kỹ năng, {sum.commands} lệnh.
+            {sum.conversations} hội thoại, {sum.skills} kỹ năng, {sum.commands} lệnh, {sum.memory} mục bộ nhớ.
           </Text>
           <div className={s.row}>
             <Button size="small" appearance="primary" onClick={() => apply("merge")}>

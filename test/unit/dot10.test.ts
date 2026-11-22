@@ -233,9 +233,10 @@ describe("Đợt 10 — chặn phình lại (số ký tự phần cố định c
   const skills = (BUILTIN_SKILLS as any[]).filter((s) => !s.hosts || s.hosts.includes("Word"));
   const common = createCommonTools({ host: "Word", skills, shareContext: true });
   const baseParts = { base: WORD_SYSTEM_PROMPT, guide: CORE_GUIDES.Word, host: "Word", skillCatalog: skillCatalog(skills) };
-  it("Trả phí: ≤ 30.700 ký tự (mốc 4.9.0: 40.922; giảm ≥ 25%)", () => {
+  // Đợt 12 phần E (23/11/2026): +400 cho công cụ remember (đề xuất nhớ) — Trả phí luôn gửi đủ; Miễn phí để trong nhóm bo_nho
+  it("Trả phí: ≤ 31.100 ký tự (mốc 4.9.0: 40.922; giảm ≥ 24%)", () => {
     const n = sizeOf(buildSystemPrompt(baseParts), [...WORD_SPECS, ...common.specs]);
-    assert.ok(n <= 30700, `đang ${n}`);
+    assert.ok(n <= 31100, `đang ${n}`);
   });
   it("Miễn phí, nhóm lõi: ≤ 20.400 ký tự (giảm ≥ 50%)", () => {
     const ex = withLoadTools(common, G);

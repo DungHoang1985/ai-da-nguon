@@ -100,6 +100,8 @@ export interface BackupSummary {
   conversations: number;
   skills: number;
   commands: number;
+  /** Đợt 12 phần E: số mục bộ nhớ */
+  memory: number;
 }
 
 export function summarizeBackup(b: BackupFile): BackupSummary {
@@ -112,6 +114,7 @@ export function summarizeBackup(b: BackupFile): BackupSummary {
     conversations: Object.keys(b.kv).filter((k) => k.startsWith("conv:")).length,
     skills: Array.isArray(b.kv["skills-user"]) ? (b.kv["skills-user"] as unknown[]).length : 0,
     commands: Array.isArray(b.kv["commands"]) ? (b.kv["commands"] as unknown[]).length : 0,
+    memory: Array.isArray(readJson(b.local["aidn.memory"])) ? readJson(b.local["aidn.memory"]).length : 0,
   };
 }
 
@@ -155,6 +158,12 @@ export async function restoreBackup(b: BackupFile, ls: LocalLike, kv: AsyncKV, m
     }
     const a = readJson(cur);
     const inc = readJson(v);
+    // Bộ nhớ (mảng mục): giữ mục hiện có, thêm mục chỉ có trong tệp (theo mã mục)
+    if (k === "aidn.memory" && Array.isArray(a) && Array.isArray(inc)) {
+      ls.setItem(k, JSON.stringify(unionBy(a, inc, (x: any) => String(x?.id))));
+      nLocal++;
+      continue;
+    }
     if (a && inc && typeof a === "object" && typeof inc === "object" && !Array.isArray(a)) {
       // Đối tượng (key, cài đặt, lựa chọn): giữ giá trị hiện có, thêm khóa còn thiếu; chỉ dẫn riêng gộp theo từng ứng dụng
       const merged: any = { ...inc, ...a };

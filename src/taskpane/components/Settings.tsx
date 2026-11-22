@@ -15,6 +15,7 @@ import { clearHighlights } from "../../office/excelTrail";
 import SignInCard from "./SignInCard";
 import BackupCard from "./BackupCard";
 import { getKV } from "../../core/db";
+import { MEMORY_CAP_FREE, MEMORY_CAP_PAID, MEMORY_ITEM_MAX, MemoryItem, MemoryScope, buildMemoryBlock, cleanMemoryText, validateMemoryText } from "../../core/memory";
 import { Command, Skill, SkillStore, importZip, parseCommandMd, parseSkillMd, toSkillName } from "../../core/skills";
 
 const useStyles = makeStyles({
@@ -511,6 +512,130 @@ const InstructionsCard: React.FC<Props> = ({ storage, onChanged, host }) => {
   );
 };
 
+const SCOPE_LABEL: Record<MemoryScope, string> = { all: "Mọi ứng dụng", Word: "Chỉ Word", Excel: "Chỉ Excel", PowerPoint: "Chỉ PowerPoint" };
+
+/** Đợt 12 phần E: bộ nhớ dài hạn — xem, thêm, sửa, bật / tắt, xóa từng mục, xóa hết */
+const MemoryCard: React.FC<Props> = ({ storage, host }) => {
+  const s = useStyles();
+  const [list, setList] = React.useState<MemoryItem[]>(() => storage.getMemory());
+  const [text, setText] = React.useState("");
+  const [scope, setScope] = React.useState<MemoryScope>("all");
+  const [editId, setEditId] = React.useState("");
+  const [editText, setEditText] = React.useState("");
+  const [confirmAll, setConfirmAll] = React.useState(false);
+  const [msg, setMsg] = React.useState<{ text: string; err?: boolean } | null>(null);
+  const save = (next: MemoryItem[], note?: string) => {
+    storage.setMemory(next);
+    setList(storage.getMemory());
+    if (note) setMsg({ text: note });
+  };
+  const add = () => {
+    const r = storage.addMemory(text, scope, "user");
+    if ("error" in r) return setMsg({ text: r.error, err: true });
+    setList(storage.getMemory());
+    setText("");
+    setMsg({ text: "Đã nhớ. Có hiệu lực từ hội thoại mới (bấm Hội thoại mới ở khung chat)." });
+  };
+  const saveEdit = (m: MemoryItem) => {
+    const t = cleanMemoryText(editText);
+    const err = validateMemoryText(t, list.filter((x) => x.id !== m.id), m.scope);
+    if (err) return setMsg({ text: err, err: true });
+    save(list.map((x) => (x.id === m.id ? { ...x, text: t } : x)), "Đã sửa. Có hiệu lực từ hội thoại mới.");
+    setEditId("");
+  };
+  const h = host && SCOPE_LABEL[host as MemoryScope] ? host : "Word";
+  const used = buildMemoryBlock(list, h, MEMORY_CAP_PAID);
+  const usedFree = buildMemoryBlock(list, h, MEMORY_CAP_FREE);
+  const fmt = (t: number) => new Date(t).toLocaleDateString("vi-VN");
+  return (
+    <div className={s.card} data-memory-card="1">
+      <Text weight="semibold">Bộ nhớ (giữ qua các hội thoại)</Text>
+      <Text size={200} className={s.muted}>
+        Mục ngắn về cách anh muốn AI làm việc, thuật ngữ, tên dự án, quy ước văn bản. Gửi kèm lời nhắc khi mở hội thoại mới; trong một hội thoại không đổi.
+        AI chỉ đề xuất, anh bấm Nhớ mới lưu. Không ghi key, mật khẩu, số định danh, số tài khoản. Lưu trên máy, đi theo bản sao lưu.
+      </Text>
+      <Text size={200} className={s.muted} data-memory-usage="1">
+        Ở {h}: Trả phí gửi {used.used} mục{used.skipped ? `, ${used.skipped} mục vượt trần ${MEMORY_CAP_PAID} ký tự` : ""} · Miễn phí gửi {usedFree.used} mục
+        {usedFree.skipped ? `, ${usedFree.skipped} mục vượt trần ${MEMORY_CAP_FREE} ký tự (nguồn miễn phí sức chứa nhỏ: mục cũ được ưu tiên)` : ""}.
+      </Text>
+      {list.map((m) => (
+        <div key={m.id} className={s.card} style={{ marginBottom: 0, padding: "6px" }} data-memory-item={m.id}>
+          {editId === m.id ? (
+            <>
+              <Textarea value={editText} onChange={(_, d) => setEditText(d.value)} rows={2} resize="vertical" />
+              <div className={s.row}>
+                <Button size="small" appearance="primary" onClick={() => saveEdit(m)}>
+                  Lưu
+                </Button>
+                <Button size="small" onClick={() => setEditId("")}>
+                  Thôi
+                </Button>
+              </div>
+            </>
+          ) : (
+            <Text size={200} style={{ opacity: m.off ? 0.55 : 1, wordBreak: "break-word" }}>
+              {m.text}
+            </Text>
+          )}
+          <Text size={100} className={s.muted}>
+            {SCOPE_LABEL[m.scope]} · {m.source === "ai" ? "AI đề xuất" : "Anh ghi"} · {fmt(m.createdAt)}
+            {m.off ? " · đang tắt" : ""}
+          </Text>
+          <div className={s.row}>
+            <Switch checked={!m.off} label={m.off ? "Tắt" : "Bật"} onChange={(_, d) => save(list.map((x) => (x.id === m.id ? { ...x, off: d.checked ? undefined : true } : x)))} />
+            <Button size="small" appearance="subtle" onClick={() => (setEditId(m.id), setEditText(m.text))}>
+              Sửa
+            </Button>
+            <Button size="small" appearance="subtle" data-memory-delete={m.id} onClick={() => save(list.filter((x) => x.id !== m.id), "Đã xóa mục.")}>
+              Xóa
+            </Button>
+          </div>
+        </div>
+      ))}
+      <Textarea value={text} onChange={(_, d) => setText(d.value)} rows={2} resize="vertical" placeholder="Ví dụ: Trả lời kết luận trước, dùng bảng Tiêu chí · Kết quả." data-memory-input="1" />
+      <div className={s.row}>
+        <Select value={scope} onChange={(_, d) => setScope(d.value as MemoryScope)} size="small">
+          {(Object.keys(SCOPE_LABEL) as MemoryScope[]).map((k) => (
+            <option key={k} value={k}>
+              {SCOPE_LABEL[k]}
+            </option>
+          ))}
+        </Select>
+        <Button size="small" appearance="primary" onClick={add} disabled={!text.trim()} data-memory-add="1">
+          Nhớ
+        </Button>
+        <Text size={100} className={s.muted}>
+          {cleanMemoryText(text).length}/{MEMORY_ITEM_MAX}
+        </Text>
+      </div>
+      {list.length > 0 && (
+        <div className={s.row}>
+          {confirmAll ? (
+            <>
+              <Text size={200}>Xóa hết {list.length} mục? Không lấy lại được (trừ khi có bản sao lưu).</Text>
+              <Button size="small" onClick={() => (save([], "Đã xóa hết bộ nhớ."), setConfirmAll(false))}>
+                Xóa hết
+              </Button>
+              <Button size="small" appearance="subtle" onClick={() => setConfirmAll(false)}>
+                Thôi
+              </Button>
+            </>
+          ) : (
+            <Button size="small" appearance="subtle" onClick={() => setConfirmAll(true)}>
+              Xóa hết bộ nhớ…
+            </Button>
+          )}
+        </div>
+      )}
+      {msg && (
+        <Text size={200} className={msg.err ? s.err : s.ok}>
+          {msg.text}
+        </Text>
+      )}
+    </div>
+  );
+};
+
 const SkillsCard: React.FC<Props> = ({ onChanged }) => {
   const s = useStyles();
   const store = React.useMemo(() => new SkillStore(getKV()), []);
@@ -761,6 +886,7 @@ const Settings: React.FC<Props> = (props) => {
         <PermissionsCard {...props} />
         <div className={s.section}>Chỉ dẫn và kỹ năng</div>
         <InstructionsCard {...props} />
+        <MemoryCard {...props} />
         <SkillsCard {...props} />
         {props.host === "Excel" && (
           <>

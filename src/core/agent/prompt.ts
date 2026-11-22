@@ -31,6 +31,8 @@ export interface SystemParts {
   host: string;
   /** Chỉ dẫn riêng của người dùng cho ứng dụng này */
   instructions?: string;
+  /** Khối bộ nhớ dài hạn đã chụp khi mở hội thoại (memory.ts buildMemoryBlock) — giữ nguyên cả hội thoại */
+  memory?: string;
   /** Danh mục kỹ năng (skillCatalog) */
   skillCatalog?: string;
   /** Nạp công cụ theo việc (Đợt 10, chế độ Miễn phí): danh sách nhóm công cụ chuyên và cách xin (groupsNote) */
@@ -47,15 +49,16 @@ export function buildSystemPrompt(p: SystemParts): string {
     EFFICIENCY_RULES,
     SAFETY_RULES,
     instr ? `## Chỉ dẫn riêng của người dùng cho ${p.host} (luôn tuân theo)\n${instr}` : "",
+    (p.memory || "").trim(),
     p.skillCatalog || "",
   ]
     .filter(Boolean)
     .join("\n\n");
 }
 
-export function buildPlainSystem(instructions?: string): string {
+export function buildPlainSystem(instructions?: string, memory?: string): string {
   const instr = (instructions || "").trim();
-  return [PLAIN_SYSTEM, instr ? `## Chỉ dẫn riêng của người dùng (luôn tuân theo)\n${instr}` : ""].filter(Boolean).join("\n\n");
+  return [PLAIN_SYSTEM, instr ? `## Chỉ dẫn riêng của người dùng (luôn tuân theo)\n${instr}` : "", (memory || "").trim()].filter(Boolean).join("\n\n");
 }
 
 export const CONTEXT_OPEN = "<bo_sung_cua_add_in>";

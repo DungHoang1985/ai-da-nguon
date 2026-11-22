@@ -17,6 +17,10 @@ export interface ToolGroup {
 
 export const LOAD_TOOLS = "load_tools";
 
+/** Đợt 12 phần E: nhóm bo_nho (công cụ remember) ở chế độ Miễn phí chỉ gửi khi người dùng nói tới một quy ước lâu dài —
+ *  nguồn miễn phí sức chứa nhỏ, không gửi mô tả công cụ này ở mọi lượt */
+export const MEMORY_KEYWORDS = ["tu gio", "tu nay", "tu lan sau", "lan sau", "ve sau", "ghi nho", "hay nho", "nho giup", "nho rang", "nho la", "luon luon", "lan nao cung", "mac dinh", "quy uoc"];
+
 
 export const WORD_TOOL_GROUPS: ToolGroup[] = [
   {
@@ -60,6 +64,12 @@ export const WORD_TOOL_GROUPS: ToolGroup[] = [
     tools: ["read_other_app", "write_other_app"],
     keywords: ["excel", "powerpoint", "slide", "trinh chieu", "bang tinh", "ung dung khac"],
     skills: ["kiem-tra-tuan-thu", "chuan-bi-hop", "dien-mau"],
+  },
+  {
+    id: "bo_nho",
+    label: "ghi nhớ cho hội thoại sau",
+    tools: ["remember"],
+    keywords: MEMORY_KEYWORDS,
   },
 ];
 
@@ -114,6 +124,12 @@ export const EXCEL_TOOL_GROUPS: ToolGroup[] = [
     keywords: ["word", "powerpoint", "slide", "trinh chieu", "van ban dang mo", "ung dung khac"],
     skills: ["mo-hinh-tai-chinh-du-an", "kiem-tra-tuan-thu"],
   },
+  {
+    id: "bo_nho",
+    label: "ghi nhớ cho hội thoại sau",
+    tools: ["remember"],
+    keywords: MEMORY_KEYWORDS,
+  },
 ];
 
 /** Đợt 11: nhóm chuyên của PowerPoint. Lõi (luôn gửi): tổng quan, thêm slide (một và nhiều), sửa chữ, ô chữ, hình, bảng mới, chuyển slide,
@@ -158,6 +174,12 @@ export const PPT_TOOL_GROUPS: ToolGroup[] = [
     tools: ["read_other_app", "write_other_app"],
     keywords: ["word", "excel", "van ban dang mo", "so tinh", "bang tinh", "ung dung khac"],
     skills: ["bao-cao-tien-do-du-an", "trinh-chieu-tu-tai-lieu", "chuan-bi-hop"],
+  },
+  {
+    id: "bo_nho",
+    label: "ghi nhớ cho hội thoại sau",
+    tools: ["remember"],
+    keywords: MEMORY_KEYWORDS,
   },
 ];
 

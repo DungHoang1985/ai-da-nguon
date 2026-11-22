@@ -59,6 +59,7 @@ import { parseMarkdownTable } from "../../core/table";
 import { HostName, INSERT_LABEL, insertAnswer, readSelection } from "../../office/host";
 import { QUICK_PROMPTS, describeCall, getHostTools } from "../../office/tools";
 import { createCommonTools } from "../../office/common";
+import { MemoryProposal, buildMemoryBlock, memoryCapFor } from "../../core/memory";
 import { navigateTo } from "../../office/navigate";
 import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { inputKeyAction } from "../../core/keys";
@@ -227,6 +228,10 @@ interface Item {
   paused?: { steps: number; writes: number; stuck?: string };
   /** Số lần gọi AI của các lượt trước thuộc CÙNG nhiệm vụ (khi người dùng bấm Làm tiếp) */
   callsBase?: number;
+  /** Đợt 12 phần E: AI đề xuất nhớ — thẻ "AI muốn nhớ: … [Nhớ] [Bỏ]" (chỉ để hiện; lưu khi người dùng bấm Nhớ) */
+  memProps?: MemoryProposal[];
+  /** Đợt 12 phần E: lượt đầu của hội thoại gửi kèm bao nhiêu mục bộ nhớ (chỉ để hiện) */
+  memUsed?: { used: number; skipped: number; free?: boolean };
 }
 
 /** Câu gửi model khi người dùng bấm "Làm tiếp" */
@@ -383,6 +388,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
   const itemsRef = React.useRef<Item[]>([]);
   itemsRef.current = items;
   const convIdRef = React.useRef("");
+  /** Đợt 12 phần E: khối bộ nhớ chụp khi hội thoại bắt đầu; undefined = chưa chụp (hội thoại mới). Giữ nguyên cả hội thoại để
+   *  lời nhắc hệ thống không đổi giữa các lượt (bộ nhớ đệm lời nhắc); mục nhớ mới có hiệu lực từ hội thoại sau. */
+  const memSnapRef = React.useRef<string | undefined>(undefined);
   const saveChain = React.useRef<Promise<void>>(Promise.resolve());
   const lastSaveAt = React.useRef(0);
   /** Token đầu vào thực đo của bước gần nhất: đo độ đầy ngữ cảnh để quyết định tóm tắt */
@@ -584,6 +592,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       updatedAt: Date.now(),
       items: its.map((it) => ({ ...it, undo: undefined, undoCount: it.undo?.length || it.undoCount })),
       history: slimForStorage(historyRef.current),
+      ...(memSnapRef.current ? { memory: memSnapRef.current } : {}),
     };
     lastSaveAt.current = Date.now();
     // Xếp hàng để hai lần lưu không ghi đè chỉ mục của nhau
@@ -850,8 +859,23 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     abortRef.current = ac;
     const key = storage.getKey(p.id);
     const instr = (settings.instructions || {})[host]?.trim();
+    // Hội thoại mới: chụp bộ nhớ một lần (trần theo chế độ — nguồn miễn phí sức chứa nhỏ)
+    if (memSnapRef.current === undefined) {
+      const mb = buildMemoryBlock(storage.getMemory(), host, memoryCapFor(mode));
+      memSnapRef.current = mb.text;
+      if (mb.used || mb.skipped) patchLast((it) => ({ ...it, memUsed: { used: mb.used, skipped: mb.skipped, free: mode === "free" || undefined } }));
+    }
     const log: UndoEntry[] = [];
-    const extraTools = createCommonTools({ host, skills, shareContext: settings.shareContext, apps: linkedApps, signal: ac.signal, seesPages: canSeePages({ pdfCapable: pdfCapable(p), vision }) });
+    const extraTools = createCommonTools({
+      host,
+      skills,
+      shareContext: settings.shareContext,
+      apps: linkedApps,
+      signal: ac.signal,
+      seesPages: canSeePages({ pdfCapable: pdfCapable(p), vision }),
+      onRemember: (mp) => patchLast((it) => ({ ...it, memProps: [...(it.memProps || []).filter((x) => x.text !== mp.text), mp] })),
+      memory: () => storage.getMemory(),
+    });
     /** Công cụ đã gọi trong lượt và số lệnh ghi không thành công — để nhận ra ca "nói đã sửa mà không ghi" */
     const called: string[] = [];
     let failedWrites = 0;
@@ -942,6 +966,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         files: pdfs.length ? pdfs : undefined,
         think: !!settings.deepThink,
         instructions: instr,
+        memory: memSnapRef.current || undefined,
         agent:
           useAgent && hostTools
             ? {
@@ -1129,11 +1154,25 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     setNotice((await copyText(text)) ? { text: "Đã sao chép." } : { text: "Không sao chép được trong môi trường này.", err: true });
   };
 
+  /** Người dùng bấm Nhớ / Bỏ trên thẻ đề xuất nhớ của AI */
+  const answerMemory = (i: number, k: number, keep: boolean) => {
+    const mp = items[i]?.memProps?.[k];
+    if (!mp || mp.state) return;
+    let next: MemoryProposal = { ...mp, state: "dropped" };
+    if (keep) {
+      const r = storage.addMemory(mp.text, mp.scope, "ai");
+      next = "error" in r ? { ...mp, state: "dropped", note: r.error } : { ...mp, state: "saved" };
+    }
+    setItems((prev) => prev.map((x, n) => (n === i ? { ...x, memProps: (x.memProps || []).map((y, m) => (m === k ? next : y)) } : x)));
+    setTimeout(saveConversation, 0);
+  };
+
   const newChat = () => {
     // Tệp .docx đính kèm để so sánh thuộc về hội thoại cũ (tệp đang chờ gửi được đăng ký lại lúc gửi)
     clearAttachedFiles();
     setItems([]);
     historyRef.current = [];
+    memSnapRef.current = undefined;
     lastRequestRef.current = "";
     lastInputRef.current = undefined;
     setConv("");
@@ -1148,6 +1187,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       if (!c) return;
       setItems(c.items as Item[]);
       historyRef.current = c.history || [];
+      // Hội thoại cũ dùng đúng bộ nhớ đã chụp lúc nó bắt đầu (hội thoại từ trước khi có bộ nhớ: không có)
+      memSnapRef.current = c.memory || "";
       lastInputRef.current = undefined;
       setConv(c.id);
       setHistWarn("");
@@ -1396,6 +1437,34 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                     </div>
                   </div>
                 )}
+                {it.memUsed && (
+                  <Text size={100} className={s.muted} data-mem-used={it.memUsed.used}>
+                    🧠 Gửi kèm {it.memUsed.used} mục bộ nhớ
+                    {it.memUsed.skipped ? ` (${it.memUsed.skipped} mục không gửi vì vượt trần ${memoryCapFor(it.memUsed.free ? "free" : "paid")} ký tự)` : ""}
+                    {it.memUsed.free ? " · bộ nhớ được gửi kèm tới nguồn miễn phí" : ""}
+                  </Text>
+                )}
+                {it.memProps?.map((mp, k) => (
+                  <div key={"mem" + k} className={s.approve} data-mem-proposal={mp.state || "open"}>
+                    <Text size={200}>
+                      🧠 AI muốn nhớ{mp.scope === "all" ? "" : ` (chỉ ${mp.scope})`}: “{mp.text}”
+                    </Text>
+                    {mp.state ? (
+                      <Text size={100} className={mp.note ? s.err : s.muted}>
+                        {mp.note || (mp.state === "saved" ? "Đã nhớ — có hiệu lực từ hội thoại sau. Xem, sửa, xóa ở Cài đặt → Bộ nhớ." : "Đã bỏ.")}
+                      </Text>
+                    ) : (
+                      <div className={s.row} style={{ marginTop: 4 }}>
+                        <Button size="small" appearance="primary" data-mem-save="1" onClick={() => answerMemory(i, k, true)}>
+                          Nhớ
+                        </Button>
+                        <Button size="small" data-mem-drop="1" onClick={() => answerMemory(i, k, false)}>
+                          Bỏ
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
                 {it.incoming && (
                   <Text size={200} data-incoming="1">
                     📥 {it.incoming}

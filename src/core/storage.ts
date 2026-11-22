@@ -2,6 +2,7 @@
 import type { ModelInfo } from "./models";
 import { cleanKey } from "./errors";
 import { allProviders, CustomSource, setCustomSources as registerCustomSources } from "./providers";
+import { MemoryItem, MemoryScope, cleanMemoryText, newMemoryId, sanitizeMemory, validateMemoryText } from "./memory";
 
 export interface KVStore {
   getItem(k: string): string | null;
@@ -180,6 +181,26 @@ export class Storage {
 
   setSettings(s: Partial<AppSettings>): void {
     this.write("settings", { ...this.getSettings(), ...s });
+  }
+
+  /** Đợt 12 phần E: bộ nhớ dài hạn giữa các hội thoại */
+  getMemory(): MemoryItem[] {
+    return sanitizeMemory(this.read<unknown>("memory", []));
+  }
+
+  setMemory(list: MemoryItem[]): void {
+    this.write("memory", sanitizeMemory(list));
+  }
+
+  /** Thêm một mục; trả câu lỗi nếu không thêm được */
+  addMemory(text: string, scope: MemoryScope, source: "user" | "ai", now = Date.now()): { ok: true; item: MemoryItem } | { ok: false; error: string } {
+    const t = cleanMemoryText(text);
+    const list = this.getMemory();
+    const err = validateMemoryText(t, list, scope);
+    if (err) return { ok: false, error: err };
+    const item: MemoryItem = { id: newMemoryId(now), text: t, scope, source, createdAt: now };
+    this.setMemory([...list, item]);
+    return { ok: true, item };
   }
 
   /** Đợt 9: thời điểm nghỉ của từng nguồn miễn phí (hết lượt hôm nay / tạm thời) */

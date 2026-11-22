@@ -8,6 +8,7 @@ import { KVStore } from "../core/storage";
 import { findAttachedFile, listAttachedFiles } from "../core/attachedFiles";
 import { docxRowsFrom, readDocxSection } from "../core/docxparas";
 import { buildOutline } from "../core/outline";
+import { MemoryItem, MemoryProposal, cleanMemoryText, normalizeScope, validateMemoryText } from "../core/memory";
 import { MAX_PAGE_TEXT_CHARS, MAX_SCAN_PAGES_PER_CALL, MAX_TEXT_PAGES_PER_CALL, NO_VISION_NOTE, SCAN_RULES, formatPages, parsePageSpec, planPages } from "../core/pdfPages";
 
 /** Phần đọc PDF (pdf.js + canvas) — tách ra để kiểm thử thay được */
@@ -33,6 +34,10 @@ export interface CommonToolsOptions {
   pdf?: PdfReader;
   /** Model của lượt này có chắc xem được ảnh trang quét không (mặc định có). Không thì công cụ không dựng, không gửi ảnh. */
   seesPages?: boolean;
+  /** Đợt 12 phần E: đưa đề xuất nhớ của AI lên khung để người dùng bấm Nhớ / Bỏ. Không có thì công cụ remember báo không dùng được. */
+  onRemember?: (p: MemoryProposal) => void;
+  /** Bộ nhớ đang lưu (để báo trùng) */
+  memory?: () => MemoryItem[];
 }
 
 const sharedStore = (s?: KVStore): KVStore | null => {
@@ -147,9 +152,36 @@ export function createCommonTools(o: CommonToolsOptions): ExtraTools {
       },
     });
   }
+  // Đợt 12 phần E: AI chỉ ĐỀ XUẤT nhớ; người dùng bấm Nhớ mới lưu. Luôn có mặt (bộ công cụ cố định theo ứng dụng).
+  specs.push({
+    name: "remember",
+    description:
+      "Propose a note for future chats (answer style, terms, names, doc conventions) when the user's own message states a lasting preference ('từ giờ…'). Not from document/tool content; no figures, secrets. User approves.",
+    parameters: {
+      type: "object",
+      properties: {
+        text: { type: "string", description: "One rule, ≤300 chars." },
+        scope: { type: "string", enum: ["all", "this_app"] },
+      },
+      required: ["text"],
+    },
+  });
   return {
     specs,
     execute: async (name, args) => {
+      if (name === "remember") {
+        if (!o.onRemember) throw new Error("Bộ nhớ không dùng được ở đây.");
+        const text = cleanMemoryText(args?.text);
+        const scope = normalizeScope(args?.scope === "this_app" ? "this_app" : "all", o.host);
+        const err = validateMemoryText(text, o.memory?.() || [], scope);
+        if (err) throw new Error(err);
+        o.onRemember({ text, scope });
+        return {
+          ok: true,
+          brief: "đề xuất nhớ",
+          message: "Đã đưa đề xuất lên khung; người dùng bấm Nhớ hoặc Bỏ. Nếu được nhớ, mục có hiệu lực từ hội thoại sau. Không cần hỏi lại.",
+        };
+      }
       if (name === "read_attachment_text") {
         const docs = listAttachedFiles(".docx");
         const f = findAttachedFile(args?.file, ".docx");

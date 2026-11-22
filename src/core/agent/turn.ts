@@ -78,6 +78,8 @@ export interface TurnOptions {
   think?: boolean;
   /** Chỉ dẫn riêng của người dùng cho ứng dụng */
   instructions?: string;
+  /** Khối bộ nhớ dài hạn của hội thoại (chụp khi mở hội thoại, Đợt 12 phần E) */
+  memory?: string;
   /** Có = chế độ tác tử; không = trò chuyện thường */
   agent?: TurnAgentOptions;
   webSearch?: boolean;
@@ -197,6 +199,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
       guide: groups && a.guide ? hideGroupTools(a.guide, groups) : a.guide,
       host: o.host,
       instructions: o.instructions,
+      memory: o.memory,
       skillCatalog: a.skillCatalog,
       toolGroups: groups ? groupsNote(groups) : undefined,
     });
@@ -300,7 +303,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
   }
 
   const userMsg = userOf(o.text);
-  const plainMsgs: AgentMessage[] = [{ role: "system", content: buildPlainSystem(o.instructions) }, ...plainHistory(history), userMsg];
+  const plainMsgs: AgentMessage[] = [{ role: "system", content: buildPlainSystem(o.instructions, o.memory) }, ...plainHistory(history), userMsg];
   const bigPlain = sizeCheck(plainMsgs, []);
   if (bigPlain) return result(history, bigPlain);
   let partial = "";
