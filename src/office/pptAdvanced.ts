@@ -182,6 +182,14 @@ export async function fitTableToSlide(
     startFont = Number(c.font.size) || 18;
   }
   if (canFont && !tableFits(o.top, shp.height, o.slideH)) {
+    // Dòng có chiều cao tối thiểu đặt sẵn (bảng tạo với `height`) không thấp xuống khi co chữ: hạ mức tối thiểu để dòng cao theo chữ
+    // (đã thăm dò: `TableRow.height` là mức tối thiểu, `currentHeight` vẫn theo chữ). Thử 22/11: bảng cao 80 pt rồi thêm 6 hàng → mỗi dòng 40 pt.
+    const t = shp.getTable();
+    t.rows.load("items");
+    await ctx.sync();
+    t.rows.items.forEach((r) => (r.height = 1));
+    shp.load("height");
+    await ctx.sync();
     for (let s = nextTableFont(startFont ?? 18); s !== null && !tableFits(o.top, shp.height, o.slideH); s = nextTableFont(s)) await setFont(s);
     if (font !== null && startFont !== null && font < startFont) notes.push(`đã tự co chữ từ ${startFont} xuống ${font} pt cho vừa slide`);
   }
