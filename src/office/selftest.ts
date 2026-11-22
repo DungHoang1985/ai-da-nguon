@@ -152,6 +152,15 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(got.g === 3, `Công thức ghi vào ô chữ không chạy: G1 = ${JSON.stringify(got.g)} (${w.message})`);
       // Excel không được đổi "dd/mm/yyyy" thành kiểu ngày ngắn của máy ("m/d/yyyy" — mở ở máy vùng khác sẽ hiện tháng trước ngày)
       expect(/^dd\/mm\/yyyy/.test(String(got.nf)), `Định dạng lưu lại là "${got.nf}", không phải dd/mm/yyyy`);
+      // Chữ dạng ngày ghi vào ô thường: Office.js đọc kiểu Mỹ (05/03 → 3 tháng 5) → add-in phải ghi đúng ngày 5 tháng 3
+      const wd = await tools.execute("excel_write_range", { sheet, address: "H1:H2", values: [["05/03/2026"], ["7-3-2026"]] }, { log: mine });
+      const hd = await Excel.run(async (ctx) => {
+        const r = ctx.workbook.worksheets.getItem(sheet).getRange("H1:H2");
+        r.load("text,values");
+        await ctx.sync();
+        return r.text.map((x) => x[0]);
+      });
+      expect(hd[0] === "05/03/2026" && hd[1] === "07/03/2026", `Ngày ghi vào ô thường bị đọc sai: ${JSON.stringify(hd)} (${wd.message})`);
       // Ghi bảng ngắn hơn đè lên bảng cũ: phải nhắc phần dữ liệu cũ còn lại bên dưới
       const shortW = await tools.execute("excel_write_range", { sheet, address: "F1", values: [["Ngày"], ["x"]] }, { log: mine });
       expect(/F3:F5/.test(String(shortW.note_below || "")), `Không nhắc dữ liệu cũ còn bên dưới: ${JSON.stringify(shortW.note_below)}`);

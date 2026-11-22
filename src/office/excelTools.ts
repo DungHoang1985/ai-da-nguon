@@ -1,6 +1,6 @@
 /* global Excel */
 /** Công cụ để AI thao tác trực tiếp trên sổ tính Excel. Mỗi thao tác ghi đều lưu ảnh chụp để Hoàn tác. */
-import { convertDateTexts, isDateNumberFormat } from "../core/datetext";
+import { convertDateTexts, dateTextToSerial, isDateNumberFormat } from "../core/datetext";
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, splitAreas, topLeft, truncate } from "./util";
 import { bulkTrail, getRange, restoreFrom, snapshot } from "./excelCore";
@@ -291,6 +291,9 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         target.load("numberFormat");
         await ctx.sync();
         let unText = 0;
+        // Đợt 12 (bài X3, Chạy thật 22/11/2026): Office.js đọc chữ "05/03/2026" ghi vào ô thường theo kiểu Mỹ (tháng/ngày) → 3 tháng 5.
+        // Chữ dạng ngày ghi vào ô KHÔNG phải ô chữ thì add-in tự đổi thành ngày thật theo ngày/tháng/năm; ô General thì đặt dd/mm/yyyy.
+        let dates = 0;
         const nf = target.numberFormat.map((row, i) =>
           row.map((f, j) => {
             const v = cellsIn[i]?.[j];
@@ -298,10 +301,18 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
               unText++;
               return "General";
             }
+            if (f !== "@" && typeof v === "string" && !v.startsWith("=")) {
+              const serial = dateTextToSerial(v);
+              if (serial !== null) {
+                dates++;
+                cellsIn[i][j] = serial;
+                return isDateNumberFormat(f) ? f : "dd/mm/yyyy;@";
+              }
+            }
             return f;
           }),
         );
-        if (unText) target.numberFormat = nf;
+        if (unText || dates) target.numberFormat = nf;
         target.formulas = cellsIn;
         target.load("address,values,rowIndex,columnIndex,rowCount,columnCount");
         await ctx.sync();
@@ -344,7 +355,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         );
         return {
           ok: true,
-          message: `Đã ghi ${vals.length * vals[0].length} ô vào ${target.address}${unText ? ` (${unText} ô công thức đang ở định dạng chữ "@" đã đổi về General để công thức chạy)` : ""}`,
+          message: `Đã ghi ${vals.length * vals[0].length} ô vào ${target.address}${unText ? ` (${unText} ô công thức đang ở định dạng chữ "@" đã đổi về General để công thức chạy)` : ""}${dates ? ` (${dates} ô chữ dạng ngày ghi thành ngày thật, đọc theo ngày/tháng/năm)` : ""}`,
           address: target.address,
           result_preview: target.values.slice(0, 12).map((row) => row.slice(0, 10)),
           ...(errors.length ? { formula_errors: errors.slice(0, 20) } : {}),
