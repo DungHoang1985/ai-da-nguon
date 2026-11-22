@@ -50,7 +50,7 @@ import { attachmentPrivacyNote, canSeePages, routeScanPdf } from "../../core/pdf
 import { clearAttachedFiles, listAttachedImages, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
-import { REDO_WITH_TOOLS, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
+import { REDO_WITH_TOOLS, TaskSoFar, mergeTaskFacts, taskSoFar, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
 import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, claimCommand, clearBeat, connectionLine, connections, describePayload, normalizeApp, reply, sweep, takeCommand } from "../../core/crossapp";
 import { executeIncoming } from "../../office/crossExec";
 import { RefTarget, findRefs } from "../../core/refs";
@@ -217,6 +217,8 @@ interface Item {
   incoming?: string;
   /** AI nói đã thay đổi tài liệu nhưng lượt này không có thao tác ghi nào thành công (chỉ để hiện; không gửi cho model) */
   claimWarning?: string;
+  /** Lệnh ghi, công cụ đã gọi và yêu cầu gốc của cả nhiệm vụ tới hết lượt này: lượt "Làm tiếp" kế đó gộp vào khi xét cảnh báo trên (chỉ để hiện) */
+  task?: TaskSoFar;
   /** Lượt dừng vì chạm trần số bước hoặc vì một công cụ lặp cùng một lỗi: hiện thẻ "Làm tiếp?" (chỉ để hiện) */
   paused?: { steps: number; writes: number; stuck?: string };
   /** Số lần gọi AI của các lượt trước thuộc CÙNG nhiệm vụ (khi người dùng bấm Làm tiếp) */
@@ -813,6 +815,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     }
 
 
+    // Bấm "Làm tiếp": cảnh báo "nói đã sửa mà không ghi" xét cả các lệnh ghi của lượt trước cùng nhiệm vụ
+    const lastItem = items[items.length - 1];
+    const prevTask = opts?.continueTask && lastItem?.role === "assistant" ? lastItem.task : undefined;
     setItems((prev) => {
       // Bấm "Làm tiếp": vẫn là nhiệm vụ cũ → số lần gọi AI cộng dồn; thẻ hỏi của lượt trước được gỡ
       const last = prev[prev.length - 1];
@@ -1042,6 +1047,10 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       lastInputRef.current = res.lastInputTokens;
       // Kể cả khi bị dừng hay lỗi giữa chừng: các bước đã làm vẫn hoàn tác được
       if (log.length) patchLast((it) => ({ ...it, undo: log }));
+      // Ghi lại việc đã làm của cả nhiệm vụ kể cả khi lượt dừng giữa chừng (chạm trần số bước, lỗi): lượt "Làm tiếp" sau gộp vào
+      const factsOf = (it: Item) =>
+        mergeTaskFacts(prevTask, { userText: opts?.continueTask ? request : typed, answer: finalText(it), wrote: !!it.wrote, toolsCalled: called, failedWrites });
+      if (useAgent && hostTools) patchLast((it) => ({ ...it, task: taskSoFar(factsOf(it)) }));
       if (res.error) {
         const e: any = res.error;
         const info = describeError(e, { provider: p });
@@ -1056,7 +1065,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       } else if (useAgent && hostTools) {
         // Lượt kết thúc bình thường: AI khẳng định đã thay đổi tài liệu mà không có thao tác ghi nào thành công → cảnh báo trên khung
         patchLast((it) => {
-          const w = unverifiedWriteClaim({ userText: typed, answer: finalText(it), wrote: !!it.wrote, toolsCalled: called, failedWrites });
+          const w = unverifiedWriteClaim(factsOf(it));
           return w ? { ...it, claimWarning: w.text } : it;
         });
       }

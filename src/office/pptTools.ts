@@ -6,6 +6,7 @@ import { currentSlideId, deleteShapeUndo, findShape, loadShapeTexts, restoreFont
 import { PPT_ADV_SPECS, executePptAdvanced, pptRisk, slideSizePt } from "./pptAdvanced";
 import { findAttachedImage, listAttachedImages } from "../core/attachedFiles";
 import { imageBox } from "../core/imagefit";
+import { nextTableFont, tableColumnWidths, tableFits } from "../core/tablefit";
 import { PPT_DESIGN_SPECS, executePptDesign } from "./pptDesign";
 import { PPT_SPECIAL_LINE } from "../core/toolgroups";
 
@@ -140,7 +141,7 @@ export const PPT_SPECS: ToolSpec[] = [
   },
   {
     name: "ppt_add_table",
-    description: "Add a table; first row is the header.",
+    description: "Add a table; first row is the header. Shrinks text to fit the slide and returns the real size (box, fits).",
     parameters: {
       type: "object",
       properties: {
@@ -150,6 +151,7 @@ export const PPT_SPECS: ToolSpec[] = [
         top: { type: "number" },
         width: { type: "number" },
         height: { type: "number" },
+        font_size: { type: "number" },
       },
       required: ["slide", "values"],
     },
@@ -605,14 +607,57 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         if (!supports("1.8")) throw new Error("PowerPoint trên máy này chưa hỗ trợ chèn bảng qua add-in.");
         const vals = normalize2D(a.values).map((r) => r.map((v) => String(v)));
         const { slide } = await slideAt(ctx, a.slide);
-        const opts: any = { values: vals, left: a.left ?? 40, top: a.top ?? 120 };
-        if (a.width) opts.width = a.width;
-        if (a.height) opts.height = a.height;
+        const size = await slideSizePt(ctx);
+        const left = Number.isFinite(Number(a.left)) && a.left !== null && a.left !== "" ? Number(a.left) : 40;
+        const top = Number.isFinite(Number(a.top)) && a.top !== null && a.top !== "" ? Number(a.top) : 120;
+        // Không nêu bề ngang: trải tới cách mép phải 20–40 pt — bảng hẹp mặc định 480 pt làm chữ xuống dòng, bảng cao vọt
+        const width = Number(a.width) > 0 ? Number(a.width) : Math.max(120, size.w - left - Math.min(Math.max(left, 20), 40));
+        const opts: any = { values: vals, left, top, width, columns: tableColumnWidths(vals, width).map((w) => ({ columnWidth: w })) };
+        if (Number(a.height) > 0) opts.height = Number(a.height);
         const shp = slide.shapes.addTable(vals.length, vals[0].length, opts);
-        shp.load("id,name");
+        shp.load("id,name,height");
         await ctx.sync();
         log.push(deleteShapeUndo(slide.id, shp.id, `Bảng ${shp.name}`, shp.name));
-        return { ok: true, message: `Đã thêm bảng ${vals.length}×${vals[0].length} ở slide ${a.slide}`, shape: shp.name };
+        // Cỡ chữ đặt từng ô SAU khi thêm (PowerPointApi 1.9): giữ kiểu bảng và phông chủ đề của mẫu (uniformCellProperties làm mất kiểu bảng — đã thăm dò)
+        const canFont = supports("1.9");
+        const want = Number(a.font_size);
+        let font: number | null = null;
+        const setFont = async (s: number) => {
+          const t = shp.getTable();
+          for (let r = 0; r < vals.length; r++) for (let k = 0; k < vals[0].length; k++) t.getCellOrNullObject(r, k).font.size = s;
+          shp.load("height");
+          await ctx.sync();
+          font = s;
+        };
+        const notes: string[] = [];
+        if (want && !(want >= 6 && want <= 60)) notes.push(`bỏ qua font_size ${a.font_size} (chỉ nhận 6–60)`);
+        else if (want && canFont) await setFont(want);
+        else if (want) notes.push("PowerPoint trên máy này chưa cho đặt cỡ chữ ô bảng (cần PowerPointApi 1.9)");
+        let startFont = font;
+        if (canFont && startFont === null) {
+          const c = shp.getTable().getCellOrNullObject(Math.min(1, vals.length - 1), 0);
+          c.font.load("size");
+          await ctx.sync();
+          startFont = Number(c.font.size) || 18;
+        }
+        if (canFont && !tableFits(top, shp.height, size.h)) {
+          for (let s = nextTableFont(startFont ?? 18); s !== null && !tableFits(top, shp.height, size.h); s = nextTableFont(s)) await setFont(s);
+          if (font !== null && font < startFont) notes.push(`đã tự co chữ từ ${startFont} xuống ${font} pt cho vừa slide`);
+        }
+        const h = Math.round(shp.height);
+        const bottom = Math.round(top + shp.height);
+        const fits = tableFits(top, shp.height, size.h);
+        if (!fits)
+          notes.push(
+            `BẢNG VẪN TRÀN: đáy bảng ở ${bottom} pt, slide cao ${Math.round(size.h)} pt${canFont ? ` dù chữ đã ${font ?? startFont} pt` : ""}. Đừng xóa dựng lại cùng nội dung: kéo bảng lên (top nhỏ hơn), bớt chữ, hoặc chia bảng sang hai slide.`,
+          );
+        return {
+          ok: true,
+          message: `Đã thêm bảng ${vals.length}×${vals[0].length} ở slide ${a.slide}: khung ${Math.round(left)}, ${Math.round(top)}, ${Math.round(width)} × ${h} pt${font !== null ? `, chữ ${font} pt` : ""}${fits ? ", nằm gọn trong slide" : ""}${notes.length ? ` (${notes.join("; ")})` : ""}`,
+          shape: shp.name,
+          box: [Math.round(left), Math.round(top), Math.round(width), h],
+          fits,
+        };
       });
 
     case "ppt_go_to_slide":

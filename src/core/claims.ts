@@ -169,6 +169,36 @@ export interface TurnFacts {
   toolsCalled: string[];
   /** Số công cụ ghi đã gọi nhưng lỗi, không đổi được gì, hoặc bị người dùng từ chối */
   failedWrites?: number;
+  /** Lượt này nối tiếp nhiệm vụ của lượt trước (người dùng bấm "Làm tiếp"); các trường trên đã gộp cả nhiệm vụ (`mergeTaskFacts`) */
+  continued?: boolean;
+}
+
+/** Những gì đã làm của một nhiệm vụ tới hết một lượt — lưu ở mục trả lời để lượt "Làm tiếp" kế đó gộp vào */
+export interface TaskSoFar {
+  /** Yêu cầu gốc người dùng gõ (lượt Làm tiếp chỉ gửi câu của add-in) */
+  userText: string;
+  wrote: boolean;
+  toolsCalled: string[];
+  failedWrites: number;
+}
+
+/** Gộp lượt hiện tại với các lượt trước của CÙNG nhiệm vụ (22/11/2026: lượt sau "Làm tiếp" chỉ đọc lại rồi báo "đã thêm…" bị cảnh báo nhầm,
+ *  dù thao tác ghi đã chạy ở lượt trước — X6-D3, W4-B3). Không có `prev` (nhiệm vụ mới) thì trả nguyên lượt hiện tại. */
+export function mergeTaskFacts(prev: TaskSoFar | undefined, cur: TurnFacts): TurnFacts {
+  if (!prev) return cur;
+  return {
+    userText: prev.userText || cur.userText,
+    answer: cur.answer,
+    wrote: prev.wrote || cur.wrote,
+    toolsCalled: [...prev.toolsCalled, ...cur.toolsCalled],
+    failedWrites: (prev.failedWrites || 0) + (cur.failedWrites || 0),
+    continued: true,
+  };
+}
+
+/** Bản lưu của nhiệm vụ sau lượt này (để lượt Làm tiếp kế đó gộp) */
+export function taskSoFar(f: TurnFacts): TaskSoFar {
+  return { userText: f.userText, wrote: f.wrote, toolsCalled: f.toolsCalled.slice(-200), failedWrites: f.failedWrites || 0 };
 }
 
 export interface ClaimWarning {
@@ -187,11 +217,12 @@ export function unverifiedWriteClaim(f: TurnFacts): ClaimWarning | null {
   // Câu không có chủ ngữ "tôi" chỉ tính khi người dùng có nhờ sửa; đã đọc sửa đổi của người khác thì phải là nhờ duyệt / xử lý
   if (c.strength === "medium" && (!intent || (described && !/chấp nhận|từ chối|duyệt|xử lý/i.test(f.userText)))) return null;
   if (c.strength === "strong" && described && !intent) return null;
+  const scope = f.continued ? "cả nhiệm vụ (tính cả các lượt trước khi bấm Làm tiếp)" : "lượt này";
   const why = f.failedWrites
-    ? `${f.failedWrites} thao tác ghi của lượt này đều không thành công`
+    ? `${f.failedWrites} thao tác ghi của ${scope} đều không thành công`
     : f.toolsCalled.length
-      ? "lượt này AI chỉ gọi công cụ đọc, không có thao tác ghi nào"
-      : "lượt này AI không gọi công cụ nào";
+      ? `${f.continued ? "trong " : ""}${scope} AI chỉ gọi công cụ đọc, không có thao tác ghi nào`
+      : `${f.continued ? "trong " : ""}${scope} AI không gọi công cụ nào`;
   return {
     sentence: c.sentence,
     text: `Cảnh báo: AI nói đã thay đổi tài liệu (“${c.sentence.length > 90 ? c.sentence.slice(0, 90) + "…" : c.sentence}”) nhưng ${why}. Tài liệu CHƯA được thay đổi.`,
