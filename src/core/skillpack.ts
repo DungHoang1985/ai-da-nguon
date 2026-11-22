@@ -158,7 +158,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 
 1. excel_get_overview, excel_read_range toàn vùng; xác định dòng tiêu đề, cột số, cột ngày, cột chữ.
 2. Báo vấn đề trước khi sửa: ô trống bất thường, số lưu dạng chữ, ngày sai kiểu, khoảng trắng thừa, dòng trùng (excel_find giúp dò).
-3. Mặc định ghi bản sạch sang sheet mới "<tên>_chuan"; chỉ sửa tại chỗ khi được yêu cầu.
+3. Người dùng nêu tên sheet cần làm sạch ("làm sạch sheet X") thì sửa ngay trên sheet đó (có Hoàn tác) và xóa phần thừa của bảng cũ; chỉ ghi bản sạch sang sheet mới "<tên>_chuan" khi người dùng không nói rõ chỗ hoặc muốn giữ bản gốc.
 4. Định dạng: tiêu đề đậm + tô nền nhạt + viền, số "#,##0", ngày "dd/mm/yyyy", tự giãn cột; tạo Table; cố định dòng tiêu đề (excel_sheet action freeze_rows).
 5. Thêm ô kiểm tra (tổng, đếm) bằng công thức để đối chiếu với bảng gốc.
 6. Kết thúc: liệt kê thay đổi kèm địa chỉ ô.`,
