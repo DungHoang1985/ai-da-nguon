@@ -135,4 +135,25 @@ Theo lưu ý sức chứa của model miễn phí:
 | E3 Chạy thật (Nemotron 3 Ultra miễn phí): theo bộ nhớ "trả lời kết luận trước, dùng bảng Tiêu chí · Kết quả" | **Đạt một phần** | 3 lần (`e3-chay-that.json` là lần 3). Cả 3 lần: khung báo gửi kèm 1 mục, câu trả lời **mở bằng kết luận** ("Không bắt buộc."). Bảng: lần 1, 2 **không có bảng** (lần 1 câu hỏi có "trả lời ngắn"; lần 2 đã sửa tiêu đề khối bộ nhớ thành "luôn tuân theo"; mục nhớ có tiền tố thử "E3-thu:"); lần 3 (ghi đúng câu của anh) **có bảng nhưng model tự đặt tên cột** ("Loại hợp đồng · … · Bắt buộc công chứng?"), không phải "Tiêu chí · Kết quả". Dừng sau 3 lần theo quy tắc. Nội dung pháp lý trong câu trả lời của Nemotron dẫn văn bản đã hết hiệu lực — lỗi của model, không thuộc phần này |
 | E3 AI đề xuất nhớ một quy ước, bấm Nhớ / Bỏ | Đạt (bài thử bấm, chưa phải anh bấm) | 3/3 lần nói "Từ giờ, công văn… luôn ký thừa lệnh Giám đốc…": Nemotron gọi `remember` đúng nội dung, thẻ hiện, bấm Bỏ không lưu; bấm Nhớ đã kiểm ở E2 |
 
-Chưa làm: soát mã độc lập cho phần E; Chạy thật ở chế độ Trả phí (Claude) để so mức tuân theo bộ nhớ.
+### Soát mã độc lập phần E (23/11/2026) — đã sửa trước khi phát hành 4.11.7
+
+Một tác tử soát độc lập đọc `git diff 0fd4635..HEAD -- src test` (2 cao · 4 trung bình · 7 thấp):
+
+| # | Mức | Phát hiện | Xử lý |
+|---|---|---|---|
+| 1 | Cao | Ký tự vô hình (zero-width, điều khiển hướng chữ, ký tự "tag") lọt vào mục nhớ: thẻ hiện chữ vô hại, lời nhắc mang chữ ẩn; zero-width làm sót số điện thoại | Đã sửa: `cleanMemoryText` chuẩn hóa NFKC rồi bỏ `\p{Cf}`, `\p{Co}`, `\p{Cs}`; áp cả khi đọc kho / khôi phục |
+| 2 | Cao | Bộ lọc sót số tài khoản / CCCD / thẻ viết theo nhóm hoặc gạch nối, "mật khẩu … là …", hộ chiếu, máy bàn 02x | Đã sửa, kèm 10 ca phải chặn |
+| 3 | TB | Chặn nhầm số tiền không dấu chấm, mã số thuế, tên tệp dạng gạch nối | Đã sửa (ngữ cảnh "đồng / tỷ / USD…", "MST / mã số thuế", tên dạng gạch nối), kèm 7 ca không chặn nhầm |
+| 4 | TB | Chỉ dẫn ẩn trong tài liệu có thể khiến AI đề xuất nhớ | Đã sửa: `propose_memory` chỉ nhận khi câu anh gõ ở lượt đó nói tới ghi nhớ / quy ước lâu dài (`mentionsMemory`); tiêu đề khối thêm "không vượt quy tắc an toàn" |
+| 5 | TB | Đổi Trả phí → Miễn phí giữa hội thoại vẫn gửi khối 2.000 ký tự | Đã sửa: bản chụp lưu dạng danh sách mục, mỗi lượt cắt theo trần của chế độ đang dùng (`memoryForTurn`) |
+| 6 | TB | Hai khung mở cùng lúc: thao tác ở Cài đặt ghi đè mục khung kia vừa lưu | Đã sửa: mỗi thao tác đọc lại kho; nghe sự kiện `storage` |
+| 7 | Thấp | Xóa mục nhưng hội thoại cũ vẫn gửi bản chụp | Đã sửa: mục đã xóa / tắt thôi gửi ngay từ lượt sau (đổi lời nhắc một lần — chủ ý vì có thể là thông tin lỡ lưu) |
+| 8 | Thấp | Khôi phục gộp không lọc lại, không bỏ trùng, không giới hạn 60 | Đã sửa: `tidyMemory` |
+| 9 | Thấp | Phạm vi do AI đưa ngoài danh sách thành "all"; trùng chữ giữa "all" và ứng dụng | Đã sửa |
+| 10 | Thấp | Chế độ thử dùng kho bộ nhớ thật | Để lại: bài thử tự dọn mục thử qua giao diện; ghi ở đây |
+| 11 | Thấp | `hideGroupTools` thay chuỗi con "remember" | Đã sửa: đổi tên công cụ thành `propose_memory` |
+| 12–13 | Nit | Chú thích lệch mã; từ khóa "mặc định" bật nhóm quá thường | Đã sửa chú thích; bỏ "mặc định", thêm "nhớ" (có dấu, không khớp "nhỏ") |
+
+Sau khi sửa: kiểm thử máy **801/801**, kiểm kiểu sạch; E2 lại 11/11 (`e2-bo-nho-word-sau-soat.json`), Tự kiểm tra Word 40/40 (`tu-kiem-tra-word-e-cuc-bo.json`) trên bản cục bộ.
+
+Chưa làm: Chạy thật ở chế độ Trả phí (Claude) để so mức tuân theo bộ nhớ.

@@ -1,0 +1,59 @@
+{
+ "buoc": [
+  {
+   "ten": "Bản cục bộ có mục Bộ nhớ trong Cài đặt",
+   "dat": true
+  },
+  {
+   "ten": "Thêm mục A qua Cài đặt",
+   "dat": true,
+   "chiTiet": "Đã nhớ. Có hiệu lực từ hội thoại mới (bấm Hội thoại mới ở khung chat)."
+  },
+  {
+   "ten": "Mục có số CCCD bị chặn, không lưu",
+   "dat": true,
+   "chiTiet": "Không nhớ được: có dãy số giống số CCCD, số tài khoản hoặc số thẻ. Bộ nhớ không giữ key, mật khẩu, số định danh, số điện thoại, số tài khoản."
+  },
+  {
+   "ten": "Hội thoại mới: lời nhắc hệ thống có mục A",
+   "dat": true,
+   "chiTiet": "dài 8272"
+  },
+  {
+   "ten": "Dòng 'Gửi kèm … mục bộ nhớ' hiện trên khung",
+   "dat": true,
+   "chiTiet": "🧠 Gửi kèm 1 mục bộ nhớ · bộ nhớ được gửi kèm tới nguồn miễn phí"
+  },
+  {
+   "ten": "Cùng hội thoại sau khi thêm mục B: lời nhắc giống hệt lượt 1 (bộ nhớ đệm giữ nguyên)",
+   "dat": true,
+   "chiTiet": "giống hệt"
+  },
+  {
+   "ten": "Hội thoại mới tiếp theo: lời nhắc có cả A và B",
+   "dat": true
+  },
+  {
+   "ten": "Thẻ 'AI muốn nhớ' hiện, chưa tự lưu",
+   "dat": true,
+   "chiTiet": "🧠 AI muốn nhớ: “E2-thu: Công văn ký thừa lệnh Giám đốc.” | Nhớ | Bỏ"
+  },
+  {
+   "ten": "Bấm Nhớ: thẻ đổi trạng thái đã nhớ",
+   "dat": true,
+   "chiTiet": "🧠 AI muốn nhớ: “E2-thu: Công văn ký thừa lệnh Giám đốc.” | Đã nhớ — có hiệu lực từ hội thoại sau. Xem, sửa, xóa ở Cài đặt → Bộ nhớ."
+  },
+  {
+   "ten": "Mục AI đề xuất có trong Cài đặt, nguồn 'AI đề xuất'",
+   "dat": true
+  },
+  {
+   "ten": "Xóa mục thử qua nút Xóa: bộ nhớ về đúng như trước bài thử",
+   "dat": true,
+   "chiTiet": 0
+  }
+ ],
+ "soMucTruoc": 0,
+ "nguon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "soLanChan": 14
+}
