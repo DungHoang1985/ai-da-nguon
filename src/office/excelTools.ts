@@ -1,5 +1,6 @@
 /* global Excel */
 /** Công cụ để AI thao tác trực tiếp trên sổ tính Excel. Mỗi thao tác ghi đều lưu ảnh chụp để Hoàn tác. */
+import { convertDateTexts, isDateNumberFormat } from "../core/datetext";
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, splitAreas, topLeft, truncate } from "./util";
 import { bulkTrail, getRange, restoreFrom, snapshot } from "./excelCore";
@@ -269,7 +270,23 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         const { range } = getRange(ctx, a.address, a.sheet);
         const target = range.getCell(0, 0).getResizedRange(vals.length - 1, vals[0].length - 1);
         const snap = await snapshot(ctx, target);
-        target.formulas = vals.map((row) => row.map((v) => (typeof v === "number" || typeof v === "boolean" ? v : String(v))));
+        const cellsIn = vals.map((row) => row.map((v) => (typeof v === "number" || typeof v === "boolean" ? v : String(v))));
+        // Đợt 12 (bài X3): công thức ghi vào ô định dạng chữ "@" bị Excel giữ nguyên thành chữ → đổi riêng ô đó về General trước khi ghi
+        target.load("numberFormat");
+        await ctx.sync();
+        let unText = 0;
+        const nf = target.numberFormat.map((row, i) =>
+          row.map((f, j) => {
+            const v = cellsIn[i]?.[j];
+            if (f === "@" && typeof v === "string" && v.startsWith("=")) {
+              unText++;
+              return "General";
+            }
+            return f;
+          }),
+        );
+        if (unText) target.numberFormat = nf;
+        target.formulas = cellsIn;
         target.load("address,values");
         await ctx.sync();
         const undo = restoreFrom(snap, `Ghi ${target.address}`);
@@ -284,7 +301,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         );
         return {
           ok: true,
-          message: `Đã ghi ${vals.length * vals[0].length} ô vào ${target.address}`,
+          message: `Đã ghi ${vals.length * vals[0].length} ô vào ${target.address}${unText ? ` (${unText} ô công thức đang ở định dạng chữ "@" đã đổi về General để công thức chạy)` : ""}`,
           address: target.address,
           result_preview: target.values.slice(0, 12).map((row) => row.slice(0, 10)),
           ...(errors.length ? { formula_errors: errors.slice(0, 20) } : {}),
@@ -325,9 +342,22 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           if (/^none$/i.test(a.fill_color)) f.fill.clear();
           else f.fill.color = a.fill_color;
         }
+        let dateNote = "";
         if (a.number_format) {
           if (range.rowCount * range.columnCount > 200000) throw new Error("Vùng quá lớn để đặt định dạng số.");
           range.numberFormat = Array.from({ length: range.rowCount }, () => Array(range.columnCount).fill(a.number_format));
+          // Đợt 12 (bài X3): đặt định dạng ngày cho ô đang là CHỮ dạng ngày thì Excel không đổi gì → đổi chữ thành ngày thật
+          // (đọc ngày/tháng/năm). Bản chụp ở trên đã gồm công thức và định dạng số nên Hoàn tác trả lại chữ cũ.
+          if (isDateNumberFormat(a.number_format) && range.rowCount * range.columnCount <= 20000) {
+            range.load("formulas");
+            await ctx.sync();
+            const fix = convertDateTexts(range.formulas);
+            if (fix.converted) range.formulas = fix.formulas;
+            const tl = topLeft(range.address);
+            const left = fix.leftText.slice(0, 5).map(([i, j]) => cellAddress(tl.col + j, tl.row + i));
+            if (fix.converted) dateNote += `; đổi ${fix.converted} ô chữ dạng ngày thành ngày thật (đọc theo ngày/tháng/năm)`;
+            if (fix.leftText.length) dateNote += `; ${fix.leftText.length} ô vẫn là chữ, không đọc được thành ngày (${left.join(", ")}${fix.leftText.length > 5 ? ", …" : ""}) — định dạng ngày không áp được cho các ô này`;
+          }
         }
         if (a.horizontal_alignment) f.horizontalAlignment = a.horizontal_alignment;
         if (a.wrap_text !== undefined) f.wrapText = !!a.wrap_text;
@@ -352,7 +382,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         await ctx.sync();
         const undo = restoreFrom(snap, `Định dạng ${range.address}`);
         if (undo) log.push(undo);
-        return { ok: true, message: `Đã định dạng ${range.address}` };
+        return { ok: true, message: `Đã định dạng ${range.address}${dateNote}` };
       });
     }
 

@@ -107,6 +107,41 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(bold === true, "Chữ tiêu đề chưa đậm");
       return "Đậm, tô nền, kẻ viền, định dạng số";
     });
+    // Đợt 12 (bài X3, 22/11/2026): cột ngày ở ô định dạng chữ "@" — đặt định dạng ngày phải đổi chữ thành ngày thật;
+    // công thức ghi vào ô chữ phải chạy; Hoàn tác trả lại chữ cũ
+    await step("Ngày đang là chữ → định dạng ngày đổi thành ngày thật; công thức ghi vào ô chữ vẫn chạy", async () => {
+      await Excel.run(async (ctx) => {
+        const r = ctx.workbook.worksheets.getItem(sheet).getRange("F1:F5");
+        r.numberFormat = [["@"], ["@"], ["@"], ["@"], ["@"]];
+        r.values = [["Ngày"], ["05/03/2026"], ["2026-03-07"], ["18.03.2026"], ["không rõ"]];
+        await ctx.sync();
+      });
+      const mine: UndoEntry[] = [];
+      const fr = await tools.execute("excel_format_range", { sheet, address: "F2:F5", number_format: "dd/mm/yyyy" }, { log: mine });
+      const w = await tools.execute("excel_write_range", { sheet, address: "G1", values: [["=COUNT(F2:F5)"]] }, { log: mine });
+      const got = await Excel.run(async (ctx) => {
+        const r = ctx.workbook.worksheets.getItem(sheet).getRange("F2:G5");
+        r.load("values,text");
+        await ctx.sync();
+        const g = ctx.workbook.worksheets.getItem(sheet).getRange("G1");
+        g.load("values");
+        await ctx.sync();
+        return { v: r.values.map((x) => x[0]), t: r.text.map((x) => x[0]), g: g.values[0][0] };
+      });
+      expect(typeof got.v[0] === "number" && typeof got.v[1] === "number" && typeof got.v[2] === "number", `Ngày vẫn là chữ: ${JSON.stringify(got.v)} (${fr.message})`);
+      expect(got.t[0] === "05/03/2026" && got.t[1] === "07/03/2026" && got.t[2] === "18/03/2026", `Hiển thị sai: ${JSON.stringify(got.t)}`);
+      expect(got.v[3] === "không rõ" && /1 ô vẫn là chữ/.test(fr.message), `Ô không phải ngày phải giữ nguyên và được báo: ${fr.message}`);
+      expect(got.g === 3, `Công thức ghi vào ô chữ không chạy: G1 = ${JSON.stringify(got.g)} (${w.message})`);
+      for (const u of [...mine].reverse()) await u.undo();
+      const back = await Excel.run(async (ctx) => {
+        const r = ctx.workbook.worksheets.getItem(sheet).getRange("F2:F3");
+        r.load("values");
+        await ctx.sync();
+        return r.values.map((x) => x[0]);
+      });
+      expect(back[0] === "05/03/2026" && back[1] === "2026-03-07", `Hoàn tác không trả lại chữ cũ: ${JSON.stringify(back)}`);
+      return `${fr.message.replace(/^Đã định dạng [^;]*; /, "")}; G1 = COUNT(...) = 3; Hoàn tác trả lại chữ cũ`;
+    });
     await step("Tạo bảng (Table)", async () => (await run("excel_create_table", { sheet, address: "A1:B4" })).message);
     await step("Vẽ biểu đồ", async () =>
       (await run("excel_create_chart", { sheet, source_address: "A1:B3", chart_type: "column", title: "Thử" })).message

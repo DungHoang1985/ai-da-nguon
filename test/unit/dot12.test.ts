@@ -130,3 +130,29 @@ describe("Đợt 12 · A · đo token đầu vào", () => {
     });
   });
 });
+
+import { convertDateTexts, dateTextToSerial, isDateNumberFormat } from "../../src/core/datetext";
+
+describe("Đợt 12 · B · X3: chữ dạng ngày thành ngày thật khi đặt định dạng ngày", () => {
+  it("Đọc theo ngày/tháng/năm; năm đứng đầu thì năm-tháng-ngày; dữ liệu thật của bài X3", () => {
+    const s = (y: number, m: number, d: number) => Math.round((Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / 86400000);
+    assert.strictEqual(dateTextToSerial("05/03/2026"), s(2026, 3, 5));
+    for (const [t, d] of [["2026-03-07", 7], ["7-3-2026", 7], ["12/3/2026", 12], ["2026/03/15", 15], ["18.03.2026", 18], ["25-03-2026", 25], [" 20/03/2026 ", 20]] as [string, number][])
+      assert.strictEqual(dateTextToSerial(t), s(2026, 3, d), t);
+    assert.strictEqual(dateTextToSerial("01/01/1900"), 2);
+  });
+  it("Không phải ngày có thật hoặc không phải chữ dạng ngày → null (không đổi nhầm)", () => {
+    for (const t of ["31/02/2026", "00/03/2026", "12/13/2026", "0912345678", "Ngày đặt cọc", "05/03/26", "2026-3", "1.234.567", "5/3", "", "=TODAY()"]) assert.strictEqual(dateTextToSerial(t), null, t);
+    assert.strictEqual(dateTextToSerial(45000 as any), null);
+  });
+  it("Định dạng ngày: có d hoặc y; giờ phút, số, phần trăm, chữ thì không", () => {
+    for (const f of ["dd/mm/yyyy", "m/d/yyyy", "[$-vi-VN]dd/mm/yyyy", "d-mmm-yy", "yyyy"]) assert.ok(isDateNumberFormat(f), f);
+    for (const f of ["General", "@", "#,##0", "0.0%", "mm:ss", "h:mm", '"ngày"0', "[Red]0.00", ""]) assert.ok(!isDateNumberFormat(f), f);
+  });
+  it("Chỉ đổi ô chữ dạng ngày; ô số, công thức, rỗng giữ nguyên; báo ô chữ không đọc được", () => {
+    const fix = convertDateTexts([["Ngày đặt cọc"], ["05/03/2026"], [46000], ["=TODAY()"], [""], ["không rõ"], ["31/02/2026"]]);
+    assert.strictEqual(fix.converted, 1);
+    assert.deepStrictEqual(fix.formulas.map((r) => r[0]), ["Ngày đặt cọc", dateTextToSerial("05/03/2026"), 46000, "=TODAY()", "", "không rõ", "31/02/2026"]);
+    assert.deepStrictEqual(fix.leftText, [[0, 0], [5, 0], [6, 0]]);
+  });
+});

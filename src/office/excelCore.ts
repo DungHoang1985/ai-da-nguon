@@ -97,8 +97,10 @@ export function restoreFrom(snap: Snapshot | null, label: string): UndoEntry | n
       await Excel.run(async (ctx) => {
         const ws = snap.sheet ? ctx.workbook.worksheets.getItem(snap.sheet) : ctx.workbook.worksheets.getActiveWorksheet();
         const r = ws.getRange(snap.address);
-        r.formulas = snap.formulas;
+        // Định dạng số TRƯỚC rồi mới ghi nội dung: ghi chữ "05/03/2026" vào ô còn định dạng ngày thì Excel đổi ngay thành ngày
+        // (Đợt 12, Tự kiểm tra bài X3); trả ô về "@" trước thì chữ được giữ là chữ
         r.numberFormat = snap.numberFormat;
+        r.formulas = snap.formulas;
         await ctx.sync();
       });
       // Bước 2: định dạng ô và độ rộng cột (cố gắng hết mức)
