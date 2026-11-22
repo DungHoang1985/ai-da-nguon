@@ -303,8 +303,35 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         );
         if (unText) target.numberFormat = nf;
         target.formulas = cellsIn;
-        target.load("address,values");
+        target.load("address,values,rowIndex,columnIndex,rowCount,columnCount");
         await ctx.sync();
+        // Đợt 12 (bài X3): ghi bảng đã làm sạch (ít hàng hơn) đè lên bảng cũ mà quên xóa phần thừa bên dưới, rồi báo "còn 9 dòng".
+        // Nhắc lại nếu ngay dưới vùng vừa ghi (cùng các cột) còn dữ liệu cũ.
+        let below = "";
+        try {
+          const ws = target.worksheet;
+          const used = ws.getUsedRangeOrNullObject(true);
+          used.load("rowIndex,rowCount");
+          await ctx.sync();
+          const last = used.isNullObject ? -1 : used.rowIndex + used.rowCount - 1;
+          const first = target.rowIndex + target.rowCount;
+          if (last >= first) {
+            const n = Math.min(last - first + 1, 500);
+            const rest = ws.getRangeByIndexes(first, target.columnIndex, n, target.columnCount);
+            rest.load("values,address");
+            await ctx.sync();
+            let k = 0;
+            while (k < rest.values.length && rest.values[k].some((v) => v !== "" && v !== null)) k++;
+            if (k > 0) {
+              const r = ws.getRangeByIndexes(first, target.columnIndex, k, target.columnCount);
+              r.load("address");
+              await ctx.sync();
+              below = r.address;
+            }
+          }
+        } catch {
+          /* không đọc được vùng đang dùng: bỏ qua lời nhắc */
+        }
         const undo = restoreFrom(snap, `Ghi ${target.address}`);
         if (undo) log.push(undo);
         const tl = topLeft(target.address);
@@ -321,6 +348,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           address: target.address,
           result_preview: target.values.slice(0, 12).map((row) => row.slice(0, 10)),
           ...(errors.length ? { formula_errors: errors.slice(0, 20) } : {}),
+          ...(below ? { note_below: `Ngay dưới vùng vừa ghi còn dữ liệu cũ ở ${below}. Nếu bảng mới thay cho bảng cũ thì phần này là thừa: xóa đi (excel_clear_range) trước khi báo xong.` } : {}),
           ...(snap ? {} : { note: "Vùng lớn nên không lưu được bản để Hoàn tác." }),
           // Cho lớp dấu vết soát lại (excelTrail): nội dung trước và sau; bị gỡ khỏi kết quả trước khi trả cho model
           __trail: { sheet: where.sheet || "", address: where.address, before: snap ? snap.formulas : null, after: vals, undoable: !!snap },
@@ -378,8 +406,16 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
           // Đợt 12 (bài X3): đặt định dạng ngày cho ô đang là CHỮ dạng ngày thì Excel không đổi gì → đổi chữ thành ngày thật
           // (đọc ngày/tháng/năm). Bản chụp ở trên đã gồm công thức và định dạng số nên Hoàn tác trả lại chữ cũ.
           if (isDateNumberFormat(a.number_format) && range.rowCount * range.columnCount <= 20000) {
-            range.load("formulas");
+            range.load("formulas,numberFormat");
             await ctx.sync();
+            // Đã thăm dò 22/11/2026: "dd/mm/yyyy" trùng kiểu ngày ngắn của Windows thì Excel lưu thành định dạng dựng sẵn (Office.js đọc ra
+            // "m/d/yyyy") — mở ở máy vùng Mỹ sẽ hiện 3/5/2026. Thêm ";@" thì Excel giữ đúng cách viết đã chọn trên mọi máy.
+            const want = String(a.number_format);
+            const got = String(range.numberFormat?.[0]?.[0] ?? "");
+            if (got !== want && /^m\/d\/yyyy$/i.test(got) && !/^m\/d\/yyyy$/i.test(want) && !want.includes(";")) {
+              range.numberFormat = Array.from({ length: range.rowCount }, () => Array(range.columnCount).fill(want + ";@"));
+              dateNote += `; Excel đổi "${want}" thành kiểu ngày ngắn của máy nên đã đặt "${want};@" để mọi máy đều hiện đúng ${want}`;
+            }
             const fix = convertDateTexts(range.formulas);
             if (fix.converted) range.formulas = fix.formulas;
             const tl = topLeft(range.address);
