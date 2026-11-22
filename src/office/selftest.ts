@@ -1035,6 +1035,38 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       unregisterAttachedFile(name);
     }
   });
+  // Đợt 12, phần D (chỉ Word): đọc tệp .docx đính kèm theo điều — số điều do danh sách tự động của Word dựng lại đúng
+  if (tools.host === "Word") {
+    await step("Đọc tệp .docx đính kèm theo điều (số điều do Word tự đánh)", async () => {
+      const { registerAttachedFile, unregisterAttachedFile } = await import("../core/attachedFiles");
+      const { createCommonTools } = await import("./common");
+      const JSZip = (await import("jszip")).default;
+      const zip = new JSZip();
+      const p = (st: string, t: string) => `<w:p><w:pPr><w:pStyle w:val="${st}"/></w:pPr><w:r><w:t>${t}</w:t></w:r></w:p>`;
+      zip.file("word/document.xml", `<w:document><w:body>${p("Heading1", "Định nghĩa")}${p("Heading2", "Bên A")}${p("Heading1", "Tiền thuê")}${p("Heading2", "Đơn giá")}${p("Heading3", "MOC-TU-KIEM-DOCX điện")}${p("Heading3", "nước")}</w:body></w:document>`);
+      zip.file(
+        "word/numbering.xml",
+        '<w:numbering><w:abstractNum w:abstractNumId="1"><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="decimal"/><w:lvlText w:val="Điều %1."/></w:lvl><w:lvl w:ilvl="1"><w:start w:val="1"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1.%2."/></w:lvl><w:lvl w:ilvl="2"><w:start w:val="1"/><w:numFmt w:val="lowerLetter"/><w:lvlText w:val="%3)"/></w:lvl></w:abstractNum><w:num w:numId="2"><w:abstractNumId w:val="1"/></w:num></w:numbering>'
+      );
+      zip.file(
+        "word/styles.xml",
+        ["Heading1", "Heading2", "Heading3"].map((s, k) => `<w:style w:type="paragraph" w:styleId="${s}"><w:pPr><w:numPr><w:ilvl w:val="${k}"/><w:numId w:val="2"/></w:numPr><w:outlineLvl w:val="${k}"/></w:pPr></w:style>`).join("")
+      );
+      const name = `aidn-tu-kiem-${Date.now().toString(36)}.docx`;
+      registerAttachedFile(name, await zip.generateAsync({ type: "base64" }));
+      try {
+        const t = createCommonTools({ host: "Word", skills: [], shareContext: false });
+        expect(t.specs.some((s) => s.name === "read_attachment_text"), "Thiếu công cụ read_attachment_text ở Word");
+        const r = await t.execute("read_attachment_text", { file: name, clause: "2.1(a)" });
+        expect(/^\[¶4\] a\) MOC-TU-KIEM-DOCX/.test(r.text), `Tra "2.1(a)" sai: ${JSON.stringify(r).slice(0, 200)}`);
+        const all = await t.execute("read_attachment_text", { file: name, paragraphs: "0-5" });
+        expect(/Điều 2\. Tiền thuê/.test(all.text) && all.total_paragraphs === 6, `Đọc dải đoạn sai: ${String(all.text).slice(0, 200)}`);
+        return `${all.total_paragraphs} đoạn; "2.1(a)" → ${r.text}`;
+      } finally {
+        unregisterAttachedFile(name);
+      }
+    });
+  }
   onProgress([...steps]);
   return steps;
 }

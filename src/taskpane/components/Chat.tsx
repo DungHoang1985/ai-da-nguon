@@ -797,7 +797,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     }
     // Bản gốc của tệp .docx và .pdf: đăng ký (lại) lúc gửi để công cụ so sánh phiên bản và công cụ đọc theo trang đọc được
     atts.forEach((a) => (a.mime === DOCX_MIME || a.mime === PDF_MIME) && a.data && registerAttachedFile(a.name, a.data));
-    content = withAttachments(content, atts, { compare: host === "Word" && agentOn, pageTool: useAgent, byPages: byPages.map((a) => a.name) });
+    content = withAttachments(content, atts, { compare: host === "Word" && agentOn, pageTool: useAgent, byPages: byPages.map((a) => a.name), docTool: host === "Word" && useAgent });
     const images = atts.filter((a) => a.kind === "image" && a.data).map((a) => ({ mime: a.mime || "image/png", data: a.data! }));
     // PowerPoint: giữ ảnh đính kèm trong bộ nhớ của phiên và nêu tên để AI đặt được ảnh vào slide (ppt_insert_image)
     if (host === "PowerPoint" && useAgent) {

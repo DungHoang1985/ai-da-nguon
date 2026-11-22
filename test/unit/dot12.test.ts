@@ -250,3 +250,82 @@ describe("Đợt 12 · Soát mã độc lập 22/11 (mã từ 4.11.0)", () => {
     assert.strictEqual(run([["=SUM(RC[-8]:RC[-1])"], ["=SUM(RC[-8]:RC[-1])"], ["=SUM(RC[-8]:RC[-1])"], ["=SUM(RC[-8]:RC[-2])"]]).counts.inconsistent, 1);
   });
 });
+
+import { DOCX_INLINE_MAX_CHARS, docxOutlineText, docxParagraphs, formatNumber, parseParaRange, readDocxSection } from "../../src/core/docxparas";
+import { buildOutline } from "../../src/core/outline";
+import { DOCX_MIME, withAttachments } from "../../src/core/attachments";
+
+describe("Đợt 12 · D · .docx đính kèm: số điều như Word hiện, mục lục, đọc theo điều", () => {
+  // Cấu trúc như hợp đồng thử (kiem-thu/hop-dong-thu.mjs): số điều do danh sách tự động gắn vào kiểu đoạn Heading1/2/3
+  const numbering =
+    '<w:numbering><w:abstractNum w:abstractNumId="1"><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="decimal"/><w:lvlText w:val="Điều %1."/></w:lvl>' +
+    '<w:lvl w:ilvl="1"><w:start w:val="1"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1.%2."/></w:lvl><w:lvl w:ilvl="2"><w:start w:val="1"/><w:numFmt w:val="lowerLetter"/><w:lvlText w:val="%3)"/></w:lvl></w:abstractNum>' +
+    '<w:num w:numId="2"><w:abstractNumId w:val="1"/></w:num></w:numbering>';
+  const styles =
+    '<w:styles><w:style w:type="paragraph" w:styleId="Heading1"><w:pPr><w:numPr><w:ilvl w:val="0"/><w:numId w:val="2"/></w:numPr><w:outlineLvl w:val="0"/></w:pPr></w:style>' +
+    '<w:style w:type="paragraph" w:styleId="Heading2"><w:pPr><w:numPr><w:ilvl w:val="1"/><w:numId w:val="2"/></w:numPr><w:outlineLvl w:val="1"/></w:pPr></w:style>' +
+    '<w:style w:type="paragraph" w:styleId="H3con"><w:basedOn w:val="Heading3"/></w:style>' +
+    '<w:style w:type="paragraph" w:styleId="Heading3"><w:pPr><w:numPr><w:ilvl w:val="2"/><w:numId w:val="2"/></w:numPr></w:pPr></w:style></w:styles>';
+  const p = (style: string, t: string) => `<w:p><w:pPr><w:pStyle w:val="${style}"/></w:pPr><w:r><w:t xml:space="preserve">${t}</w:t></w:r></w:p>`;
+  const doc =
+    "<w:document><w:body>" +
+    "<w:p><w:r><w:t>HỢP ĐỒNG THUÊ</w:t></w:r></w:p>" +
+    p("Heading1", "Định nghĩa") + p("Heading2", "“Bên Thuê” là Công ty A &amp; B") +
+    p("Heading1", "Tiền thuê") + p("Heading2", "Đơn giá là 450.000 đồng") +
+    '<w:p><w:pPr><w:pStyle w:val="Heading2"/></w:pPr><w:r><w:t>Tăng giá </w:t></w:r><w:del><w:r><w:delText>5%</w:delText></w:r></w:del><w:ins><w:r><w:t>3%</w:t></w:r></w:ins><w:r><w:tab/><w:t>mỗi hai năm</w:t></w:r></w:p>' +
+    p("H3con", "điện bị cắt quá 72 giờ") + p("H3con", "nước bị cắt quá 72 giờ") +
+    p("Heading1", "Thanh toán") + p("Heading2", "Trả theo quý") +
+    "<w:tbl><w:tr><w:tc><w:p><w:r><w:t>ô bảng</w:t></w:r></w:p></w:tc></w:tr></w:tbl>" +
+    "<w:p/>" +
+    "</w:body></w:document>";
+  const rows = docxParagraphs({ document: doc, styles, numbering });
+  const items = buildOutline(rows);
+
+  it("Số như Word hiện: Điều 1., 1.1., Điều 2., 2.1., 2.2., a), b) (kiểu đoạn kế thừa basedOn); bộ đếm cấp dưới đặt lại", () => {
+    assert.deepStrictEqual(rows.map((r) => r.listString || ""), ["", "Điều 1.", "1.1.", "Điều 2.", "2.1.", "2.2.", "a)", "b)", "Điều 3.", "3.1.", "", ""]);
+    assert.strictEqual(rows[2].text, "“Bên Thuê” là Công ty A & B");
+  });
+  it("Chữ hiện hành: bỏ chữ đã xóa có theo dõi, giữ chữ chèn, tab; đoạn trong bảng được đánh dấu", () => {
+    assert.strictEqual(rows[5].text, "Tăng giá 3%\tmỗi hai năm");
+    assert.strictEqual(rows[10].inTable, true);
+    assert.strictEqual(rows.length, 12);
+  });
+  it("Mục lục và tra điều: '2.2(b)' → đúng đoạn; dải đoạn; phần đọc dài có `next`", () => {
+    const sec = readDocxSection(rows, items, { clause: "2.2(b)" });
+    assert.strictEqual(sec.text, "[¶7] b) nước bị cắt quá 72 giờ");
+    const art = readDocxSection(rows, items, { clause: "Điều 2" });
+    assert.deepStrictEqual([art.from, art.to], [3, 7]);
+    assert.match(art.text, /^\[¶3\] Điều 2\. Tiền thuê\n\[¶4\] 2\.1\. Đơn giá/);
+    assert.deepStrictEqual([readDocxSection(rows, items, { paragraphs: "8-9" }).from, readDocxSection(rows, items, { paragraphs: "8-9" }).to], [8, 9]);
+    const cut = readDocxSection(rows, items, { paragraphs: "1-9" }, 60);
+    assert.ok(cut.next !== undefined && cut.to < 9, JSON.stringify(cut));
+    assert.throws(() => readDocxSection(rows, items, { clause: "Điều 9" }), /Không thấy "Điều 9"/);
+    assert.throws(() => readDocxSection(rows, items, {}), /Cần clause/);
+    const ol = docxOutlineText(items);
+    assert.match(ol, /^Điều 1 \[¶1–2\] Định nghĩa$/m);
+    assert.match(ol, /^2\.2 \[¶5–7\] Tăng giá/m);
+    assert.ok(!/^\(?a\)?/m.test(ol.split("\n").filter((l) => /^a/.test(l)).join("")), "mục lục gọn: không kê điểm a), b)");
+  });
+  it("Dải đoạn, định dạng số của Word", () => {
+    assert.deepStrictEqual(parseParaRange("120-160", 200), [120, 160]);
+    assert.deepStrictEqual(parseParaRange("¶87", 200), [87, 87]);
+    assert.deepStrictEqual(parseParaRange("190-260", 200), [190, 199]);
+    assert.strictEqual(parseParaRange("5-2", 200), null);
+    assert.strictEqual(parseParaRange("abc", 200), null);
+    assert.deepStrictEqual([1, 4, 9, 14, 27].map((n) => formatNumber(n, "lowerRoman")), ["i", "iv", "ix", "xiv", "xxvii"]);
+    assert.deepStrictEqual([1, 26, 27].map((n) => formatNumber(n, "lowerLetter")), ["a", "z", "aa"]);
+    assert.strictEqual(formatNumber(3, "decimalZero"), "03");
+  });
+  it("Tệp dài ở Word (tác tử): gửi mục lục + cách đọc thay cho cả tệp; tệp ngắn, ngoài Word, không có bản gốc: như cũ", () => {
+    const long = { name: "HĐ.docx", kind: "text" as const, mime: DOCX_MIME, data: "UEsD", text: "x".repeat(DOCX_INLINE_MAX_CHARS + 10), outline: "Điều 1 [¶1–2] Định nghĩa", paraCount: 165, fullChars: 168817 };
+    const out = withAttachments("Điều 18.2(b) nói gì?", [long], { docTool: true, compare: true });
+    assert.match(out, /nội dung CHƯA được gửi kèm vì tệp dài/);
+    assert.match(out, /read_attachment_text với file = "HĐ\.docx"/);
+    assert.match(out, /Điều 1 \[¶1–2\] Định nghĩa/);
+    assert.match(out, /word_compare_versions/);
+    assert.ok(!out.includes("xxxxxxxxxx"));
+    assert.match(withAttachments("q", [long], { docTool: false }), /x{50}/);
+    assert.match(withAttachments("q", [{ ...long, text: "ngắn", fullChars: 4 }], { docTool: true }), /ngắn/);
+    assert.match(withAttachments("q", [{ ...long, data: undefined }], { docTool: true }), /x{50}/);
+  });
+});

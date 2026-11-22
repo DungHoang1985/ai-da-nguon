@@ -2,6 +2,8 @@
  *  PDF quét (không có lớp chữ) được giữ nguyên tệp (kind "file") để gửi cho model tự đọc. */
 
 import { formatPages, isScanPage } from "./pdfPages";
+import { DOCX_INLINE_MAX_CHARS, docxOutlineText, docxParagraphs, paraDisplay } from "./docxparas";
+import { buildOutline } from "./outline";
 
 export interface Attachment {
   name: string;
@@ -16,6 +18,10 @@ export interface Attachment {
   pages?: number;
   /** PDF lẫn trang quét: các trang không có lớp chữ */
   scanPages?: number[];
+  /** .docx (Đợt 12): mục lục điều khoản gọn, số đoạn, độ dài chữ đầy đủ — tệp dài thì gửi mục lục thay cho cả tệp, AI đọc theo điều */
+  outline?: string;
+  paraCount?: number;
+  fullChars?: number;
 }
 
 export const PDF_MIME = "application/pdf";
@@ -141,7 +147,15 @@ export async function readAttachment(file: File): Promise<Attachment> {
     if (!xml) throw new Error(`Không đọc được "${name}".`);
     // Giữ bản gốc của tệp: trong Word, AI so tệp này với văn bản đang mở bằng công cụ so sánh phiên bản
     const keep = file.size <= MAX_DOCX_KEEP_BYTES ? { mime: DOCX_MIME, data: toBase64(buf) } : {};
-    return { name, kind: "text", ...keep, ...clipText(docxXmlToText(xml)) };
+    // Đợt 12: chữ kèm số điều như Word hiện (số do danh sách tự động của Word không có trong chữ thuần) + mục lục điều khoản
+    try {
+      const get = async (n: string) => (await zip.file(n)?.async("string")) || undefined;
+      const rows = docxParagraphs({ document: xml, styles: await get("word/styles.xml"), numbering: await get("word/numbering.xml") });
+      const full = rows.map(paraDisplay).join("\n").replace(/\n{3,}/g, "\n\n").trim();
+      return { name, kind: "text", ...keep, ...clipText(full), outline: docxOutlineText(buildOutline(rows)), paraCount: rows.length, fullChars: full.length };
+    } catch {
+      return { name, kind: "text", ...keep, ...clipText(docxXmlToText(xml)) };
+    }
   }
   if (/\.(txt|md|markdown|csv|tsv|json|xml|html?|ya?ml|log)$/i.test(lower) || file.type.startsWith("text/")) {
     let t = await file.text();
@@ -152,7 +166,7 @@ export async function readAttachment(file: File): Promise<Attachment> {
 }
 
 /** Ghép chữ của các tệp vào câu hỏi. opts.compare = đang ở Word, có công cụ so sánh phiên bản: ghi kèm cách gọi cho tệp .docx */
-export function withAttachments(question: string, atts: Attachment[], opts: { compare?: boolean; pageTool?: boolean; byPages?: string[] } = {}): string {
+export function withAttachments(question: string, atts: Attachment[], opts: { compare?: boolean; pageTool?: boolean; byPages?: string[]; docTool?: boolean } = {}): string {
   const texts = atts.filter((a) => a.kind === "text");
   const files = atts.filter((a) => a.kind === "file");
   if (!texts.length && !files.length) return question;
@@ -165,6 +179,15 @@ export function withAttachments(question: string, atts: Attachment[], opts: { co
     ...files.filter((a) => byPages.has(a.name)).map(viaTool),
     ...files.filter((a) => !byPages.has(a.name)).map((a) => `\n--- Tệp đính kèm: ${a.name} (${a.note || "gửi nguyên tệp"}) — tệp được gửi kèm tin nhắn này để bạn đọc trực tiếp, kể cả chữ trong ảnh quét ---`),
     ...texts.map((a) => {
+      // Đợt 12: .docx dài (Word, chế độ tác tử) → không chép cả tệp; gửi mục lục, AI đọc phần cần bằng read_attachment_text
+      if (opts.docTool && a.mime === DOCX_MIME && a.data && a.outline !== undefined && (a.fullChars ?? a.text?.length ?? 0) > DOCX_INLINE_MAX_CHARS) {
+        const cmp = opts.compare ? `\n(Muốn so tệp này với văn bản đang mở theo từng điều khoản: gọi word_compare_versions với file = "${a.name}".)` : "";
+        return (
+          `\n--- Tệp đính kèm: ${a.name} (${a.paraCount ?? "?"} đoạn, khoảng ${Math.round((a.fullChars ?? 0) / 3.6).toLocaleString("vi-VN")} token) — nội dung CHƯA được gửi kèm vì tệp dài. ` +
+          `Đọc phần cần bằng công cụ read_attachment_text với file = "${a.name}" và clause (ví dụ "Điều 6.4") hoặc paragraphs (ví dụ "120-160"); đọc đủ phần liên quan rồi mới trả lời, dẫn số điều. ---${cmp}` +
+          `\nMục lục điều khoản (số đoạn ¶ trong ngoặc):\n${a.outline || "(tệp không có điều khoản đánh số — đọc theo dải đoạn)"}\n--- Hết mục lục ${a.name} ---`
+        );
+      }
       const hint =
         opts.compare && a.mime === DOCX_MIME && a.data
           ? `\n(Muốn so tệp này với văn bản đang mở theo từng điều khoản: gọi word_compare_versions với file = "${a.name}"; đừng tự so bằng mắt.)`
