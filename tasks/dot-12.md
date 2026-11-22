@@ -71,4 +71,6 @@ Làm theo thứ tự anh xếp: A → B → C → D → E. Riêng D có liên qu
 | A3 Trả phí, model không chứa nổi: báo trước khi gửi, kèm gợi ý | Đạt | `PC3-C2`: OpenRouter Llama 3.1 8B (131.072) + 887.000 ký tự → "Chưa gửi: lượt này khoảng 254.640 token … Model cùng nguồn chứa được: Nova Lite, Nova Pro, Llama 4 Scout", nút "Đổi model", không có dòng token (không gửi) |
 | A4 Không đổi lời nhắc hệ thống, không đổi lịch sử | Đạt | Kiểm thử máy 723/723 gồm `dot0b` (bộ nhớ đệm) và `test/unit/dot12.test.ts` (lịch sử giữ nguyên khi chặn) |
 
+Phát hành **4.11.3** ngày 22/11/2026 (anh duyệt): `main@aecac6c` → `gh-pages@3934dc6`. Trên bản phát hành: Chạy thật PowerPoint bằng Nemotron ước 6.420 / thật 6.952 token (`PA1-D5-phat-hanh-4113.json`); Tự kiểm tra PowerPoint 26/26 (`tu-kiem-tra-ppt-phat-hanh-4113.json`).
+
 Sự cố trong lúc kiểm: lần thử A3 đầu tiên chọn Claude Haiku 5.5, tưởng sức chứa nhỏ nhưng thật là 1.000.000 token, nên lượt 887.000 ký tự được gửi thật: 554.610 token vào key Anthropic của anh (`PC3-C1`, dưới 1 USD theo giá Haiku). Lần sau chọn model sức chứa nhỏ đã biết trước khi gửi.
