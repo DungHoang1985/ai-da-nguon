@@ -7,6 +7,7 @@ import { cellAsText, executeIncoming } from "./crossExec";
 import { excelTools } from "./excelTools";
 import { withAuditTrail } from "./excelTrail";
 import { runExcelModelSelfTest } from "./selftestExcel";
+import { exportSlide, slideSizePt } from "./pptAdvanced";
 
 export interface TestStep {
   name: string;
@@ -303,6 +304,38 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
     await step("Thêm bảng", async () => {
       if (!Office.context.requirements.isSetSupported("PowerPointApi", "1.8")) throw new Skip("PowerPoint chưa hỗ trợ chèn bảng");
       return (await run("ppt_add_table", { slide: slideNo, values: [["Mục", "Giá trị"], ["A", "1"]], left: 300, top: 300 })).message;
+    });
+    // 22/11/2026: bảng 7 × 4 của bài P3 với cỡ chữ mặc định cao 504 pt, tràn slide → công cụ tự co chữ, báo khung thật, giữ kiểu bảng và phông chủ đề
+    await step("Bảng dài tự co cho vừa slide", async () => {
+      if (!Office.context.requirements.isSetSupported("PowerPointApi", "1.9")) throw new Skip("PowerPoint chưa cho đặt cỡ chữ ô bảng (cần PowerPointApi 1.9)");
+      const rows = [["Thủ tục", "Cơ quan", "Trạng thái", "Hạn"]];
+      for (let i = 1; i <= 8; i++) rows.push([`Thủ tục thử số ${i} có tên khá dài để xuống dòng`, "Sở Tài nguyên và Môi trường", "Đang thẩm định hồ sơ", "30/12/2026"]);
+      const r: any = await run("ppt_add_table", { slide: slideNo, values: rows, left: 40, top: 110 });
+      const got = await PowerPoint.run(async (ctx) => {
+        const slides = ctx.presentation.slides;
+        slides.load("items");
+        await ctx.sync();
+        const shapes = slides.items[slideNo - 1].shapes;
+        shapes.load("items/name");
+        await ctx.sync();
+        const shp = shapes.items.filter((x) => x.name === r.shape).pop();
+        if (!shp) throw new Error(`Không thấy bảng “${r.shape}” vừa thêm`);
+        shp.load("top,height");
+        const t = shp.getTable();
+        const head = t.getCellOrNullObject(0, 0);
+        const body = t.getCellOrNullObject(1, 0);
+        head.fill.load("foregroundColor");
+        body.font.load("name,size");
+        await ctx.sync();
+        // Bảng để lại trên slide thử: bước "Hoàn tác toàn bộ" gỡ nó theo mục Hoàn tác của công cụ
+        return { bottom: shp.top + shp.height, fill: head.fill.foregroundColor, font: body.font.name, size: body.font.size };
+      });
+      const H = await PowerPoint.run(async (ctx) => (await slideSizePt(ctx)).h);
+      if (!r.fits || got.bottom > H) throw new Error(`Bảng vẫn tràn: đáy ${Math.round(got.bottom)} pt, slide cao ${Math.round(H)} pt (${r.message})`);
+      if (!(Number(got.size) < 18)) throw new Error(`Chữ không được co (cỡ ${got.size})`);
+      if (!got.fill) throw new Error("Bảng mất kiểu bảng (ô tiêu đề không còn tô màu)");
+      if (got.font) throw new Error(`Ô bảng bị gán phông riêng “${got.font}” thay cho phông chủ đề`);
+      return `${r.message} · đáy ${Math.round(got.bottom)}/${Math.round(H)} pt, giữ kiểu bảng và phông chủ đề`;
     });
     const has18 = Office.context.requirements.isSetSupported("PowerPointApi", "1.8");
     let dupNo = 0;
@@ -782,13 +815,27 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
               c.font.load("name");
             });
             await ctx.sync();
-            cells.forEach((c) => out.push({ text: c.text, font: String(c.font.name) }));
+            // 22/11/2026: PowerPoint có lúc đọc tên phông ô bảng ra null dù ô không gán phông riêng. Đọc null thì soát XML của slide:
+            // chữ trong bảng không có typeface riêng (a:latin, a:cs, a:ea, a:sym) nghĩa là đang theo phông chủ đề của mẫu.
+            let inherits: boolean | null = null;
+            if (cells.some((c) => c.font.name === null)) {
+              const b64 = await exportSlide(ctx, s);
+              if (b64) {
+                const JSZip = (await import("jszip")).default;
+                const zip = await JSZip.loadAsync(b64, { base64: true });
+                const file = Object.keys(zip.files).find((f) => /^ppt\/slides\/slide\d+\.xml$/.test(f));
+                const xml = file ? await zip.files[file].async("string") : "";
+                const tbls = xml.match(/<a:tbl>[\s\S]*?<\/a:tbl>/g) || [];
+                inherits = tbls.length > 0 && tbls.every((x) => !/<a:(?:latin|cs|ea|sym)[^>]*typeface=/.test(x));
+              }
+            }
+            cells.forEach((c) => out.push({ text: c.text, font: c.font.name === null && inherits ? "(theo chủ đề)" : String(c.font.name) }));
           }
           return out;
         });
         const ref = seen.find((x) => x.text.startsWith("Tong quan"))?.font;
         expect(!!ref, `Không đọc được phông ô chữ mốc: ${JSON.stringify(seen)}`);
-        const off = seen.filter((x) => x.font !== ref);
+        const off = seen.filter((x) => x.font !== ref && x.font !== "(theo chủ đề)");
         expect(!off.length, `Chữ lệch phông mẫu (${ref}): ${JSON.stringify(off)}`);
         expect(seen.length >= 10, `Đọc được quá ít đoạn chữ: ${JSON.stringify(seen)}`);
         return `${seen.length} đoạn chữ (ô chữ, hình, 2 sơ đồ, bảng) đều ${ref}`;
