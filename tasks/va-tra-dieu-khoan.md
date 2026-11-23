@@ -1,6 +1,6 @@
 # Bản vá: tra "Điều N" khớp nhầm mục "N." của phụ lục (23/11/2026)
 
-Nhánh `claude/va-tra-dieu-khoan`, tách từ `main@b2404be` (4.11.8). **Chưa gộp, chưa phát hành.** Phát hành khi anh Dũng duyệt.
+Nhánh `claude/va-tra-dieu-khoan`, tách từ `main@b2404be` (4.11.8). **Đã phát hành 4.11.9** (anh Dũng duyệt 23/11/2026): `main@81893e2` → `gh-pages@7188dc8`; Tự kiểm tra Word trên bản phát hành **41/41** (`tu-kiem-tra-word-phat-hanh-4119.json`).
 
 ## Lỗi
 
@@ -38,4 +38,4 @@ Bằng chứng: `tasks/va-tra-dieu-khoan-bang-chung/`. Một lượt H1 lỗi k�
 ## Còn lại
 
 - Mục cùng số giữa khoản phần chính và mục phụ lục ("3.1" so với "Phụ lục 01, mục 3.1") vẫn báo trùng như thiết kế cũ. Chưa thấy gây dừng lượt trong các lượt thử.
-- Chưa nâng số bản, chưa phát hành, chưa chạy Tự kiểm tra Word trên bản phát hành.
+- Chưa Chạy thật bằng Claude (API Claude hết tiền); Excel, PowerPoint không dùng hàm này nên không chạy lại Tự kiểm tra.
