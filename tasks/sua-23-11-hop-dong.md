@@ -54,4 +54,6 @@ Anh Dũng báo: dùng chế độ Miễn phí (Nemotron 3 Ultra free) soạn h�
 
 Sau soát mã: 819/819, Tự kiểm tra Word 41/41 (bản cục bộ, desktop ẩn), Chạy thật Nemotron đạt (bố cục đúng, không chữ lạ, căn cứ nghiêng đúng chỗ).
 
+**Đã phát hành** 23/11/2026: `main@e115788` → `gh-pages@cef0ad0`; trên bản phát hành Tự kiểm tra Word 41/41 (`sua-23-11-bang-chung/phat-hanh-4118-tu-kiem-tra-word.json`).
+
 Chưa làm: Chạy thật với Claude (Trả phí); đo ca chèn hợp đồng vào cuối tài liệu đang có chữ.
