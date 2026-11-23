@@ -291,6 +291,29 @@ describe("Đợt 1A – tìm điều khoản theo cách gọi của người dù
     );
     assert.deepStrictEqual(findClause(o, "Điều 99"), []);
   });
+  it("findClause: gọi 'Điều N' không khớp mục 'N.' của phụ lục (Chạy thật 23/11/2026, tasks/va-tra-dieu-khoan.md)", () => {
+    const hd = buildOutline(
+      rows([
+        { text: "Điều 3. Thời hạn thuê" },
+        { text: "3.1. Thời hạn thuê là 05 năm." },
+        { text: "Điều 4. Tiền thuê" },
+        { text: "PHỤ LỤC 01. MÔ TẢ DIỆN TÍCH" },
+        { text: "1. Mô tả mặt bằng" },
+        { text: "3. Giờ hoạt động" },
+        { text: "3.1 Tòa Nhà mở cửa từ 6 giờ." },
+      ])
+    );
+    assert.deepStrictEqual(findClause(hd, "Điều 3").map((x) => x.i), [0]);
+    assert.deepStrictEqual(findClause(hd, "điều 3").map((x) => x.i), [0], "không phân biệt hoa thường");
+    assert.deepStrictEqual(findClause(hd, "Article 3").map((x) => x.i), [0]);
+    assert.deepStrictEqual(findClause(hd, "3").map((x) => x.i), [0, 5], "chỉ gọi số thì vẫn báo trùng để AI chọn");
+    assert.deepStrictEqual(findClause(hd, "khoản 1 Điều 3").map((x) => x.i), [1, 6], "khoản trùng số giữ cách cũ: trả hết");
+    // Phụ lục không có điều mang chữ "Điều": gọi "Điều 1" vẫn không lấy mục "1." của phụ lục
+    assert.deepStrictEqual(findClause(hd, "Điều 1"), []);
+    // Văn bản không có mục nào kiểu "Điều N" (đánh số 1., 2. ngay từ đầu): gọi "Điều 3" vẫn tìm ra mục "3."
+    const tron = buildOutline(rows([{ text: "1. Phạm vi" }, { text: "2. Giá" }, { text: "3. Thanh toán" }]));
+    assert.deepStrictEqual(findClause(tron, "Điều 3").map((x) => x.i), [2]);
+  });
   it("clauseAt: điều khoản trong cùng chứa một đoạn", () => {
     assert.strictEqual(clauseAt(o, 4)?.num, "5.2(a)");
     assert.strictEqual(clauseAt(o, 3)?.num, "5.2");

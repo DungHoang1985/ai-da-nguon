@@ -386,6 +386,11 @@ export function findClause(items: OutlineItem[], query: string): OutlineItem[] {
   const key = clauseKey(q);
   if (!key) return [];
   const exact = items.filter((it) => it.kind !== "chapter" && it.kind !== "section" && it.kind !== "heading" && it.key === key);
+  // Gọi đúng "Điều N" (không kèm khoản, điểm) trong văn bản có các mục kiểu "Điều N": chỉ lấy các mục đó, không lấy mục "N."
+  // của phụ lục. Trước đây "Điều 3" khớp cả mục "3. Giờ hoạt động" của Phụ lục 01, công cụ báo trùng số và model gọi lại
+  // y nguyên tới khi add-in dừng lượt (Chạy thật 23/11/2026, tasks/va-tra-dieu-khoan.md).
+  if (/^(?:dieu|article|clause|section)\s+\d+\.?$/.test(flat) && items.some((it) => it.kind === "article"))
+    return exact.filter((it) => it.kind === "article");
   if (exact.length) return exact;
   // Số La Mã / chữ cái đứng một mình trùng mục lớn ("II", "A")
   return items.filter((it) => (it.kind === "chapter" || it.kind === "section") && it.num.toLowerCase() === q.toLowerCase());
