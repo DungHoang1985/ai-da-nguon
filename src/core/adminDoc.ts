@@ -3,7 +3,7 @@
  *  Phần Office.js (wordAdmin.ts) chỉ việc dựng theo bản vẽ, nên thể thức đúng dù model mạnh hay yếu.
  *  Số đo theo chuẩn trình bày văn bản hành chính đang áp dụng: A4, Times New Roman, cỡ chữ 13–14. */
 
-export const DOC_TYPES = ["cong_van", "to_trinh", "bao_cao", "quyet_dinh", "thong_bao", "giay_moi", "bien_ban", "ke_hoach", "khac"] as const;
+export const DOC_TYPES = ["cong_van", "to_trinh", "bao_cao", "quyet_dinh", "thong_bao", "giay_moi", "bien_ban", "ke_hoach", "hop_dong", "khac"] as const;
 export type DocType = (typeof DOC_TYPES)[number];
 
 /** Tên loại in trên văn bản (công văn không có tên loại) */
@@ -16,6 +16,7 @@ export const TYPE_TITLE: Record<DocType, string> = {
   giay_moi: "GIẤY MỜI",
   bien_ban: "BIÊN BẢN",
   ke_hoach: "KẾ HOẠCH",
+  hop_dong: "HỢP ĐỒNG",
   khac: "",
 };
 
@@ -90,6 +91,8 @@ export interface AdminDocInput {
   /** Người ký bên trái (biên bản: thư ký) */
   left_signer_title?: string;
   left_signer_name?: string;
+  /** Hợp đồng: dòng đầu khối ký bên trái (mặc định "ĐẠI DIỆN BÊN A") */
+  left_signer_authority?: string;
   /** Nơi nhận */
   recipients?: string[] | string;
   /** Cỡ chữ nội dung: 13 hoặc 14 */
@@ -106,6 +109,8 @@ export interface AdminDocPlan {
   /** Lưu ý về nội dung do công cụ tự chỉnh */
   notes: string[];
   size: number;
+  /** Cụm chữ lạ (Hán, Nhật, Ả Rập, Kirin) trong nội dung — model miễn phí đôi khi chèn lẫn (Chạy thật 23/11/2026) */
+  foreign?: string[];
 }
 
 const clean = (s: unknown) =>
@@ -166,10 +171,182 @@ function bodyPara(raw: string, size: number): Para {
 
 const empty = (size: number): Para => ({ text: "", size, align: "Centered" });
 
+/** Cụm chữ Hán, Nhật, Hàn, Ả Rập, Kirin, Thái trong các dòng nội dung (văn bản tiếng Việt không có; tên riêng nước ngoài hiếm gặp
+ *  nên chỉ báo cho model sửa, không từ chối). Trả tối đa 6 cụm, mỗi cụm kèm chữ đứng trước để tìm được chỗ. */
+export function foreignRuns(lines: string[]): string[] {
+  const out: string[] = [];
+  const re = /[\u0600-\u06FF\u0400-\u04FF\u0E00-\u0E7F\u3040-\u30FF\u3400-\u9FFF\uAC00-\uD7AF]+/gu;
+  for (const l of lines)
+    for (const m of l.matchAll(re)) {
+      if (out.length >= 6) return out;
+      out.push(`${l.slice(Math.max(0, (m.index || 0) - 20), m.index).trimStart()}${m[0]}`);
+    }
+  return out;
+}
+
+/** So khớp hai dòng bỏ dấu, bỏ ký hiệu markdown và dấu câu (để nhận ra dòng nội dung lặp lại phần đầu hoặc phần ký) */
+const key = (t: string) =>
+  noAccent(clean(t))
+    .toLowerCase()
+    .replace(/[#*_`>]/g, "")
+    .replace(/[\s.,:;()\-–—]+/g, " ")
+    .trim();
+
+/** Model hay chép lại phần đầu (quốc hiệu, tiêu ngữ, tên loại, "Số: …", địa danh ngày tháng) ở đầu nội dung và phần ký ở cuối
+ *  nội dung, trong khi công cụ đã tự dựng những phần đó → văn bản có hai dòng "HỢP ĐỒNG …" (Chạy thật 23/11/2026). Bỏ các dòng
+ *  lặp ở ĐẦU và CUỐI nội dung, chỉ khi khớp trọn dòng; dòng ở giữa nội dung không bao giờ bị bỏ. */
+export function stripHeaderEcho(
+  lines: string[],
+  o: { title?: string; org?: string; subject?: string; contract?: boolean }
+): { lines: string[]; removed: number } {
+  const heads = new Set([QUOC_HIEU, TIEU_NGU, o.title || "", o.org || "", o.subject || ""].map(key).filter(Boolean));
+  const isHead = (l: string) => {
+    const k = key(l);
+    const raw = clean(l);
+    return (
+      !k ||
+      heads.has(k) ||
+      // Hợp đồng: dòng tên hợp đồng in hoa khác chữ với title ("HỢP ĐỒNG XÂY DỰNG" khi title là "HỢP ĐỒNG THI CÔNG XÂY DỰNG")
+      (!!o.contract && /^hop dong\b/.test(k) && raw.length <= 100 && raw.replace(/[*_#]/g, "") === upper(raw.replace(/[*_#]/g, ""))) ||
+      /^[-=_~*.]{3,}$/.test(raw) ||
+      // "Số: 12/HĐ-XD", "Số: …/2026/HĐTC" — dòng ngắn bắt đầu bằng "Số" và có dấu "/"
+      (/^so\b/.test(k) && raw.length <= 40 && raw.includes("/")) ||
+      /^v\/v\b/i.test(raw) ||
+      // "Hà Nội, ngày … tháng … năm …" đứng một mình (không bắt câu "Hôm nay, ngày … năm …, chúng tôi gồm:")
+      (raw.length <= 70 && !/^hom nay\b/.test(k) && /^[^,]{1,40}, ngay\b.{0,14}\bthang\b.{0,14}\bnam\b[^a-z]*$/.test(noAccent(raw).toLowerCase()))
+    );
+  };
+  const isFoot = (l: string) => {
+    const k = key(l);
+    return (
+      !k ||
+      k === "noi nhan" ||
+      (/^dai dien ben [ab]\b/.test(k) && k.length <= 60) ||
+      /^ky,? (ghi ro )?ho ten/.test(k) ||
+      (!!o.contract && /^(ben [ab]|ben giao thau|ben nhan thau)$/.test(k))
+    );
+  };
+  let s = 0;
+  let e = lines.length;
+  while (s < e && s < 10 && isHead(lines[s])) s++;
+  let tail = 0;
+  while (e > s && tail < 8 && isFoot(lines[e - 1])) {
+    e--;
+    tail++;
+  }
+  return { lines: lines.slice(s, e), removed: s + (lines.length - e) };
+}
+
+/** Hợp đồng (Chạy thật 23/11/2026: model dùng 'khac' cho hợp đồng → thừa tên loại, có Kính gửi, Nơi nhận, "./."):
+ *  - có tên đơn vị (org): phần đầu là bảng hai cột không viền như văn bản hành chính — trái: đơn vị, "Số: …"; phải: quốc hiệu,
+ *    tiêu ngữ (và địa danh, ngày nếu có);
+ *  - không có org: quốc hiệu, tiêu ngữ canh giữa; "Số: …" nằm dưới tên hợp đồng;
+ *  - tên hợp đồng in hoa đậm, dòng "về việc" (subject) đậm; không Kính gửi, không Nơi nhận, không "./.";
+ *  - phần ký: hai cột ĐẠI DIỆN BÊN A / ĐẠI DIỆN BÊN B, họ tên hai bên cùng hàng. */
+function planContract(a: AdminDocInput): AdminDocPlan {
+  const size = Number(a.font_size) === 14 ? 14 : 13;
+  const hdr = size - 1;
+  const blanks: string[] = [];
+  const notes: string[] = [];
+  const blocks: Block[] = [];
+  const org = clean(a.org);
+  const parent = clean(a.parent_org);
+  const rawTitle = upper(clean(a.title));
+  const title = rawTitle ? (/^HỢP ĐỒNG\b/u.test(rawTitle) ? rawTitle : `HỢP ĐỒNG ${rawTitle}`) : TYPE_TITLE.hop_dong;
+  if (!rawTitle) blanks.push("tên hợp đồng");
+  const subject = clean(a.subject);
+  const allLines = (Array.isArray(a.body) ? (a.body as unknown[]).map((x) => String(x ?? "")).join("\n") : String(a.body ?? ""))
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const echo = stripHeaderEcho(allLines, { title, org, subject, contract: true });
+  const bodyLines = echo.lines;
+  if (echo.removed) notes.push(`đã bỏ ${echo.removed} dòng ở đầu hoặc cuối nội dung vì trùng phần đầu hoặc phần ký do công cụ tự dựng`);
+  if (!bodyLines.length) throw new Error("Thiếu nội dung hợp đồng (body): mỗi dòng là một đoạn — căn cứ, các bên, các điều khoản.");
+  if (list(a.to).length || list(a.recipients).length) notes.push("hợp đồng không có Kính gửi và Nơi nhận: đã bỏ hai phần này");
+
+  // Số hợp đồng: giữ nguyên dạng đầy đủ người dùng đưa ("01/2026/HĐ-XD"); chỉ có số thì ghép với ký hiệu
+  const rawNo = clean(a.number).replace(/^số\s*:?\s*/i, "");
+  const symbol = clean(a.symbol).replace(/^\/+/, "");
+  const soHD = rawNo.includes("/") ? `Số: ${rawNo}` : `Số: ${rawNo || "     "}/${symbol || BLANK}`;
+  if (!rawNo) blanks.push("số hợp đồng");
+  else if (!rawNo.includes("/") && !symbol) blanks.push("ký hiệu hợp đồng");
+  const place = clean(a.place).replace(/,$/, "");
+  const date = clean(a.date).replace(/^,\s*/, "");
+  // Hợp đồng thường ghi ngày ký trong câu "Hôm nay, ngày …": chỉ hiện dòng địa danh, ngày ở đầu khi người dùng đưa
+  const diaDanh =
+    place || date ? `${place || BLANK}, ${date ? (/^ngày/i.test(date) ? date : "ngày " + date) : `ngày      tháng      năm ${a.year || BLANK}`}` : "";
+  const mottoRule = (w: number) => Math.min(w - 6, estimateWidthMm(TIEU_NGU, hdr + 1, { bold: true }));
+
+  if (org) {
+    const leftW = 62;
+    const rightW = TEXT_WIDTH_MM - leftW;
+    const orgUp = upper(org);
+    const orgRule = Math.max(12, Math.min(leftW - 8, Math.min(estimateWidthMm(orgUp, hdr, { bold: true }), leftW - 4) * 0.4));
+    const leftTop: Para[] = [];
+    if (parent) leftTop.push({ text: upper(parent), size: hdr, align: "Centered" });
+    leftTop.push({ text: orgUp, size: hdr, bold: true, align: "Centered" }, { text: "", size: 3, align: "Centered", ruleMm: orgRule }, empty(2));
+    const rightTop: Para[] = [
+      { text: QUOC_HIEU, size: hdr, bold: true, align: "Centered" },
+      { text: TIEU_NGU, size: hdr + 1, bold: true, align: "Centered" },
+      { text: "", size: 3, align: "Centered", ruleMm: mottoRule(rightW) },
+      empty(2),
+    ];
+    const so: Para = { text: soHD, size: 13, align: "Centered", before: 4 };
+    // Không có ngày ở đầu: một hàng, "Số" cuối ô trái. Đã đo trong Word 23/11/2026: hàng hai có ô phải rỗng thì Hoàn tác để sót một đoạn rỗng
+    if (diaDanh)
+      blocks.push({ kind: "table", widths: [leftW, rightW], rows: [[leftTop, rightTop], [[so], [{ text: diaDanh, size: hdr + 1, italic: true, align: "Centered", before: 4 }]]] });
+    else blocks.push({ kind: "table", widths: [leftW, rightW], rows: [[[...leftTop, so], rightTop]] });
+  } else {
+    blocks.push({ kind: "para", text: QUOC_HIEU, size: hdr, bold: true, align: "Centered" });
+    blocks.push({ kind: "para", text: TIEU_NGU, size: hdr + 1, bold: true, align: "Centered" });
+    blocks.push({ kind: "para", text: "", size: 3, align: "Centered", ruleMm: mottoRule(TEXT_WIDTH_MM) });
+    if (diaDanh) blocks.push({ kind: "para", text: diaDanh, size: hdr + 1, italic: true, align: "Right", before: 6 });
+  }
+
+  blocks.push({ kind: "para", text: title, size: Math.max(size, 14), bold: true, align: "Centered", before: 18, line: 1.2, keepNext: true });
+  if (!org) blocks.push({ kind: "para", text: soHD, size, align: "Centered", line: 1.2, keepNext: true });
+  if (subject) blocks.push({ kind: "para", text: subject, size, bold: true, align: "Centered", line: 1.2, keepNext: true });
+  blocks.push({ kind: "para", text: "", size: 6, align: "Centered", after: 6 });
+
+  for (const l of bodyLines) {
+    const p = bodyPara(l, size);
+    // Dòng căn cứ của hợp đồng in nghiêng dù model không đánh dấu _…_ (Chạy thật 23/11/2026: Nemotron gửi chữ thường)
+    if (!p.bold && /^căn cứ(?=\s|$)/iu.test(p.text)) p.italic = true;
+    blocks.push({ kind: "para", ...p });
+  }
+  blocks[blocks.length - 1] = { ...(blocks[blocks.length - 1] as ParaBlock), keepNext: true, after: 12 };
+
+  // Phần ký: cột trái Bên A, cột phải Bên B
+  const side = (auth: string, ttl: string): Para[] => {
+    const ps: Para[] = [{ text: auth, size, bold: true, align: "Centered", keepNext: true }];
+    if (ttl) ps.push({ text: ttl, size, bold: true, align: "Centered", keepNext: true });
+    ps.push({ text: "(Ký, ghi rõ họ tên, đóng dấu)", size: 12, italic: true, align: "Centered", keepNext: true });
+    return ps;
+  };
+  const lName = clean(a.left_signer_name);
+  const rName = clean(a.signer_name);
+  if (!lName) blanks.push("họ tên người ký Bên A");
+  if (!rName) blanks.push("họ tên người ký Bên B");
+  const left = side(upper(clean(a.left_signer_authority)) || "ĐẠI DIỆN BÊN A", upper(clean(a.left_signer_title)));
+  const right = side(upper(clean(a.signer_authority)) || "ĐẠI DIỆN BÊN B", upper(clean(a.signer_title)));
+  // Hai cột cao bằng nhau để họ tên hai bên nằm cùng hàng
+  while (left.length < right.length) left.push(empty(size));
+  while (right.length < left.length) right.push(empty(size));
+  for (const col of [left, right]) for (let i = 0; i < 4; i++) col.push(empty(size));
+  left.push({ text: lName || BLANK, size, bold: true, align: "Centered" });
+  right.push({ text: rName || BLANK, size, bold: true, align: "Centered" });
+  blocks.push({ kind: "table", widths: [TEXT_WIDTH_MM / 2, TEXT_WIDTH_MM / 2], rows: [[left, right]] });
+  const foreign = foreignRuns(bodyLines);
+  return { type: "hop_dong", blocks, blanks: [...new Set(blanks)], notes, size, ...(foreign.length ? { foreign } : {}) };
+}
+
 export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   const a = input || {};
   // "Tờ trình", "công văn", "to-trinh" đều nhận
   const rawType = noAccent(clean(a.doc_type)).toLowerCase().replace(/[\s-]+/g, "_");
+  // "hợp đồng", "hop_dong_xay_dung", "hợp đồng thi công": đều là hợp đồng
+  if (rawType.startsWith("hop_dong")) return planContract(a);
   const type: DocType = (DOC_TYPES as readonly string[]).includes(rawType) ? (rawType as DocType) : "khac";
   const size = Number(a.font_size) === 13 ? 13 : 14;
   /** Cặp cỡ chữ Quốc hiệu / Tiêu ngữ tăng giảm cùng cỡ nội dung: 12/13 hoặc 13/14 */
@@ -185,9 +362,14 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
-  if (!bodyLines.length) throw new Error("Thiếu nội dung văn bản (body): mỗi dòng là một đoạn.");
   const subject = clean(a.subject).replace(/^v\/v:?\s*/i, "");
   const title = upper(clean(a.title)) || TYPE_TITLE[type];
+  const echo = stripHeaderEcho(bodyLines, { title, org, subject });
+  if (echo.removed && echo.lines.length) {
+    bodyLines.splice(0, bodyLines.length, ...echo.lines);
+    notes.push(`đã bỏ ${echo.removed} dòng ở đầu hoặc cuối nội dung vì trùng phần đầu hoặc phần ký do công cụ tự dựng`);
+  }
+  if (!bodyLines.length) throw new Error("Thiếu nội dung văn bản (body): mỗi dòng là một đoạn.");
   if (type !== "cong_van" && !title) throw new Error(`Không nhận ra loại văn bản “${clean(a.doc_type)}”. Dùng một trong: ${DOC_TYPES.filter((t) => t !== "khac").join(", ")}; hoặc doc_type "khac" kèm title (tên loại).`);
   if (!subject) blanks.push("trích yếu nội dung");
 
@@ -312,7 +494,8 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
     blocks.push({ kind: "para", text: "Nơi nhận:", size: 12, bold: true, italic: true, align: "Left", before: 12 });
     recipients.forEach((r, i) => blocks.push({ kind: "para", text: `- ${r}${i === recipients.length - 1 ? dot(r) : ";"}`, size: 11, align: "Left" }));
   }
-  return { type, blocks, blanks: [...new Set(blanks)], notes, size };
+  const foreign = foreignRuns(bodyLines);
+  return { type, blocks, blanks: [...new Set(blanks)], notes, size, ...(foreign.length ? { foreign } : {}) };
 }
 
 /** Một dòng tóm tắt hiện trên khung */

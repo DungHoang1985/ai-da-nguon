@@ -584,6 +584,32 @@ async function loadRowsOf(ctx: Word.RequestContext, body: Word.Body, withList = 
   return { paras, rows, hasChanges, ...(withNotes ? { footnotes: fn?.items.length || 0, endnotes: en?.items.length || 0 } : {}) };
 }
 
+/** Ghi vị trí ô bảng ("bảng 1, hàng 1, cột 2") cho các đoạn trong ô thuộc khoảng [start, end): model cần biết hai đoạn nằm
+ *  ngang hàng hay trên dưới (Chạy thật 23/11/2026). Bảng đánh số theo các dải đoạn trong bảng liền nhau từ đầu văn bản.
+ *  Không đọc được (Word cũ) thì bỏ qua, kết quả đọc vẫn như trước. */
+async function markCells(ctx: Word.RequestContext, rows: Row[], paras: Word.ParagraphCollection, all: { cell?: string }[], start: number, end: number) {
+  if (!supports("1.3")) return;
+  const want = rows.slice(start, end).filter((r) => r.inTable);
+  if (!want.length) return;
+  try {
+    const tableNo: number[] = [];
+    let t = 0;
+    rows.forEach((r, i) => {
+      if (r.inTable && (i === 0 || !rows[i - 1].inTable)) t++;
+      tableNo[i] = t;
+    });
+    const cells = want.map((r) => {
+      const c = paras.items[r.i].parentTableCellOrNullObject;
+      c.load("rowIndex,cellIndex");
+      return { r, c };
+    });
+    await ctx.sync();
+    for (const { r, c } of cells) if (!c.isNullObject) all[r.i].cell = `bảng ${tableNo[r.i]}, hàng ${c.rowIndex + 1}, cột ${c.cellIndex + 1}`;
+  } catch {
+    /* Word không trả được ô: bỏ qua */
+  }
+}
+
 /** Số điều khoản của từng đoạn mở đầu điều khoản (để mọi kết quả đọc đều kèm số điều) */
 function withNums(rows: Row[], outline: OutlineItem[]) {
   const byPara = outlineByParagraph(outline);
@@ -1175,11 +1201,12 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
           }
           const { rows, paras, hasChanges } = await loadRows(ctx, true);
           const outline = buildOutline(rows);
-          const all = withNums(rows, outline) as { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[] }[];
+          const all = withNums(rows, outline) as { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[]; cell?: string }[];
           // Ngân sách tính theo độ dài JSON thật; next_start và truncated nằm đầu kết quả (không bị cắt mất)
           const start = Math.max(0, Number(a.start) || 0);
           // Không nạp sửa đổi cho quá 300 đoạn một lần: kết quả cũng chỉ trả vài chục tới vài trăm đoạn theo ngân sách
           const end = Math.min(rows.length, Number(a.end) || start + 200, start + 300);
+          await markCells(ctx, rows, paras, all, start, end);
           if (hasChanges) await annotatePending(ctx, { rows, paras }, all, start, end, a.view === "original");
           const r = packParagraphs(all, start, end);
           return a.view === "original" ? { ...r, view: "original" } : r;
@@ -1703,6 +1730,17 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             const s = r.index;
             const e = s + span;
             if (e >= r.rows.length) throw new Error(`Chỉ số đoạn không hợp lệ (có ${r.rows.length} đoạn).`);
+            // Vùng xóa vắt qua mép bảng (một phần trong ô bảng, một phần ngoài) làm vỡ bảng thể thức ở phần đầu, phần ký
+            if (supports("1.3") && e > s) {
+              const range = r.paras.items.slice(s, e + 1);
+              range.forEach((p) => p.load("tableNestingLevel"));
+              await ctx.sync();
+              const inT = range.map((p) => p.tableNestingLevel > 0);
+              if (inT.some(Boolean) && !inT.every(Boolean))
+                throw new Error(
+                  `Đoạn ${s}–${e} vừa có đoạn trong ô bảng vừa có đoạn ngoài bảng: không xóa một lần. Đọc lại (trường cell cho biết đoạn nào trong ô), rồi xóa riêng từng phần, chỉ những đoạn người dùng muốn bỏ.`
+                );
+            }
             for (let i = s; i <= e; i++) if (r.rows[i].id) u.touched.push(r.rows[i].id as string);
             for (let i = e; i >= s; i--) r.paras.items[i].delete();
             await ctx.sync();

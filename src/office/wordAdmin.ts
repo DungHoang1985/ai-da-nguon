@@ -20,7 +20,7 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
   {
     name: "word_create_admin_document",
     description:
-      "Build a complete Vietnamese administrative document (công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch) in the correct formal layout in ONE call: national motto, organisation, number/symbol, place/date, title, subject, Kính gửi, body, signature block, Nơi nhận. On an empty document also sets A4, margins, page number. ALWAYS use it instead of inserting parts by hand. Omit unknown facts (number, date, signer): blanks are left and reported; never invent.",
+      "Build a complete Vietnamese administrative document (công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch) or a contract (hop_dong) in the correct formal layout in ONE call: national motto, organisation, number/symbol, place/date, title, subject, Kính gửi, body, signature block, Nơi nhận. On an empty document also sets A4, margins, page number. ALWAYS use it instead of inserting parts by hand. body = content only, never the header, title, number, date or signature lines. Omit unknown facts (number, date, signer): blanks are left and reported; never invent.",
     parameters: {
       type: "object",
       properties: {
@@ -28,12 +28,12 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
           type: "string",
           enum: DOC_TYPES as unknown as string[],
           description:
-            "cong_van: no title line, subject shown as 'V/v …'.",
+            "cong_van: no title line, subject shown as 'V/v …'. hop_dong: contract, two-party signatures.",
         },
         org: {
           type: "string",
           description:
-            "Issuing organisation, full official name.",
+            "Issuing organisation, full official name. hop_dong: optional (top-left, opposite the motto).",
         },
         parent_org: {
           type: "string",
@@ -57,7 +57,7 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
         title: {
           type: "string",
           description:
-            "Only for doc_type 'khac' or to override.",
+            "For 'khac'; contract name for hop_dong.",
         },
         subject: {
           type: "string",
@@ -72,7 +72,7 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
         signer_authority: {
           type: "string",
           description:
-            "e.g. 'TM. HỘI ĐỒNG QUẢN TRỊ', 'KT. GIÁM ĐỐC'.",
+            "e.g. 'TM. HỘI ĐỒNG QUẢN TRỊ', 'KT. GIÁM ĐỐC'. hop_dong: default 'ĐẠI DIỆN BÊN B'.",
         },
         signer_title: {
           type: "string",
@@ -81,9 +81,10 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
         signer_name: { type: "string" },
         left_signer_title: {
           type: "string",
-          description: "Left signer (biên bản: 'THƯ KÝ').",
+          description: "Left signer (biên bản: 'THƯ KÝ'; hop_dong: Bên A).",
         },
         left_signer_name: { type: "string" },
+        left_signer_authority: { type: "string", description: "hop_dong: default 'ĐẠI DIỆN BÊN A'." },
         recipients: {
           type: "array",
           items: { type: "string" },
@@ -102,7 +103,7 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
           description: "First ~30 characters of that paragraph.",
         },
       },
-      required: ["doc_type", "org", "body"],
+      required: ["doc_type", "body"],
     },
     write: true,
   },
@@ -381,6 +382,15 @@ export function createWordAdminTools(d: Deps) {
     /** Định dạng làm SAU, khi Theo dõi thay đổi đã tắt: phần chèn là sửa đổi được theo dõi, còn định dạng của chính phần mới chèn
      *  không ghi thành một loạt sửa đổi "Formatted" riêng (xem ảnh thử 16/11/2026: mỗi đoạn một ô chú thích ở lề, rất rối khi duyệt) */
     const later: (() => void)[] = [];
+    // Đoạn đứng ngay sau chỗ chèn (trước khi chèn): để nhận ra đoạn rỗng Word tự sinh sau bảng cuối (đo 23/11/2026 với phần ký
+    // của hợp đồng: Word thêm một đoạn "Normal" rỗng sau bảng, không thuộc phần đã chèn nên Hoàn tác để sót)
+    let nextAt: Word.Paragraph | null = null;
+    if (d.supports("1.6")) {
+      nextAt = where === "Before" ? anchor : anchor.getNextOrNullObject();
+      nextAt.load("uniqueLocalId");
+      await ctx.sync();
+    }
+    const nextId = nextAt && !nextAt.isNullObject ? nextAt.uniqueLocalId : "";
     let prev: Word.Paragraph | Word.Table | null = null;
     for (const b of plan.blocks) {
       if (b.kind === "table") {
@@ -431,6 +441,17 @@ export function createWordAdminTools(d: Deps) {
     async function finish() {
       later.forEach((f) => f());
       await ctx.sync();
+      // Bảng là khối cuối: đoạn rỗng Word tự sinh ngay sau nó (không phải đoạn vốn có của văn bản) thì bỏ
+      const lastBlock = plan.blocks[plan.blocks.length - 1];
+      if (nextId && lastBlock?.kind === "table" && tables.length) {
+        const extra = tables[tables.length - 1].getParagraphAfterOrNullObject();
+        extra.load("text,uniqueLocalId,tableNestingLevel");
+        await ctx.sync();
+        if (!extra.isNullObject && extra.uniqueLocalId !== nextId && !extra.text.trim() && extra.tableNestingLevel === 0) {
+          extra.delete();
+          await ctx.sync();
+        }
+      }
       // Đoạn chèn sau một mục danh sách thừa hưởng danh sách của nó: gỡ ra
       plain.forEach((p) => p.load("isListItem"));
       await ctx.sync();
@@ -570,10 +591,16 @@ export function createWordAdminTools(d: Deps) {
       return {
         ok: true,
         brief: adminDocBrief(plan),
-        message: `Đã dựng văn bản đúng thể thức (ghi có theo dõi): phần đầu, ${plan.type === "cong_van" ? "V/v" : "tên loại và trích yếu"}, nội dung ${plan.blocks.filter((b) => b.kind === "para").length} đoạn, phần ký và nơi nhận; ${res.rules} đường kẻ.${pageNote}${narrow}`,
+        message: `Đã dựng văn bản đúng thể thức (ghi có theo dõi): phần đầu, ${plan.type === "cong_van" ? "V/v" : plan.type === "hop_dong" ? "tên hợp đồng" : "tên loại và trích yếu"}, nội dung ${plan.blocks.filter((b) => b.kind === "para").length} đoạn, ${plan.type === "hop_dong" ? "phần ký hai bên" : "phần ký và nơi nhận"}; ${res.rules} đường kẻ.${pageNote}${narrow}`,
         blanks: plan.blanks,
         ...(plan.notes.length ? { notes: plan.notes } : {}),
-        next: "Báo người dùng các chỗ còn trống (blanks) cần điền trước khi ký. Muốn sửa câu chữ thì dùng word_set_paragraph_text trên đoạn tương ứng; không dựng lại cả văn bản.",
+        ...(plan.foreign?.length
+          ? {
+              foreign_text: plan.foreign,
+              fix_now: "Nội dung vừa dựng lẫn chữ không phải tiếng Việt (foreign_text). Trừ khi đó là tên riêng người dùng đưa, sửa NGAY từng cụm thành tiếng Việt bằng word_replace_text (find = đúng cụm chữ lạ) trước khi trả lời.",
+            }
+          : {}),
+        next: "Báo người dùng các chỗ còn trống (blanks) cần điền trước khi ký. Muốn sửa câu chữ thì dùng word_set_paragraph_text trên đoạn tương ứng; không dựng lại cả văn bản. Phần đầu và phần ký là bảng không viền hai cột (các đoạn có trường cell khi đọc): bên trái và bên phải nằm ngang hàng nhau là đúng thể thức; bớt hay sửa một dòng ở đó thì chỉ xóa hoặc sửa đúng đoạn đó, không xóa rồi chèn lại để đổi chỗ.",
       };
     });
   }

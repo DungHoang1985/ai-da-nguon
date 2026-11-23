@@ -228,8 +228,8 @@ describe("v3 · Skill: định dạng SKILL.md, lệnh /, gói plugin", () => {
 });
 
 describe("v3 · Bộ kỹ năng tích hợp chuyển thể từ skill/plugin chính thức", () => {
-  it("19 kỹ năng hợp lệ (Đợt 8 thêm dien-mau): tên ≤ 64 ký tự kiểu a-b-c, có mô tả, ứng dụng hợp lệ, có từ khóa", () => {
-    assert.strictEqual(BUILTIN_SKILLS.length, 19);
+  it("20 kỹ năng hợp lệ (Đợt 8 thêm dien-mau, 4.11.8 thêm soan-hop-dong): tên ≤ 64 ký tự kiểu a-b-c, có mô tả, ứng dụng hợp lệ, có từ khóa", () => {
+    assert.strictEqual(BUILTIN_SKILLS.length, 20);
     for (const s of BUILTIN_SKILLS) {
       assert.match(s.name, /^[a-z0-9]+(-[a-z0-9]+)*$/);
       assert.ok(s.name.length <= 64);

@@ -34,8 +34,8 @@ src/core/            lõi không phụ thuộc Office, kiểm thử được b�
   oauth.ts                            đăng nhập để nhận key (OAuth PKCE), khối dùng chung: mã kiểm / thách thức, địa chỉ, đọc mã dán, đổi mã lấy key
   credits.ts                          hạn mức của key OpenRouter (GET /key, /credits): dòng hiển thị và mức cảnh báo
   errors.ts                           lỗi → câu tiếng Việt; phân loại lỗi key và tiền theo nhà cung cấp; maskSecrets che key trong mọi thông báo
-  skills.ts skillpack.ts              kỹ năng (SKILL.md), 18 kỹ năng dựng sẵn
-  adminDoc.ts                         bản vẽ văn bản hành chính đúng thể thức (công văn, tờ trình, quyết định…): bảng không viền + đoạn đã định dạng
+  skills.ts skillpack.ts              kỹ năng (SKILL.md), 20 kỹ năng dựng sẵn
+  adminDoc.ts                         bản vẽ văn bản hành chính và hợp đồng đúng thể thức (công văn, tờ trình, quyết định, hop_dong…): bảng không viền + đoạn đã định dạng
   crossapp.ts                         ghi chéo ứng dụng: nhịp sống, hộp thư lệnh trong kho dùng chung, kiểm lệnh ở khung nhận (chỉ thêm mới)
   deckcheck.ts                        kiểm bài trình chiếu theo mẫu bằng mã: phông, cỡ chữ, tiêu đề, chữ tràn, hình ra ngoài, chồng nhau
   auditlog.ts                         dấu vết soát lại của Excel: dòng của sheet "Nhật ký AI", chữ ghi vào nhật ký luôn là chữ, nhận diện sheet nhật ký
@@ -61,7 +61,7 @@ src/office/          công cụ Office.js: excel*, word*, ppt*, common, selftest
   dialog.ts          hộp thoại của Office (displayDialogAsync) và mở trình duyệt ngoài, dùng cho đăng nhập
 src/dialog/          dang-nhap.html + dang-nhap.ts: trang mở trong hộp thoại của Office khi đăng nhập (đóng gói thành dist/dang-nhap.html)
 src/taskpane/components/   App.tsx, Chat.tsx (điều phối + giao diện), Settings.tsx, SignInCard.tsx + useCredits.ts (thẻ OpenRouter: đăng nhập, dán mã, hạn mức, đăng xuất)
-test/unit/           mocha, 801 kiểm thử (dữ liệu mẫu ở test/fixtures/)
+test/unit/           mocha, 814 kiểm thử (dữ liệu mẫu ở test/fixtures/)
 cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry WEF\Developer)
 ```
 
@@ -69,7 +69,7 @@ cai-dat/             tệp .cmd cài và gỡ add-in vào Office (ghi registry W
 
 ```
 npm ci                      # .npmrc phải trỏ registry.npmjs.org
-npm test                    # 801/801 phải đạt
+npm test                    # 814/814 phải đạt
 npx tsc --noEmit -p .       # không lỗi kiểu
 npm run build               # ra dist/, manifest tự đổi sang địa chỉ GitHub Pages
 ```

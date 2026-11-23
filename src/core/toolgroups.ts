@@ -27,8 +27,8 @@ export const WORD_TOOL_GROUPS: ToolGroup[] = [
     id: "hanh_chinh",
     label: "văn bản hành chính, thể thức trang",
     tools: ["word_create_admin_document", "word_set_page_format", "word_check_page_format"],
-    keywords: ["cong van", "to trinh", "bao cao", "quyet dinh", "thong bao", "giay moi", "bien ban", "ke hoach", "the thuc", "hanh chinh", "le trang", "can le", "kho giay", "kho a4", "so trang", "danh so trang", "phong chu", "lề", "cỡ chữ"],
-    skills: ["soan-thao-van-ban-hanh-chinh", "soan-phan-hoi-phap-ly"],
+    keywords: ["cong van", "to trinh", "bao cao", "quyet dinh", "thong bao", "giay moi", "bien ban", "ke hoach", "the thuc", "hanh chinh", "le trang", "can le", "kho giay", "kho a4", "so trang", "danh so trang", "phong chu", "lề", "cỡ chữ", "soan hop dong", "soan thao hop dong", "du thao hop dong", "mau hop dong", "lap hop dong", "viet hop dong", "quoc hieu", "tieu ngu"],
+    skills: ["soan-thao-van-ban-hanh-chinh", "soan-phan-hoi-phap-ly", "soan-hop-dong"],
   },
   {
     id: "dien_mau",

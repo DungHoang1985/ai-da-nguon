@@ -221,8 +221,13 @@ export function takeWithinBudget<T>(items: T[], budget: number, shrink?: (x: T, 
 export const PENDING_NOTE =
   "Mục có changed=true nằm trong đoạn đang có sửa đổi được theo dõi CHƯA DUYỆT: text là chữ sau sửa, before là chữ gốc của đoạn trước sửa, changed_by là người sửa. Khi dẫn hoặc trả lời dựa trên các đoạn này phải nêu cả chữ gốc lẫn chữ đang sửa và nói rõ sửa đổi còn chờ duyệt.";
 
+/** Chạy thật 23/11/2026: model không biết phần đầu văn bản là bảng hai cột, tưởng tên đơn vị (ô trái) "đứng trước" quốc hiệu
+ *  (ô phải) theo chiều dọc nên xóa rồi chèn lại, làm lệch cả phần đầu */
+export const TABLE_NOTE =
+  "Đoạn có trường cell nằm trong ô bảng. Chỉ số đoạn đi hết ô bên trái rồi mới sang ô bên phải của cùng hàng, nên hai ô đó nằm NGANG hàng nhau, không phải trên dưới. Phần đầu văn bản hành chính và hợp đồng (tên đơn vị, số bên trái; quốc hiệu, tiêu ngữ, ngày bên phải) và phần ký là bảng không viền như vậy, đúng thể thức. Sửa trong ô: chỉ sửa hoặc xóa đúng đoạn cần đổi; không xóa đoạn rồi chèn lại ở chỗ khác để đổi vị trí.";
+
 export function packParagraphs(
-  all: { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[]; before?: string; changed_by?: string }[],
+  all: { text: string; style: string; num?: string; changed?: boolean; deleted?: boolean; notes?: string[]; before?: string; changed_by?: string; cell?: string }[],
   start: number,
   end: number,
   budget = RESULT_JSON_BUDGET
@@ -243,6 +248,8 @@ export function packParagraphs(
     ...(p.deleted ? { deleted: true } : {}),
     // notes = chú thích cuối trang / cuối văn bản neo vào đoạn này
     ...(p.notes?.length ? { notes: p.notes } : {}),
+    // cell = đoạn nằm trong ô bảng ("bảng 1, hàng 1, cột 2")
+    ...(p.cell ? { cell: p.cell } : {}),
   }));
   const { picked, truncated } = takeWithinBudget(slice, budget - 400, (x, room) => ({
     ...x,
@@ -258,6 +265,7 @@ export function packParagraphs(
     read_from: s0,
     read_to: last,
     ...(picked.some((x: any) => x.before !== undefined) ? { pending_note: PENDING_NOTE } : {}),
+    ...(picked.some((x: any) => x.cell) ? { table_note: TABLE_NOTE } : {}),
     paragraphs: picked,
   };
 }

@@ -1231,6 +1231,79 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     return `Tờ trình: 2 bảng, ${rules2 < 0 ? "không đo được" : rules2} đường kẻ, hoàn tác sạch. Công văn: 2 bảng không viền, ${mid.paras.length - before.paras.length} đoạn, ${rules < 0 ? "không đo được đường kẻ" : rules + " đường kẻ"}, báo ${r.blanks.length} chỗ trống; hoàn tác sạch`;
   });
 
+  await step("Hợp đồng: dựng hợp đồng có tên đơn vị (bảng hai cột), không thừa dòng tên, không Nơi nhận; đọc thấy ô bảng; không xóa vắt mép bảng; hoàn tác sạch", async () => {
+    const snap = async () => {
+      const s = await need(START);
+      const e = await need(END);
+      return Word.run(async (ctx) => {
+        const ps = ctx.document.body.paragraphs;
+        ps.load("items/text,items/font/bold,items/font/size,items/alignment,items/tableNestingLevel,items/spaceAfter,items/spaceBefore");
+        const ts = ctx.document.body.tables;
+        ts.load("items");
+        await ctx.sync();
+        return { s, tables: ts.items.length, paras: ps.items.slice(s, e + 1).map((p) => ({ text: p.text, bold: p.font.bold, size: p.font.size, sa: p.spaceAfter, sb: p.spaceBefore, align: String(p.alignment), inTable: p.tableNestingLevel > 0 })) };
+      });
+    };
+    const anchor = await addNeo();
+    const before = await snap();
+    const mark = log.length;
+    const TEN = `HỢP ĐỒNG THI CÔNG THỬ ${code}`;
+    // body chép lại phần đầu và phần ký như model đã làm (Chạy thật 23/11/2026): công cụ phải tự bỏ
+    const body = [TEN, "Số: …/2026/HĐ-THU", "_Căn cứ nhu cầu của hai bên._", "Hôm nay, ngày … tháng … năm 2026, chúng tôi gồm:", `## Điều 1. Nội dung công việc ${code}`, "Hợp đồng lập thành 04 bản.", "ĐẠI DIỆN BÊN A", "ĐẠI DIỆN BÊN B"].join("\n");
+    const r = await run("word_create_admin_document", {
+      doc_type: "hop_dong",
+      org: `Công ty thử ${code}`,
+      title: TEN,
+      symbol: "HĐ-THU",
+      body,
+      left_signer_title: "Giám đốc",
+      signer_title: "Giám đốc",
+      page_setup: false,
+      position: "after_paragraph",
+      paragraph_index: anchor,
+      expect: NEO.slice(0, 30),
+    });
+    expect(r.ok && r.blanks.includes("số hợp đồng") && (r.notes || []).some((n: string) => /đã bỏ/.test(n)), `Kết quả công cụ thiếu chỗ trống hoặc ghi chú bỏ dòng lặp: ${JSON.stringify(r).slice(0, 300)}`);
+    const mid = await snap();
+    expect(mid.tables === before.tables + 2, `Số bảng tăng ${mid.tables - before.tables} (phải là 2: phần đầu và phần ký)`);
+    const texts = mid.paras.map((p) => p.text);
+    expect(texts.filter((t) => t === TEN).length === 1, `Tên hợp đồng xuất hiện ${texts.filter((t) => t === TEN).length} lần (phải là 1)`);
+    expect(!texts.some((t) => /^Nơi nhận|Kính gửi|\.\/\.$/.test(t)), "Hợp đồng không được có Nơi nhận, Kính gửi, dấu ./.");
+    const org = mid.paras.find((p) => p.text === `CÔNG TY THỬ ${code}`);
+    const qh = mid.paras.find((p) => p.text === "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM");
+    const ten = mid.paras.find((p) => p.text === TEN);
+    expect(!!org?.inTable && !!qh?.inTable && !!ten && !ten.inTable && ten.bold && ten.align === "Centered", "Tên đơn vị, quốc hiệu phải trong bảng; tên hợp đồng đậm canh giữa ngoài bảng");
+    expect(texts.includes("ĐẠI DIỆN BÊN A") && texts.includes("ĐẠI DIỆN BÊN B") && texts.filter((t) => t === "ĐẠI DIỆN BÊN A").length === 1, "Phần ký phải có đúng một ĐẠI DIỆN BÊN A và một BÊN B");
+    // Đọc lại: đoạn trong ô có cell, tên đơn vị cột 1, quốc hiệu cột 2 cùng hàng
+    const orgIdx = before.s + texts.indexOf(`CÔNG TY THỬ ${code}`);
+    const rd = await run("word_read_paragraphs", { start: orgIdx, end: orgIdx + 12 });
+    const cellOf = (t: string) => rd.paragraphs.find((p: any) => p.text === t)?.cell as string | undefined;
+    const c1 = cellOf(`CÔNG TY THỬ ${code}`);
+    const c2 = cellOf("CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM");
+    expect(!!rd.table_note && /hàng 1, cột 1$/.test(c1 || "") && /hàng 1, cột 2$/.test(c2 || "") && c1!.split(",")[0] === c2!.split(",")[0], `Đọc đoạn không báo đúng ô bảng: ${c1} / ${c2}`);
+    expect(!cellOf(TEN), "Tên hợp đồng nằm ngoài bảng mà vẫn bị gắn cell");
+    // Xóa vắt mép bảng (đoạn cuối phần đầu + tên hợp đồng) phải bị từ chối, văn bản không đổi
+    // Từ dòng "Số: …" (ô trái, hàng 2 của phần đầu) tới tên hợp đồng: vừa trong ô vừa ngoài bảng
+    const tenIdx = before.s + texts.indexOf(TEN);
+    const soK = texts.findIndex((t) => t.startsWith("Số:") && t.includes("HĐ-THU"));
+    expect(soK >= 0 && mid.paras[soK].inTable, "Dòng Số của hợp đồng phải nằm trong bảng phần đầu");
+    let refused = "";
+    try {
+      await run("word_delete_paragraphs", { start: before.s + soK, end: tenIdx, expect: texts[soK].slice(0, 30) });
+    } catch (e: any) {
+      refused = String(e?.message || e);
+    }
+    expect(/trong ô bảng vừa có đoạn ngoài bảng/.test(refused), `Xóa vắt mép bảng không bị chặn: ${refused || "đã xóa"}`);
+    const same = await snap();
+    expect(same.paras.length === mid.paras.length && same.tables === mid.tables, "Lệnh xóa bị chặn mà văn bản vẫn đổi");
+    for (const u of log.slice(mark).reverse()) await u.undo();
+    log.length = mark;
+    const after = await snap();
+    expect(after.tables === before.tables && after.paras.map((p) => p.text).join("\n") === before.paras.map((p) => p.text).join("\n"), `Hoàn tác hợp đồng chưa sạch: bảng ${before.tables} → ${after.tables}, đoạn ${before.paras.length} → ${after.paras.length}; khác: ${after.paras.map((p, k) => (p.text !== before.paras[k]?.text ? `${k}:“${p.text.slice(0, 30)}”(${p.inTable ? "ô" : "ngoài"} cỡ ${p.size} đậm ${p.bold} ${p.align} trước ${p.sb} sau ${p.sa})` : "")).filter(Boolean).slice(0, 4).join(", ")}; lúc dựng: ${mid.paras.slice(0, 14).map((p, k) => `${k}:“${p.text.slice(0, 14)}”${p.inTable ? "ô" : ""}${p.size}`).join(" ")}; trước: ${before.paras.slice(0, 4).map((p) => `“${p.text.slice(0, 14)}”${p.size}`).join(" ")}; cuối: ${mid.paras.slice(texts.indexOf("ĐẠI DIỆN BÊN A") - 2, texts.indexOf("ĐẠI DIỆN BÊN A") + 19).map((p) => `“${p.text.slice(0, 12)}”${p.inTable ? "ô" : ""}${p.size}`).join(" ")}`);
+    await dropNeo();
+    return `2 bảng, tên hợp đồng 1 dòng, ${r.blanks.length} chỗ trống, ô bảng: ${c1} / ${c2}; xóa vắt mép bảng bị chặn; hoàn tác sạch`;
+  });
+
   await step("Đặt thể thức trang: đổi lề rồi hoàn tác về đúng lề cũ; định dạng thụt đầu dòng, cách đoạn, giãn dòng", async () => {
     if (!sup("1.3", "WordApiDesktop")) throw new Skip("Cần WordApiDesktop 1.3 để đặt lề và khổ giấy");
     const read = () =>
