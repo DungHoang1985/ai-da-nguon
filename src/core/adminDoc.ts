@@ -170,17 +170,26 @@ function bodyPara(raw: string, size: number): Para {
 }
 
 const empty = (size: number): Para => ({ text: "", size, align: "Centered" });
+/** "Hà Nội, ngày 05 tháng 01 năm 2026" → { place, date } */
+const splitPlaceDate = (t?: string) => {
+  const m = String(t || "").match(/^([^,]+),\s*(ngày.*)$/iu);
+  return m ? { place: m[1].trim(), date: m[2].trim() } : { place: "", date: "" };
+};
 
-/** Cụm chữ Hán, Nhật, Hàn, Ả Rập, Kirin, Thái trong các dòng nội dung (văn bản tiếng Việt không có; tên riêng nước ngoài hiếm gặp
- *  nên chỉ báo cho model sửa, không từ chối). Trả tối đa 6 cụm, mỗi cụm kèm chữ đứng trước để tìm được chỗ. */
+/** Cụm chữ Hán, Nhật, Hàn, Ả Rập, Kirin, Thái trong các dòng (văn bản tiếng Việt không có; tên riêng nước ngoài hiếm gặp nên chỉ báo
+ *  cho model sửa, không từ chối). Tối đa 6 mục dạng `<cụm chữ lạ> (sau “<chữ đứng trước>”)`; cụm chữ lạ đứng đầu để làm `find`. */
 export function foreignRuns(lines: string[]): string[] {
   const out: string[] = [];
-  const re = /[\u0600-\u06FF\u0400-\u04FF\u0E00-\u0E7F\u3040-\u30FF\u3400-\u9FFF\uAC00-\uD7AF]+/gu;
-  for (const l of lines)
+  const re = /[؀-ۿЀ-ӿ฀-๿぀-ヿ㐀-鿿가-힯]+/gu;
+  for (const raw of lines) {
+    const l = raw.normalize("NFC");
     for (const m of l.matchAll(re)) {
       if (out.length >= 6) return out;
-      out.push(`${l.slice(Math.max(0, (m.index || 0) - 20), m.index).trimStart()}${m[0]}`);
+      // Cắt theo ký tự (không theo đơn vị mã) để không làm gãy chữ
+      const before = Array.from(l.slice(0, m.index)).slice(-20).join("").trim();
+      out.push(before ? `${m[0]} (sau “${before}”)` : m[0]);
     }
+  }
   return out;
 }
 
@@ -191,50 +200,74 @@ const key = (t: string) =>
     .replace(/[#*_`>]/g, "")
     .replace(/[\s.,:;()\-–—]+/g, " ")
     .trim();
+/** Dòng bỏ ký hiệu markdown ở hai đầu */
+const plain = (t: string) => clean(t).replace(/^[#>\s]+/, "").replace(/^[*_]+|[*_]+$/g, "").trim();
 
-/** Model hay chép lại phần đầu (quốc hiệu, tiêu ngữ, tên loại, "Số: …", địa danh ngày tháng) ở đầu nội dung và phần ký ở cuối
- *  nội dung, trong khi công cụ đã tự dựng những phần đó → văn bản có hai dòng "HỢP ĐỒNG …" (Chạy thật 23/11/2026). Bỏ các dòng
- *  lặp ở ĐẦU và CUỐI nội dung, chỉ khi khớp trọn dòng; dòng ở giữa nội dung không bao giờ bị bỏ. */
+/** Giá trị bắt được từ các dòng lặp phần đầu (để không mất thông tin khi model dồn hết vào body — soát mã 4.11.8, C1) */
+export interface EchoFound {
+  title?: string;
+  number?: string;
+  placeDate?: string;
+}
+
+/** Model hay chép lại phần đầu (quốc hiệu, tiêu ngữ, tên loại, "Số: …", địa danh ngày tháng) ở đầu nội dung và phần ký, nơi nhận ở
+ *  cuối nội dung, trong khi công cụ đã tự dựng những phần đó → văn bản có hai dòng "HỢP ĐỒNG …" (Chạy thật 23/11/2026). Bỏ các dòng
+ *  lặp ở ĐẦU và CUỐI nội dung, chỉ khi khớp trọn dòng; dòng ở giữa nội dung không bao giờ bị bỏ. Tên, số, địa danh ngày tháng của các
+ *  dòng bị bỏ được trả trong `found` để bên gọi dùng khi tham số tương ứng còn trống. */
 export function stripHeaderEcho(
   lines: string[],
   o: { title?: string; org?: string; subject?: string; contract?: boolean }
-): { lines: string[]; removed: number } {
+): { lines: string[]; removed: number; found: EchoFound } {
   const heads = new Set([QUOC_HIEU, TIEU_NGU, o.title || "", o.org || "", o.subject || ""].map(key).filter(Boolean));
+  const found: EchoFound = {};
   const isHead = (l: string) => {
     const k = key(l);
-    const raw = clean(l);
-    return (
-      !k ||
-      heads.has(k) ||
-      // Hợp đồng: dòng tên hợp đồng in hoa khác chữ với title ("HỢP ĐỒNG XÂY DỰNG" khi title là "HỢP ĐỒNG THI CÔNG XÂY DỰNG")
-      (!!o.contract && /^hop dong\b/.test(k) && raw.length <= 100 && raw.replace(/[*_#]/g, "") === upper(raw.replace(/[*_#]/g, ""))) ||
-      /^[-=_~*.]{3,}$/.test(raw) ||
-      // "Số: 12/HĐ-XD", "Số: …/2026/HĐTC" — dòng ngắn bắt đầu bằng "Số" và có dấu "/"
-      (/^so\b/.test(k) && raw.length <= 40 && raw.includes("/")) ||
-      /^v\/v\b/i.test(raw) ||
-      // "Hà Nội, ngày … tháng … năm …" đứng một mình (không bắt câu "Hôm nay, ngày … năm …, chúng tôi gồm:")
-      (raw.length <= 70 && !/^hom nay\b/.test(k) && /^[^,]{1,40}, ngay\b.{0,14}\bthang\b.{0,14}\bnam\b[^a-z]*$/.test(noAccent(raw).toLowerCase()))
-    );
+    const raw = plain(l);
+    if (!k || heads.has(k) || /^[-=_~*.]{3,}$/.test(clean(l)) || /^v\/v\b/i.test(raw)) return true;
+    // Hợp đồng: dòng tên in hoa ("HỢP ĐỒNG XÂY DỰNG"), không phải câu ("HỢP ĐỒNG NÀY ĐƯỢC LẬP …, …")
+    if (o.contract && /^hop dong\b/.test(k) && raw.length <= 100 && !/[,;:.]/.test(raw) && raw === upper(raw)) {
+      found.title = found.title || raw;
+      return true;
+    }
+    // "Số: 12/HĐ-XD", "Số: …/2026/HĐTC" — phải có dấu hai chấm sau "Số" (không bắt "Số liệu …", "Sở …", "So sánh 2024/2025")
+    const so = raw.match(/^số\s*:\s*(.*)$/iu);
+    if (so && raw.length <= 50) {
+      const v = so[1].trim();
+      if (/\d/.test(v.split("/")[0])) found.number = found.number || v;
+      return true;
+    }
+    // "Hà Nội, ngày … tháng … năm …" đứng một mình (không bắt câu "Hôm nay, ngày … năm …, chúng tôi gồm:")
+    if (raw.length <= 70 && !/^hom nay\b/.test(k) && /^[^,]{1,40}, ngay\b.{0,14}\bthang\b.{0,14}\bnam\b[^a-z]*$/.test(noAccent(raw).toLowerCase())) {
+      if (/\d{4}/.test(raw) && /ngày\s+\d/iu.test(raw)) found.placeDate = found.placeDate || raw;
+      return true;
+    }
+    return false;
   };
-  const isFoot = (l: string) => {
-    const k = key(l);
-    return (
-      !k ||
-      k === "noi nhan" ||
-      (/^dai dien ben [ab]\b/.test(k) && k.length <= 60) ||
-      /^ky,? (ghi ro )?ho ten/.test(k) ||
-      (!!o.contract && /^(ben [ab]|ben giao thau|ben nhan thau)$/.test(k))
-    );
-  };
+  const isSignLine = (k: string) => /^dai dien ben [ab]\b/.test(k) && k.length <= 60;
   let s = 0;
   let e = lines.length;
   while (s < e && s < 10 && isHead(lines[s])) s++;
-  let tail = 0;
-  while (e > s && tail < 8 && isFoot(lines[e - 1])) {
-    e--;
-    tail++;
+  // Phần cuối: từ dòng "ĐẠI DIỆN BÊN …" hoặc "Nơi nhận:" (trong 10 dòng cuối) tới hết, nếu sau nó chỉ là dòng ngắn của phần ký
+  // (chức vụ, họ tên, "(Ký, ghi rõ họ tên…)") hoặc dòng "- …" của nơi nhận — không có đề mục, điều khoản
+  for (let i = Math.max(s, e - 10); i < e; i++) {
+    const k = key(lines[i]);
+    const sign = isSignLine(k);
+    const noiNhan = k === "noi nhan";
+    if (!sign && !noiNhan) continue;
+    const rest = lines.slice(i + 1, e);
+    const ok = rest.every((l) => {
+      const r = plain(l);
+      if (/^(điều|chương|mục)\s+\d/iu.test(r) || /^#/.test(clean(l))) return false;
+      return noiNhan ? /^[-–•+]/.test(clean(l)) || isSignLine(key(l)) : r.length <= 60 && !/[.;:]$/.test(r.replace(/\)$/, ""));
+    });
+    if (ok) {
+      e = i;
+      break;
+    }
   }
-  return { lines: lines.slice(s, e), removed: s + (lines.length - e) };
+  // Còn sót dòng "Bên A", "Bên B" đứng một mình ở cuối hợp đồng
+  while (e > s && o.contract && /^(ben [ab]|ben giao thau|ben nhan thau)$/.test(key(lines[e - 1]))) e--;
+  return { lines: lines.slice(s, e), removed: s + (lines.length - e), found };
 }
 
 /** Hợp đồng (Chạy thật 23/11/2026: model dùng 'khac' cho hợp đồng → thừa tên loại, có Kính gửi, Nơi nhận, "./."):
@@ -251,28 +284,32 @@ function planContract(a: AdminDocInput): AdminDocPlan {
   const blocks: Block[] = [];
   const org = clean(a.org);
   const parent = clean(a.parent_org);
-  const rawTitle = upper(clean(a.title));
-  const title = rawTitle ? (/^HỢP ĐỒNG\b/u.test(rawTitle) ? rawTitle : `HỢP ĐỒNG ${rawTitle}`) : TYPE_TITLE.hop_dong;
-  if (!rawTitle) blanks.push("tên hợp đồng");
+  const given = upper(clean(a.title));
+  const withPrefix = (t: string) => (/^HỢP ĐỒNG\b/u.test(t) ? t : `HỢP ĐỒNG ${t}`);
   const subject = clean(a.subject);
   const allLines = (Array.isArray(a.body) ? (a.body as unknown[]).map((x) => String(x ?? "")).join("\n") : String(a.body ?? ""))
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
-  const echo = stripHeaderEcho(allLines, { title, org, subject, contract: true });
+  const echo = stripHeaderEcho(allLines, { title: given ? withPrefix(given) : "", org, subject, contract: true });
   const bodyLines = echo.lines;
+  // Model dồn tên, số, ngày vào body mà không đưa tham số: lấy từ các dòng vừa bỏ, không để mất (soát mã 4.11.8, C1)
+  const rawTitle = given || upper(clean(echo.found.title));
+  const title = rawTitle ? withPrefix(rawTitle) : TYPE_TITLE.hop_dong;
+  if (!rawTitle) blanks.push("tên hợp đồng");
   if (echo.removed) notes.push(`đã bỏ ${echo.removed} dòng ở đầu hoặc cuối nội dung vì trùng phần đầu hoặc phần ký do công cụ tự dựng`);
   if (!bodyLines.length) throw new Error("Thiếu nội dung hợp đồng (body): mỗi dòng là một đoạn — căn cứ, các bên, các điều khoản.");
   if (list(a.to).length || list(a.recipients).length) notes.push("hợp đồng không có Kính gửi và Nơi nhận: đã bỏ hai phần này");
 
   // Số hợp đồng: giữ nguyên dạng đầy đủ người dùng đưa ("01/2026/HĐ-XD"); chỉ có số thì ghép với ký hiệu
-  const rawNo = clean(a.number).replace(/^số\s*:?\s*/i, "");
+  const rawNo = (clean(a.number) || clean(echo.found.number)).replace(/^số\s*:?\s*/i, "");
   const symbol = clean(a.symbol).replace(/^\/+/, "");
   const soHD = rawNo.includes("/") ? `Số: ${rawNo}` : `Số: ${rawNo || "     "}/${symbol || BLANK}`;
   if (!rawNo) blanks.push("số hợp đồng");
   else if (!rawNo.includes("/") && !symbol) blanks.push("ký hiệu hợp đồng");
-  const place = clean(a.place).replace(/,$/, "");
-  const date = clean(a.date).replace(/^,\s*/, "");
+  const pd = !clean(a.place) && !clean(a.date) ? splitPlaceDate(echo.found.placeDate) : { place: "", date: "" };
+  const place = (clean(a.place) || pd.place).replace(/,$/, "");
+  const date = (clean(a.date) || pd.date).replace(/^,\s*/, "");
   // Hợp đồng thường ghi ngày ký trong câu "Hôm nay, ngày …": chỉ hiện dòng địa danh, ngày ở đầu khi người dùng đưa
   const diaDanh =
     place || date ? `${place || BLANK}, ${date ? (/^ngày/i.test(date) ? date : "ngày " + date) : `ngày      tháng      năm ${a.year || BLANK}`}` : "";
@@ -309,10 +346,13 @@ function planContract(a: AdminDocInput): AdminDocPlan {
   if (subject) blocks.push({ kind: "para", text: subject, size, bold: true, align: "Centered", line: 1.2, keepNext: true });
   blocks.push({ kind: "para", text: "", size: 6, align: "Centered", after: 6 });
 
+  let preamble = true;
   for (const l of bodyLines) {
     const p = bodyPara(l, size);
-    // Dòng căn cứ của hợp đồng in nghiêng dù model không đánh dấu _…_ (Chạy thật 23/11/2026: Nemotron gửi chữ thường)
-    if (!p.bold && /^căn cứ(?=\s|$)/iu.test(p.text)) p.italic = true;
+    if (p.bold || /^(hôm nay|điều\s+\d|bên\s)/iu.test(p.text)) preamble = false;
+    // Dòng căn cứ ở phần mở đầu in nghiêng dù model không đánh dấu _…_ (Chạy thật 23/11/2026: Nemotron gửi chữ thường);
+    // câu "Căn cứ biên bản nghiệm thu, …" trong điều khoản giữ chữ đứng (soát mã 4.11.8, T3)
+    if (preamble && /^căn cứ(?=\s|$)/iu.test(p.text)) p.italic = true;
     blocks.push({ kind: "para", ...p });
   }
   blocks[blocks.length - 1] = { ...(blocks[blocks.length - 1] as ParaBlock), keepNext: true, after: 12 };
@@ -365,6 +405,7 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   const subject = clean(a.subject).replace(/^v\/v:?\s*/i, "");
   const title = upper(clean(a.title)) || TYPE_TITLE[type];
   const echo = stripHeaderEcho(bodyLines, { title, org, subject });
+  if (echo.removed && !echo.lines.length) echo.found = {};
   if (echo.removed && echo.lines.length) {
     bodyLines.splice(0, bodyLines.length, ...echo.lines);
     notes.push(`đã bỏ ${echo.removed} dòng ở đầu hoặc cuối nội dung vì trùng phần đầu hoặc phần ký do công cụ tự dựng`);
@@ -375,17 +416,19 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
 
   // ----- Phần đầu: bảng hai cột không viền -----
   // Model hay đưa "Số 12" hoặc cả "12/CV-ABC": chỉ lấy phần số
-  const number = clean(a.number)
+  const echoNo = !clean(a.number) ? clean(echo.found.number) : "";
+  const number = (clean(a.number) || echoNo)
     .replace(/^số\s*:?\s*/i, "")
     .split("/")[0]
     .trim();
-  const symbol = clean(a.symbol).replace(/^\/+/, "");
+  const symbol = (clean(a.symbol) || (echoNo.includes("/") ? echoNo.slice(echoNo.indexOf("/") + 1) : "")).replace(/^\/+/, "");
   if (!number) blanks.push("số văn bản (để văn thư cấp)");
   if (!symbol) blanks.push("ký hiệu văn bản");
   const soKyHieu = `Số: ${number || "     "}/${symbol || BLANK}`;
-  const place = clean(a.place).replace(/,$/, "");
+  const pd = !clean(a.place) && !clean(a.date) ? splitPlaceDate(echo.found.placeDate) : { place: "", date: "" };
+  const place = (clean(a.place) || pd.place).replace(/,$/, "");
   if (!place && type !== "bien_ban") blanks.push("địa danh");
-  let date = clean(a.date).replace(/^,\s*/, "");
+  let date = (clean(a.date) || pd.date).replace(/^,\s*/, "");
   if (date && !/^ngày/i.test(date)) {
     const iso = date.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
     const m = iso ? [iso[0], iso[3], iso[2], iso[1]] : date.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);

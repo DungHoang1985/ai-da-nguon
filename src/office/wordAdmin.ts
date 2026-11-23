@@ -33,7 +33,7 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
         org: {
           type: "string",
           description:
-            "Issuing organisation, full official name. hop_dong: optional (top-left, opposite the motto).",
+            "Issuing organisation, full official name. Required except hop_dong (optional, top-left).",
         },
         parent_org: {
           type: "string",
@@ -90,7 +90,7 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
           items: { type: "string" },
           description: "Nơi nhận lines ('Như trên', 'Lưu: VT' auto-added).",
         },
-        font_size: { type: "number", enum: [13, 14], description: "Body size (default 14)." },
+        font_size: { type: "number", enum: [13, 14], description: "Body size (default 14; hop_dong 13)." },
         page_setup: {
           type: "boolean",
           description:
@@ -385,12 +385,14 @@ export function createWordAdminTools(d: Deps) {
     // Đoạn đứng ngay sau chỗ chèn (trước khi chèn): để nhận ra đoạn rỗng Word tự sinh sau bảng cuối (đo 23/11/2026 với phần ký
     // của hợp đồng: Word thêm một đoạn "Normal" rỗng sau bảng, không thuộc phần đã chèn nên Hoàn tác để sót)
     let nextAt: Word.Paragraph | null = null;
-    if (d.supports("1.6")) {
+    if (d.supports("1.6") && plan.blocks[plan.blocks.length - 1]?.kind === "table") {
       nextAt = where === "Before" ? anchor : anchor.getNextOrNullObject();
       nextAt.load("uniqueLocalId");
       await ctx.sync();
     }
     const nextId = nextAt && !nextAt.isNullObject ? nextAt.uniqueLocalId : "";
+    /** Đoạn rỗng Word sinh để ngăn bảng ký với một bảng có sẵn đứng ngay sau (giữ lại, Hoàn tác gỡ) */
+    let sepId = "";
     let prev: Word.Paragraph | Word.Table | null = null;
     for (const b of plan.blocks) {
       if (b.kind === "table") {
@@ -447,7 +449,18 @@ export function createWordAdminTools(d: Deps) {
         const extra = tables[tables.length - 1].getParagraphAfterOrNullObject();
         extra.load("text,uniqueLocalId,tableNestingLevel");
         await ctx.sync();
+        // Chỉ bỏ khi ngay sau nó là đúng đoạn vốn đứng sau chỗ chèn, ngoài bảng: đoạn rỗng ngăn bảng ký với một bảng có sẵn của
+        // người dùng thì giữ (bỏ đi là hai bảng dính nhau — soát mã 4.11.8, T2)
+        let follows = false;
         if (!extra.isNullObject && extra.uniqueLocalId !== nextId && !extra.text.trim() && extra.tableNestingLevel === 0) {
+          const nx = extra.getNextOrNullObject();
+          nx.load("uniqueLocalId,tableNestingLevel");
+          await ctx.sync();
+          follows = !nx.isNullObject && nx.uniqueLocalId === nextId && nx.tableNestingLevel === 0;
+          // Đoạn ngăn bảng ký với bảng có sẵn: giữ, nhưng ghi lại để Hoàn tác gỡ nó ngay sau khi gỡ bảng ký
+          if (!follows) sepId = extra.uniqueLocalId;
+        }
+        if (follows) {
           extra.delete();
           await ctx.sync();
         }
@@ -490,6 +503,8 @@ export function createWordAdminTools(d: Deps) {
         marks.forEach((m) =>
           made.push({ id: m.p.uniqueLocalId, head: m.p.text.slice(0, 20), table: m.table })
         );
+        // Gỡ từ cuối lên: đoạn ngăn đứng trước mục bảng ký trong danh sách → được gỡ ngay sau bảng ký
+        if (sepId) made.splice(made.length - 1, 0, { id: sepId, head: "", table: false });
       }
       return { rules: rules.length, made };
     }
@@ -597,7 +612,7 @@ export function createWordAdminTools(d: Deps) {
         ...(plan.foreign?.length
           ? {
               foreign_text: plan.foreign,
-              fix_now: "Nội dung vừa dựng lẫn chữ không phải tiếng Việt (foreign_text). Trừ khi đó là tên riêng người dùng đưa, sửa NGAY từng cụm thành tiếng Việt bằng word_replace_text (find = đúng cụm chữ lạ) trước khi trả lời.",
+              fix_now: "Nội dung vừa dựng lẫn chữ không phải tiếng Việt (foreign_text: mỗi mục là cụm chữ lạ, trong ngoặc là chữ đứng trước để định vị). Trừ khi đó là tên riêng người dùng đưa, sửa NGAY từng cụm thành tiếng Việt bằng word_replace_text, find = chỉ cụm chữ lạ (không kèm phần trong ngoặc), trước khi trả lời.",
             }
           : {}),
         next: "Báo người dùng các chỗ còn trống (blanks) cần điền trước khi ký. Muốn sửa câu chữ thì dùng word_set_paragraph_text trên đoạn tương ứng; không dựng lại cả văn bản. Phần đầu và phần ký là bảng không viền hai cột (các đoạn có trường cell khi đọc): bên trái và bên phải nằm ngang hàng nhau là đúng thể thức; bớt hay sửa một dòng ở đó thì chỉ xóa hoặc sửa đúng đoạn đó, không xóa rồi chèn lại để đổi chỗ.",

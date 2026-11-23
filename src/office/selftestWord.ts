@@ -1296,12 +1296,47 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     expect(/trong ô bảng vừa có đoạn ngoài bảng/.test(refused), `Xóa vắt mép bảng không bị chặn: ${refused || "đã xóa"}`);
     const same = await snap();
     expect(same.paras.length === mid.paras.length && same.tables === mid.tables, "Lệnh xóa bị chặn mà văn bản vẫn đổi");
+    // Xóa trong bảng nhưng vắt từ ô trái (tên đơn vị) sang ô phải (quốc hiệu) cũng phải bị từ chối
+    const orgK = texts.indexOf(`CÔNG TY THỬ ${code}`);
+    const qhK = texts.indexOf("CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM");
+    let refused2 = "";
+    try {
+      await run("word_delete_paragraphs", { start: before.s + orgK, end: before.s + qhK, expect: texts[orgK].slice(0, 30) });
+    } catch (e: any) {
+      refused2 = String(e?.message || e);
+    }
+    expect(/nhiều ô bảng/.test(refused2), `Xóa vắt hai ô của phần đầu không bị chặn: ${refused2 || "đã xóa"}`);
     for (const u of log.slice(mark).reverse()) await u.undo();
     log.length = mark;
     const after = await snap();
     expect(after.tables === before.tables && after.paras.map((p) => p.text).join("\n") === before.paras.map((p) => p.text).join("\n"), `Hoàn tác hợp đồng chưa sạch: bảng ${before.tables} → ${after.tables}, đoạn ${before.paras.length} → ${after.paras.length}; khác: ${after.paras.map((p, k) => (p.text !== before.paras[k]?.text ? `${k}:“${p.text.slice(0, 30)}”(${p.inTable ? "ô" : "ngoài"} cỡ ${p.size} đậm ${p.bold} ${p.align} trước ${p.sb} sau ${p.sa})` : "")).filter(Boolean).slice(0, 4).join(", ")}; lúc dựng: ${mid.paras.slice(0, 14).map((p, k) => `${k}:“${p.text.slice(0, 14)}”${p.inTable ? "ô" : ""}${p.size}`).join(" ")}; trước: ${before.paras.slice(0, 4).map((p) => `“${p.text.slice(0, 14)}”${p.size}`).join(" ")}; cuối: ${mid.paras.slice(texts.indexOf("ĐẠI DIỆN BÊN A") - 2, texts.indexOf("ĐẠI DIỆN BÊN A") + 19).map((p) => `“${p.text.slice(0, 12)}”${p.inTable ? "ô" : ""}${p.size}`).join(" ")}`);
     await dropNeo();
-    return `2 bảng, tên hợp đồng 1 dòng, ${r.blanks.length} chỗ trống, ô bảng: ${c1} / ${c2}; xóa vắt mép bảng bị chặn; hoàn tác sạch`;
+    // Chèn hợp đồng ngay trước một bảng có sẵn của người dùng: đoạn ngăn bảng ký với bảng đó phải giữ (hai bảng không dính nhau)
+    const base = await snap();
+    const k = base.paras.findIndex((p, i) => !p.inTable && p.text.trim().length >= 5 && base.paras[i + 1]?.inTable);
+    let nearTable = "không có bảng trong vùng thử: bỏ qua ca chèn sát bảng";
+    if (k >= 0) {
+      const rowsOf = () =>
+        Word.run(async (ctx) => {
+          const ts = ctx.document.body.tables;
+          ts.load("items/rowCount");
+          await ctx.sync();
+          return ts.items.map((t) => t.rowCount).join(",");
+        });
+      const rows0 = await rowsOf();
+      const mark2 = log.length;
+      await run("word_create_admin_document", { doc_type: "hop_dong", org: `Công ty sát bảng ${code}`, title: "Hợp đồng thử sát bảng", body: `## Điều 1. Nội dung ${code}`, page_setup: false, position: "after_paragraph", paragraph_index: base.s + k, expect: base.paras[k].text.slice(0, 30) });
+      const near = await snap();
+      const sigEnd = near.paras.map((p) => p.text).lastIndexOf("…");
+      expect(near.tables === base.tables + 2, `Chèn sát bảng: số bảng tăng ${near.tables - base.tables} (phải là 2, không dính vào bảng có sẵn)`);
+      expect(sigEnd >= 0 && !near.paras[sigEnd + 1]?.inTable, "Giữa bảng ký và bảng có sẵn phải còn đoạn ngăn cách");
+      for (const u of log.slice(mark2).reverse()) await u.undo();
+      log.length = mark2;
+      const back = await snap();
+      expect(back.tables === base.tables && back.paras.map((p) => p.text).join("\n") === base.paras.map((p) => p.text).join("\n") && (await rowsOf()) === rows0, `Hoàn tác ca chèn sát bảng chưa sạch: bảng ${base.tables} → ${back.tables}, đoạn ${base.paras.length} → ${back.paras.length}`);
+      nearTable = "chèn sát bảng có sẵn: bảng không dính, hoàn tác sạch";
+    }
+    return `2 bảng, tên hợp đồng 1 dòng, ${r.blanks.length} chỗ trống, ô bảng: ${c1} / ${c2}; xóa vắt mép bảng và vắt hai ô bị chặn; hoàn tác sạch; ${nearTable}`;
   });
 
   await step("Đặt thể thức trang: đổi lề rồi hoàn tác về đúng lề cũ; định dạng thụt đầu dòng, cách đoạn, giãn dòng", async () => {

@@ -277,7 +277,7 @@ export const WORD_SPECS: ToolSpec[] = [
   {
     name: "word_delete_paragraphs",
     description:
-      "Delete paragraphs start..end inclusive (tracked; the user confirms first). Only when the user asks to remove content.",
+      "Delete paragraphs start..end inclusive (tracked; the user confirms first). Only when the user asks to remove content. Never across table cells or a table edge.",
     parameters: {
       type: "object",
       properties: {
@@ -604,10 +604,35 @@ async function markCells(ctx: Word.RequestContext, rows: Row[], paras: Word.Para
       return { r, c };
     });
     await ctx.sync();
-    for (const { r, c } of cells) if (!c.isNullObject) all[r.i].cell = `bảng ${tableNo[r.i]}, hàng ${c.rowIndex + 1}, cột ${c.cellIndex + 1}`;
+    for (const { r, c } of cells)
+      if (!c.isNullObject)
+        all[r.i].cell = `bảng ${tableNo[r.i]}${paras.items[r.i].tableNestingLevel > 1 ? " (bảng con trong ô)" : ""}, hàng ${c.rowIndex + 1}, cột ${c.cellIndex + 1}`;
   } catch {
     /* Word không trả được ô: bỏ qua */
   }
+}
+
+/** Vùng xóa vắt qua mép bảng (một phần trong ô, một phần ngoài) hoặc qua nhiều ô: làm vỡ bảng thể thức ở phần đầu, phần ký
+ *  (Chạy thật 23/11/2026; soát mã 4.11.8, T4). Trả câu lỗi, hoặc null nếu xóa được. Kiểm cả ở bước hỏi người dùng (không hỏi rồi mới từ chối). */
+async function tableSpanProblem(ctx: Word.RequestContext, paras: Word.ParagraphCollection, s: number, e: number): Promise<string | null> {
+  if (!supports("1.3") || e <= s) return null;
+  const range = paras.items.slice(s, e + 1);
+  range.forEach((p) => p.load("tableNestingLevel"));
+  await ctx.sync();
+  const inT = range.map((p) => p.tableNestingLevel > 0);
+  if (!inT.some(Boolean)) return null;
+  const how = "Xóa riêng từng phần, chỉ những đoạn người dùng muốn bỏ: các đoạn ngoài bảng một lần, mỗi ô bảng một lần. Công cụ này không xóa được cả bảng: báo người dùng tự xóa bảng nếu cần.";
+  if (!inT.every(Boolean)) return `Đoạn ${s}–${e} vừa có đoạn trong ô bảng vừa có đoạn ngoài bảng (trường cell khi đọc cho biết đoạn nào trong ô). ${how}`;
+  const cells = range.map((p) => {
+    const c = p.parentTableCellOrNullObject;
+    c.load("rowIndex,cellIndex");
+    return c;
+  });
+  await ctx.sync();
+  const id = (c: Word.TableCell) => (c.isNullObject ? "-" : `${c.rowIndex}:${c.cellIndex}`);
+  const levels = new Set(range.map((p) => p.tableNestingLevel));
+  if (levels.size > 1 || new Set(cells.map(id)).size > 1) return `Đoạn ${s}–${e} nằm ở nhiều ô bảng khác nhau (ví dụ ô trái và ô phải của phần đầu). ${how}`;
+  return null;
 }
 
 /** Số điều khoản của từng đoạn mở đầu điều khoản (để mọi kết quả đọc đều kèm số điều) */
@@ -1730,17 +1755,8 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
             const s = r.index;
             const e = s + span;
             if (e >= r.rows.length) throw new Error(`Chỉ số đoạn không hợp lệ (có ${r.rows.length} đoạn).`);
-            // Vùng xóa vắt qua mép bảng (một phần trong ô bảng, một phần ngoài) làm vỡ bảng thể thức ở phần đầu, phần ký
-            if (supports("1.3") && e > s) {
-              const range = r.paras.items.slice(s, e + 1);
-              range.forEach((p) => p.load("tableNestingLevel"));
-              await ctx.sync();
-              const inT = range.map((p) => p.tableNestingLevel > 0);
-              if (inT.some(Boolean) && !inT.every(Boolean))
-                throw new Error(
-                  `Đoạn ${s}–${e} vừa có đoạn trong ô bảng vừa có đoạn ngoài bảng: không xóa một lần. Đọc lại (trường cell cho biết đoạn nào trong ô), rồi xóa riêng từng phần, chỉ những đoạn người dùng muốn bỏ.`
-                );
-            }
+            const bad = await tableSpanProblem(ctx, r.paras, s, e);
+            if (bad) throw new Error(bad);
             for (let i = s; i <= e; i++) if (r.rows[i].id) u.touched.push(r.rows[i].id as string);
             for (let i = e; i >= s; i--) r.paras.items[i].delete();
             await ctx.sync();
@@ -2212,7 +2228,7 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     // Xóa đoạn: hộp xác nhận hiện trích nội dung sắp xóa
     word_delete_paragraphs: (a) =>
       Word.run(async (ctx) => {
-        const { rows } = await loadRows(ctx);
+        const { rows, paras } = await loadRows(ctx);
         const loc = locateParagraph(
           rows.map((r) => r.text),
           a.start,
@@ -2222,6 +2238,8 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         const span = a.end === undefined || a.end === null ? 0 : Math.max(0, Number(a.end) - Number(a.start));
         const s = loc.index;
         const e = Math.min(rows.length - 1, s + span);
+        // Vùng vắt mép bảng: công cụ sẽ từ chối, không hỏi người dùng trước
+        if (await tableSpanProblem(ctx, paras, s, e)) return null;
         const shown = rows.slice(s, Math.min(e + 1, s + 5)).map((r) => `[¶${r.i}] “${truncate(r.text, 80)}”`);
         return `Xóa ${e - s + 1} đoạn (ghi bằng Theo dõi thay đổi): ${shown.join(" · ")}${e - s + 1 > 5 ? ` · … và ${e - s + 1 - 5} đoạn nữa` : ""}`;
       }),

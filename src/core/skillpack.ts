@@ -50,7 +50,7 @@ export const BUILTIN_SKILLS: BuiltinSkill[] = [
     hosts: ["Word"],
     source: "builtin",
     enabled: true,
-    triggers: ["ra soat hop dong", "gop y hop dong", "review contract", "kiem tra hop dong", "danh gia hop dong", "ra soat phu luc", "ra soat thoa thuan"],
+    triggers: ["ra soat hop dong", "ra soat mau hop dong", "kiem tra mau hop dong", "gop y mau hop dong", "gop y hop dong", "review contract", "kiem tra hop dong", "danh gia hop dong", "ra soat phu luc", "ra soat thoa thuan"],
     body: `# Rà soát hợp đồng (phỏng theo plugin legal/review-contract)
 
 1. Xác định loại hợp đồng và **bên mình** (hỏi nếu chưa rõ): bên bán/mua, chủ đầu tư/nhà thầu, bên chuyển nhượng/nhận chuyển nhượng… Kết luận phụ thuộc vào bên mình.
@@ -423,8 +423,8 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
     source: "builtin",
     enabled: true,
     triggers: [
-      "soan hop dong", "soan thao hop dong", "du thao hop dong", "mau hop dong", "lap hop dong", "viet hop dong", "tao hop dong",
-      "hop dong mau", "the thuc hop dong",
+      "soan hop dong", "soan thao hop dong", "du thao hop dong", "lap hop dong", "viet hop dong", "tao hop dong",
+      "soan mau hop dong", "tao mau hop dong", "lap mau hop dong", "du thao mau hop dong",
     ],
     body: `# Soạn hợp đồng
 
@@ -485,7 +485,7 @@ Phần đầu (tên đơn vị, "Số:" bên trái; quốc hiệu, tiêu ngữ b
     hosts: ["Word"],
     source: "builtin",
     enabled: true,
-    triggers: ["dien mau", "dien vao", "dien giup", "dien ho", "dien cac cho", "dien vao mau", "dien thong tin", "dien hop dong", "dien to khai", "dien bieu mau", "dien cho trong", "dien vao cho trong", "hoan thien mau", "dien giay", "dien don"],
+    triggers: ["dien mau", "dien mau hop dong", "dien vao", "dien giup", "dien ho", "dien cac cho", "dien vao mau", "dien thong tin", "dien hop dong", "dien to khai", "dien bieu mau", "dien cho trong", "dien vao cho trong", "hoan thien mau", "dien giay", "dien don"],
     body: `# Điền mẫu
 
 1. Gọi word_list_form_fields một lần để biết mọi chỗ cần điền (mã, nhãn, loại ô, danh sách mục của ô chọn, định dạng ngày). Kết quả có next_start là chưa hết: gọi tiếp.

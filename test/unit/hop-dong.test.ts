@@ -121,10 +121,48 @@ describe("4.11.8 · Hợp đồng: bản vẽ loại hop_dong", () => {
   });
 });
 
+describe("4.11.8 · Sửa theo soát mã độc lập", () => {
+  it("C1: model dồn tên, số, ngày vào body mà không đưa tham số → lấy lại, không mất", () => {
+    const p = planAdminDocument({ doc_type: "hop_dong", body: "HỢP ĐỒNG THI CÔNG XÂY DỰNG NHÀ XƯỞNG\nSố: 15/2026/HĐ-XD\nHà Nội, ngày 20 tháng 11 năm 2026\n## Điều 1. Nội dung\nx" });
+    const t = allText(p);
+    assert.ok(t.includes("HỢP ĐỒNG THI CÔNG XÂY DỰNG NHÀ XƯỞNG") && t.includes("Số: 15/2026/HĐ-XD") && t.includes("Hà Nội, ngày 20 tháng 11 năm 2026"), t.join(" | "));
+    assert.ok(!p.blanks.includes("tên hợp đồng") && !p.blanks.includes("số hợp đồng"), p.blanks.join("; "));
+    const cv = planAdminDocument({ doc_type: "cong_van", org: "Công ty ABC", body: "Số: 12/ABC-PC\nHà Nội, ngày 05 tháng 01 năm 2026\nCông ty đề nghị …" });
+    const ct = allText(cv);
+    assert.ok(ct.includes("Số: 12/ABC-PC") && ct.includes("Hà Nội, ngày 05 tháng 01 năm 2026"), ct.join(" | "));
+  });
+  it("T1: 'Số liệu …', 'So sánh 2024/2025', 'Sở …' ở đầu body không bị bỏ", () => {
+    for (const l of ["Số liệu tính đến 30/9/2025:", "So sánh 2024/2025 như sau:", "Sở Xây dựng đề nghị 2/3 hồ sơ"]) assert.strictEqual(stripHeaderEcho([l, "x"], {}).removed, 0, l);
+    const p = planAdminDocument({ doc_type: "bao_cao", org: "ABC", subject: "x", body: "Số liệu tính đến 30/9/2025:\nDoanh thu tăng." });
+    assert.ok(paras(p).some((x) => x.text === "Số liệu tính đến 30/9/2025:"));
+  });
+  it("T3: 'Căn cứ …' trong điều khoản giữ chữ đứng; căn cứ phần mở đầu nghiêng", () => {
+    const p = planAdminDocument({ doc_type: "hop_dong", title: "x", body: "Căn cứ nhu cầu hai bên;\nHôm nay, ngày … chúng tôi gồm:\n## Điều 5. Thanh toán\nCăn cứ biên bản nghiệm thu, Bên A thanh toán." });
+    const ps = paras(p);
+    assert.ok(ps.find((x) => x.text === "Căn cứ nhu cầu hai bên;")!.italic);
+    assert.ok(!ps.find((x) => x.text.startsWith("Căn cứ biên bản"))!.italic);
+  });
+  it("L2: phần ký có họ tên, nơi nhận có danh sách ở cuối body cũng bị bỏ; câu 'HỢP ĐỒNG NÀY …, …' ở đầu body giữ", () => {
+    assert.strictEqual(stripHeaderEcho(["Điều 1. x", "ĐẠI DIỆN BÊN A", "ĐẠI DIỆN BÊN B", "Nguyễn Văn A", "Trần Văn B"], { contract: true }).lines.length, 1);
+    assert.strictEqual(stripHeaderEcho(["Nội dung.", "Nơi nhận:", "- Như trên;", "- Lưu: VT."], {}).lines.length, 1);
+    assert.strictEqual(stripHeaderEcho(["HỢP ĐỒNG NÀY ĐƯỢC LẬP TẠI HÀ NỘI, GỒM 10 ĐIỀU", "x"], { contract: true }).removed, 0);
+    assert.strictEqual(stripHeaderEcho(["Điều 9. Đại diện", "ĐẠI DIỆN BÊN A", "## Điều 10. Hiệu lực", "Hợp đồng có hiệu lực."], { contract: true }).removed, 0, "có điều khoản sau thì không phải phần ký");
+  });
+  it("C2: 'mẫu hợp đồng' khi rà soát, góp ý, tóm tắt, so sánh, điền thì không bật soạn hợp đồng", () => {
+    const word = BUILTIN_SKILLS.filter((s) => !s.hosts || s.hosts.includes("Word"));
+    const picked = (q: string) => autoSelectSkills(q, word).map((s) => s.name);
+    for (const q of ["Rà soát mẫu hợp đồng này giúp tôi", "Kiểm tra mẫu hợp đồng của đối tác", "Góp ý mẫu hợp đồng thi công", "Tóm tắt mẫu hợp đồng", "So sánh hợp đồng mẫu với bản đối tác gửi", "Điền mẫu hợp đồng theo thông tin trong tệp", "Kiểm tra thể thức hợp đồng này"])
+      assert.ok(!picked(q).includes("soan-hop-dong"), q);
+    assert.strictEqual(picked("Rà soát mẫu hợp đồng này giúp tôi")[0], "ra-soat-hop-dong");
+    assert.ok(picked("Điền mẫu hợp đồng theo thông tin trong tệp").includes("dien-mau"));
+    assert.ok(!requestGroups(WORD_TOOL_GROUPS, { text: "Tóm tắt mẫu hợp đồng" }).has("hanh_chinh"));
+  });
+});
+
 describe("4.11.8 · Chữ lạ lẫn trong nội dung (Nemotron chèn chữ Hán, Ả Rập — Chạy thật 23/11/2026)", () => {
   it("Báo cụm chữ Hán, Ả Rập kèm chữ đứng trước; tiếng Việt có dấu, ký hiệu … § ¶ thì không báo", () => {
     const p = planAdminDocument({ doc_type: "hop_dong", title: "Hợp đồng", body: ["## Điều 15. Giải quyết tranh chấp", "Hai bên có quyền 提交仲裁 tại trọng tài.", "Bên B phải رفع到 hồ sơ."].join("\n") });
-    assert.deepStrictEqual(p.foreign, ["Hai bên có quyền 提交仲裁", "Bên B phải رفع到"]);
+    assert.deepStrictEqual(p.foreign, ["提交仲裁 (sau “Hai bên có quyền”)", "رفع到 (sau “Bên B phải”)"]);
     const ok = planAdminDocument({ doc_type: "cong_van", org: "Công ty ABC", body: "Đề nghị Quý Sở xem xét … § 2, mục ¶ 3; giá 1.250.000.000 đồng (Một tỷ hai trăm năm mươi triệu đồng)." });
     assert.strictEqual(ok.foreign, undefined);
   });

@@ -33,7 +33,25 @@ Anh Dũng báo: dùng chế độ Miễn phí (Nemotron 3 Ultra free) soạn h�
 | Soạn mẫu không hỏi dồn | Đạt | Chạy thật lần 1 (trước sửa kỹ năng) hỏi 7 mục; lần 2–4 soạn ngay |
 | Căn cứ in nghiêng; không tự ghi số hiệu luật | Đạt | Chạy thật lần 3: căn cứ nghiêng, số hiệu để "…" |
 | Chữ lạ trong nội dung được báo để model sửa | Kiểm thử máy đạt; Chạy thật chưa kiểm được (lần 4 model không sinh chữ lạ) | `hop-dong.test.ts` |
-| Kiểm thử máy, kiểm kiểu | Đạt 814/814, kiểm kiểu sạch | `npm test` |
+| Kiểm thử máy, kiểm kiểu | Đạt 819/819 (sau soát mã), kiểm kiểu sạch | `npm test` |
 | Tự kiểm tra Word (bản cục bộ, desktop ẩn) | Đạt 41/41 | `sua-23-11-bang-chung/tu-kiem-tra-word-41.json` |
 
-Chưa làm: soát mã độc lập; phát hành (đẩy `main`) — chờ anh duyệt; Chạy thật với Claude (Trả phí).
+## Soát mã độc lập (23/11/2026, anh duyệt "soát mã rồi phát hành")
+
+| Mức | Phát hiện | Xử lý |
+|---|---|---|
+| Cao C1 | Dòng lặp bị bỏ mà không giữ giá trị: model dồn tên, số, ngày vào body thì văn bản mất tên, số, ngày | Đã sửa: `stripHeaderEcho` trả `found` (tên, số, địa danh ngày), bên gọi dùng khi tham số trống (hợp đồng và văn bản hành chính) |
+| Cao C2 | Từ khóa "mẫu hợp đồng" bật kỹ năng soạn khi người dùng nhờ rà soát, góp ý, tóm tắt, điền mẫu | Đã sửa: chỉ cụm có động từ soạn ("soạn mẫu hợp đồng"…); thêm "rà soát / kiểm tra / góp ý mẫu hợp đồng" cho ra-soat-hop-dong, "điền mẫu hợp đồng" cho dien-mau; bỏ khỏi nhóm hanh_chinh |
+| TB T1 | Quy tắc "Số" bỏ nhầm "Số liệu …", "So sánh 2024/2025" | Đã sửa: phải có "Số:" (còn dấu, có hai chấm) |
+| TB T2 | Bỏ đoạn rỗng sau bảng ký có thể xóa đoạn ngăn với bảng có sẵn → hai bảng dính | Đã sửa: chỉ bỏ khi ngay sau nó là đoạn vốn đứng sau chỗ chèn; đoạn ngăn được giữ và Hoàn tác gỡ ngay sau bảng ký (Tự kiểm tra thêm ca chèn sát bảng — lần đầu thấy Hoàn tác sót đoạn ngăn, đã sửa) |
+| TB T3 | "Căn cứ …" trong điều khoản cũng bị nghiêng | Đã sửa: chỉ dòng căn cứ ở phần mở đầu |
+| TB T4 | Chặn xóa bỏ lọt vùng vắt từ ô trái sang ô phải; bị chặn sau khi người dùng đã bấm đồng ý | Đã sửa: chặn cả vùng nhiều ô; kiểm ngay ở bước hỏi (không hỏi rồi mới từ chối); mô tả công cụ ghi giới hạn; câu lỗi nói cách xóa từng phần |
+| Thấp L1 | Bảng con gắn nhãn của bảng ngoài | Đã sửa: ghi "(bảng con trong ô)" |
+| Thấp L2 | Phần ký có họ tên, nơi nhận có danh sách ở cuối body không bị bỏ; câu "HỢP ĐỒNG NÀY …" bị bỏ nhầm | Đã sửa, có kiểm thử |
+| Thấp L3 | Thêm lượt sync cho mọi văn bản; chèn cuối tài liệu không dọn đoạn thừa | Sửa phần đầu (chỉ nạp khi khối cuối là bảng); ca chèn cuối tài liệu để lại (chưa đo trong Word) |
+| Thấp L4, L5, L7 | Mô tả cỡ chữ, org; CLAUDE.md lệch trần ký tự | Đã sửa |
+| Thấp L6 | `foreign_text` lẫn chữ đứng trước làm model dùng sai `find`; cắt chữ theo đơn vị mã | Đã sửa: dạng `<cụm lạ> (sau “…”)`, cắt theo ký tự |
+
+Sau soát mã: 819/819, Tự kiểm tra Word 41/41 (bản cục bộ, desktop ẩn), Chạy thật Nemotron đạt (bố cục đúng, không chữ lạ, căn cứ nghiêng đúng chỗ).
+
+Chưa làm: Chạy thật với Claude (Trả phí); đo ca chèn hợp đồng vào cuối tài liệu đang có chữ.
