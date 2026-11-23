@@ -38,4 +38,17 @@ Bằng chứng: `tasks/va-tra-dieu-khoan-bang-chung/`. Một lượt H1 lỗi k�
 ## Còn lại
 
 - Mục cùng số giữa khoản phần chính và mục phụ lục ("3.1" so với "Phụ lục 01, mục 3.1") vẫn báo trùng như thiết kế cũ. Chưa thấy gây dừng lượt trong các lượt thử.
-- Chưa Chạy thật bằng Claude (API Claude hết tiền); Excel, PowerPoint không dùng hàm này nên không chạy lại Tự kiểm tra.
+- Excel, PowerPoint không dùng hàm này nên không chạy lại Tự kiểm tra.
+
+## Chạy thật bằng Claude trên bản phát hành 4.11.9 (anh Dũng cho chạy, 23/11/2026)
+
+Chế độ Trả phí, nguồn OpenRouter (key có tín dụng của anh). Desktop ẩn, mỗi lượt một bản sao sạch. Chạy xong add-in đã được trả về chế độ Miễn phí. Bộ chạy `chay-claude.mjs`; bằng chứng ở `claude-haiku/`, `claude-sonnet/`.
+
+| Model | Bài | Kết quả | Lần gọi | Token vào · ra | Các bước đọc |
+|---|---|---|---|---|---|
+| Claude Haiku 5.5 | H1 (2 lượt) | 16/16, 16/16 | 2, 2 | 34.856 · 2.169; 35.209 · 2.522 | Đọc thẳng Điều 3, 4, 7, 9, 11; không xoay sang đọc theo đoạn |
+| Claude Haiku 5.5 | R1 (2 lượt) | Đạt, đạt: 6 nhận xét, tất cả đúng Điều 3/5, không sửa chữ | 5, 6 | 110.460 · 15.375; 140.382 · 15.217 | Đọc thẳng Điều 3, 5 (rồi đọc thêm các điều liên quan để đối chiếu) |
+| Claude Sonnet 5.5 | H1 | 16/16 | 2 | 34.744 · 1.014 | Đọc thẳng Điều 3, 4, 7, 9, 11 |
+| Claude Sonnet 5.5 | R1 | Đạt: 5 nhận xét, đúng Điều 3/5, không sửa chữ | 4 | 86.763 · 6.984 | — (phần đầu khung bị cắt khỏi bản ghi) |
+
+Chi phí ước theo giá niêm yết của Anthropic, chưa trừ phần đọc từ bộ nhớ đệm (dòng token của khung không tách phần này với nguồn OpenRouter): Haiku 5.5 (0,10 / 0,50 USD mỗi triệu token vào / ra) khoảng 0,05 USD; Sonnet 5.5 (2 / 10 USD) khoảng 0,32 USD; **tổng khoảng 0,37 USD** (trần đặt trước 1 USD). Số trừ thật xem ở openrouter.ai → Activity.

@@ -1,0 +1,31 @@
+[
+ {
+  "ten": "H1-A-1",
+  "bai": "H1",
+  "arm": "A",
+  "goi": 2,
+  "vao": 34744,
+  "ra": 1014,
+  "giay": 11,
+  "model": "",
+  "doiNguon": [],
+  "diem": 16,
+  "toiDa": 16,
+  "chiTiet": "111 111 111 111 111 phí1",
+  "khongSua": true
+ },
+ {
+  "ten": "R1-A-1",
+  "bai": "R1",
+  "arm": "A",
+  "goi": 4,
+  "vao": 86763,
+  "ra": 6984,
+  "giay": 56,
+  "model": "",
+  "doiNguon": [],
+  "diem": 1,
+  "toiDa": 1,
+  "chiTiet": "5 nhận xét, 5 đúng Điều 3/5 (¶20,21,28,29,30); đoạn đổi: không"
+ }
+]

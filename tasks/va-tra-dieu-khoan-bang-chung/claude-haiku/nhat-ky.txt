@@ -1,0 +1,5 @@
+[14:51:29] H1-A-1: 2 lần gọi · vào 34.856 · 15s ·  5.5. Bấm để đổi 💳 OpenRouter · Anthropic: Claude Haiku 5.5
+[14:53:27] R1-A-1: 5 lần gọi · vào 110.460 · 74s ·  5.5. Bấm để đổi 💳 OpenRouter · Anthropic: Claude Haiku 5.5
+[14:54:01] H1-A-2: 2 lần gọi · vào 35.209 · 15s ·  5.5. Bấm để đổi 💳 OpenRouter · Anthropic: Claude Haiku 5.5
+[14:55:43] R1-A-2: 6 lần gọi · vào 140.382 · 74s ·  5.5. Bấm để đổi 💳 OpenRouter · Anthropic: Claude Haiku 5.5
+[14:55:48] XONG

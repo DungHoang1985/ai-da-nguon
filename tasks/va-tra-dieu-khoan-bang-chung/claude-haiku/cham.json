@@ -1,0 +1,60 @@
+[
+ {
+  "ten": "H1-A-1",
+  "bai": "H1",
+  "arm": "A",
+  "goi": 2,
+  "vao": 34856,
+  "ra": 2169,
+  "giay": 15,
+  "model": "",
+  "doiNguon": [],
+  "diem": 16,
+  "toiDa": 16,
+  "chiTiet": "111 111 111 111 111 phí1",
+  "khongSua": true
+ },
+ {
+  "ten": "H1-A-2",
+  "bai": "H1",
+  "arm": "A",
+  "goi": 2,
+  "vao": 35209,
+  "ra": 2522,
+  "giay": 15,
+  "model": "",
+  "doiNguon": [],
+  "diem": 16,
+  "toiDa": 16,
+  "chiTiet": "111 111 111 111 111 phí1",
+  "khongSua": true
+ },
+ {
+  "ten": "R1-A-1",
+  "bai": "R1",
+  "arm": "A",
+  "goi": 5,
+  "vao": 110460,
+  "ra": 15375,
+  "giay": 74,
+  "model": "",
+  "doiNguon": [],
+  "diem": 1,
+  "toiDa": 1,
+  "chiTiet": "6 nhận xét, 6 đúng Điều 3/5 (¶20,21,22,28,29,30); đoạn đổi: không"
+ },
+ {
+  "ten": "R1-A-2",
+  "bai": "R1",
+  "arm": "A",
+  "goi": 6,
+  "vao": 140382,
+  "ra": 15217,
+  "giay": 74,
+  "model": "",
+  "doiNguon": [],
+  "diem": 1,
+  "toiDa": 1,
+  "chiTiet": "6 nhận xét, 6 đúng Điều 3/5 (¶20,21,22,28,29,30); đoạn đổi: không"
+ }
+]
