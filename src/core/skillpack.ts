@@ -7,6 +7,11 @@
  */
 import type { Skill } from "./skills";
 
+/** Căn cứ pháp lý hay dùng đang có hiệu lực — thử model miễn phí 23/11/2026: mọi model dẫn Luật Nhà ở 2014, Luật Đất đai 2013,
+ *  Nghị định 99/2015 (đã hết hiệu lực), có model bịa văn bản sửa đổi. Theo quy tắc của bộ kỹ năng: chỉ ghi TÊN và NĂM, không ghi số
+ *  hiệu (số hiệu do người dùng, tài liệu đưa, hoặc để chỗ trống). Danh mục cần soát lại khi luật đổi. */
+const CAN_CU_HIEN_HANH = `Căn cứ ĐANG CÓ HIỆU LỰC hay dùng (ghi tên và năm; số hiệu chỉ ghi khi người dùng, tài liệu đưa, không thì "Luật … năm …"): Bộ luật Dân sự năm 2015, Luật Doanh nghiệp năm 2020, Bộ luật Lao động năm 2019, Luật Nhà ở năm 2023, Luật Đất đai năm 2024, Luật Kinh doanh bất động sản năm 2023 (và văn bản sửa đổi, bổ sung). Mẫu hợp đồng kinh doanh bất động sản (mua bán nhà, chuyển nhượng quyền sử dụng đất đã có hạ tầng trong dự án, chuyển nhượng dự án) ở phụ lục nghị định năm 2024 của Chính phủ quy định chi tiết Luật Kinh doanh bất động sản; Luật Nhà ở KHÔNG có mẫu hợp đồng. ĐÃ HẾT HIỆU LỰC, không dẫn: Luật Nhà ở 2014, Luật Đất đai 2013, Luật Kinh doanh bất động sản 2014, Luật Doanh nghiệp 2014 và nghị định hướng dẫn các luật này. Từ 01/7/2025 không còn cấp huyện: không viết "Ủy ban nhân dân cấp huyện", "Tòa án nhân dân cấp huyện" (ghi "Tòa án nhân dân có thẩm quyền").`;
+
 /** Hướng dẫn nền luôn đưa vào lời nhắc hệ thống theo ứng dụng (giống chuyên môn sẵn có của add-in chính thức). */
 export const CORE_GUIDES: Record<string, string> = {
   Excel: `## Chuẩn làm việc với Excel (luôn áp dụng)
@@ -357,9 +362,9 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
   },
   {
     name: "soan-thao-van-ban-hanh-chinh",
-    brief: "Soạn, sửa, soát thể thức văn bản hành chính (công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch). Dùng khi nói 'soạn công văn', 'tờ trình', 'đúng thể thức chưa'.",
+    brief: "Soạn, sửa, soát thể thức văn bản hành chính (công văn, tờ trình, quyết định, nghị quyết, thông báo, biên bản họp…). Dùng khi nói 'soạn công văn', 'tờ trình', 'đúng thể thức chưa'.",
     description:
-      "Soạn, sửa và soát thể thức văn bản hành chính trong Word: công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch. Dựng trọn văn bản đúng thể thức (quốc hiệu, tiêu ngữ, tên cơ quan, số và ký hiệu, địa danh ngày tháng, trích yếu, kính gửi, phần ký, nơi nhận, lề, phông, cỡ chữ) và kiểm lại. Dùng khi người dùng nói 'soạn công văn', 'soạn tờ trình', 'viết báo cáo gửi…', 'soạn quyết định', 'thông báo', 'giấy mời', 'biên bản', 'kiểm tra thể thức', 'đúng thể thức chưa'.",
+      "Soạn, sửa và soát thể thức văn bản hành chính trong Word: công văn, tờ trình, báo cáo, quyết định, nghị quyết (Hội đồng quản trị, Đại hội đồng cổ đông), thông báo, giấy mời, biên bản (kể cả biên bản họp Đại hội đồng cổ đông), kế hoạch. Dựng trọn văn bản đúng thể thức (quốc hiệu, tiêu ngữ, tên cơ quan, số và ký hiệu, địa danh ngày tháng, trích yếu, kính gửi, phần ký, nơi nhận, lề, phông, cỡ chữ) và kiểm lại. Dùng khi người dùng nói 'soạn công văn', 'soạn tờ trình', 'viết báo cáo gửi…', 'soạn quyết định', 'thông báo', 'giấy mời', 'biên bản', 'kiểm tra thể thức', 'đúng thể thức chưa'.",
     hosts: ["Word"],
     source: "builtin",
     enabled: true,
@@ -367,6 +372,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
       "cong van", "to trinh", "van ban hanh chinh", "dung the thuc", "sai the thuc", "the thuc van ban", "kiem tra the thuc", "soat the thuc", "soan quyet dinh", "du thao quyet dinh",
       "soan thong bao", "viet thong bao", "du thao thong bao", "giay moi", "soan bien ban", "lap bien ban", "viet bien ban", "soan bao cao", "du thao bao cao", "viet bao cao",
       "soan ke hoach", "lap ke hoach", "soan van ban gui", "soan van ban de nghi", "quoc hieu",
+      "nghi quyet", "soan nghi quyet", "du thao nghi quyet", "bien ban hop", "dai hoi dong co dong", "hoi dong quan tri",
     ],
     body: `# Soạn thảo văn bản hành chính
 
@@ -376,24 +382,31 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 1. Xác định trước khi viết: loại văn bản; cơ quan ban hành (và cơ quan chủ quản nếu có); gửi ai; nội dung chính; ai ký và ký với quyền hạn gì. Người dùng đã nêu đủ ý chính thì soạn ngay; chỉ hỏi khi thiếu tên cơ quan ban hành hoặc thiếu nội dung chính.
 2. KHÔNG bịa số văn bản, ngày ký, tên người ký, ký hiệu đơn vị, số liệu, căn cứ pháp lý. Chưa biết thì bỏ trống tham số: công cụ tự chừa chỗ. Số văn bản luôn để trống cho văn thư cấp.
 3. Dựng bằng MỘT lần gọi word_create_admin_document (công cụ tự trình bày đúng mọi thành phần, đặt khổ giấy, lề, số trang khi văn bản đang trống). Không tự chèn từng dòng quốc hiệu, bảng, phần ký bằng công cụ khác.
-   - doc_type: cong_van, to_trinh, bao_cao, quyet_dinh, thong_bao, giay_moi, bien_ban, ke_hoach, khac (kèm title). Hợp đồng (kể cả khi người dùng muốn "theo thể thức hành chính"): doc_type hop_dong, làm theo kỹ năng soan-hop-dong (use_skill), không dùng khac.
+   - doc_type: cong_van, to_trinh, bao_cao, quyet_dinh, nghi_quyet, thong_bao, giay_moi, bien_ban, ke_hoach, khac (kèm title). Hợp đồng (kể cả khi người dùng muốn "theo thể thức hành chính"): doc_type hop_dong, làm theo kỹ năng soan-hop-dong (use_skill), không dùng khac.
    - symbol: chữ viết tắt tên loại + chữ viết tắt tên cơ quan, ví dụ TTr-ABC, BC-ABC, QĐ-ABC, TB-ABC, GM-ABC, BB-ABC, KH-ABC. Công văn không có chữ viết tắt tên loại: chữ viết tắt cơ quan + đơn vị soạn thảo, ví dụ ABC-PC. Chỉ điền khi người dùng đã cho chữ viết tắt của cơ quan hoặc tài liệu có sẵn; không biết thì bỏ trống, không tự đặt.
    - subject: trích yếu ngắn, nêu đúng việc (công văn: phần sau "V/v").
    - to: nơi nhận ở phần Kính gửi (công văn, tờ trình, báo cáo gửi cấp trên). recipients: các dòng Nơi nhận.
-   - body: mỗi dòng một đoạn; "# " đề mục canh giữa; "## " đề mục đậm; cả dòng trong dấu gạch dưới _…_ là chữ nghiêng (dòng căn cứ). Body chỉ là phần nội dung: không chép quốc hiệu, tên cơ quan, tên loại, số, ngày, phần ký, nơi nhận vào body (công cụ đã dựng).
-   - signer_authority (TM., KT., TL., TUQ., Q. nếu có), signer_title, signer_name (không ghi học hàm, học vị).
+   - body: mỗi dòng một đoạn; "# " đề mục canh giữa; "## " đề mục đậm; cả dòng trong dấu gạch dưới _…_ là chữ nghiêng (dòng căn cứ). Body chỉ là phần nội dung: không chép quốc hiệu, tên cơ quan, tên loại, số, ngày, Kính gửi, phần ký, nơi nhận vào body (công cụ đã dựng). body là MỘT chuỗi nhiều dòng, không phải mảng.
+   - to (Kính gửi) chỉ cho công văn, tờ trình, báo cáo (thông báo, giấy mời khi cần); quyết định, nghị quyết, biên bản không có Kính gửi — nơi thi hành ghi ở recipients ("Như Điều 3").
+   - Viết vào Word bằng công cụ, không viết văn bản ra khung trả lời rồi bảo người dùng dán. Chưa gọi công cụ thì không được nói "công cụ đang lỗi".
+   - signer_authority chỉ có các dạng: "TM. <tên tập thể>" (tập thể ban hành: "TM. HỘI ĐỒNG QUẢN TRỊ"), "KT. <chức vụ người đứng đầu>" (cấp phó ký thay: "KT. TỔNG GIÁM ĐỐC", signer_title "PHÓ TỔNG GIÁM ĐỐC"), "TL.", "TUQ.", "Q."; người đứng đầu tự ký thì bỏ trống. Không ghi chức vụ, chữ viết tắt ("TGĐ") hay "ĐẠI DIỆN PHÁP LUẬT" vào đây. Người trình (tờ trình) không ký "TM." nơi nhận tờ trình. signer_title, signer_name (không ghi học hàm, học vị).
+   - Ghi thứ trong tuần kèm ngày thì tính cẩn thận; công cụ tự kiểm và báo trong check_now nếu lệch.
 4. Viết nội dung theo loại:
    - Công văn: mở đầu nêu lý do hoặc dẫn văn bản liên quan; nội dung trình bày từng ý, đề nghị cụ thể, thời hạn; câu kết ("Trân trọng." hoặc đề nghị phối hợp). Văn bản gửi cấp trên dùng "kính đề nghị", gửi ngang cấp hoặc cấp dưới dùng "đề nghị".
    - Tờ trình: "## I. …" sự cần thiết / căn cứ; "## II. …" nội dung trình (phương án, số liệu, kinh phí, tiến độ); "## III. …" kiến nghị, đề xuất cụ thể để người có thẩm quyền quyết; kết "Kính trình … xem xét, quyết định."
    - Báo cáo: tình hình và kết quả (có số liệu, mốc thời gian); tồn tại, nguyên nhân; phương hướng; đề xuất, kiến nghị.
-   - Quyết định: dòng "# <THẨM QUYỀN BAN HÀNH>" (ví dụ "# GIÁM ĐỐC CÔNG TY …"); các dòng căn cứ nghiêng "_Căn cứ …;_", dòng cuối "_Theo đề nghị của …._" kết bằng dấu chấm; "# QUYẾT ĐỊNH:"; rồi "## Điều 1. …", "## Điều 2. …"; điều cuối nêu hiệu lực và người chịu trách nhiệm thi hành. Nơi nhận ghi "Như Điều …".
+   - Quyết định: dòng đầu là chức danh hoặc tập thể ban hành viết hoa, ví dụ "# HỘI ĐỒNG QUẢN TRỊ CÔNG TY CỔ PHẦN ABC", "# GIÁM ĐỐC CÔNG TY ABC" (thay ABC bằng tên thật); các dòng căn cứ nghiêng "_Căn cứ …;_", dòng cuối "_Theo đề nghị của …._" kết bằng dấu chấm; "# QUYẾT ĐỊNH:"; rồi "## Điều 1. …", "## Điều 2. …"; điều cuối nêu hiệu lực và người chịu trách nhiệm thi hành. Nơi nhận ghi "Như Điều …" (điều nêu người thi hành). Tập thể ban hành thì ký "TM. <TẬP THỂ>" + "CHỦ TỊCH".
+   - Nghị quyết (doc_type nghi_quyet; của tập thể: Hội đồng quản trị, Đại hội đồng cổ đông, Hội đồng thành viên): dòng "# <TẬP THỂ> <TÊN TỔ CHỨC>" (ví dụ "# HỘI ĐỒNG QUẢN TRỊ CÔNG TY CỔ PHẦN …"); căn cứ nghiêng (Luật Doanh nghiệp, Điều lệ, biên bản họp ngày …, nêu số thành viên dự họp và tán thành); "# QUYẾT NGHỊ:" (không phải "QUYẾT ĐỊNH:"); "## Điều 1. …" mỗi nội dung được thông qua một điều; điều cuối: hiệu lực và người thi hành. Ký "TM. <TẬP THỂ>" + chức vụ "CHỦ TỊCH" (Đại hội đồng cổ đông: "TM. ĐẠI HỘI ĐỒNG CỔ ĐÔNG" + "CHỦ TỌA"). Số người dùng đưa đủ dạng (có năm, có ký hiệu) thì đưa nguyên vào number.
    - Thông báo: nội dung thông báo, đối tượng, thời gian, yêu cầu thực hiện, đầu mối liên hệ.
    - Giấy mời: dòng "<cơ quan> trân trọng kính mời: …"; "Tới dự: …"; "Chủ trì: …"; "Thời gian: …"; "Địa điểm: …".
-   - Biên bản: thời gian bắt đầu, địa điểm, thành phần tham dự, chủ trì, thư ký, nội dung, giờ kết thúc; ký hai bên: left_signer_title "THƯ KÝ", signer_title "CHỦ TỌA".
+   - Biên bản: thời gian bắt đầu, địa điểm, thành phần tham dự, chủ trì, thư ký, nội dung, giờ kết thúc (chưa biết thì để "…"); ký hai bên: left_signer_title "THƯ KÝ", signer_title "CHỦ TỌA" (không thêm signer_authority).
+   - Biên bản họp Đại hội đồng cổ đông (Luật Doanh nghiệp 2020): tỷ lệ dự họp = cổ phần biểu quyết của cổ đông dự họp / tổng cổ phần biểu quyết, đủ điều kiện khi trên 50% (Điều 145). Từng vấn đề: số và tỷ lệ tán thành, không tán thành, không có ý kiến trên tổng phiếu của cổ đông dự họp (cộng lại 100%). Thông qua khi từ 65% với vấn đề ở khoản 1 Điều 148 (loại cổ phần, ngành nghề, cơ cấu quản lý, dự án đầu tư hoặc bán tài sản từ 35% tổng tài sản, tổ chức lại, giải thể), vấn đề khác trên 50%, trừ khi Điều lệ khác. Ghi cả phép chia.
+   - Thẩm quyền công ty cổ phần (kèm "trừ khi Điều lệ quy định khác"): hợp đồng vay, giao dịch từ 35% tổng tài sản (báo cáo tài chính gần nhất) do Hội đồng quản trị thông qua (điểm h khoản 2 Điều 153); đầu tư, bán tài sản từ 35% do Đại hội đồng cổ đông quyết định (điểm d khoản 2 Điều 138). Tính tỷ lệ trước khi kết luận.
+   - ${CAN_CU_HIEN_HANH}
    - Đề mục trong nội dung: phần "I., II.", mục "1., 2.", điểm "a), b)"; đánh số liên tục, không nhảy, không trùng.
 5. Căn cứ pháp lý chỉ ghi khi có trong tài liệu, tệp đính kèm hoặc người dùng cung cấp; lần đầu viện dẫn ghi đủ tên loại, số, ký hiệu, ngày, cơ quan ban hành, trích yếu. Không có thì ghi "[cần bổ sung căn cứ]" và báo người dùng.
 6. Viết hoa: tên cơ quan viết hoa chữ đầu các từ chỉ loại hình, chức năng (Sở Xây dựng, Ủy ban nhân dân tỉnh …); "khoản", "điểm" viết thường, "Điều", "Chương" viết hoa khi viện dẫn; "cơ quan nhà nước", "quản lý nhà nước" viết thường chữ "nhà nước"; chức vụ viết hoa khi đi liền tên người.
-7. Sau khi dựng: gọi word_check_page_format để xác nhận lề, khổ giấy, phông, cỡ chữ; báo người dùng danh sách chỗ còn trống (trường blanks của công cụ) cần điền trước khi ký. Sửa câu chữ sau đó thì dùng word_set_paragraph_text trên đúng đoạn, không dựng lại cả văn bản.
+7. Sau khi dựng: kết quả có check_now thì sửa ngay từng mục; gọi word_check_page_format để xác nhận lề, khổ giấy, phông, cỡ chữ; còn chỗ trống thì không nói "sẵn sàng ký"; báo người dùng danh sách chỗ còn trống (trường blanks của công cụ) cần điền trước khi ký. Sửa câu chữ sau đó thì dùng word_set_paragraph_text trên đúng đoạn, không dựng lại cả văn bản.
 
 ## B. Soát và sửa văn bản có sẵn
 1. Đọc văn bản (word_read_paragraphs), kiểm trang bằng word_check_page_format, đọc đầu và chân trang bằng word_read_parts.
@@ -431,12 +444,15 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 ## A. Soạn mới
 1. Nắm trước khi viết: loại hợp đồng (thi công xây dựng, tư vấn, cung cấp vật tư, mua bán, dịch vụ…); Bên A, Bên B; đối tượng (công trình, gói thầu, địa điểm, khối lượng); giá và cách tính giá; thời hạn; người đại diện ký. Soạn MẪU hợp đồng, hoặc người dùng đã nêu loại hợp đồng: soạn ngay, chỗ chưa có thông tin để "…", rồi kê các chỗ đó; không hỏi trước. Chỉ hỏi (một lần) khi người dùng muốn hợp đồng cho một việc cụ thể mà chưa rõ cả loại lẫn đối tượng.
 2. KHÔNG bịa: số hợp đồng, ngày ký, mã số thuế, tài khoản, địa chỉ, người đại diện, giá trị, căn cứ pháp lý. Chưa biết thì để "…" cho người dùng điền; căn cứ chỉ ghi khi có trong tài liệu, tệp đính kèm hoặc người dùng đưa. KHÔNG tự viết số hiệu, ngày ban hành của luật, nghị định theo trí nhớ (rất dễ sai số, sai năm, có khi văn bản không tồn tại): chưa có nguồn thì để dòng "_Căn cứ [cần bổ sung căn cứ pháp lý];_" và báo người dùng.
+   ${CAN_CU_HIEN_HANH}
+   Hợp đồng mà bên bán, bên chuyển nhượng là doanh nghiệp bán nhà, đất trong dự án: đó là kinh doanh bất động sản — dùng Luật Kinh doanh bất động sản và mẫu ở nghị định quy định chi tiết luật này; nêu điều này với người dùng, và hỏi (một lần, sau khi đã soạn) bên bán có phải chủ đầu tư dự án không nếu đề bài chưa nói.
 3. Dựng bằng MỘT lần gọi word_create_admin_document với doc_type "hop_dong" (không dùng "khac"):
    - title: tên hợp đồng, ví dụ "HỢP ĐỒNG THI CÔNG XÂY DỰNG".
    - org: chỉ khi người dùng muốn tên đơn vị ở góc trái, ngang hàng với quốc hiệu bên phải (khi đó "Số: …" nằm dưới tên đơn vị). Không có org: quốc hiệu, tiêu ngữ canh giữa, "Số: …" dưới tên hợp đồng.
    - number (đủ dạng nếu người dùng cho), symbol (ví dụ HĐ-XD) chỉ khi người dùng cho; subject: dòng dưới tên hợp đồng nếu cần (ví dụ "Gói thầu: … thuộc dự án …").
    - body: CHỈ phần nội dung, bắt đầu từ các dòng căn cứ. KHÔNG chép vào body: quốc hiệu, tiêu ngữ, tên đơn vị, tên hợp đồng, dòng "Số:", địa danh ngày tháng, khối "ĐẠI DIỆN BÊN A/B" — công cụ đã tự dựng, chép lại là thừa dòng.
-   - left_signer_title, left_signer_name: chức vụ, họ tên đại diện Bên A (cột trái); signer_title, signer_name: Bên B (cột phải). Nhãn "ĐẠI DIỆN BÊN A", "ĐẠI DIỆN BÊN B" tự có; muốn ghi khác thì left_signer_authority, signer_authority.
+   - left_signer_title, left_signer_name: chức vụ, họ tên đại diện Bên A (cột trái); signer_title, signer_name: Bên B (cột phải). Nhãn "ĐẠI DIỆN BÊN A", "ĐẠI DIỆN BÊN B" tự có — chức vụ là chức vụ thật ("GIÁM ĐỐC"), không ghi lại "ĐẠI DIỆN BÊN …"; muốn ghi khác thì left_signer_authority, signer_authority.
+   - Viết vào Word bằng công cụ, KHÔNG viết hợp đồng ra khung trả lời rồi bảo người dùng tự dán. Công cụ báo lỗi thì đọc lỗi, sửa tham số, gọi lại; chưa gọi công cụ thì không được nói "công cụ đang lỗi".
 4. Body, mỗi dòng một đoạn:
    - Căn cứ: mỗi căn cứ một dòng nghiêng "_Căn cứ …;_", dòng căn cứ cuối kết bằng dấu chấm.
    - "Hôm nay, ngày … tháng … năm …, tại …, chúng tôi gồm:"
@@ -444,7 +460,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
    - "Hai bên thống nhất ký kết hợp đồng … với các điều khoản sau:"
    - Điều khoản: "## Điều 1. <tên điều>"; khoản "1.1.", "1.2." hoặc "1.", "2."; điểm "a)", "b)". Đánh số liên tục, không nhảy, không trùng.
 5. Hợp đồng thi công xây dựng thường có các điều: đối tượng, khối lượng công việc; chất lượng, yêu cầu kỹ thuật, nghiệm thu, bàn giao; thời gian và tiến độ; giá hợp đồng, tạm ứng, thanh toán (hồ sơ, thời hạn, đồng tiền); điều chỉnh giá, khối lượng; bảo đảm thực hiện hợp đồng, bảo lãnh tạm ứng; bảo hành; quyền và nghĩa vụ của mỗi bên; an toàn lao động, vệ sinh môi trường, phòng chống cháy nổ; bảo hiểm; rủi ro, bất khả kháng; tạm dừng, chấm dứt; thưởng, phạt vi phạm, bồi thường; giải quyết tranh chấp; điều khoản chung (hiệu lực, số bản mỗi bên giữ). Số tiền ghi cả bằng số và bằng chữ, hai chỗ khớp nhau.
-6. Xong: báo người dùng danh sách chỗ còn trống (blanks) và lưu ý (notes) của công cụ.
+6. Xong: kết quả có check_now (thứ lệch ngày, từ không phải tiếng Việt…) thì sửa ngay; báo người dùng danh sách chỗ còn trống (blanks) và lưu ý (notes) của công cụ. Còn chỗ trống thì không nói "sẵn sàng để ký".
 
 ## B. Sửa phần đầu, phần ký
 Phần đầu (tên đơn vị, "Số:" bên trái; quốc hiệu, tiêu ngữ bên phải) và phần ký là bảng không viền hai cột. Khi đọc (word_read_paragraphs), đoạn trong ô có trường cell: hai ô cùng hàng nằm NGANG nhau, chỉ số đoạn đi hết ô trái rồi mới sang ô phải. Tên đơn vị bên trái, quốc hiệu bên phải là đúng thể thức, không "sắp lại" thành trên dưới.

@@ -51,7 +51,7 @@ import { clearAttachedFiles, listAttachedImages, registerAttachedFile } from "..
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
 import { SHOW_SIZE_FROM, sizeNote } from "../../core/inputsize";
-import { REDO_WITH_TOOLS, TaskSoFar, mergeTaskFacts, taskSoFar, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
+import { REDO_WITH_TOOLS, TaskSoFar, mergeTaskFacts, taskSoFar, toolFailureClaim, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
 import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, claimCommand, clearBeat, connectionLine, connections, describePayload, normalizeApp, reply, sweep, takeCommand } from "../../core/crossapp";
 import { executeIncoming } from "../../office/crossExec";
 import { RefTarget, findRefs } from "../../core/refs";
@@ -219,6 +219,8 @@ interface Item {
   incoming?: string;
   /** AI nói đã thay đổi tài liệu nhưng lượt này không có thao tác ghi nào thành công (chỉ để hiện; không gửi cho model) */
   claimWarning?: string;
+  /** Chế độ Miễn phí tự đổi nguồn giữa chừng: model THỰC SỰ trả lời (nút chọn model vẫn ghi model đã chọn) — thử 23/11/2026 */
+  answeredBy?: string;
   /** Đợt 12: số token đầu vào ước lượng của lần gửi đầu tiên và số thật nhà cung cấp báo cho lần đó (chỉ để hiện và đối chiếu) */
   inputEst?: number;
   firstInput?: number;
@@ -1053,6 +1055,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
             }));
           } else if (ev.type === "switch") {
             clearRetry();
+            patchLast((it) => ({ ...it, answeredBy: ev.to }));
             appendText(`
 ↪ ${ev.from}: ${ev.reason} — đổi sang ${ev.to}${ev.partial ? " (trả lời lại bước này)" : ""}.
 `);
@@ -1099,7 +1102,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       } else if (useAgent && hostTools) {
         // Lượt kết thúc bình thường: AI khẳng định đã thay đổi tài liệu mà không có thao tác ghi nào thành công → cảnh báo trên khung
         patchLast((it) => {
-          const w = unverifiedWriteClaim(factsOf(it));
+          const w = unverifiedWriteClaim(factsOf(it)) || toolFailureClaim(factsOf(it));
           return w ? { ...it, claimWarning: w.text } : it;
         });
       }
@@ -1472,6 +1475,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                 {it.incoming && (
                   <Text size={200} data-incoming="1">
                     📥 {it.incoming}
+                  </Text>
+                )}
+                {it.answeredBy && !isLastBusy(i) && (
+                  <Text size={100} className={s.muted} data-answered-by={it.answeredBy}>
+                    Trả lời bởi {it.answeredBy} (đã tự đổi nguồn; model đang chọn không trả lời lượt này)
                   </Text>
                 )}
                 {it.error && <Text className={s.err}>{it.error}</Text>}

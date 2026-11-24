@@ -1,0 +1,369 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Particle AI: Particle-1 (free). Bấm để đổi 🆓 OpenRouter · Particle AI: Particle-1 (free)"
+ },
+ "luot1": {
+  "giay": 22,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Biên bản họp Đại hội đồng cổ đông bất thường năm 2 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 1575
+ },
+ "luot2": null,
+ "lanGoiAI": [],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nExcel — · PowerPoint —\nSoạn biên bản họp Đại hội đồng cổ đông bất thường năm 2026 của Công ty Cổ phần Đầu tư Anh Quân, họp lúc 8h30 ngày 20/12/2026 tại hội trường công ty. Vốn điều lệ 200 tỷ đồng, tương ứng 20.000.000 cổ phần phổ thông. Có 85 cổ đông dự họp, sở hữu và đại diện 14.600.000 cổ phần. Chủ tọa: ông Nguyễn Anh Quân – Chủ tịch HĐQT; thư ký: bà Lê Thị Hoa. Nội dung duy nhất: thông qua chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc với tổng vốn đầu tư 450 tỷ đồng. Kết quả biểu quyết: tán thành 12.410.000 cổ phần, không tán thành 1.460.000 cổ phần, không có ý kiến 730.000 cổ phần. Hãy tính tỷ lệ dự họp, tỷ lệ biểu quyết và kết luận cuộc họp có đủ điều kiện tiến hành không, nội dung có được thông qua không theo Luật Doanh nghiệp.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh, chuan-bi-hop\n✅ Dựng văn bản hành chính đúng thể thức: Biên bản họp Đại hội đồng cổ đông bất thường năm 2 — Đã dựng biên bản đúng thể thức · còn 2 chỗ cần điền\n✅ Chèn nội dung (end) — lý do: Thêm kết luận cuộc họp\n✅ Chèn nội dung (end) — lý do: Thêm phân tích tỷ lệ và kết luận\nĐã soạn và chèn biên bản họp Đại hội đồng cổ đông bất thường năm 2026 theo đúng thể thức hành chính, bao gồm:\n• Phần đầu, tên loại và trích yếu\n• Nội dung chính 12 đoạn với thông tin thời gian, địa điểm, thành phần, chủ tọa, thư ký, nội dung họp và kết quả biểu quyết\n• Phần ký hai bên (Chủ tọa và Thư ký)\n• Thêm tiêu đề KẾT LUẬN và phân tích tỷ lệ dự họp, tỷ lệ biểu quyết, kết luận về điều kiện tiến hành và việc thông qua nghị quyết theo Luật Doanh nghiệp\n \nCần điền trước khi ký:\n• Số văn bản (để văn thư cấp)\n• Ký hiệu văn bản\n \nVăn bản đã được đặt khổ giấy A4, lề đúng chuẩn, có 3 đường kẻ trang trí, có thể sử dụng ngay. Nếu muốn sửa câu chữ, hãy cho biết đoạn cụ thể (số đoạn) để chỉnh bằng word_set_paragraph_text.\nHoàn tác thay đổi (3)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Particle AI: Particle-1 (free)",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "BIÊN BẢN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Biên bản họp Đại hội đồng cổ đông bất thường năm 2026",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa điểm: Hội trường Công ty Cổ phần Đầu tư Anh Quân.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thành phần tham dự: Tổng số 85 cổ đông tham dự, sở hữu và đại diện 14.600.000 cổ phần trên tổng số 20.000.000 cổ phần phổ thông của Công ty (73% tỷ lệ dự họp).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Chủ tọa: Ông Nguyễn Anh Quân – Chủ tịch Hội đồng quản trị.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thư ký: Bà Lê Thị Hoa.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nội dung cuộc họp: Thông qua chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc với tổng vốn đầu tư 450 tỷ đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kết quả biểu quyết: Tán thành 12.410.000 cổ phần (84,9%); Không tán thành 1.460.000 cổ phần (10,0%); Không có ý kiến 730.000 cổ phần (5,0%). Tổng số cổ phần biểu quyết: 14.600.000.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kết luận: Cuộc họp đủ điều kiện tiến hành theo quy định tại Điều 114 Luật Doanh nghiệp (tỷ lệ dự họp 73% > 51%). Nghị quyết về chủ trương đầu tư được thông qua với tỷ lệ tán thành 84,9% > 50% tổng số cổ phần có quyền biểu quyết tham dự. Cuộc họp kết thúc lúc 12 giờ cùng ngày./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "THƯ KÝ",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Lê Thị Hoa",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CHỦ TỌA",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Lưu: VT, Hồ sơ.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "# KẾT LUẬN",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 16,
+   "f": "Calibri Light",
+   "tb": 0
+  },
+  {
+   "t": "## Kết quả kiểm tra tỷ lệ và điều kiện thông qua nghị quyết",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "- Tỷ lệ dự họp: 14.600.000 / 20.000.000 = 73% (cao hơn 51% theo quy định tại Điều 114 Luật Doanh nghiệp).",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "- Tỷ lệ biểu quyết: 12.410.000 / 14.600.000 = 84,9% (cao hơn 50% tổng số cổ phần có quyền biểu quyết tham dự theo Điều 115 Luật Doanh nghiệp).",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "- Kết luận: Cuộc họp đủ điều kiện tiến hành, nghị quyết về chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc được thông qua hợp pháp.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

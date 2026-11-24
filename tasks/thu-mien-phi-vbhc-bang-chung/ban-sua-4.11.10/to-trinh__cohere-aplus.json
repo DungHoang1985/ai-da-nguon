@@ -1,0 +1,333 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Cohere command-a-plus-05-2026. Bấm để đổi 🆓 Cohere · command-a-plus-05-2026"
+ },
+ "luot1": {
+  "giay": 35,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: V/v trình phê duyệt khoản vay 150 tỷ đồng cho dự á | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 1209
+ },
+ "luot2": null,
+ "lanGoiAI": [],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nSoạn tờ trình của Tổng Giám đốc Công ty Cổ phần Đầu tư Anh Quân trình Hội đồng quản trị phê duyệt việc vay vốn 150 tỷ đồng tại Ngân hàng TMCP Phát Triển để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside. Thời hạn vay 36 tháng, lãi suất dự kiến 9,5%/năm, tài sản bảo đảm là quyền tài sản phát sinh từ dự án. Tổng tài sản của công ty theo báo cáo tài chính gần nhất là 380 tỷ đồng. Hãy nêu rõ khoản vay này thuộc thẩm quyền phê duyệt của cơ quan nào trong công ty theo Luật Doanh nghiệp và vì sao.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: V/v trình phê duyệt khoản vay 150 tỷ đồng cho dự á — Đã dựng tờ trình đúng thể thức · còn 5 chỗ cần điền\n⚠️ Sửa [¶4] — text có xuống dòng: mỗi lần chỉ viết lại MỘT đoạn. Thêm đoạn mới bằng word_insert_paragraphs hoặc word_insert_clause.\n⚠️ Sửa [¶4] — Đoạn 4 không bắt đầu bằng “## III. Kiến nghị và đề xuất” và không tìm thấy đoạn nào như vậy: văn bản đã đổi so với lúc đọc. Đọc lại rồi mới sửa.\n✅ Đọc đoạn 0–20\n✅ Đọc đoạn 20–40\n⚠️ Sửa [¶22] — text có xuống dòng: mỗi lần chỉ viết lại MỘT đoạn. Thêm đoạn mới bằng word_insert_paragraphs hoặc word_insert_clause.\n✅ Sửa [¶23]\n✅ Đọc đoạn 20–30\n✅ Thêm nhận xét: Theo Luật Doanh nghiệp 2020, Điều 153 khoản 2 điểm\n✅ Xem mục lục điều khoản\nĐã dựng tờ trình \"V/v trình phê duyệt khoản vay 150 tỷ đồng cho dự án Khu nhà ở Anh Quân Riverside\" đúng thể thức. Đã sửa Điều III để nêu rõ khoản vay 150 tỷ đồng (≈39,47% tổng tài sản 380 tỷ) thuộc thẩm quyền phê duyệt của Đại hội đồng cổ đông theo Điều 153 khoản 2 điểm h Luật Doanh nghiệp năm 2020, và hội đồng quản trị chỉ có thẩm quyền xem xét, trình lên. Đã thêm nhận xét neo vào đoạn này giải thích thẩm quyền.\n \nCác chỗ cần điền trước khi ký:\n• Số văn bản (để văn thư cấp)\n• Địa danh\n• Ngày tháng ban hành\n• Họ tên người ký (Tổng Giám đốc)\n• Đơn vị soạn thảo ở dòng \"Lưu\"\n \nVăn bản đã có đầy đủ phần đầu, trích yếu, nội dung, phần ký và nơi nhận theo đúng thể thức hành chính.\nHoàn tác thay đổi (3)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🆓 Cohere · command-a-plus-05-2026",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /TTr-AQ",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỜ TRÌNH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "trình phê duyệt khoản vay 150 tỷ đồng cho dự án Khu nhà ở Anh Quân Riverside",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Hội đồng quản trị",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "I. Sự cần thiết và căn cứ",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Doanh nghiệp năm 2020, Điều lệ công ty và quy định về quản lý tài chính doanh nghiệp.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ báo cáo tài chính gần nhất, tổng tài sản công ty là 380 tỷ đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "II. Nội dung trình",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Công ty đề nghị vay 150 tỷ đồng tại Ngân hàng TMCP Phát Triển để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside, cụ thể:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Mục đích vay: Thi công hạ tầng kỹ thuật dự án.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Thời hạn vay: 36 tháng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Lãi suất dự kiến: 9,5%/năm.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Tài sản bảo đảm: Quyền tài sản phát sinh từ dự án.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "III. Kiến nghị và đề xuất",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ điểm h khoản 2 Điều 153 Luật Doanh nghiệp năm 2020, hợp đồng vay có giá trị từ 35% tổng tài sản trở lên (150/380 ≈ 39,47%) thuộc thẩm quyền phê duyệt của Đại hội đồng cổ đông. Đề nghị Hội đồng quản trị trình Đại hội đồng cổ đông phê duyệt khoản vay này. Kiến nghị thông qua chủ trương vay vốn để triển khai dự án đúng tiến độ.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, ….",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "KT. TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

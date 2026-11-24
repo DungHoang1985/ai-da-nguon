@@ -1,0 +1,459 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Cohere command-a-plus-05-2026. Bấm để đổi 🆓 Cohere · command-a-plus-05-2026"
+ },
+ "luot1": {
+  "giay": 22,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Biên bản họp Đại hội đồng cổ đông bất thường năm 2 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 1702
+ },
+ "luot2": null,
+ "lanGoiAI": [],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nExcel — · PowerPoint —\nSoạn biên bản họp Đại hội đồng cổ đông bất thường năm 2026 của Công ty Cổ phần Đầu tư Anh Quân, họp lúc 8h30 ngày 20/12/2026 tại hội trường công ty. Vốn điều lệ 200 tỷ đồng, tương ứng 20.000.000 cổ phần phổ thông. Có 85 cổ đông dự họp, sở hữu và đại diện 14.600.000 cổ phần. Chủ tọa: ông Nguyễn Anh Quân – Chủ tịch HĐQT; thư ký: bà Lê Thị Hoa. Nội dung duy nhất: thông qua chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc với tổng vốn đầu tư 450 tỷ đồng. Kết quả biểu quyết: tán thành 12.410.000 cổ phần, không tán thành 1.460.000 cổ phần, không có ý kiến 730.000 cổ phần. Hãy tính tỷ lệ dự họp, tỷ lệ biểu quyết và kết luận cuộc họp có đủ điều kiện tiến hành không, nội dung có được thông qua không theo Luật Doanh nghiệp.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh, chuan-bi-hop\n✅ Dựng văn bản hành chính đúng thể thức: Biên bản họp Đại hội đồng cổ đông bất thường năm 2 — Đã dựng biên bản đúng thể thức · còn 1 chỗ cần điền\n✅ Chèn nội dung (end) — lý do: Thêm kết luận về tỷ lệ dự họp và điều kiện thông qua theo Luật Doanh nghiệp\nĐã dựng biên bản họp Đại hội đồng cổ đông bất thường năm 2026 theo đúng thể thức hành chính, bao gồm:\n• Phần đầu, tên loại và trích yếu\n• Nội dung 23 đoạn với đánh số điều khoản tự động\n• Phần ký (Chủ tịch Nguyễn Anh Quân, thư ký Lê Thị Hoa)\n• Nơi nhận\n• Đã thêm phần kết luận về tỷ lệ dự họp và điều kiện thông qua theo Luật Doanh nghiệp 2020\n \nCòn cần điền:\n• Số văn bản (để văn thư cấp) – hiện để trống\n \nLưu ý:\n• Cần đối chiếu với báo cáo tài chính gần nhất để xác nhận tổng tài sản, đảm bảo dự án đầu tư 450 tỷ đồng không vượt 35% tổng tài sản theo quy định tại điểm d khoản 2 Điều 138 Luật Doanh nghiệp 2020.\n \nSau khi điền số văn bản, biên bản đã sẵn sàng để ký. Nếu muốn sửa câu chữ, hãy cho biết đoạn cụ thể.\nHoàn tác thay đổi (2)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🆓 Cohere · command-a-plus-05-2026",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /BB-AQ",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "BIÊN BẢN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Biên bản họp Đại hội đồng cổ đông bất thường năm 2026",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thời gian",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "9 giờ 30, ngày 20 tháng 12 năm 2026.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa điểm",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hội trường Công ty Cổ phần Đầu tư Anh Quân.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thành phần tham dự",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Chủ tọa: Ông Nguyễn Anh Quân – Chủ tịch HĐQT",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Thư ký: Bà Lê Thị Hoa",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Các cổ đông tham dự: 85 cổ đông, sở hữu và đại diện 14.600.000 cổ phần (73% tổng cổ phần).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nội dung cuộc họp",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thông qua chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc với tổng vốn đầu tư 450 tỷ đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kết quả biểu quyết",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Tán thành: 12.410.000 cổ phần (85% tổng phiếu biểu quyết của cổ đông dự họp)",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Không tán thành: 1.460.000 cổ phần (10%)",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Không có ý kiến: 730.000 cổ phần (5%)",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tổng phiếu biểu quyết: 14.600.000 cổ phần.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kết luận",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Cuộc họp đủ điều kiện tiến hành (tỷ lệ dự họp 73% > 50%). Nội dung được thông qua với tỷ lệ tán thành 85% (>65% theo quy định cho dự án đầu tư). Cần đối chiếu với báo cáo tài chính gần nhất để xác nhận tổng tài sản trước khi triển khai./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "THƯ KÝ",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Lê Thị Hoa",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CHỦ TỊCH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Chủ tịch HĐQT; Các thành viên HĐQT;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Lưu: VT, Hồ sơ.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kết luận về điều kiện họp và thông qua nghị quyết",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Calibri Light",
+   "tb": 0
+  },
+  {
+   "t": "Tỷ lệ dự họp: 73% (14.600.000/20.000.000 cổ phần) > 50% → Đủ điều kiện tiến hành họp theo Điều 145 Luật Doanh nghiệp 2020.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Tỷ lệ biểu quyết: Tán thành 85%, Không tán thành 10%, Không có ý kiến 5% → Đạt trên 65% theo Điều 148 khoản 1 (dự án đầu tư) → Nội dung được thông qua.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Lưu ý: Cần đối chiếu với báo cáo tài chính gần nhất để xác nhận tổng tài sản công ty, đảm bảo dự án đầu tư 450 tỷ đồng không vượt 35% tổng tài sản theo quy định tại điểm d khoản 2 Điều 138 Luật Doanh nghiệp 2020.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

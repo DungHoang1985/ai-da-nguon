@@ -20,7 +20,7 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
   {
     name: "word_create_admin_document",
     description:
-      "Build a complete Vietnamese administrative document (công văn, tờ trình, báo cáo, quyết định, thông báo, giấy mời, biên bản, kế hoạch) or a contract (hop_dong) in the correct formal layout in ONE call: national motto, organisation, number/symbol, place/date, title, subject, Kính gửi, body, signature block, Nơi nhận. On an empty document also sets A4, margins, page number. ALWAYS use it instead of inserting parts by hand. body = content only, never the header, title, number, date or signature lines. Omit unknown facts (number, date, signer): blanks are left and reported; never invent.",
+      "Build a complete Vietnamese administrative document (công văn, tờ trình, báo cáo, quyết định, nghị quyết, thông báo, giấy mời, biên bản, kế hoạch) or a contract (hop_dong) in the correct formal layout in ONE call: header, number, date, title, subject, Kính gửi, body, signatures, Nơi nhận. On an empty document also sets A4, margins, page number. ALWAYS use it instead of inserting parts by hand. body = content only, never the header, title, number, date or signature lines. Omit unknown facts (number, date, signer): blanks are left and reported; never invent.",
     parameters: {
       type: "object",
       properties: {
@@ -67,12 +67,12 @@ export const WORD_ADMIN_SPECS: ToolSpec[] = [
         body: {
           type: "string",
           description:
-            "One paragraph per line. '# ' centred bold ('# QUYẾT ĐỊNH:'), '## ' bold heading ('## Điều 1. …', '## I. …'), a whole line in _underscores_ italic ('Căn cứ …;'). No other markdown.",
+            "One string, one paragraph per line. '# ' centred bold ('# QUYẾT ĐỊNH:'), '## ' bold ('## Điều 1. …'), whole line _underscored_ italic ('Căn cứ …;'). No other markdown.",
         },
         signer_authority: {
           type: "string",
           description:
-            "e.g. 'TM. HỘI ĐỒNG QUẢN TRỊ', 'KT. GIÁM ĐỐC'. hop_dong: default 'ĐẠI DIỆN BÊN B'.",
+            "Only TM./KT./TL./TUQ./Q. + name, e.g. 'TM. HỘI ĐỒNG QUẢN TRỊ', 'KT. TỔNG GIÁM ĐỐC'. Omit if head signs. hop_dong: default 'ĐẠI DIỆN BÊN B'.",
         },
         signer_title: {
           type: "string",
@@ -351,6 +351,11 @@ export function createWordAdminTools(d: Deps) {
     p.font.italic = !!x.italic;
     p.font.underline = "None" as any;
     p.font.color = "#000000";
+    // "Điều 1." đậm, phần lời văn sau chữ thường
+    if (x.boldLead && !x.bold) {
+      const hit = p.search(x.boldLead, { matchCase: true }).getFirstOrNullObject();
+      hit.font.bold = true;
+    }
     p.alignment = x.align as any;
     p.firstLineIndent = x.indent ? mm(10) : 0;
     p.spaceAfter = x.after || 0;
@@ -615,7 +620,14 @@ export function createWordAdminTools(d: Deps) {
               fix_now: "Nội dung vừa dựng lẫn chữ không phải tiếng Việt (foreign_text: mỗi mục là cụm chữ lạ, trong ngoặc là chữ đứng trước để định vị). Trừ khi đó là tên riêng người dùng đưa, sửa NGAY từng cụm thành tiếng Việt bằng word_replace_text, find = chỉ cụm chữ lạ (không kèm phần trong ngoặc), trước khi trả lời.",
             }
           : {}),
-        next: "Báo người dùng các chỗ còn trống (blanks) cần điền trước khi ký. Muốn sửa câu chữ thì dùng word_set_paragraph_text trên đoạn tương ứng; không dựng lại cả văn bản. Phần đầu và phần ký là bảng không viền hai cột (các đoạn có trường cell khi đọc): bên trái và bên phải nằm ngang hàng nhau là đúng thể thức; bớt hay sửa một dòng ở đó thì chỉ xóa hoặc sửa đúng đoạn đó, không xóa rồi chèn lại để đổi chỗ.",
+        ...(plan.checks?.length
+          ? {
+              check_now: plan.checks,
+              fix_now_checks:
+                "Công cụ phát hiện các chỗ nghi sai ở check_now (thứ trong tuần lệch ngày, từ không phải tiếng Việt, quyền hạn ký…). Kiểm từng mục và sửa NGAY bằng word_replace_text hoặc word_set_paragraph_text trước khi trả lời; mục nào là tên riêng, thuật ngữ người dùng đưa thì giữ và nói rõ.",
+            }
+          : {}),
+        next: "Báo người dùng các chỗ còn trống (blanks) cần điền trước khi ký; còn chỗ trống hoặc còn mục check_now chưa sửa thì KHÔNG nói văn bản đã sẵn sàng để ký. Muốn sửa câu chữ thì dùng word_set_paragraph_text trên đoạn tương ứng; không dựng lại cả văn bản. Phần đầu và phần ký là bảng không viền hai cột (các đoạn có trường cell khi đọc): bên trái và bên phải nằm ngang hàng nhau là đúng thể thức; bớt hay sửa một dòng ở đó thì chỉ xóa hoặc sửa đúng đoạn đó, không xóa rồi chèn lại để đổi chỗ.",
       };
     });
   }

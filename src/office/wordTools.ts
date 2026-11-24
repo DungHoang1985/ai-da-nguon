@@ -1488,9 +1488,11 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
         return Word.run(async (ctx) =>
           tracked(ctx, async () => {
             if (!supports("1.6")) throw new Error("Word trên máy này chưa hỗ trợ chèn điều khoản kế thừa đánh số qua add-in (cần WordApi 1.6).");
+            // Điều khoản chèn theo kiểu của điều neo: ký hiệu markdown ("## Điều 8.", "**…**") bỏ đi, không ghi thành chữ
+            // (thử 23/11/2026: Cohere chèn "## Điều 8. Hồ sơ pháp lý bàn giao" vào hợp đồng)
             const lines = String(a.text ?? "")
               .split(/\r?\n/)
-              .map((l) => l.trim())
+              .map((l) => l.trim().replace(/^#{1,4}\s+/, "").replace(/\*\*(.*?)\*\*/g, "$1"))
               .filter(Boolean);
             if (!lines.length) throw new Error("Không có nội dung để chèn.");
             const loaded = await loadRows(ctx, true);

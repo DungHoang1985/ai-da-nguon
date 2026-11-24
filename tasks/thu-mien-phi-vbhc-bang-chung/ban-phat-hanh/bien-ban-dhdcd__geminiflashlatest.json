@@ -1,0 +1,432 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Google Gemini Gemini Flash Latest. Bấm để đổi 🆓 Google Gemini · Gemini Flash Latest"
+ },
+ "luot1": {
+  "giay": 37,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Biên bản họp Đại hội đồng cổ đông bất thường năm 2 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 2040
+ },
+ "luot2": null,
+ "lanGoiAI": [],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nExcel — · PowerPoint —\nSoạn biên bản họp Đại hội đồng cổ đông bất thường năm 2026 của Công ty Cổ phần Đầu tư Anh Quân, họp lúc 8h30 ngày 20/12/2026 tại hội trường công ty. Vốn điều lệ 200 tỷ đồng, tương ứng 20.000.000 cổ phần phổ thông. Có 85 cổ đông dự họp, sở hữu và đại diện 14.600.000 cổ phần. Chủ tọa: ông Nguyễn Anh Quân – Chủ tịch HĐQT; thư ký: bà Lê Thị Hoa. Nội dung duy nhất: thông qua chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc với tổng vốn đầu tư 450 tỷ đồng. Kết quả biểu quyết: tán thành 12.410.000 cổ phần, không tán thành 1.460.000 cổ phần, không có ý kiến 730.000 cổ phần. Hãy tính tỷ lệ dự họp, tỷ lệ biểu quyết và kết luận cuộc họp có đủ điều kiện tiến hành không, nội dung có được thông qua không theo Luật Doanh nghiệp.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh, chuan-bi-hop\n✅ Dựng văn bản hành chính đúng thể thức: Biên bản họp Đại hội đồng cổ đông bất thường năm 2 — Đã dựng biên bản đúng thể thức · còn 4 chỗ cần điền\n✅ Chèn nội dung (end) — lý do: Thêm phần kết luận và chữ ký theo thể thức biên bản\n✅ Đọc đoạn 0–20\n✅ Đọc đoạn 34–45\n⚠️ Thêm nhận xét: Theo Điều 114 khoản 2 Luật Doanh nghiệp, tỷ lệ dự — Thiếu expect: khi chỉ một đoạn bằng số (đoạn 35) phải kèm expect = khoảng 30 ký tự đầu của đoạn đó đúng như đã đọc, để công cụ không sửa nhầm đoạn khi chỉ số đã dời.\n✅ Đọc đoạn 35–36\n✅ Thêm nhận xét: Theo Điều 114 khoản 2 Luật Doanh nghiệp, tỷ lệ dự\nĐã soạn biên bản họp Đại hội đồng cổ đông bất thường năm 2026 đúng thể thức hành chính (Điều 1-15, đoạn 0-19). Đã chèn thêm Phần Kết luận của Chủ tọa (đoạn 35) và Chữ ký (đoạn 36-44). Đã thêm nhận xét neo vào đoạn 35 về điều kiện tiến hành cuộc họp.\n \nTính toán và kết luận:\n• Tỷ lệ dự họp: 14.600.000/20.000.000 = 73% (vốn điều lệ).\n• Tỷ lệ biểu quyết: 100% (tất cả cổ đông tham dự đều biểu quyết).\n• Tỷ lệ tán thành: 12.410.000/14.600.000 = 85% (so với cổ phần có quyền biểu quyết).\n \nĐiều kiện tiến hành (Điều 114 khoản 2 Luật Doanh nghiệp): Yêu cầu ít nhất 75% tổng số cổ phần có quyền biểu quyết tham dự. Hiện đạt 73% → chưa đủ điều kiện tiến hành.\n \nĐiều kiện thông qua nghị quyết (Điều 114 khoản 3): Nếu cuộc họp được tiến hành, nghị quyết đã được thông qua với tỷ lệ tán thành 85% (>75%), nên nội dung được thông qua.\n \nBiên bản đã phản ánh đầy đủ thông tin và kết luận pháp lý. Các trường trống (số văn bản, ký hiệu, quyền hạn người ký, họ tên người ký) cần được điền trước khi ký.\nHoàn tác thay đổi (3)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nGemini chỉ tìm trên web khi tắt “AI tự thao tác”.\nHỏi trước\n🌐 Web ✕\n🆓 Google Gemini · Gemini Flash Latest",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "BIÊN BẢN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Biên bản họp Đại hội đồng cổ đông bất thường năm 2026",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi:",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Chủ tịch HĐQT;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Các cổ đông.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thời gian và địa điểm",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Cuộc họp Đại hội đồng cổ đông bất thường năm 2026 được tổ chức lúc 8 giờ 30 phút, ngày 20 tháng 12 năm 2026 tại hội trường trụ sở chính của Công ty Cổ phần Đầu tư Anh Quân.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thành phần tham dự",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tổng số cổ đông: 85 người, sở hữu và đại diện 14.600.000 cổ phần phổ thông trên tổng số 20.000.000 cổ phần (tương đương 73% vốn điều lệ). Chủ tọa: Ông Nguyễn Anh Quân – Chủ tịch Hội đồng quản trị. Thư ký: Bà Lê Thị Hoa.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nội dung cuộc họp",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nội dung duy nhất của cuộc họp là thông qua chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc với tổng vốn đầu tư 450 tỷ đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kết quả biểu quyết",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Cổ phần biểu quyết: 14.600.000 (tương đương 73% tổng số cổ phần có quyền biểu quyết). Tán thành: 12.410.000 cổ phần (85.0%). Không tán thành: 1.460.000 cổ phần (10.0%). Không có ý kiến: 730.000 cổ phần (5.0%).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kết luận",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Theo Luật Doanh nghiệp, cuộc họp Đại hội đồng cổ đông lần đầu phải có ít nhất 75% tổng số cổ phần có quyền biểu quyết tham dự. Tỷ lệ dự họp thực tế là 73%, chưa đạt yêu cầu 75%, do đó cuộc họp chưa đủ điều kiện tiến hành theo quy định. Tuy nhiên, nếu cuộc họp được tiến hành, nghị quyết đã được thông qua với tỷ lệ tán thành 85%, vượt quá ngưỡng 75% yêu cầu để thông qua nghị quyết./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, Phòng Hành chính.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Kết luận của Chủ tọa",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Calibri Light",
+   "tb": 0
+  },
+  {
+   "t": "Chủ tọa kết luận: Cuộc họp Đại hội đồng cổ đông bất thường năm 2026 không đủ điều kiện tiến hành theo quy định tại Điều 114, khoản 2, Luật Doanh nghiệp do tỷ lệ dự họp chỉ đạt 73% (yêu cầu tối thiểu 75%). Tuy nhiên, nếu cuộc họp được tiến hành, nghị quyết về chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc đã được thông qua với tỷ lệ tán thành 85%, vượt quá ngưỡng 75% yêu cầu để thông qua nghị quyết.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Chữ ký",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Calibri Light",
+   "tb": 0
+  },
+  {
+   "t": "Chủ tọa",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "_(Ký, ghi rõ họ tên)_",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Chủ tịch Hội đồng quản trị",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Thư ký",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "_(Ký, ghi rõ họ tên)_",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Lê Thị Hoa",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Thư ký cuộc họp",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

@@ -1,0 +1,324 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Cohere command-a-plus-05-2026. Bấm để đổi 🆓 Cohere · command-a-plus-05-2026"
+ },
+ "luot1": {
+  "giay": 37,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Lịch nghỉ Tết Dương lịch năm 2027 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 813
+ },
+ "luot2": null,
+ "lanGoiAI": [],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nSoạn thông báo của Công ty Cổ phần Đầu tư Anh Quân về lịch nghỉ Tết Dương lịch năm 2027 gửi toàn thể cán bộ, nhân viên: nghỉ ngày 01/01/2027 và nghỉ bù cuối tuần liền kề, đi làm lại từ ngày làm việc đầu tiên sau đó (ghi rõ thứ trong tuần của các ngày). Phòng Hành chính – Nhân sự bố trí trực từ 8h00 đến 17h00 ngày 02/01/2027. Các phòng ban hoàn thành báo cáo công việc năm 2026 trước 17h00 ngày 31/12/2026. Người ký: Phó Tổng Giám đốc Trần Văn Bình ký thay Tổng Giám đốc.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: Lịch nghỉ Tết Dương lịch năm 2027 — Đã dựng thông báo đúng thể thức · còn 4 chỗ cần điền\n✅ Đọc đoạn 0–10\n✅ Đọc đoạn 10–30\n⚠️ Thay \"thứ Ba\" → \"thứ Sáu\" ở [¶14] — lý do: Sửa thứ trong tuần cho ngày 01/01/2027 — Thiếu expect: khi chỉ một đoạn bằng số (đoạn 14) phải kèm expect = khoảng 30 ký tự đầu của đoạn đó đúng như đã đọc, để công cụ không sửa nhầm đoạn khi chỉ số đã dời.\n✅ Đọc đoạn 14–15\n✅ Thay \"thứ Ba\" → \"thứ Sáu\" ở [¶14] — lý do: Sửa thứ trong tuần cho ngày 01/01/2027\n✅ Đọc đoạn 15–16\n✅ Thay \"thứ Bảy\" → \"thứ Hai\" ở [¶15] — lý do: Sửa thứ trong tuần cho ngày 04/01/2027\nĐã sửa các lỗi thứ trong tuần:\n• Đoạn 14: đổi “thứ Ba” thành “thứ Sáu” cho ngày 01/01/2027\n• Đoạn 15: đổi “thứ Bảy” thành “thứ Hai” cho ngày 04/01/2027\n \nCác lỗi thứ khác cần sửa tiếp:\n• Đoạn 16: “Chủ nhật 05/01/2027” → đổi thành “thứ Ba 05/01/2027”\n• Đoạn 16: “- Đi làm lại từ thứ Hai 06/01/2027 (thứ Hai)” → chỉ giữ “- Đi làm lại từ thứ Hai 06/01/2027”\n• Đoạn 18: “ngày 02/01/2027 (thứ Tư)” → đổi thành “ngày 02/01/2027 (thứ Bảy)”\n• Đoạn 20: “ngày 31/12/2026 (thứ Tư)” → đổi thành “ngày 31/12/2026 (thứ Tư)” (đã đúng) – giữ nguyên\n \nBạn muốn tôi sửa tiếp các mục còn lại không?\nHoàn tác thay đổi (2)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🆓 Cohere · command-a-plus-05-2026",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "THÔNG BÁO",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Lịch nghỉ Tết Dương lịch năm 2027",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Toàn thể cán bộ, nhân viên",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thời gian nghỉ Tết Dương lịch năm 2027",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Ngày 01/01/2027 (thứ Sáu) – ngày nghỉ chính thức.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Nghỉ bù cuối tuần liền kề: thứ Hai 04/01/2027 và Chủ nhật 05/01/2027.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Đi làm lại từ thứ Hai 06/01/2027 (thứ Hai).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Phân công trực Tết",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Phòng Hành chính – Nhân sự trực từ 8h00 đến 17h00 ngày 02/01/2027 (thứ Tư).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Yêu cầu hoàn thành báo cáo",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Các phòng ban hoàn thành báo cáo công việc năm 2026 trước 17h00 ngày 31/12/2026 (thứ Tư).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Trân trọng./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Phòng Hành chính – Nhân sự;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, Phòng Hành chính – Nhân sự.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "KT. TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "PHÓ TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TRẦN VĂN BÌNH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

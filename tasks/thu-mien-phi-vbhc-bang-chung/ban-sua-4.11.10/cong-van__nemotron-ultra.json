@@ -1,0 +1,326 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "luot1": {
+  "giay": 45,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: V/v Đề nghị xem xét, thông báo nhà ở hình thành tr | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 2206
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "2 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nSoạn công văn của Công ty Cổ phần Đầu tư Anh Quân gửi Sở Xây dựng tỉnh Bình Minh, đề nghị Sở xem xét, có văn bản thông báo nhà ở hình thành trong tương lai đủ điều kiện được bán đối với 120 căn nhà liền kề thuộc dự án Khu nhà ở Anh Quân Riverside tại phường An Phú. Dự án đã được cấp Giấy phép xây dựng số 45/GPXD ngày 15/6/2026, đã nghiệm thu phần móng toàn bộ 120 căn ngày 10/11/2026, đã có hợp đồng bảo lãnh nghĩa vụ tài chính với Ngân hàng TMCP Phát Triển. Người ký: Tổng Giám đốc Nguyễn Anh Quân.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: V/v Đề nghị xem xét, thông báo nhà ở hình thành tr — Đã dựng công văn đúng thể thức · còn 4 chỗ cần điền\nĐã soạn xong công văn theo đúng thể thức hành chính (doc_type: `cong_van`). Văn bản đã được dựng vào Word với:\n• Phần đầu: Quốc hiệu, tên cơ quan, tiêu ngữ, số/ký hiệu (để trống), địa danh/ngày (để trống), tên loại \"CÔNG VĂN\", trích yếu (V/v…).\n• Kính gửi: Sở Xây dựng tỉnh Bình Minh.\n• Nội dung: 13 đoạn trình bày căn cứ pháp lý (Luật Nhà ở 2023, Luật KDBĐS 2023, NĐ 144/2024/NĐ-CP), thực trạng dự án (GPXD 45/GPXD, nghiệm thu móng 10/11/2026, bảo lãnh Ngân hàng TMCP Phát Triển), và đề nghị cụ thể.\n• Phần ký: TỔNG GIÁM ĐỐC Nguyễn Anh Quân.\n• Nơi nhận: \"Như trên\" và \"Lưu: VT, Công ty Cổ phần Đầu tư Anh Quân\".\n• Thể thức trang: A4 dọc, lề trên/dưới 20 mm, trái 30 mm, phải 20 mm; font Times New Roman 14.\n \nCòn 4 chỗ cần điền trước khi ký (báo từ công cụ `blanks`):\n1. Số văn bản (để văn thư cấp)\n2. Ký hiệu văn bản\n3. Địa danh\n4. Ngày tháng ban hành\n \nKhi đã có số, ký hiệu, địa danh, ngày → bạn có thể điền trực tiếp vào các ô tương ứng trong bảng phần đầu (đừng xóa rồi chèn lại). Cần sửa câu chữ nào thì dùng `word_set_paragraph_text` trên đúng đoạn.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 28.494 · ra 1.740 · đọc từ bộ nhớ đệm 13.152\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "V/v Đề nghị xem xét, thông báo nhà ở hình thành trong tương lai đủ điều kiện được bán đối với 120 căn nhà liền kề thuộc dự án Khu nhà ở Anh Quân Riverside tại phường An Phú",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 6,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Sở Xây dựng tỉnh Bình Minh",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Nhà ở năm 2023;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Kinh doanh bất động sản năm 2023;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Nghị định số 144/2024/NĐ-CP ngày 21/10/2024 của Chính phủ quy định chi tiết Luật Kinh doanh bất động sản về điều kiện kinh doanh bất động sản;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Giấy phép xây dựng số 45/GPXD ngày 15/6/2026 do Sở Xây dựng tỉnh Bình Minh cấp;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Biên bản nghiệm thu phần móng toàn bộ 120 căn nhà liền kề ngày 10/11/2026;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Hợp đồng bảo lãnh nghĩa vụ tài chính đã ký kết với Ngân hàng TMCP Phát Triển.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính thưa Sở Xây dựng tỉnh Bình Minh,",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân đang triển khai thực hiện Dự án Khu nhà ở Anh Quân Riverside tại phường An Phú, tỉnh Bình Minh. Dự án đã được Sở Xây dựng tỉnh Bình Minh cấp Giấy phép xây dựng số 45/GPXD ngày 15/6/2026. Đến nay, Công ty đã hoàn thành thi công và nghiệm thu phần móng toàn bộ 120 căn nhà liền kề (gồm 120 lô đất) theo đúng thiết kế đã được phê duyệt. Bên cạnh đó, Công ty đã ký kết Hợp đồng bảo lãnh nghĩa vụ tài chính với Ngân hàng TMCP Phát Triển để đảm bảo nghĩa vụ tài chính đối với người mua nhà ở hình thành trong tương lai.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Theo quy định tại khoản 1 Điều 34 Luật Nhà ở năm 2023 và khoản 2 Điều 21 Nghị định 144/2024/NĐ-CP, nhà ở hình thành trong tương lai được bán khi đáp ứng đủ điều kiện: có Giấy phép xây dựng; đã hoàn thành phần móng; có bảo lãnh ngân hàng hoặc bảo hiểm trách nhiệm. Dự án Anh Quân Riverside đã đáp ứng đầy đủ các điều kiện nêu trên.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Với những lý do trên, Công ty Cổ phần Đầu tư Anh Quân kính đề nghị Sở Xây dựng tỉnh Bình Minh xem xét, có văn bản thông báo 120 căn nhà liền kề thuộc Dự án Khu nhà ở Anh Quân Riverside tại phường An Phú đủ điều kiện được bán theo quy định về nhà ở hình thành trong tương lai để Công ty triển khai bán nhà theo đúng quy định của pháp luật.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Trân trọng./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, Công ty Cổ phần Đầu tư Anh Quân.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

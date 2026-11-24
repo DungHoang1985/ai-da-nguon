@@ -1,0 +1,272 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Free Models Router. Bấm để đổi 🆓 OpenRouter · Free Models Router"
+ },
+ "luot1": {
+  "giay": 71,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Bổ nhiệm ông Trần Văn Bình làm Phó Tổng Giám đốc c | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 762
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "4 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nExcel — · PowerPoint —\nSoạn quyết định của Hội đồng quản trị Công ty Cổ phần Đầu tư Anh Quân bổ nhiệm ông Trần Văn Bình, hiện là Giám đốc Ban Quản lý dự án, giữ chức Phó Tổng Giám đốc công ty kể từ ngày 01/12/2026, thời hạn bổ nhiệm 03 năm. Căn cứ Nghị quyết Hội đồng quản trị số 15/2026/NQ-HĐQT ngày 20/11/2026 và Điều lệ công ty. Người ký: Chủ tịch Hội đồng quản trị Nguyễn Anh Quân.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Đọc kỹ năng soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: Bổ nhiệm ông Trần Văn Bình làm Phó Tổng Giám đốc c — Đã dựng quyết định đúng thể thức · còn 4 chỗ cần điền\n✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — đúng chuẩn\nĐã soạn Quyết định bổ nhiệm Phó Tổng Giám đốc đúng thể thức hành chính (doc_type quyet_dinh) và chèn vào tài liệu đang mở.\n \nNội dung chính đã dựng:\n• Thẩm quyền ban hành: Hội đồng quản trị Công ty Cổ phần Đầu tư Anh Quân\n• Căn cứ: Nghị quyết HĐQT số 15/2026/NQ-HĐQT ngày 20/11/2026 & Điều lệ công ty\n• Quyết định bổ nhiệm ông Trần Văn Bình (hiện Giám đốc Ban QLDA) làm Phó Tổng Giám đốc từ 01/12/2026, thời hạn 03 năm\n• Hiệu lực & trách nhiệm thi hành\n• Người ký: Chủ tịch Hội đồng quản trị Nguyễn Anh Quân\n \nKiểm tra trang: A4 đứng, lề trên/dưới 20 mm, trái 30 mm, phải 20 mm, phông Times New Roman 13‑14 pt – đúng chuẩn.\n \nCác chỗ còn trống cần điền trước khi ký (trường blanks):\n1. Số văn bản (để văn thư cấp)\n2. Ký hiệu văn bản\n3. Địa danh (nơi ban hành)\n4. Đơn vị soạn thảo (dòng “‑ Lưu: VT, …” ở phần Nơi nhận)\n \nBạn hãy điền 4 mục trên, sau đó là bản quyết định hoàn chỉnh sẵn sàng trình ký. Nếu muốn sửa câu chữ, chỉ cần dùng `word_set_paragraph_text` trên đoạn tương ứng (không dựng lại toàn văn).\n1 nhiệm vụ · 4 lần gọi AI · Token: vào 72.170 · ra 7.064\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Free Models Router",
+ "doanVan": [
+  {
+   "t": "HỘI ĐỒNG QUẢN TRỊ CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày 20 tháng 11 năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "QUYẾT ĐỊNH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Bổ nhiệm ông Trần Văn Bình làm Phó Tổng Giám đốc công ty",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Nghị quyết Hội đồng quản trị số 15/2026/NQ-HĐQT ngày 20/11/2026;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Điều lệ công ty.;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Theo đề nghị của Hội đồng quản trị.;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "QUYẾT ĐỊNH:",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 1. Ông Trần Văn Bình, hiện là Giám đốc Ban Quản lý dự án, được bổ nhiệm giữ chức Phó Tổng Giám đốc Công ty Cổ phần Đầu tư Anh Quân kể từ ngày 01/12/2026 với thời hạn bổ nhiệm 03 năm.",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 2. Quyết định này có hiệu lực kể từ ngày ký; Chủ tịch Hội đồng quản trị là người chịu trách nhiệm thi hành.",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như Điều 2;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, ….",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CHỦ TỊCH HỘI ĐỒNG QUẢN TRỊ",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

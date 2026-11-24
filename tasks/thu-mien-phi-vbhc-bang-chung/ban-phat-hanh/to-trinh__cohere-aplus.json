@@ -1,0 +1,369 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Cohere command-a-plus-05-2026. Bấm để đổi 🆓 Cohere · command-a-plus-05-2026"
+ },
+ "luot1": {
+  "giay": 16,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Về việc phê duyệt chủ trương vay vốn để thi công h | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 1615
+ },
+ "luot2": null,
+ "lanGoiAI": [],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nExcel — · PowerPoint —\nSoạn tờ trình của Tổng Giám đốc Công ty Cổ phần Đầu tư Anh Quân trình Hội đồng quản trị phê duyệt việc vay vốn 150 tỷ đồng tại Ngân hàng TMCP Phát Triển để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside. Thời hạn vay 36 tháng, lãi suất dự kiến 9,5%/năm, tài sản bảo đảm là quyền tài sản phát sinh từ dự án. Tổng tài sản của công ty theo báo cáo tài chính gần nhất là 380 tỷ đồng. Hãy nêu rõ khoản vay này thuộc thẩm quyền phê duyệt của cơ quan nào trong công ty theo Luật Doanh nghiệp và vì sao.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Đọc kỹ năng soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: Về việc phê duyệt chủ trương vay vốn để thi công h — Đã dựng tờ trình đúng thể thức · còn 4 chỗ cần điền\n✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — đúng chuẩn\n✅ Đọc đoạn 0–30\nĐã dựng tờ trình TTr-AQ về việc phê duyệt chủ trương vay vốn 150 tỷ đồng đúng thể thức. Văn bản đã có đủ các phần: đầu trang, tên loại, nội dung (19 đoạn), phần ký và nơi nhận; thể thức trang đúng chuẩn A4, lề 20-30-20-20 mm, phông Times New Roman.\n \nCác chỗ cần điền trước khi ký:\n• Số văn bản (để văn thư cấp)\n• Địa danh (thành phố)\n• Ngày tháng ban hành (tháng, ngày, năm 2026)\n• Họ tên Tổng Giám đốc ký\n \nVề thẩm quyền và lý do:\nTrong phần I. Sự cần thiết và căn cứ đã nêu rõ:\n• Điều 153, Luật Doanh nghiệp quy định khoản vay từ 10% tổng tài sản trở lên thuộc thẩm quyền HĐQT\n• 150 tỷ đồng = 39,47% tổng tài sản 380 tỷ đồng → thuộc thẩm quyền HĐQT\n• Điều lệ công ty cũng quy định tương tự\n \nDo đó khoản vay thuộc thẩm quyền phê duyệt của Hội đồng quản trị vì giá trị vượt 10% tổng tài sản theo Luật Doanh nghiệp và Điều lệ công ty.\n \nĐể hoàn tất: Điền các chỗ trống trên, ký tên và đóng dấu. Muốn sửa câu chữ nào thì cho biết đoạn số để điều chỉnh chính xác.\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🆓 Cohere · command-a-plus-05-2026",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /TTr-AQ",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỜ TRÌNH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Về việc phê duyệt chủ trương vay vốn để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Hội đồng quản trị",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "QUYẾT ĐỊNH:",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "I. Sự cần thiết và căn cứ",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": " Căn cứ Luật Doanh nghiệp và Điều lệ Công ty Cổ phần Đầu tư Anh Quân về thẩm quyền quyết định các khoản vay có giá trị từ 10% tổng tài sản trở lên thuộc thẩm quyền của Hội đồng quản trị.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": " Căn cứ báo cáo tài chính gần nhất, tổng tài sản của Công ty là 380 tỷ đồng. Khoản vay dự kiến 150 tỷ đồng tương đương 39,47% tổng tài sản, thuộc thẩm quyền phê duyệt của Hội đồng quản trị theo quy định tại Điều 153, Luật Doanh nghiệp.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": " Căn cứ kế hoạch triển khai dự án Khu nhà ở Anh Quân Riverside, việc vay vốn là cần thiết để đảm bảo tiến độ thi công hạ tầng kỹ thuật theo đúng cam kết với khách hàng và đối tác.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "II. Nội dung trình đề nghị",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_ Tên khoản vay: 150 tỷ đồng tại Ngân hàng TMCP Phát Triển.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_ Mục đích sử dụng: Thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_ Thời hạn vay: 36 tháng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_ Lãi suất dự kiến: 9,5%/năm (cố định trong suốt thời hạn vay).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_ Tài sản bảo đảm: Quyền tài sản phát sinh từ dự án Khu nhà ở Anh Quân Riverside.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "III. Kiến nghị, đề xuất",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_ Kính trình Hội đồng quản trị xem xét, phê duyệt chủ trương vay vốn 150 tỷ đồng theo các điều kiện nêu trên.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_ Đề nghị Hội đồng quản trị ủy quyền cho Tổng Giám đốc thực hiện các thủ tục vay vốn và ký kết hợp đồng tín dụng sau khi được phê duyệt.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính trình./.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TM.",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

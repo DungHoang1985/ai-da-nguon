@@ -229,6 +229,22 @@ export function unverifiedWriteClaim(f: TurnFacts): ClaimWarning | null {
   };
 }
 
+/** AI đổ lỗi cho công cụ khi lượt đó không gọi công cụ nào (thử 23/11/2026: ERNIE hai lần nói "công cụ soạn thảo đang lỗi" rồi viết
+ *  hợp đồng ra khung chat, không hề gọi công cụ). Chỉ bắt câu khẳng định công cụ hỏng; không bắt khi có công cụ lỗi thật. */
+const reToolBroken = new RegExp(
+  `(?:^|${L})(?:công cụ|chức năng|tính năng)(?:\\s+[\\p{L}]+){0,3}\\s+(?:(?:hiện\\s+)?(?:đang|vẫn|bị|vẫn đang)\\s+)?(?:lỗi|gặp lỗi|gặp sự cố|không hoạt động|không khả dụng|không phản hồi|tạm ngưng)${END}|(?:^|${L})không thể (?:tạo|dựng|ghi|soạn)\\s+văn bản\\s+(?:ngay\\s+)?(?:lúc này|bây giờ)`,
+  "iu"
+);
+export function toolFailureClaim(f: TurnFacts & { toolErrors?: number }): ClaimWarning | null {
+  if (f.toolsCalled.length || f.failedWrites || f.toolErrors) return null;
+  const s = sentences(f.answer).find((x) => reToolBroken.test(x) && !/\?\s*$/.test(x));
+  if (!s) return null;
+  return {
+    sentence: s,
+    text: `Cảnh báo: AI nói công cụ bị lỗi (“${s.length > 90 ? s.slice(0, 90) + "…" : s}”) nhưng ${f.continued ? "trong cả nhiệm vụ" : "lượt này"} AI không gọi công cụ nào — công cụ không hề lỗi. Bấm "Yêu cầu làm lại bằng công cụ" hoặc đổi model.`,
+  };
+}
+
 /** Công cụ ghi có thật sự thay đổi tài liệu không: lỗi, trả ok=false, hoặc báo thay 0 chỗ đều không tính */
 export function writeSucceeded(result: any, error?: string): boolean {
   if (error) return false;

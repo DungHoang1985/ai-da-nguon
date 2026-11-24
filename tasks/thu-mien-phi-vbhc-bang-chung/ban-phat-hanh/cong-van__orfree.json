@@ -1,0 +1,272 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Free Models Router. Bấm để đổi 🆓 OpenRouter · Free Models Router"
+ },
+ "luot1": {
+  "giay": 27,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: xem xét, có văn bản thông báo nhà ở hình thành tro | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 1434
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "3 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nExcel — · PowerPoint —\nSoạn công văn của Công ty Cổ phần Đầu tư Anh Quân gửi Sở Xây dựng tỉnh Bình Minh, đề nghị Sở xem xét, có văn bản thông báo nhà ở hình thành trong tương lai đủ điều kiện được bán đối với 120 căn nhà liền kề thuộc dự án Khu nhà ở Anh Quân Riverside tại phường An Phú. Dự án đã được cấp Giấy phép xây dựng số 45/GPXD ngày 15/6/2026, đã nghiệm thu phần móng toàn bộ 120 căn ngày 10/11/2026, đã có hợp đồng bảo lãnh nghĩa vụ tài chính với Ngân hàng TMCP Phát Triển. Người ký: Tổng Giám đốc Nguyễn Anh Quân.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: xem xét, có văn bản thông báo nhà ở hình thành tro — Đã dựng công văn đúng thể thức · còn 5 chỗ cần điền\n✅ Kiểm thể thức trang: lề, khổ giấy, phông, cỡ chữ — đúng chuẩn\nCông văn đã được dựng đúng thể thức (công văn chuẩn). Dưới đây là kết quả:\n \n1. Văn bản đã tạo\n• Ký gửi: Công ty Cổ phần Đầu tư Anh Quân → Sở Xây dựng tỉnh Bình Minh\n• Chủ đề: Xem xét, có văn bản thông báo nhà ở hình thành trong tương lai đủ điều kiện được bán đối với 120 căn nhà liền kề thuộc dự án Khu nhà ở Anh Quân Riverside tại phường An Phú\n• Nội dung: Đã liệt kê quyền hạn (GPXD, nghiệm thu móng, hợp đồng bảo lãnh) và đề nghị Sở kiểm tra, có văn bản thông báo\n• Ký: Tổng Giám đốc Nguyễn Anh Quân (TM. Giám đốc)\n• Thể thức: A4 đứng, lề 20-20-30-20 mm, phông Times New Roman cỡ 14, toàn văn canh đều hai lề, đầu đoạn thụt 10–12,7 mm, giãn dòng 1,5, kết thúc bằng dấu “./.”\n \n2. Các chỗ còn trống (blanks) – cần điền trước khi ký\ncó\t\ttrong văn bản\t\tcần điền\n1\tSố văn bản\tĐể văn thư cấp\t_Người dùng điền\t\n2\tKý hiệu văn bản\tChữ viết tắt loại + cơ quan (ví dụ: BĐ-ABC)\t_Người dùng điền hoặc bỏ trống\t\n3\tĐịa danh\tNơi ban hành (thường là “Tp. Bình Minh”)\t_Người dùng điền\t\n4\tNgày tháng ban hành\tNgày gửi (ví dụ: “ngày 20 tháng 12 năm 2026”)\t_Người dùng điền\t\n5\tĐơn vị soạn thảo\tĐặt ở dòng “Lưu: VT”\t_Người dùng điền (tên phận/cư Ban soạn)\t\n \n3. Hướng dẫn xử lý\n• Để điền các chỗ trống trên, bạn dùng công cụ `word_set_paragraph_text` trên từng đoạn tương ứng hoặc cho tôi biết nội dung cần thay đổi để tôi thực hiện.\n• Cần chú ý: Không tự sửa nội dung câu chữ, số liệu, ngày tháng trong phần thân văn bản (nếu có sai hiểu, hãy dùng nhận xét `word_add_comment`). Chỉ sửa phông, cỡ, lề, canh lề nếu cần thiết bằng `word_format_text`.\n• Kiểm tra lại thể thức bằng `word_check_page_format` sau khi điền số/ngày/ký hiệu để đảm bảo vẫn đúng chuẩn.\n \nBạn muốn tôi điền các chỗ trống này (số, ngày, ký hiệu…) hay muốn sửa nội dung nào trong văn bản trước khi ký?\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 37.712 · ra 1.836 · đọc từ bộ nhớ đệm 10.240\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Free Models Router",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "V/v xem xét, có văn bản thông báo nhà ở hình thành trong tương lai đủ điều kiện được bán đối với 120 căn nhà liền kề thuộc dự án Khu nhà ở Anh Quân Riverside tại phường An Phú",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 6,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: SỞ XÂY DỰNG TỈNH BÌNH MINH",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân (sau đây gọi là \"Công ty\") xin được đề nghị Sở Xây dựng tỉnh Bình Minh xem xét, có văn bản thông báo nhà ở hình thành trong tương lai đủ điều kiện được bán đối với 120 căn nhà liền kề thuộc dự án Khu nhà ở Anh Quân Riverside tại phường An Phú, thành phố Bình Minh, tỉnh Bình Minh.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Dự án Khu nhà ở Anh Quân Riverside đã được cấp giấy phép xây dựng số 45/GPXD ngày 15/6/2026; phần móng của toàn bộ 120 căn nhà liền kề đã được nghiệm thu vào ngày 10/11/2026. Hiện nay, Công ty đã ký hợp đồng bảo lãnh nghĩa vụ tài chính với Ngân hàng TMCP Phát Triển để bảo đảm thực hiện các nghĩa vụ liên quan đến việc bán nhà ở hình thành trong tương lai.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Trước những kết quả trên, Công ty kính đề nghị Sở Xây dựng tỉnh Bình Minh xem xét, tiến hành kiểm tra, đánh giá và có văn bản thông báo nhà ở hình thành trong tương lai đủ điều kiện được bán đối với 120 căn nhà liền kề thuộc dự án trên, theo đúng quy định pháp luật hiện hành về kinh doanh bất động sản.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Trân trọng./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, ….",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TM. GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

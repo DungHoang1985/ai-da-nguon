@@ -1,0 +1,308 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter LiquidAI: LFM3-1.7B (free). Bấm để đổi 🆓 OpenRouter · LiquidAI: LFM3-1.7B (free)"
+ },
+ "luot1": {
+  "giay": 51,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: V/v Công ty Cổ phần Đầu tư Anh Quân | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 978
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "3 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nExcel — · PowerPoint —\nSoạn quyết định của Hội đồng quản trị Công ty Cổ phần Đầu tư Anh Quân bổ nhiệm ông Trần Văn Bình, hiện là Giám đốc Ban Quản lý dự án, giữ chức Phó Tổng Giám đốc công ty kể từ ngày 01/12/2026, thời hạn bổ nhiệm 03 năm. Căn cứ Nghị quyết Hội đồng quản trị số 15/2026/NQ-HĐQT ngày 20/11/2026 và Điều lệ công ty. Người ký: Chủ tịch Hội đồng quản trị Nguyễn Anh Quân.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Đọc kỹ năng soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: V/v Công ty Cổ phần Đầu tư Anh Quân — Đã dựng quyết định đúng thể thức · còn 5 chỗ cần điền\nĐã sử dụng công cụ `word_create_admin_document` để xây dựng Quyết định theo mẫu văn bản hành chính (doc_type = *quyet_dinh*).\n \nThông tin cơ bản đã nhập\nHạng mục\tGiá trị\nLoại văn bản\tQuyết định (quyet_dinh)\nTổ chức phát hành\tCông ty Cổ phần Đầu tư Anh Quân\nTiêu đề\tBổ nhiệm ông Trần Văn Bình làm Phó Tổng Giám đốc công ty\nChủ đề (V/v…)\tV/v Công ty Cổ phần Đầu tư Anh Quân\nNgười gửi (to)\tHội đồng quản trị Công ty Cổ phần Đầu tư Anh Quân\nNgười ký (signer)\tChủ tịch Hội đồng quản trị Nguyễn Anh Quân (Authority: CHỦ TỌA, Title: CHỦ TỌA, Name: Nguyễn Anh Quân)\n \nNội dung đã dựng (trước hết)\n```\nTHẨM QUYỀN BAN HÀNH\nGIÁM ĐỐC CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUAN\n \n_Căn cứ Nghị quyết Hội đồng quản trị số 15/2026/NQ-HĐQT ngày 20/11/2026 và Điều lệ công ty._\n \nQUYẾT ĐỊNH: Bổ nhiệm ông Trần Văn Bình làm Phó Tổng Giám đốc công ty, hiện là Giám đốc Ban Quản lý dự án, giữ chức Phó Tổng Giám đốc công ty kể từ ngày 01/12/2026, thời hạn bổ nhiệm 03 năm.\n \nĐiều 1. Nội dung bổ nhiệm\nHội đồng quản trị xin bổ nhiệm ông Trần Văn Bình, hiện đang giữ chức Giám đốc Ban Quản lý dự án, làm Phó Tổng Giám đốc công ty, có hiệu lực kể từ ngày 01/12/2026 và thời hạn 3 năm.\n \n_Theo đề nghị của Hội đồng quản trị._\n```\n \n• Thể thức: A4, lề trên 20 mm / dưới 20 mm, trái 30 mm / phải 20 mm, phông Times New Roman cỡ 14, kết thúc bằng \"./.\"\n• Đã thêm dấu kết thúc \".\" ở cuối nội dung.\n• Số đoạn: 12 đoạn (bao gồm phần thâm nhập, căn cứ, quyết định…).\n• 3 đường kẻ: giữa tên cơ quan, giữa trích yếu, giữa dòng \"_Theo đề nghị của …_\".\n \nCác trường còn thiếu (blanks) cần điền trước khi ký\n1. Số văn bản (cho văn thư cấp) – thường bỏ trống nếu chưa xác định.\n2. Ký hiệu văn bản (ví dụ `TTr‑ABC`, `BC‑ABC`…) – không có thông tin.\n3. Địa danh (Nơi nhận) – ví dụ: \"Hà Nội\", \"Như trên\"…\n4. Ngày tháng ban hành – ngày ban hành quyết định (có thể trùng với ngày của Nghị quyết, 20/11/2026 hoặc ngày bổ nhiệm 01/12/2026).\n5. Đơn vị soạn thảo trong dòng “Lưu: VT, …” – thường là đơn vị phát hành (Công ty Cổ phần Đầu tư Anh Quân).\n \n---\n \nBạn muốn:\n• Điền các thông tin còn trống (các blanks trên)? → Gọi `word_set_paragraph_text` cho đoạn tương ứng hoặc `word_insert_clause` để thêm số, ký hiệu, v.v.\n• Xem lại toàn bộ văn bản, kiểm tra chi tiết, hoặc yêu cầu chỉnh sửa thể thức (font, lề, v.v.)? → Dùng `word_read_paragraphs`, `word_check_page_format`, `word_add_comment`.\n \nHãy cho tôi biết để tiếp tục!\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 46.745 · ra 10.836 · đọc từ bộ nhớ đệm 27.136\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · LiquidAI: LFM3-1.7B (free)",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "BỔ NHIỆM ÔNG TRẦN VĂN BÌNH LÀM PHÓ TỔNG GIÁM ĐỐC CÔNG TY",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Hội đồng quản trị Công ty Cổ phần Đầu tư Anh Quân",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "THẨM QUYỀN BAN HÀNH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "GIÁM ĐỐC CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUAN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Nghị quyết Hội đồng quản trị số 15/2026/NQ-HĐQT ngày 20/11/2026 và Điều lệ công ty.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "QUYẾT ĐỊNH: Bổ nhiệm ông Trần Văn Bình làm Phó Tổng Giám đốc công ty, hiện là Giám đốc Ban Quản lý dự án, giữ chức Phó Tổng Giám đốc công ty kể từ ngày 01/12/2026, thời hạn bổ nhiệm 03 năm.",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 1. Nội dung bổ nhiệm",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hội đồng quản trị xin bổ nhiệm ông Trần Văn Bình, hiện đang giữ chức Giám đốc Ban Quản lý dự án, làm Phó Tổng Giám đốc công ty, có hiệu lực kể từ ngày 01/12/2026 và thời hạn 3 năm.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Theo đề nghị của Hội đồng quản trị.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận: Như Điều 1./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, ….",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CHỦ TỌA",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CHỦ TỌA",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

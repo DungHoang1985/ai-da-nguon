@@ -1,0 +1,182 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Dots Studio: Dots3-Note Preview (free). Bấm để đổi 🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)"
+ },
+ "luot1": {
+  "giay": 80,
+  "daHoi": [
+   "AI muốn: Chèn nội dung (end) — lý do: Soạn nghị quyết của HĐQT theo yêu cầu người dùng | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 856
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "7 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nExcel — · PowerPoint —\nSoạn nghị quyết của Hội đồng quản trị Công ty Cổ phần Đầu tư Anh Quân, cuộc họp ngày 20/11/2026, có 5/5 thành viên dự họp, các nội dung đều được 5/5 thành viên tán thành: (1) thông qua việc vay 150 tỷ đồng tại Ngân hàng TMCP Phát Triển, thời hạn 36 tháng để thi công hạ tầng dự án Khu nhà ở Anh Quân Riverside; (2) bổ nhiệm ông Trần Văn Bình giữ chức Phó Tổng Giám đốc từ ngày 01/12/2026; (3) triệu tập họp Đại hội đồng cổ đông bất thường năm 2026 vào ngày 20/12/2026, ngày chốt danh sách cổ đông là 25/11/2026. Số nghị quyết 15/2026/NQ-HĐQT. Người ký: Chủ tịch Hội đồng quản trị Nguyễn Anh Quân.\nKỹ năng áp dụng: chuan-bi-hop\n✅ Chèn nội dung (end) — lý do: Soạn nghị quyết của HĐQT theo yêu cầu người dùng\n✅ Đọc đoạn 0–5\n⚠️ Định dạng chữ — Thiếu expect: khi chỉ một đoạn bằng số (đoạn 0) phải kèm expect = khoảng 30 ký tự đầu của đoạn đó đúng như đã đọc, để công cụ không sửa nhầm đoạn khi chỉ số đã dời.\n✅ Định dạng chữ\n✅ Đọc đoạn 5–18\n✅ Định dạng chữ\nĐã soạn xong nghị quyết số 15/2026/NQ-HĐQT của Hội đồng quản trị Công ty Cổ phần Đầu tư Anh Quân, chèn vào cuối văn bản. Văn bản bao gồm đầy đủ các phần:\n• Tiêu đề công ty, số nghị quyết, ngày 20/11/2026\n• Căn cứ pháp lý (Điều lệ, biên bản họp)\n• 3 quyết định chính: vay 150 tỷ, bổ nhiệm Phó TGĐ, triệu tập ĐHĐCĐ bất thường\n• Hiệu lực từ ngày ký, chữ ký Chủ tịch Nguyễn Anh Quân\n \nĐoạn tiêu đề \"QUYẾT ĐỊNH\" đã được in đậm, căn giữa. Các đoạn khác giữ nguyên định dạng cơ bản.\n1 nhiệm vụ · 7 lần gọi AI · Token: vào 57.116 · ra 6.180 · đọc từ bộ nhớ đệm 46.080\nHoàn tác thay đổi (3)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 16,
+   "f": "Calibri Light",
+   "tb": 0
+  },
+  {
+   "t": "Số: 15/2026/NQ-HĐQT",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Ngày 20 tháng 11 năm 2026",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "V/v thông qua các quyết định sau cuộc họp HĐQT ngày 20/11/2026",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Hội đồng quản trị Công ty Cổ phần Đầu tư Anh Quân:",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Điều lệ tổ chức và hoạt động của Công ty;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ biên bản họp Hội đồng quản trị ngày 20/11/2026;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Sau khi xem xét, thảo luận và biểu quyết,",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "QUYẾT ĐỊNH:",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "1. Thống nhất thông qua việc vay 150 tỷ đồng tại Ngân hàng TMCP Phát Triển, thời hạn 36 tháng, để thi công hạ tầng dự án Khu nhà ở Anh Quân Riverside.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "2. Thống nhất bổ nhiệm ông Trần Văn Bình giữ chức Phó Tổng Giám đốc từ ngày 01/12/2026.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "3. Thống nhất triệu tập họp Đại hội đồng cổ đông bất thường năm 2026 vào ngày 20/12/2026, ngày chốt danh sách cổ đông là 25/11/2026.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Nghị quyết này có hiệu lực từ ngày ký.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận: Như trên; Lưu: VT, KT.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "CHỦ TỊCH HỘI ĐỒNG QUẢN TRỊ",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "(Ký tên, đóng dấu)",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

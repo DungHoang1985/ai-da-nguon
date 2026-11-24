@@ -1,0 +1,461 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "luot1": {
+  "giay": 89,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: V/v Trình phê duyệt vay vốn 150 tỷ đồng tại Ngân h | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 2117
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "3 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nSoạn tờ trình của Tổng Giám đốc Công ty Cổ phần Đầu tư Anh Quân trình Hội đồng quản trị phê duyệt việc vay vốn 150 tỷ đồng tại Ngân hàng TMCP Phát Triển để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside. Thời hạn vay 36 tháng, lãi suất dự kiến 9,5%/năm, tài sản bảo đảm là quyền tài sản phát sinh từ dự án. Tổng tài sản của công ty theo báo cáo tài chính gần nhất là 380 tỷ đồng. Hãy nêu rõ khoản vay này thuộc thẩm quyền phê duyệt của cơ quan nào trong công ty theo Luật Doanh nghiệp và vì sao.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: V/v Trình phê duyệt vay vốn 150 tỷ đồng tại Ngân h — Đã dựng tờ trình đúng thể thức · còn 4 chỗ cần điền\n✅ Thay \"担保\" → \"\" — lý do: Xóa chữ Hán '担保' lẫn trong nội dung tiếng Việt\nĐã soạn tờ trình đúng thể thức hành chính (doc_type to_trinh) và ghi có theo dõi thay đổi. Văn bản gồm:\n \n• Phần đầu: Quốc hiệu, tên cơ quan, tên loại \"TỜ TRÌNH\", trích yếu, Kính gửi Hội đồng quản trị.\n• Nội dung 3 phần (I. Căn cứ & sự cần thiết; II. Thông tin vay vốn & phân tích thẩm quyền; III. Kiến nghị).\n• Phần ký: quyền hạn \"TỔNG GIÁM ĐỐC\", chừa dòng ký.\n• Nơi nhận: \"Như trên\", \"Lưu: VT, Ban Tổng Giám đốc\".\n \nĐã sửa: xóa chữ Hán \"担保\" lẫn trong câu \"bảo lãnh,担保\".\n \nCòn 4 chỗ trống cần điền trước khi ký (theo `blanks`):\n1. Số văn bản (để văn thư cấp)\n2. Ký hiệu văn bản\n3. Ngày tháng ban hành (ví dụ: \"ngày 05 tháng 01 năm 2026\")\n4. Họ tên người ký (Tổng Giám đốc)\n \nVề thẩm quyền phê duyệt (đã nêu ở Mục II.2):\n• Tổng tài sản: 380 tỷ đồng → tỷ lệ vay = 150/380 = 39,47% (> 35%).\n• Theo điểm h khoản 2 Điều 153 Luật Doanh nghiệp 2020, Hội đồng quản trị có thẩm quyền quyết định hợp đồng vay, cho vay, bảo lãnh… có giá trị từ 35% tổng tài sản trở lên (trừ khi Điều lệ công ty quy định khác).\n• Do đó, hợp đồng vay 150 tỷ đồng thuộc thẩm quyền phê duyệt của Hội đồng quản trị.\n \nKhi đã có đủ số, ký hiệu, ngày, tên người ký → bạn điền vào các chỗ trống (hoặc nhờ tôi điền) thì tờ trình sẽ sẵn sàng trình ký.\n1 nhiệm vụ · 3 lần gọi AI · Token: vào 48.743 · ra 4.377 · đọc từ bộ nhớ đệm 43.840\nHoàn tác thay đổi (2)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Hà Nội, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỜ TRÌNH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Trình phê duyệt vay vốn 150 tỷ đồng tại Ngân hàng TMCP Phát Triển để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: HỘI ĐỒNG QUẢN TRỊ CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "I. CĂN CỨ VÀ SỰ CẦN THIẾT",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Căn cứ pháp lý",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Doanh nghiệp năm 2020;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Điều lệ Công ty Cổ phần Đầu tư Anh Quân;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Báo cáo tài chính quý ... năm 202X của Công ty;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Sự cần thiết",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Dự án Khu nhà ở Anh Quân Riverside đang trong giai đoạn triển khai thi công hạ tầng kỹ thuật, cần vốn đầu tư để đảm bảo tiến độ và chất lượng. Ngân hàng TMCP Phát Triển đã xem xét và sẵn sàng cho vay theo điều kiện thương lượng.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "II. NỘI DUNG TRÌNH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Thông tin vay vốn",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Số tiền vay: 150.000.000.000 đồng (Một trăm năm mươi tỷ đồng).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Ngân hàng cho vay: Ngân hàng TMCP Phát Triển.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Mục đích vay: Thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Thời hạn vay: 36 tháng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Lãi suất dự kiến: 9,5%/năm.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Tài sản bảo đảm: Quyền tài sản phát sinh từ dự án (quyền thu tiền bán/cho thuê nhà đất, quyền yêu cầu thanh toán của bên mua/thuê).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Phân tích thẩm quyền phê duyệt",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Tổng tài sản Công ty theo báo cáo tài chính gần nhất: 380.000.000.000 đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Tỷ lệ số tiền vay trên tổng tài sản: 150/380 = 39,47% (> 35%).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Theo điểm h khoản 2 Điều 153 Luật Doanh nghiệp năm 2020, Hội đồng quản trị có thẩm quyền quyết định các hợp đồng vay, cho vay, bảo lãnh,... có giá trị từ 35% tổng tài sản trở lên (trừ khi Điều lệ quy định khác).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Do đó, hợp đồng vay này thuộc thẩm quyền phê duyệt của Hội đồng quản trị Công ty.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "III. KIẾN NGHỊ",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính đề nghị Hội đồng quản trị xem xét, phê duyệt:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Cho phép Công ty ký hợp đồng vay vốn 150 tỷ đồng tại Ngân hàng TMCP Phát Triển với các điều kiện nêu trên.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Ủy quyền cho Tổng Giám đốc ký kết hợp đồng vay và các văn bản liên quan.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3. Phân bổ vốn vay đúng mục đích, đảm bảo tiến độ thi công dự án.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính trình Hội đồng quản trị xem xét, quyết định./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, Ban Tổng Giám đốc.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

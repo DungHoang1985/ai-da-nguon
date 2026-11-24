@@ -276,6 +276,16 @@ describe("Đợt 9 — xoay vòng khi gọi model (T3, T4, T5)", () => {
     const back = await new FreeRotation([cand("gemini"), cand("groq")], { store, now: () => Date.UTC(2026, 10, 19, 8, 0, 1) }).call({ messages: USER, tools: [], onText: () => {}, fetchFn: r2.fetchFn });
     assert.strictEqual(back.text, "lại rồi");
   });
+  it("4.11.10: nguồn đang chọn còn nghỉ thì lượt sau vẫn BÁO đổi nguồn (trước đây bỏ qua lặng lẽ, khung ghi nhầm model)", async () => {
+    const r = router({ gemini: [() => err(429, "Too many requests per minute", { "retry-after": "120" })], groq: [() => oaText("1"), () => oaText("2")] });
+    const store = memStore();
+    await new FreeRotation([cand("gemini"), cand("groq")], { store, now: () => 0 }).call({ messages: USER, tools: [], onText: () => {}, fetchFn: r.fetchFn });
+    const sw: any[] = [];
+    const res = await new FreeRotation([cand("gemini"), cand("groq")], { store, now: () => 1000 }).call({ messages: USER, tools: [], onText: () => {}, fetchFn: r.fetchFn }, (i) => sw.push(i));
+    assert.strictEqual(res.text, "2");
+    assert.strictEqual(sw.length, 1);
+    assert.ok(/gemini/i.test(sw[0].from) && /groq/i.test(sw[0].to) && /dùng lại lúc/.test(sw[0].reason), JSON.stringify(sw));
+  });
   it("Hết mọi nguồn → dừng, báo từng nguồn; không gọi nguồn nào ngoài vòng (không sang trả phí)", async () => {
     const r = router({ gemini: [() => err(503, "x")], groq: [() => err(401, "Invalid API Key")] });
     const rot = new FreeRotation([cand("gemini"), cand("groq")], { store: memStore() });

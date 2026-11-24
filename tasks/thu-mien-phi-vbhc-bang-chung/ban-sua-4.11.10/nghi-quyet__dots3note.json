@@ -1,0 +1,353 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Dots Studio: Dots3-Note Preview (free). Bấm để đổi 🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)"
+ },
+ "luot1": {
+  "giay": 61,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 999
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "6 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nSoạn nghị quyết của Hội đồng quản trị Công ty Cổ phần Đầu tư Anh Quân, cuộc họp ngày 20/11/2026, có 5/5 thành viên dự họp, các nội dung đều được 5/5 thành viên tán thành: (1) thông qua việc vay 150 tỷ đồng tại Ngân hàng TMCP Phát Triển, thời hạn 36 tháng để thi công hạ tầng dự án Khu nhà ở Anh Quân Riverside; (2) bổ nhiệm ông Trần Văn Bình giữ chức Phó Tổng Giám đốc từ ngày 01/12/2026; (3) triệu tập họp Đại hội đồng cổ đông bất thường năm 2026 vào ngày 20/12/2026, ngày chốt danh sách cổ đông là 25/11/2026. Số nghị quyết 15/2026/NQ-HĐQT. Người ký: Chủ tịch Hội đồng quản trị Nguyễn Anh Quân.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh, chuan-bi-hop\n✅ Dựng văn bản hành chính đúng thể thức — Đã dựng nghị quyết đúng thể thức · còn 3 chỗ cần điền\n✅ Đọc đoạn 0–30\n✅ Thay \"Căn cứ opinions of 5/5 thành viên dự họp\" → \"Căn cứ rằng 5/5 thành viên dự họp và toà\" ở [¶14] — lý do: Sửa cụm từ tiếng Anh 'opinions of' thành tiếng Việt 'được' để văn bản bằng tiếng Việt chuẩn.\n✅ Đọc đoạn 12–16\n✅ Đọc đoạn 7–12\nĐã soạn xong nghị quyết đúng thể thức. Dưới đây là kết quả:\n \nĐã tạo:\n• Phần đầu: tên cơ quan, quốc hiệu, số 15/2026/NQ-HĐQT, ngày 20/11/2026, tiêu ngữ NGHỊ QUYẾT, trích yếu (có đường kẻ), phần căn cứ, 4 điều khoản, phần ký và nơi nhận.\n• Thiết kế trang: A4 dọc, lề trên/dưới 20mm, trái 30mm, phải 20mm.\n \nĐã sửa:\n• Đoạn 14: đổi \"Căn cứ opinions of 5/5 thành viên...\" thành \"Căn cứ rằng 5/5 thành viên dự họp và toàn bộ đều tán thành.\" (loại từ tiếng Anh).\n \nCần người dùng điền trước khi ký (3 chỗ trống):\n1. Trích yếu (đoạn 10): chưa có nội dung trích yếu cụ thể.\n2. Địa điểm (đoạn 8): dòng \"..., ngày 20 tháng 11 năm 2026\" chưa có địa danh (ví dụ Hà Nội).\n3. Đơn vị soạn thảo (đoạn 28): dòng \"- Lưu: VT, ….\" chưa điền tên đơn vị.\n \nVui lòng cung cấp 3 thông tin trên để tôi điền tiếp, hoặc nếu đã đủ có thể kiểm tra lại trước khi duyệt.\n1 nhiệm vụ · 6 lần gọi AI · Token: vào 89.797 · ra 4.353 · đọc từ bộ nhớ đệm 74.240\nHoàn tác thay đổi (2)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số: 15/2026/NQ-HĐQT",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày 20 tháng 11 năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "NGHỊ QUYẾT",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_Căn cứ Điều lệ Công ty Cổ phần Đầu tư Anh Quân;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Biên bản họp Hội đồng quản trị ngày 20 tháng 11 năm 2026;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ rằng 5/5 thành viên dự họp và toàn bộ đều tán thành._",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "QUYẾT NGHỊ:",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 1. Phê duyệt việc vay 150 tỷ đồng tại Ngân hàng TMCP Phát Triển",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thời hạn vay: 36 tháng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Mục đích vay: Thi công hạ tầng dự án Khu nhà ở Anh Riverside.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 2. Bổ nhiệm ông Trần Văn Bình giữ chức Phó Tổng Giám đốc",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hiệu lực từ ngày 01/12/2026.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 3. Triệu tập họp Đại hội đồng cổ đông bất thường năm 2026",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thời gian: Ngày 20/12/2026.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Ngày chốt danh sách cổ đông: 25/11/2026.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 4. Hiệu lực và người thi hành",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nghị quyết này có hiệu lực kể từ ngày ký.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Các thành viên Hội đồng quản trị, Tổng Giám đốc và các phòng ban liên quan có trách nhiệm thi hành Nghị quyết này./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, ….",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TM. HỘI ĐỒNG QUẢN TRỊ",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CHỦ TỊCH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

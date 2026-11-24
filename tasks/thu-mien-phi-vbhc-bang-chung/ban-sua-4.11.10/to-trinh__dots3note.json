@@ -1,0 +1,362 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Dots Studio: Dots3-Note Preview (free). Bấm để đổi 🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)"
+ },
+ "luot1": {
+  "giay": 54,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: V/v phê duyệt việc vay vốn 150 tỷ đồng tại Ngân hà | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 1733
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "2 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nSoạn tờ trình của Tổng Giám đốc Công ty Cổ phần Đầu tư Anh Quân trình Hội đồng quản trị phê duyệt việc vay vốn 150 tỷ đồng tại Ngân hàng TMCP Phát Triển để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside. Thời hạn vay 36 tháng, lãi suất dự kiến 9,5%/năm, tài sản bảo đảm là quyền tài sản phát sinh từ dự án. Tổng tài sản của công ty theo báo cáo tài chính gần nhất là 380 tỷ đồng. Hãy nêu rõ khoản vay này thuộc thẩm quyền phê duyệt của cơ quan nào trong công ty theo Luật Doanh nghiệp và vì sao.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: V/v phê duyệt việc vay vốn 150 tỷ đồng tại Ngân hà — Đã dựng tờ trình đúng thể thức · còn 6 chỗ cần điền\nĐã soạn xong tờ trình đúng thể thức văn bản hành chính. Dưới đây là kết quả:\n \nTờ trình của Tổng Giám đốc Công ty Cổ phần Đầu tư Anh Quân trình Hội đồng quản trị phê duyệt việc vay vốn 150 tỷ đồng tại Ngân hàng TMCP Phát Triển để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside.\n \nNội dung chính đã được trình bày:\n \n1. Sự cần thiết và căn cứ pháp lý: Nêu rõ việc đầu tư hạ tầng là bước đi thiết yếu; dẫn dụng Điều 153 điểm h khoản 2 Luật Doanh nghiệp năm 2020 (hợp đồng vay từ 35% tổng tài sản trở lên do Hội đồng quản trị quyết định). Tính toán cụ thể: 150 tỷ đồng / 380 tỷ đồng = 39,47% > 35% → Khoản vay này thuộc thẩm quyền phê duyệt của Hội đồng quản trị, không phải của Tổng Giám đốc.\n \n2. Nội dung trình: Đầy đủ số tiền (150 tỷ đồng), ngân hàng (TMCP Phát Triển), mục đích (thi công hạ tầng kỹ thuật dự án Anh Quân Riverside), thời hạn (36 tháng), lãi suất (9,5%/năm), tài sản bảo đảm (quyền tài sản phát sinh từ dự án), tổng tài sản công ty (380 tỷ đồng).\n \n3. Kiến nghị: Trình Hội đồng quản trị xem xét, phê duyệt với các điều kiện đã nêu.\n \nLưu ý: Văn bản còn 6 chỗ trống cần người dùng điền trước khi ký:\n• Số văn bản (văn thư cấp)\n• Ký hiệu văn bản\n• Địa danh\n• Ngày tháng ban hành\n• Họ tên người ký (Tổng Giám đốc)\n• Đơn vị soạn thảo ở dòng \"Lưu: VT\"\n \nCác phần khác (phần đầu, tên loại, trích yếu, phần ký, nơi nhận, lề A4) đã được thiết lập đúng thể thức.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 24.737 · ra 4.677 · đọc từ bộ nhớ đệm 23.040\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỜ TRÌNH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "phê duyệt việc vay vốn 150 tỷ đồng tại Ngân hàng TMCP Phát Triển để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: HỘI ĐỒNG QUẢN TRỊ",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "I. SỰ CẦN THẾT VÀ CĂN CỨ",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Để thực hiện dự án Khu nhà ở Anh Quân Riverside, Công ty cần thi công hạ tầng kỹ thuật (đường điện, nước, thoát nước, cây xanh,…), làm nền tảng cho việc xây dựng các công trình trong dự án. Việc đầu tư hạ tầng là bước đi thiết yếu, đảm bảo tính pháp lý, tiến độ và chất lượng cho toàn bộ dự án.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Theo Luật Doanh nghiệp năm 2020, Điều 153 điểm h khoản 2: Hợp đồng vay, giao dịch khác từ 35% tổng tài sản của công ty (theo báo cáo tài chính gần nhất) trở lên do Hội đồng quản trị quyết định.",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tỷ lệ số tiền vay so với tổng tài sản hiện có: 150 tỷ đồng / 380 tỷ đồng = 39,47% > 35%. Do đó, khoản vay này thuộc thẩm quyền phê duyệt của Hội đồng quản trị, không thuộc thẩm quyền của Tổng Giám đốc.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "II. NỘI DUNG TRÌNH",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Số tiền vay: 150 tỷ đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Ngân hàng cho vay: Ngân hàng TMCP Phát Triển.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Mục đích vay: Thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Thời hạn vay: 36 tháng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Lãi suất dự kiến: 9,5%/năm.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Tài sản bảo đảm: Quyền tài sản phát sinh từ dự án Khu nhà ở Anh Quân Riverside.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Tổng tài sản của công ty theo báo cáo tài chính gần nhất: 380 tỷ đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "III. KIẾN NGHỊ",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính trình Hội đồng quản trị xem xét, phê duyệt việc vay vốn 150 tỷ đồng tại Ngân hàng TMCP Phát Triển để thi công hạ tầng kỹ thuật dự án Khu nhà ở Anh Quân Riverside, với các điều kiện nêu trên.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính trình Hội đồng quản trị xem xét, quyết định./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, ….",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

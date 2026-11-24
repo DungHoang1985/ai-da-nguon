@@ -239,6 +239,12 @@ export class FreeRotation {
       const why = this.blocked(c, needOf(c));
       if (why) {
         this.notes.set(c.provider.id, why);
+        // Nguồn đang nghỉ (lỗi ở lượt trước) bị bỏ qua cũng phải báo đổi nguồn: trước đây bỏ qua lặng lẽ, nguồn khác trả lời thay
+        // mà khung vẫn ghi model đã chọn (thử 24/11/2026: Ling, Particle, Gemma trên OpenRouter → Cohere trả lời)
+        if (!lastLabel) {
+          lastLabel = label(c);
+          lastReason = why;
+        }
         continue;
       }
       if (lastLabel) onSwitch?.({ from: lastLabel, to: label(c), reason: lastReason, partial: shown });

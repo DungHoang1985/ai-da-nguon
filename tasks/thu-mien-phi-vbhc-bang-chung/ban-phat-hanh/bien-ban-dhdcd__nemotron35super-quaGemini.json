@@ -1,0 +1,328 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Google Gemini Gemini 3.8 Flash. Bấm để đổi 🆓 Google Gemini · Gemini 3.8 Flash"
+ },
+ "luot1": {
+  "giay": 85,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 974
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "2 lần gọi AI"
+ ],
+ "doiNguon": [
+  "↪ Google Gemini · gemini-3.8-flash: máy chủ lỗi hoặc quá tải — đổi sang OpenRouter · nvidia/nemotron-3.5-super-vl:free."
+ ],
+ "chat": "AI Đa Nguồn\nv4.11.9\nExcel — · PowerPoint —\nSoạn biên bản họp Đại hội đồng cổ đông bất thường năm 2026 của Công ty Cổ phần Đầu tư Anh Quân, họp lúc 8h30 ngày 20/12/2026 tại hội trường công ty. Vốn điều lệ 200 tỷ đồng, tương ứng 20.000.000 cổ phần phổ thông. Có 85 cổ đông dự họp, sở hữu và đại diện 14.600.000 cổ phần. Chủ tọa: ông Nguyễn Anh Quân – Chủ tịch HĐQT; thư ký: bà Lê Thị Hoa. Nội dung duy nhất: thông qua chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc với tổng vốn đầu tư 450 tỷ đồng. Kết quả biểu quyết: tán thành 12.410.000 cổ phần, không tán thành 1.460.000 cổ phần, không có ý kiến 730.000 cổ phần. Hãy tính tỷ lệ dự họp, tỷ lệ biểu quyết và kết luận cuộc họp có đủ điều kiện tiến hành không, nội dung có được thông qua không theo Luật Doanh nghiệp.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh, chuan-bi-hop\n↪ Google Gemini · gemini-3.8-flash: máy chủ lỗi hoặc quá tải — đổi sang OpenRouter · nvidia/nemotron-3.5-super-vl:free.\n \n✅ Dựng văn bản hành chính đúng thể thức — Đã dựng biên bản đúng thể thức · còn 3 chỗ cần điền\nĐã soạn xong Biên bản họp Đại hội đồng cổ đông bất thường năm 2026 của Công ty Cổ phần Đầu tư Anh Quân, đã ghi theo dõi thay đổi trong văn bản đang opened. Nội dung chính bao gồm thời gian, địa điểm, thành phần tham dự (85 cổ đông / 14.600.000 cổ phần), nội dung duy nhất (đầu tư dự án Khu đô thị Anh Quân Bắc, 450 tỷ đồng), kết quả biểu quyết và kết luận. Phần ký hai bên: Chủ tịch Hội đồng quản trị Nguyễn Anh Quân (Chủ tọa) và bà Lê Thị Hoa (Thư ký).\n \nTính toán theo số liệu đã cung cấp\n \nChỉ số\tCông thức\tKết quả\nTỷ lệ cổ đông dự họp\t14.600.000 ÷ 20.000.000\t73%\nTỷ lệ tán thành\t12.410.000 ÷ 14.600.000\t85%\nKhông tán thành\t1.460.000 ÷ 14.600.000\t10%\nKhông có ý kiến\t730.000 ÷ 14.600.000\t5%\n \nKết luận theo Luật Doanh nghiệp 2020\n \n1. Đủ điều kiện tiến hành họp?\nCó. Theo quy định chung, Đại hội đồng cổ đông hợp lệ khi có cổ đông đại hữu trên 51% số cổ sở hữu có quyền biểu quyết. Tỷ lệ dự họp 73% đã vượt ngưỡng này.\n \n2. Nội dung có được thông qua không?\nCó, theo quy tắc đa số đơn giản: cần được đồng ý bởi cổ đông đại hữu hơn 50% số cổ đã tham gia biểu quyết; tỷ lệ tán thành 85% đã đạt.\n*Lưu ý:* Một số vấn đề nhất định (sửa Hiến đàn thành lập công ty, đổi loại công ty, giảm vốn, giải thể…) Luật Doanh nghiệp quy định cần cổ đông đại hữu 65% trở lên. Việc thông qua chủ trương đầu tư dự án lớn này, nếu Hiến đàn công ty quy định ngưỡng cao hơn, cần đối chiếu thêm Hiến đàn trước khi chốt kết luận cuối cùng.\n \nCác chỗ còn trống cần điền trước khi ký\nCông cụ tự để trống 3 trường để bạn hoặc văn thư cấp completes:\n• Số văn bản / ký hiệu văn bản (để văn thư cấp)\n• Trích yếu nội dung (nếu cần bổ sung)\n• Giờ kết thúc (trong nội dung biên bản)\n \nNếu bạn muốn sửa câu chữ bất kỳ đoạn nào trong biên bản, hãy cho tôi biết, tôi sẽ dùng `word_set_paragraph_text` trên đúng đoạn đó (không dựng lại cả văn bản).\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 30.950 · ra 5.621 · đọc từ bộ nhớ đệm 13.008\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nGemini chỉ tìm trên web khi tắt “AI tự thao tác”.\nHỏi trước\n🌐 Web ✕\n🆓 Google Gemini · Gemini 3.8 Flash",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "BIÊN BẢN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thời gian bắt đầu: 8h30 ngày 20 tháng 12 năm 2026.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa điểm: Hội trường Công ty Cổ phần Đầu tư Anh Quân.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thành phần tham dự: Chủ tịch Hội đồng quản trị Nguyễn Anh Quân làm Chủ tọa; bà Lê Thị Hoa làm Thư ký; 85 cổ đông đại diện cho 14.600.000 cổ phần, tương đương 73% số cổ sở hữu có quyền biểu quyết (20.000.000 cổ phần).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nội dung họp: Thông qua chủ trương đầu tư dự án Khu đô thị Anh Quân Bắc với tổng vốn đầu tư 450 tỷ đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kết quả biểu quyết: tán thành 12.410.000 cổ phần (85,0% số cổ đã biểu quyết); không tán thành 1.460.000 cổ phần (10,0%); không có ý kiến 730.000 cổ phần (5,0%).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kết luận: Đại hội đồng cổ đông đạt quórum theo quy định của Luật Doanh nghiệp; nội dung được thông qua với tỷ lệ tán thành 85,0% số cổ đã biểu quyết.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Giờ kết thúc: [cần bổ sung]./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "THƯ KÝ",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Lê Thị Hoa",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CHỦ TỌA",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Lưu: VT, Hồ sơ.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

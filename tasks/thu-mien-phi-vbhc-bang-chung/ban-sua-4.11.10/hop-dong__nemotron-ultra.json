@@ -1,0 +1,974 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "luot1": {
+  "giay": 74,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 5541
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "4 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nSoạn một hợp đồng chuyển nhượng quyền sử dụng đất giữa công ty Anh Quân cho công ty Xây dựng 3 theo quy định mẫu của Luật nhà ở (biết rằng đây là chuyển nhượng quyền sử dụng đất và tài sản là nhà xây sẵn trên đất đã có hạ tầng cơ bản để vào ở).\n✅ Đọc kỹ năng soan-hop-dong\n✅ Dựng văn bản hành chính đúng thể thức — Đã dựng hợp đồng đúng thể thức · còn 3 chỗ cần điền\n✅ Thay \"担保\" → \"đảm bảo\" — lý do: Sửa từ tiếng Trung thành tiếng Việt\n✅ Thay \"distraint\" → \"trích thu\" — lý do: Sửa từ tiếng Anh thành thuật ngữ pháp luật Việt Nam\nĐã soạn xong Hợp đồng chuyển nhượng quyền sử dụng đất và tài sản gắn liền với đất giữa Công ty Anh Quân (Bên chuyển nhượng) và Công ty Xây dựng 3 (Bên nhận chuyển nhượng) theo thể thức pháp luật hiện hành (Luật Nhà ở 2023, Luật Đất đai 2024, Luật Kinh doanh bất động sản 2023 và nghị định quy định chi tiết về mẫu hợp đồng).\n \nCấu trúc hợp đồng (10 điều):\n1. Đối tượng chuyển nhượng – đất đã có hạ tầng cơ bản, nhà ở xây sẵn, chỉ tiêu lô thửa, giấy chứng nhận, diện tích, kết cấu, trạng thái.\n2. Giá chuyển nhượng và thanh toán – tổng giá, tiến độ thanh toán 3 lần (ký HĐ, giao nhận, cấp Sổ đỏ).\n3. Giao nhận – biên bản, cam kết không tranh chấp, không bị trích thu/hạn chế.\n4. Thuế, phí, đăng ký – phân bổ theo luật (thuế TNDN/Doanh nghiệp Bên A; đăng ký, đo đạc Bên B).\n5. Quyền, nghĩa vụ Bên A – giao đúng, cấp hồ sơ, không quay lại, chịu trách nhiệm rủi ro trước giao.\n6. Quyền, nghĩa vụ Bên B – thanh toán đúng, nhận giao, làm thủ tục, dùng đúng mục đích.\n7. Trách nhiệm vi phạm – phạt chậm thanh toán, chậm giao, bồi thường thiệt hại.\n8. Giải quyết tranh chấp – thương lượng → điều giải/Tòa án nhân dân có thẩm quyền.\n9. Điều khoản chung – hiệu lực, số bản, phụ lục, sửa đổi bằng văn bản.\n10. Hiệu lực – có hiệu lực từ ngày ký.\n \nĐã sửa 2 từ không phải tiếng Việt: `担保` → *đảm bảo*, `distraint` → *trích thu*.\n \n---\n \nCần bạn điền trước khi ký (blanks):\nVị trí\tNội dung cần điền\nDòng `Số: …` (phần đầu)\tSố hợp đồng\n`Đại diện: …` / `Họ tên người ký Bên A`\tHọ tên người ký phía Công ty Anh Quân\n`Đại diện: …` / `Họ tên người ký Bên B`\tHọ tên người ký phía Công ty Xây dựng 3\nCác chỗ `…` trong thân hợp đồng\tThửa đất, bản đồ, diện tích, loại đất, thời hạn, Giấy chứng nhận, giá tiền, % thanh toán, ngày ký, địa điểm ký…\n \nBạn hãy cung cấp thông tin còn thiếu, tôi sẽ điền vào đúng chỗ (dùng công cụ sửa theo đoạn).\n1 nhiệm vụ · 4 lần gọi AI · Token: vào 46.785 · ra 3.552 · đọc từ bộ nhớ đệm 26.304\nHoàn tác thay đổi (2)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "doanVan": [
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "HỢP ĐỒNG CHUYỂN NHƯỢNG QUYỀN SỬ DỤNG ĐẤT VÀ TÀI SẢN GẮN LIỀN VỚI ĐẤT",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 6,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_Căn cứ Luật Dân sự năm 2015;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_Căn cứ Luật Nhà ở năm 2023;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_Căn cứ Luật Đất đai năm 2024;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_Căn cứ Luật Kinh doanh bất động sản năm 2023;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_Căn cứ Nghị định quy định chi tiết Luật Kinh doanh bất động sản năm 2024 về mẫu hợp đồng chuyển nhượng quyền sử dụng đất, tài sản gắn liền với đất;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "_Căn cứ [cần bổ sung căn cứ pháp lý khác nếu có].",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hôm nay, ngày … tháng … năm 20…, tại …, chúng tôi gồm:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "BÊN CHUYỂN NHƯỢNG (BÊN A): CÔNG TY ANH QUÂN",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đại diện: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Chức vụ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa chỉ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điện thoại: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Mã số thuế: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tài khoản số: … tại …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "BÊN NHẬN CHUYỂN NHƯỢNG (BÊN B): CÔNG TY XÂY DỰNG 3",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đại diện: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Chức vụ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa chỉ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điện thoại: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Mã số thuế: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tài khoản số: … tại …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hai bên thống nhất ký kết Hợp đồng chuyển nhượng quyền sử dụng đất và tài sản gắn liền với đất với các điều khoản sau:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 1. Đối tượng chuyển nhượng",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1.1. Bên A chuyển nhượng cho Bên B quyền sử dụng đất và tài sản gắn liền với đất (nhà ở) tại:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Thửa đất số: …, bản đồ số: …, tờ bản đồ số: …, khu vực/phường/xã: …, quận/huyện: …, tỉnh/thành phố: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Diện tích đất: … m²",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Loại đất: đất ở (đất đô thị/đất nông thôn*)",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Nguồn gốc đất: Bên A có Giấy chứng nhận quyền sử dụng đất, quyền sở hữu nhà ở và tài sản khác gắn liền với đất số: …, ngày … tháng … năm … do … cấp",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Thời hạn sử dụng đất: … (đổ bộ/50 năm/70 năm*), còn lại: … năm",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Mục đích sử dụng đất: đất ở",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Trạng thái đất: đã có hạ tầng cơ bản (điện, nước, đường giao thông, thoát nước…) để vào ở",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1.2. Tài sản gắn liền với đất (nhà ở):",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Loại hình: nhà ở riêng lẻ/nhà ở chung cư*",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Số tầng: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Diện tích sàn xây dựng: … m²",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Diện tích sử dụng: … m²",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Kết cấu: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Năm xây dựng: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Trạng thái: đã hoàn thiện, có thể vào ở",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Giấy phép xây dựng/Sổ đỏ tài sản: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 2. Giá chuyển nhượng và thanh toán",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2.1. Tổng giá trị chuyển nhượng: … VNĐ (viết bằng chữ: … đồng Việt Nam)",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2.2. Cách thức thanh toán:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "a) Lần 1: …% tổng giá trị = … VNĐ, thanh toán ngay ngày ký Hợp đồng/ngày … tháng … năm …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "b) Lần 2: …% tổng giá trị = … VNĐ, thanh toán khi Bên A giao đất, nhà cho Bên B",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "c) Lần 3: …% tổng giá trị = … VNĐ, thanh toán khi Bên B được cấp Giấy chứng nhận quyền sử dụng đất, quyền sở hữu nhà ở và tài sản khác gắn liền với đất",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2.3. Thanh toán bằng chuyển khoản vào tài khoản Bên A nêu ở trên. Thời hạn thanh toán mỗi lần: … ngày làm việc kể từ ngày sự kiện phát sinh.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 3. Giao nhận đối tượng chuyển nhượng",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3.1. Bên A giao đối tượng chuyển nhượng cho Bên B trong vòng … ngày làm việc kể từ ngày nhận đủ số tiền thanh toán lần 1 (hoặc theo tiến độ thỏa thuận).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3.2. Giao nhận bằng Biên bản giao nhận, ghi rõ trạng thái thực tế đất, nhà tại thời điểm giao.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3.3. Bên A đảm bảo đất, nhà không bị tranh chấp, không bị trích thu, không bị hạn chế quyền sử dụng đất, không có nợ vayđảm bảo bằng tài sản này.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "",
+   "tb": 0
+  },
+  {
+   "t": "Điều 4. Thuế, phí, lệ phí và đăng ký",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.1. Thuế thu nhập cá nhân/doanh nghiệp (nếu Bên A là doanh nghiệp) do Bên A chịu.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.2. Thuế đăng ký, phí cấp Giấy chứng nhận, lệ phí đo đạc đất do Bên B chịu (trừ khi pháp luật quy định khác).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.3. Hai bên phối hợp thực hiện thủ tục đăng ký chuyển nhượng quyền sử dụng đất, quyền sở hữu nhà ở tại cơ quan đăng ký đất đai có thẩm quyền trong vòng … ngày làm việc kể từ ngày giao nhận.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 5. Quyền và nghĩa vụ của Bên A",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "5.1. Quyền: Nhận tiền chuyển nhượng đúng hạn, đúng số tiền; được hỗ trợ Bên B thực hiện thủ tục đăng ký.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "5.2. Nghĩa vụ:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "a) Giao đất, nhà đúng vị trí, diện tích, chất lượng, trạng thái đã thỏa thuận;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "b) Cung cấp đầy đủ hồ sơ, giấy tờ gốc liên quan để Bên B thực hiện đăng ký;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "c) Không quay lại yêu cầu hủy bỏ, đổi mới Hợp đồng sau khi đã ký, trừ trường hợp pháp luật quy định;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "d) Chịu trách nhiệm về các tranh chấp, nợ nần, rủi ro pháp lý phát sinh trước ngày giao nhận.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 6. Quyền và nghĩa vụ của Bên B",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "6.1. Quyền: Được giao đất, nhà đúng thỏa thuận; được cấp Giấy chứng nhận quyền sử dụng đất, quyền sở hữu nhà ở; được yêu cầu Bên A hỗ trợ thủ tục.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "6.2. Nghĩa vụ:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "a) Thanh toán tiền đúng hạn, đúng số tiền, đúng cách thức đã thỏa thuận;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "b) Nhận giao đất, nhà, ký Biên bản giao nhận;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "c) Thực hiện nghĩa vụ tài chính (thuế, phí, lệ phí) theo quy định;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "d) Sử dụng đất, nhà đúng mục đích, đúng quy hoạch, đúng pháp luật.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 7. Trách nhiệm vi phạm hợp đồng",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "7.1. Chậm thanh toán: Bên B chậm thanh toán phải trả tiền phạt …% giá trị số tiền chậm trên mỗi ngày chậm; chậm quá … ngày, Bên A có quyền đơn phương chấm dứt Hợp đồng và yêu cầu bồi thường thiệt hại.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "7.2. Chậm giao đất, nhà: Bên A chậm giao phải trả tiền phạt …% giá trị Hợp đồng trên mỗi ngày chậm; chậm quá … ngày, Bên B có quyền đơn phương chấm dứt Hợp đồng, yêu cầu hoàn trả tiền đã trả và bồi thường thiệt hại.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "7.3. Vi phạm khác: Bên vi phạm phải bồi thường toàn bộ thiệt hại thực tế cho bên kia.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 8. Giải quyết tranh chấp",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "8.1. Hai bên thương lượng; không thoát thì yêu cầu điều giải tại …/tại Tòa án nhân dân có thẩm quyền.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "8.2. Hợp đồng được giải thích, áp dụng theo pháp luật Việt Nam.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 9. Điều khoản chung",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "9.1. Hợp đồng có hiệu lực pháp luật kể từ ngày ký.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "9.2. Hợp đồng làm … bản, mỗi bên giữ … bản, gửi cơ quan đăng ký đất đai … bản, có giá trị pháp lý như nhau.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "9.3. Phụ lục (nếu có) là một phần không tách rời của Hợp đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "9.4. Việc thay đổi, bổ sung Hợp đồng phải làm bằng văn bản, ký bởi đại diện hợp pháp của hai bên.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 10. Hiệu lực hợp đồng",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hợp đồng này được ký ngày … tháng … năm 20… tại …, có hiệu lực kể từ ngày ký.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "ĐẠI DIỆN BÊN A",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "(Ký, ghi rõ họ tên, đóng dấu)",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "ĐẠI DIỆN BÊN B",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "(Ký, ghi rõ họ tên, đóng dấu)",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}

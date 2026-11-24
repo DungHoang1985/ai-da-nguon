@@ -172,7 +172,8 @@ describe("Đợt 3 · A1 · Kỹ năng soạn thảo văn bản hành chính", (
   });
   it("Kỹ năng ngắn gọn và nhắc đúng công cụ dựng, kiểm, sửa thể thức", () => {
     const sk = BUILTIN_SKILLS.find((s) => s.name === "soan-thao-van-ban-hanh-chinh")!;
-    assert.ok(sk.body.length < 9000, `kỹ năng dài ${sk.body.length} ký tự`);
+    // 11.000 từ 4.11.10: thêm nghị quyết, biên bản họp Đại hội đồng cổ đông, quyền hạn ký, căn cứ đang có hiệu lực (thử model miễn phí 23/11/2026); kỹ năng chỉ nạp khi dùng
+    assert.ok(sk.body.length < 11000, `kỹ năng dài ${sk.body.length} ký tự`);
     for (const t of ["word_create_admin_document", "word_check_page_format", "word_set_page_format", "word_format_text"]) assert.ok(sk.body.includes(t), t);
     assert.ok(!/\b\d{1,3}\/\d{4}\/[A-ZĐ]/.test(sk.body + sk.description), "không ghi số hiệu văn bản pháp luật");
   });

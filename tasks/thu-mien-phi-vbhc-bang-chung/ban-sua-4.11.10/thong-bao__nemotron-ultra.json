@@ -1,0 +1,371 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "luot1": {
+  "giay": 73,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: V/v lịch nghỉ Tết Dương lịch năm 2027 | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 1392
+ },
+ "luot2": null,
+ "lanGoiAI": [
+  "2 lần gọi AI"
+ ],
+ "doiNguon": [],
+ "chat": "AI Đa Nguồn\nv4.11.9\nchế độ thử — không lưu lịch sử\nExcel — · PowerPoint —\nSoạn thông báo của Công ty Cổ phần Đầu tư Anh Quân về lịch nghỉ Tết Dương lịch năm 2027 gửi toàn thể cán bộ, nhân viên: nghỉ ngày 01/01/2027 và nghỉ bù cuối tuần liền kề, đi làm lại từ ngày làm việc đầu tiên sau đó (ghi rõ thứ trong tuần của các ngày). Phòng Hành chính – Nhân sự bố trí trực từ 8h00 đến 17h00 ngày 02/01/2027. Các phòng ban hoàn thành báo cáo công việc năm 2026 trước 17h00 ngày 31/12/2026. Người ký: Phó Tổng Giám đốc Trần Văn Bình ký thay Tổng Giám đốc.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: V/v lịch nghỉ Tết Dương lịch năm 2027 — Đã dựng thông báo đúng thể thức · còn 4 chỗ cần điền\nĐã soạn xong Thông báo về lịch nghỉ Tết Dương lịch năm 2027 của Công ty Cổ phần Đầu tư Anh Quân đúng thể thức hành chính.\n \nNội dung chính đã dựng:\n• Căn cứ: Luật Lao động 2019, Điều lệ công ty, Quy chế làm việc nội bộ.\n• Lịch nghỉ: 01/01/2027 (Thứ Sáu), nghỉ bù cuối tuần 02–03/01/2027 (Thứ Bảy, Chủ Nhật), đi làm lại từ 04/01/2027 (Thứ Hai).\n• Phòng HC–NS bố trí trực 8h–17h ngày 02/01/2027 (Thứ Bảy).\n• Các phòng ban nộp báo cáo tổng kết 2026 trước 17h00 ngày 31/12/2026 (Thứ Năm).\n• Yêu cầu thực hiện, giữ máy thoại liên lạc.\n• Ký: Phó Tổng Giám đốc Trần Văn Bình ký thay Tổng Giám đốc (KT. TỔNG GIÁM ĐỐC).\n• Nơi nhận: Toàn thể cán bộ, nhân viên; Lưu: VT, Phòng HC–NS.\n \nCòn 4 chỗ trống cần điền trước khi ký:\n1. Số văn bản (để văn thư cấp)\n2. Ký hiệu văn bản\n3. Địa danh (ví dụ: Hà Nội)\n4. Ngày tháng ban hành (ví dụ: ngày 15 tháng 12 năm 2026)\n \nVăn bản đã có lề, khổ giấy, phông chữ, định dạng đúng chuẩn. Bạn điền 4 trường trên là hoàn tất.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 30.043 · ra 3.271 · đọc từ bộ nhớ đệm 26.304\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "THÔNG BÁO",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "lịch nghỉ Tết Dương lịch năm 2027",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Lao động năm 2019;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Điều lệ Công ty Cổ phần Đầu tư Anh Quân;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Quy chế làm việc nội bộ của Công ty;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Lịch nghỉ Tết Dương lịch năm 2027",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "a) Nghỉ ngày 01/01/2027 (Thứ Sáu);",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "b) Nghỉ bù cuối tuần liền kề ngày 02/01/2027 (Thứ Bảy) và 03/01/2027 (Chủ Nhật);",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "c) Toàn thể cán bộ, nhân viên đi làm lại từ ngày 04/01/2027 (Thứ Hai).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Bố trí trực",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Phòng Hành chính – Nhân sự bố trí cán bộ trực tại Công ty từ 8 giờ 00 đến 17 giờ 00 ngày 02/01/2027 (Thứ Bảy) để đảm bảo an ninh, trật tự và giải quyết các vấn đề phát sinh.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3. Báo cáo tổng kết năm 2026",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Các phòng, ban, bộ phận hoàn thành báo cáo tổng kết công tác năm 2026 và nộp về Phòng Hành chính – Nhân sự trước 17 giờ 00 ngày 31/12/2026 (Thứ Năm).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4. Yêu cầu thực hiện",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Yêu cầu các phòng, ban, bộ phận và toàn thể cán bộ, nhân viên nghiêm túc thực hiện theo đúng quy định trên. Trong thời gian nghỉ, cán bộ, nhân viên giữ máy thoại mở để liên lạc khi cần thiết.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "5. Trách nhiệm thi hành",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Phòng Hành chính – Nhân sự chịu trách nhiệm thông báo, hướng dẫn và tổ chức thực hiện Thông báo này.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Trân trọng./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Toàn thể cán bộ, nhân viên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, Phòng Hành chính – Nhân sự.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "KT. TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "PHÓ TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Trần Văn Bình",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ]
+}
