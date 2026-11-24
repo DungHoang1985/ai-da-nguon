@@ -96,7 +96,7 @@ export function routeScanPdf(o: { pages: number; pdfCapable: boolean; vision?: b
 
 /** Dòng nhắc riêng tư khi tệp đính kèm sắp được gửi cho nguồn miễn phí hoặc qua nơi trung chuyển. Không phải thì trả "". */
 /** Nguồn có gói miễn phí phổ biến, key không cho biết thuộc gói nào */
-const FREE_TIER_PROVIDERS = new Set(["gemini", "groq", "cerebras", "mistral"]);
+const FREE_TIER_PROVIDERS = new Set(["gemini", "groq", "cerebras", "mistral", "cohere"]);
 
 export function attachmentPrivacyNote(o: { providerId: string; providerName: string; modelId: string; free?: boolean }): string {
   const freeModel = /:free$/i.test(o.modelId) || !!o.free;

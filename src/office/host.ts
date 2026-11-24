@@ -1,6 +1,6 @@
 /* global Office, Excel, Word */
 /** Làm việc với tài liệu đang mở: đọc nội dung đang chọn, chèn câu trả lời. */
-import { parseMarkdownTable, stripMarkdown, valuesToTsv } from "../core/table";
+import { answerToExcelCells, stripMarkdown, valuesToTsv } from "../core/table";
 
 export type HostName = "Excel" | "Word" | "PowerPoint" | "Khác";
 
@@ -85,22 +85,15 @@ export async function readSelection(): Promise<{ text: string; note: string }> {
 export async function insertAnswer(answer: string): Promise<string> {
   const host = hostName();
   if (host === "Excel") {
-    const table = parseMarkdownTable(answer);
+    // Ô bắt đầu bằng =, +, @ được ghi thành chữ (cellAsText): chữ do AI soạn không bao giờ thành công thức
+    const { values, table } = answerToExcelCells(answer);
     return Excel.run(async (ctx) => {
       const cell = ctx.workbook.getSelectedRange().getCell(0, 0);
-      if (table) {
-        const target = cell.getResizedRange(table.length - 1, table[0].length - 1);
-        target.values = table;
-        target.load("address");
-        await ctx.sync();
-        return `Đã ghi bảng ${table.length}×${table[0].length} vào ${target.address}.`;
-      }
-      const lines = stripMarkdown(answer).split(/\r?\n/).filter((l) => l.trim() !== "");
-      const target = cell.getResizedRange(Math.max(lines.length - 1, 0), 0);
-      target.values = lines.map((l) => [l]);
+      const target = cell.getResizedRange(values.length - 1, values[0].length - 1);
+      target.values = values;
       target.load("address");
       await ctx.sync();
-      return `Đã ghi ${lines.length} dòng vào ${target.address}.`;
+      return table ? `Đã ghi bảng ${values.length}×${values[0].length} vào ${target.address}.` : `Đã ghi ${values.length} dòng vào ${target.address}.`;
     });
   }
   if (host === "Word") {

@@ -52,3 +52,18 @@ export function valuesToTsv(values: any[][], maxCells = 5000): { text: string; t
   }
   return { text: out.join("\n"), truncated };
 }
+
+/** Ô bắt đầu bằng =, + hoặc @ (hoặc "-" mà không phải số âm) được ghi thành chữ: không nhận công thức từ chữ do AI soạn hay từ
+ *  ứng dụng khác (dấu nháy đầu ô = kiểu chữ, theo quy ước của excel_write_range). */
+export const cellAsText = (v: string): string => (/^[=+@]/.test(v) || (/^-/.test(v) && !/^-\d[\d.,\s]*%?$/.test(v)) ? "'" + v : v);
+
+/** Nút "Chèn" của Excel: câu trả lời → khối ô để ghi từ ô đang chọn. Có bảng Markdown thì ghi bảng, không thì mỗi dòng một ô.
+ *  Mọi ô đi qua cellAsText (rà soát kiến trúc 20/11/2026: trước đây dòng "=WEBSERVICE(…)" trong câu trả lời thành công thức). */
+export function answerToExcelCells(answer: string): { values: string[][]; table: boolean } {
+  const table = parseMarkdownTable(answer);
+  if (table) return { values: table.map((r) => r.map(cellAsText)), table: true };
+  const lines = stripMarkdown(answer)
+    .split(/\r?\n/)
+    .filter((l) => l.trim() !== "");
+  return { values: (lines.length ? lines : [""]).map((l) => [cellAsText(l)]), table: false };
+}

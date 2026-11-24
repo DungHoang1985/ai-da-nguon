@@ -27,6 +27,12 @@ export interface RawAssistant {
   reasoning?: any[];
 }
 
+/** Tin nhắn trợ lý mang khối suy nghĩ có chữ ký (Anthropic `thinking`, OpenRouter `reasoning_details`): chỗ nào buộc phải đổi
+ *  phần hội thoại đứng trước (tóm tắt, rút gọn khi lưu) thì phải bỏ `raw` này. Gemini không thuộc nhóm này. */
+export function hasThinkingRaw(m: { role: string; raw?: RawAssistant }): boolean {
+  return m.role === "assistant" && (m.raw?.kind === "anthropic" || m.raw?.kind === "openrouter");
+}
+
 export type AgentMessage =
   | { role: "system"; content: string }
   | { role: "user"; content: string; images?: { mime: string; data: string }[]; files?: FilePart[]; /** Tin do add-in thêm để gửi ảnh công cụ vừa chụp (không phải lời người dùng) */ fromTool?: boolean }

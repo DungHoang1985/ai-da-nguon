@@ -25,6 +25,10 @@ jobs:
     steps:
       - name: Lấy mã
         uses: actions/checkout@v7
+        with:
+          # Không để token ghi trong .git/config: script cài đặt hay plugin đóng gói của bất kỳ gói npm nào cũng đọc được
+          # (rà soát kiến trúc 20/11/2026). Token chỉ được đưa vào ở bước đẩy lên gh-pages.
+          persist-credentials: false
 
       - name: Cài Node.js
         uses: actions/setup-node@v7
@@ -56,6 +60,7 @@ jobs:
       - name: Phát hành lên gh-pages
         env:
           CHAY_THAT: ${{ github.ref == 'refs/heads/main' && 'co' || 'khong' }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           VERSION=$(node -p "require('./package.json').version")
@@ -74,7 +79,7 @@ jobs:
           git commit -q -m "Bản chạy thật v$VERSION (main@${GITHUB_SHA::7})"
           git show --stat --oneline HEAD | head -40
           if [ "$CHAY_THAT" = "co" ]; then
-            git push origin HEAD:gh-pages
+            git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:gh-pages
             echo "Đã phát hành v$VERSION lên gh-pages."
           else
             echo "Nhánh thử (${GITHUB_REF_NAME}): chỉ chạy thử, không đẩy lên gh-pages."

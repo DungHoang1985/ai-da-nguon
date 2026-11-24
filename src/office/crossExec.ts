@@ -4,8 +4,9 @@
 import { HostToolSet, UndoEntry } from "../core/agent/types";
 import { CrossOp } from "../core/crossapp";
 
-/** Ô bắt đầu bằng =, + hoặc @ được ghi thành chữ: không nhận công thức từ ứng dụng khác (dấu nháy đầu ô = kiểu chữ, theo quy ước của excel_write_range) */
-export const cellAsText = (v: string): string => (/^[=+@]/.test(v) || (/^-/.test(v) && !/^-\d[\d.,\s]*%?$/.test(v)) ? "'" + v : v);
+import { cellAsText } from "../core/table";
+/** Ô bắt đầu bằng =, + hoặc @ được ghi thành chữ (hàm nằm ở core/table.ts, dùng chung với nút Chèn) */
+export { cellAsText };
 
 export async function executeIncoming(tools: HostToolSet, p: CrossOp, log: UndoEntry[]): Promise<string> {
   const run = (name: string, args: any) => tools.execute(name, args, { log });

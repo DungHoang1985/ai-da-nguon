@@ -712,6 +712,9 @@ async function callModelOnce(opts: CallModelOptions): Promise<StepResult> {
   } finally {
     if (timer) clearTimeout(timer);
     opts.signal?.removeEventListener("abort", onUserAbort);
+    // Lỗi giữa luồng (khối error, onText ném lỗi): đóng kết nối thay vì để luồng HTTP mở tới khi máy chủ tự đóng.
+    // Đọc xong rồi thì abort là vô hại.
+    ctl.abort();
   }
   parser.end();
   return acc.result();

@@ -2,9 +2,9 @@
  *  Ngưỡng tính theo sức chứa của model. Giữa hai lần tóm tắt, lịch sử không bị sửa (để bộ nhớ đệm lời nhắc có tác dụng). */
 import { estimateInputTokens } from "../inputsize";
 import { Provider } from "../providers";
-import { callModelStep } from "./llm";
+import { callModelStep, RetryInfo } from "./llm";
 import type { FreeRotation } from "./rotation";
-import { AgentMessage } from "./types";
+import { AgentMessage, hasThinkingRaw } from "./types";
 
 /** Ngưỡng khi không biết sức chứa của model */
 export const COMPACT_AT_CHARS = 120000;
@@ -85,6 +85,10 @@ export async function compactIfNeeded(o: {
   fetchFn?: typeof fetch;
   /** Chế độ Miễn phí: gọi qua vòng xoay nguồn (Đợt 9) */
   rotation?: FreeRotation;
+  /** Tự thử lại như các lần gọi khác của lượt (soát kiến trúc 20/11/2026: trước đây lượt tóm tắt chờ thử lại mà khung không báo) */
+  onRetry?: (info: RetryInfo) => void;
+  retryDelaysMs?: number[];
+  sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
 }): Promise<{ history: AgentMessage[]; compacted: boolean }> {
   const limit = o.limitChars ?? compactLimitChars(o.context);
   // Soát mã 22/11 (Đợt 12): đo bằng cùng bộ ước token với lượt gửi (hệ số theo họ model) — với Claude, ngưỡng ký tự cũ đến sau
@@ -107,6 +111,9 @@ export async function compactIfNeeded(o: {
     signal: o.signal,
     onText: () => {},
     fetchFn: o.fetchFn,
+    onRetry: o.onRetry,
+    retryDelaysMs: o.retryDelaysMs,
+    sleep: o.sleep,
     messages: [
       {
         role: "system",
@@ -119,10 +126,11 @@ export async function compactIfNeeded(o: {
   const summary = res.text.trim();
   // Model trả rỗng, bị chặn hoặc bị cắt cụt: KHÔNG thay hội thoại cũ bằng một dòng trống nghĩa (mất vĩnh viễn) — giữ nguyên, lượt sau thử lại
   if (summary.length < MIN_SUMMARY_CHARS || res.truncated) return { history: o.history, compacted: false };
-  // Khối suy nghĩ của Anthropic gắn với phần hội thoại đứng trước nó; phần đó vừa bị thay bằng bản tóm tắt nên các khối trong
-  // phần giữ lại không còn hợp lệ → bỏ (tài liệu: sau khi tóm tắt không gửi lại khối suy nghĩ cũ)
+  // Khối suy nghĩ (Anthropic `thinking`, OpenRouter `reasoning_details`) gắn với phần hội thoại đứng trước nó; phần đó vừa bị thay
+  // bằng bản tóm tắt nên các khối trong phần giữ lại không còn hợp lệ → bỏ (tài liệu: sau khi tóm tắt không gửi lại khối suy nghĩ cũ).
+  // Giữ raw của Gemini: chữ ký của lời gọi công cụ ở lượt gần nhất vẫn cần.
   recent = recent.map((m) => {
-    if (m.role !== "assistant" || m.raw?.kind !== "anthropic") return m;
+    if (m.role !== "assistant" || !hasThinkingRaw(m)) return m;
     const { raw: _raw, ...rest } = m;
     return rest;
   });

@@ -1,6 +1,6 @@
 /** Lịch sử hội thoại lưu trên máy (IndexedDB), theo từng ứng dụng. */
 import { AsyncKV } from "./db";
-import { AgentMessage } from "./agent/types";
+import { AgentMessage, hasThinkingRaw } from "./agent/types";
 
 export interface ConversationMeta {
   id: string;
@@ -51,7 +51,7 @@ export function slimForStorage(history: AgentMessage[]): AgentMessage[] {
       ].filter(Boolean);
       return { ...rest, content: `${rest.content}\n${notes.join("\n")}` };
     }
-    if (changed && m.role === "assistant" && m.raw?.kind === "anthropic") {
+    if (changed && m.role === "assistant" && hasThinkingRaw(m)) {
       const { raw: _raw, ...rest } = m;
       return rest;
     }

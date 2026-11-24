@@ -156,6 +156,9 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
       signal: o.signal,
       fetchFn: o.fetchFn,
       rotation: o.rotation,
+      retryDelaysMs: o.retryDelaysMs,
+      sleep: o.sleep,
+      onRetry: (r) => o.onEvent({ type: "retry", ...r }),
     });
     if (comp.compacted) {
       history = comp.history;
@@ -234,6 +237,7 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
             fetchFn: o.fetchFn,
             retryDelaysMs: o.retryDelaysMs,
             sleep: o.sleep,
+            onRetry: (r) => o.onEvent({ type: "retry", ...r }),
             messages: [
               { role: "system", content: REVIEW_SYSTEM },
               {

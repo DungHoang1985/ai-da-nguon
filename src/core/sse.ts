@@ -25,14 +25,3 @@ export function createSSEParser(onData: (data: string) => void) {
   };
 }
 
-export async function readSSE(body: ReadableStream<Uint8Array>, onData: (data: string) => void): Promise<void> {
-  const reader = body.getReader();
-  const decoder = new TextDecoder();
-  const parser = createSSEParser(onData);
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    parser.push(decoder.decode(value, { stream: true }));
-  }
-  parser.end();
-}
