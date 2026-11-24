@@ -1,6 +1,6 @@
 /** Ghi chéo ứng dụng (Đợt 3, việc B1–B2): khung ở ứng dụng này nhờ khung AI Đa Nguồn ở ứng dụng kia ghi hộ vào tài liệu của nó.
  *  Không có máy chủ: "hộp thư" là các khóa trong localStorage mà ba ứng dụng Office dùng chung (đã đo 16/11/2026: sự kiện storage
- *  tới khung kia trong 0–2 ms, khung ở ứng dụng nền vẫn ghi được, hẹn giờ không bị bóp — bảng ở tasks/dot-3.md).
+ *  tới khung kia trong 0–2 ms, khung ở ứng dụng nền vẫn ghi được, hẹn giờ không bị bóp — bảng ở tasks/dot/dot-3/dot-3.md).
  *
  *  An toàn:
  *  - Người dùng LUÔN được hỏi ở khung gửi trước khi lệnh rời đi (công cụ write_other_app có cảnh báo rủi ro ở mọi lần gọi;

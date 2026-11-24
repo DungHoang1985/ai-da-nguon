@@ -3,9 +3,9 @@
  *   - ô điền mẫu (content control), mã c<id>: ô chữ, ô chữ định dạng, ô đánh dấu, ô chọn, ô chọn hoặc nhập, ô ngày;
  *   - chỗ trống gõ tay trong đoạn ("……", "____", "[●]", "ngày   tháng   năm"), mã b<đoạn>.<thứ tự trong đoạn>;
  *   - ô bảng trống có ô nhãn bên trái, mã t<bảng>.<hàng>.<cột>.
- *  Đo 18/11/2026 (`tasks/dot-8.md`): ghi chữ vào ô điền mẫu rồi Hoàn tác (từ chối sửa đổi) làm Word khóa ô với mọi lệnh ghi sau →
+ *  Đo 18/11/2026 (`tasks/dot/dot-8/dot-8.md`): ghi chữ vào ô điền mẫu rồi Hoàn tác (từ chối sửa đổi) làm Word khóa ô với mọi lệnh ghi sau →
  *  MỌI loại ô được ghi bằng cách dựng lại OOXML của cả ô và insertOoxml (Hoàn tác trả nguyên ô cũ). Chỗ trống tìm đúng trọn chuỗi
- *  và đúng lần xuất hiện, bỏ các kết quả tìm nằm trong chữ đã xóa chờ duyệt. Soát mã độc lập: `tasks/dot-8-bang-chung/soat-ma-dot-8.md`. */
+ *  và đúng lần xuất hiện, bỏ các kết quả tìm nằm trong chữ đã xóa chờ duyệt. Soát mã độc lập: `tasks/dot/dot-8/bang-chung/soat-ma-dot-8.md`. */
 import { ToolSpec } from "../core/agent/types";
 import { ParaRow } from "../core/outline";
 import {

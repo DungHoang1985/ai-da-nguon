@@ -1,7 +1,7 @@
 /* global Excel */
 /** Công cụ Excel của Đợt 4: liệt kê và sửa biểu đồ / PivotTable có sẵn, chuẩn bị in, tên vùng, kiểm toán mô hình, giải ngược và
  *  bảng nhạy cảm, làm sạch dữ liệu, bảo vệ ô công thức. Các API dùng ở đây đã thăm dò trong Excel thật 16/11/2026
- *  (tasks/dot-4.md, bảng thăm dò; bằng chứng tasks/dot-4-bang-chung/01). */
+ *  (tasks/dot/dot-4/dot-4.md, bảng thăm dò; bằng chứng tasks/dot/dot-4/bang-chung/01). */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { bulkTrail, getRange, restoreFrom, snapshot } from "./excelCore";
 import { cellAddress, lettersToCol, splitAddress, topLeft, truncate } from "./util";

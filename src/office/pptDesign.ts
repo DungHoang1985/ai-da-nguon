@@ -1,7 +1,7 @@
 /* global PowerPoint */
 /** Công cụ PowerPoint của Đợt 3: ảnh slide cho AI tự nhìn, kiểm bài theo mẫu, đọc mẫu (màu, phông, bố cục, ô giữ chỗ),
  *  định dạng chữ theo đoạn / cụm chữ, sửa bảng có sẵn, đọc vùng đang chọn, đổi bố cục slide.
- *  Các API dùng ở đây đã thăm dò trong PowerPoint 16/11/2026 (kiem-thu/cdp-bai/tham-do-3-ppt.js, bảng ở tasks/dot-3.md).
+ *  Các API dùng ở đây đã thăm dò trong PowerPoint 16/11/2026 (kiem-thu/cdp-bai/tham-do-3-ppt.js, bảng ở tasks/dot/dot-3/dot-3.md).
  *  Không có API cho ghi chú diễn giả và phông chủ đề: phông chủ đề đọc từ gói tệp của một slide xuất ra (chỉ đọc). */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { DeckPara, DeckShape, DeckSlide, checkDeck, deckBrief } from "../core/deckcheck";

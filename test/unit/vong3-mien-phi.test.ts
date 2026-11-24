@@ -1,5 +1,5 @@
 /** Bản 4.11.11: sửa theo vòng thử thứ ba với model miễn phí (24/11/2026, đề mới: giấy mời, báo cáo, hợp đồng đặt cọc,
- *  hợp đồng lao động, giấy ủy quyền, sửa văn bản có sẵn — `tasks/thu-mien-phi-vong3.md`). Mỗi ca lấy đúng dạng tham số model đã gửi. */
+ *  hợp đồng lao động, giấy ủy quyền, sửa văn bản có sẵn — `tasks/viec-le/thu-mien-phi-vong3/thu-mien-phi-vong3.md`). Mỗi ca lấy đúng dạng tham số model đã gửi. */
 import * as assert from "assert";
 import { ParaBlock, TableBlock, partyIsPerson, planAdminDocument } from "../../src/core/adminDoc";
 import { legalThresholds } from "../../src/core/legalcheck";

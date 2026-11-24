@@ -27,7 +27,7 @@ const nums = (rs: ParaRow[]) => buildOutline(rs).map((o) => `${o.i}:${o.num}`);
 
 describe("Đợt 1A – mục lục điều khoản (buildOutline)", () => {
   it("số do Word tự đánh, nhiều cấp gắn kiểu tiêu đề: ghép nhãn cấp con với cấp cha", () => {
-    // Đúng dữ liệu thăm dò 15/11/2026 (tasks/dot-1a-bang-chung/01)
+    // Đúng dữ liệu thăm dò 15/11/2026 (tasks/dot/dot-1a/bang-chung/01)
     const rs = rows([
       { text: "HỢP ĐỒNG" },
       { text: "Phạm vi hợp đồng", listString: "Điều 1.", listLevel: 0, listId: 2, outlineLevel: 1 },
@@ -291,7 +291,7 @@ describe("Đợt 1A – tìm điều khoản theo cách gọi của người dù
     );
     assert.deepStrictEqual(findClause(o, "Điều 99"), []);
   });
-  it("findClause: gọi 'Điều N' không khớp mục 'N.' của phụ lục (Chạy thật 23/11/2026, tasks/va-tra-dieu-khoan.md)", () => {
+  it("findClause: gọi 'Điều N' không khớp mục 'N.' của phụ lục (Chạy thật 23/11/2026, tasks/viec-le/va-tra-dieu-khoan/va-tra-dieu-khoan.md)", () => {
     const hd = buildOutline(
       rows([
         { text: "Điều 3. Thời hạn thuê" },

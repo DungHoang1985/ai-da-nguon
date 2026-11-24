@@ -1,4 +1,4 @@
-/** Kiểm nội dung model miễn phí soạn (thử model miễn phí 23/11/2026, `tasks/thu-mien-phi-vbhc.md`) — hàm thuần, kiểm thử được:
+/** Kiểm nội dung model miễn phí soạn (thử model miễn phí 23/11/2026, `tasks/viec-le/thu-mien-phi-vbhc/thu-mien-phi-vbhc.md`) — hàm thuần, kiểm thử được:
  *  - từ Latinh không phải tiếng Việt lẫn vào văn bản ("burden", "competencia", "cấmélé", "quórum") và chữ dính nhau ("chủthể");
  *  - thứ trong tuần ghi sai so với ngày ("01/01/2027 (Thứ Ba)" — 01/01/2027 là Thứ Sáu).
  *  Chỉ BÁO để model sửa (công cụ trả `check_now`), không tự sửa: tên riêng, thuật ngữ người dùng đưa vẫn có thể đúng. */

@@ -1,7 +1,7 @@
-/** Đo token đầu vào của một lần gửi trước khi gửi (Đợt 12, phần A — `tasks/dot-12.md`).
+/** Đo token đầu vào của một lần gửi trước khi gửi (Đợt 12, phần A — `tasks/dot/dot-12/dot-12.md`).
  *  Tính ĐỦ: lời nhắc hệ thống, tin nhắn, lệnh gọi công cụ, kết quả công cụ và bộ công cụ gửi kèm (trước Đợt 12 vòng xoay bỏ qua bộ công cụ —
  *  Word Trả phí tới khoảng 30.000 ký tự). Ảnh và tệp gửi nguyên (PDF quét) không tính: mỗi nhà cung cấp đếm khác nhau. Hàm thuần.
- *  Hai hệ số, đo bằng Chạy thật 22/11/2026 với OpenRouter Nemotron 3 Ultra (`tasks/dot-12.md`, A1): lời nhắc, công cụ, JSON (kết quả công cụ,
+ *  Hai hệ số, đo bằng Chạy thật 22/11/2026 với OpenRouter Nemotron 3 Ultra (`tasks/dot/dot-12/dot-12.md`, A1): lời nhắc, công cụ, JSON (kết quả công cụ,
  *  tham số lệnh gọi) khoảng 2,6 ký tự một token; chữ thường của người dùng và tệp đính kèm tiếng Việt khoảng 3,6. Một hệ số chung (3) lệch
  *  −15% ở lượt nhỏ và +21% ở lượt có hợp đồng 50 trang; hai hệ số còn lệch −7,6% · +1,4% · +6,7%.
  *  Họ Claude tách chữ tiếng Việt dày hơn nhiều (đo cùng ngày với Claude Haiku 5.5: 1,3–1,6 ký tự một token cho chữ, khoảng 2,1 cho lời nhắc

@@ -1,4 +1,4 @@
-/** Đoạn và số điều của tệp .docx đính kèm, đọc thẳng từ gói OOXML (Đợt 12, phần D — `tasks/dot-12.md`). Hàm thuần.
+/** Đoạn và số điều của tệp .docx đính kèm, đọc thẳng từ gói OOXML (Đợt 12, phần D — `tasks/dot/dot-12/dot-12.md`). Hàm thuần.
  *  Hợp đồng thường đánh số bằng danh sách tự động của Word (kiểu đoạn Heading1 → "Điều %1.", Heading2 → "%1.%2."…): chữ thuần của tệp
  *  KHÔNG có các số này, nên AI không tra được "Điều 6.4". Ở đây dựng lại nhãn số như Word hiện (numbering.xml + numPr của đoạn hoặc của
  *  kiểu đoạn, có kế thừa basedOn) rồi đưa vào `buildOutline` dùng chung với Word đang mở. Chữ đã xóa có theo dõi (<w:del>) không tính. */

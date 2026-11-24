@@ -1,4 +1,4 @@
-/** Đợt 9: hai chế độ Miễn phí / Trả phí và xoay vòng nguồn miễn phí (tasks/dot-9.md, tiêu chí T1–T6). */
+/** Đợt 9: hai chế độ Miễn phí / Trả phí và xoay vòng nguồn miễn phí (tasks/dot/dot-9/dot-9.md, tiêu chí T1–T6). */
 import * as assert from "assert";
 import { allProviders, customProvider, getProvider } from "../../src/core/providers";
 import { DEFAULT_FREE_ORDER, freeKeyWarning, modelInMode, normalizeFreeOrder, providerInMode } from "../../src/core/modes";

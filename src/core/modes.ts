@@ -1,4 +1,4 @@
-/** Hai chế độ dùng (Đợt 9, `tasks/dot-9.md`): "Miễn phí" chỉ hiện nguồn / model có bậc miễn phí và tự xoay vòng giữa các nguồn đó;
+/** Hai chế độ dùng (Đợt 9, `tasks/dot/dot-9/dot-9.md`): "Miễn phí" chỉ hiện nguồn / model có bậc miễn phí và tự xoay vòng giữa các nguồn đó;
  *  "Trả phí" chỉ hiện nguồn / model thu phí, không xoay vòng. Hàm thuần, kiểm thử bằng npm test. */
 import type { Provider } from "./providers";
 

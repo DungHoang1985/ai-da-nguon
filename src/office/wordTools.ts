@@ -1,7 +1,7 @@
 /* global Word, Office */
 /** Công cụ để AI thao tác trực tiếp trên văn bản Word. Sửa đổi được ghi bằng Theo dõi thay đổi (Track Changes).
  *  Bản 4.0 (Đợt 1A): mục lục điều khoản, tìm và đọc theo điều, chống sửa nhầm đoạn, sửa mức từ, đọc đúng khi văn bản đang có
- *  sửa đổi, chèn điều khoản kế thừa đánh số, Hoàn tác. Căn cứ kỹ thuật: bảng thăm dò trong tasks/dot-1a.md. */
+ *  sửa đổi, chèn điều khoản kế thừa đánh số, Hoàn tác. Căn cứ kỹ thuật: bảng thăm dò trong tasks/dot/dot-1a/dot-1a.md. */
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { officeErrorHint } from "../core/errors";
 import {
@@ -438,7 +438,7 @@ function mapStyle(s?: string): string {
 }
 
 /** Mốc chú thích cuối trang / cuối văn bản nằm trong paragraph.text dưới dạng ký tự U+0002; getText() thì không trả ký tự này
- *  (thăm dò 15/11/2026, tasks/dot-1b.md). Chữ đưa cho AI không kèm mốc; khi sửa đoạn, mốc được coi là chữ "không sống" (như chữ
+ *  (thăm dò 15/11/2026, tasks/dot/dot-1b/dot-1b.md). Chữ đưa cho AI không kèm mốc; khi sửa đoạn, mốc được coi là chữ "không sống" (như chữ
  *  đã xóa có theo dõi) để lần sửa mức từ không đụng tới, và đoạn có mốc không bao giờ bị thay cả đoạn (sẽ mất chú thích). */
 const NOTE_MARK = "\u0002";
 const noMarks = (s: string) => (s.includes(NOTE_MARK) ? s.split(NOTE_MARK).join("") : s);

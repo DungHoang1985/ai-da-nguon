@@ -1,4 +1,4 @@
-/** Đợt 10: rút gọn token mỗi lượt Word (tasks/dot-10.md) — viết gọn (mọi chế độ) và nạp công cụ theo việc (chỉ chế độ Miễn phí). */
+/** Đợt 10: rút gọn token mỗi lượt Word (tasks/dot/dot-10/dot-10.md) — viết gọn (mọi chế độ) và nạp công cụ theo việc (chỉ chế độ Miễn phí). */
 import * as assert from "assert";
 import { getProvider } from "../../src/core/providers";
 import { runTurn } from "../../src/core/agent/turn";

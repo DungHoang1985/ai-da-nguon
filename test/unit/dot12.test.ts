@@ -1,4 +1,4 @@
-/** Đợt 12 (tasks/dot-12.md). Phần A: đo token đầu vào trước khi gửi, chọn model đủ sức chứa. */
+/** Đợt 12 (tasks/dot/dot-12/dot-12.md). Phần A: đo token đầu vào trước khi gửi, chọn model đủ sức chứa. */
 import * as assert from "assert";
 import { getProvider } from "../../src/core/providers";
 import { runTurn } from "../../src/core/agent/turn";

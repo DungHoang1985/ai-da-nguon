@@ -148,7 +148,7 @@ export async function slideSizePt(ctx: PowerPoint.RequestContext): Promise<{ w: 
   }
 }
 
-// ---------- Bảng vừa slide (22/11/2026, tasks/sua-22-11.md) ----------
+// ---------- Bảng vừa slide (22/11/2026, tasks/viec-le/sua-22-11/sua-22-11.md) ----------
 
 /** Đặt cỡ chữ (nếu có `fontSize`) rồi tự co chữ bảng cho tới khi đáy bảng lọt slide, tối thiểu 10 pt.
  *  Cỡ chữ đặt từng ô (PowerPointApi 1.9): giữ kiểu bảng và phông chủ đề của mẫu — `uniformCellProperties` làm mất kiểu bảng (đã thăm dò).

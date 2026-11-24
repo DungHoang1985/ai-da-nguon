@@ -1,5 +1,5 @@
 /** Bản 4.11.10: sửa theo buổi thử model miễn phí soạn hợp đồng và văn bản hành chính (23–24/11/2026,
- *  `tasks/thu-mien-phi-hdcn.md`, `tasks/thu-mien-phi-vbhc.md`). Mỗi ca lấy đúng dạng tham số model đã gửi. */
+ *  `tasks/viec-le/thu-mien-phi-hdcn/thu-mien-phi-hdcn.md`, `tasks/viec-le/thu-mien-phi-vbhc/thu-mien-phi-vbhc.md`). Mỗi ca lấy đúng dạng tham số model đã gửi. */
 import * as assert from "assert";
 import { ParaBlock, TableBlock, adminDocBrief, bodyLinesOf, normalizeSigner, planAdminDocument } from "../../src/core/adminDoc";
 import { toolFailureClaim } from "../../src/core/claims";

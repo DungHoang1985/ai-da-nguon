@@ -1,6 +1,6 @@
 # Kế hoạch hoàn thiện AI Đa Nguồn — bản 2
 
-Lập ngày 15/11/2026. **Trạng thái: ĐÃ DUYỆT ngày 15/11/2026.** Thay bản sáng 14/11 (lưu tại `tasks/ra-soat-2026-11-15/ke-hoach-v4-ban-1.md`). Việc cụ thể của đợt đang làm: `tasks/dot-0.md` (Đợt 0A).
+Lập ngày 15/11/2026. **Trạng thái: ĐÃ DUYỆT ngày 15/11/2026.** Thay bản sáng 14/11 (lưu tại `tasks/luu/ra-soat-2026-11-15/ke-hoach-v4-ban-1.md`). Việc cụ thể của đợt đang làm: `tasks/dot/dot-0a/dot-0a.md` (Đợt 0A).
 
 Quyết định của anh ngày 15/11/2026:
 1. Duyệt kế hoạch bản 2, giữ thứ tự 0A → 0B → 1A → 1B → 2 → 3 → 4.

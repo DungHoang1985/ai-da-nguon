@@ -1,5 +1,5 @@
 /** Công tắc "Suy nghĩ kỹ": tham số suy nghĩ theo từng nhà cung cấp và từng đời model.
- *  Căn cứ: tài liệu chính thức đọc ngày 15/11/2026, tóm tắt ở tasks/dot-1b-bang-chung/05-tra-tai-lieu-nha-cung-cap.md.
+ *  Căn cứ: tài liệu chính thức đọc ngày 15/11/2026, tóm tắt ở tasks/dot/dot-1b/bang-chung/05-tra-tai-lieu-nha-cung-cap.md.
  *  Các tham số này KHÔNG nằm trong lời nhắc hệ thống, bộ công cụ hay tin nhắn, nên bật / tắt không làm vỡ bộ nhớ đệm lời nhắc
  *  và không làm hỏng khối suy nghĩ đã có trong lịch sử. */
 import { Provider } from "../providers";

@@ -250,7 +250,7 @@ export function messageForStatus(status: number, detail = ""): string {
 }
 
 /** Gợi ý tiếng Việt cho lỗi Office.js đã biết nguyên nhân (đo trong Office). Không nhận ra thì trả null.
- *  Word thu nhỏ cửa sổ: Office.js từ chối chèn nhận xét (AccessDenied) và ô điền mẫu (GeneralException) — đo 16/11/2026, tasks/dot-3.md. */
+ *  Word thu nhỏ cửa sổ: Office.js từ chối chèn nhận xét (AccessDenied) và ô điền mẫu (GeneralException) — đo 16/11/2026, tasks/dot/dot-3/dot-3.md. */
 export function officeErrorHint(tool: string, e: any): string | null {
   const code = String(e?.code || "");
   const msg = String(e?.message || e || "");

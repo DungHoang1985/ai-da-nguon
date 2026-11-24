@@ -1,4 +1,4 @@
-/** Đợt 2 — các ca thêm sau lần soát mã độc lập 16/11/2026 (tasks/dot-2-bang-chung/soat-ma-doc-lap.md).
+/** Đợt 2 — các ca thêm sau lần soát mã độc lập 16/11/2026 (tasks/dot/dot-2/bang-chung/soat-ma-doc-lap.md).
  *  Mọi "key" trong tệp này là chuỗi giả ghép từ ký tự lặp, không phải key thật. */
 import * as assert from "assert";
 import { ApiError, classifyError, describeError, ensureOk, explainApiError, isRetryable, maskSecrets } from "../../src/core/errors";

@@ -1,4 +1,4 @@
-/** Bộ nhớ dài hạn giữa các hội thoại (Đợt 12, phần E — thiết kế ở tasks/dot-12-bo-nho.md, anh duyệt 23/11/2026).
+/** Bộ nhớ dài hạn giữa các hội thoại (Đợt 12, phần E — thiết kế ở tasks/dot/dot-12/dot-12-bo-nho.md, anh duyệt 23/11/2026).
  *
  *  - Mục ngắn (≤ 300 ký tự) về cách làm việc, thuật ngữ / tên riêng, quy ước văn bản. Chung cho mọi ứng dụng hoặc riêng một ứng dụng.
  *  - Người dùng ghi tay trong Cài đặt; AI chỉ ĐỀ XUẤT (công cụ propose_memory), người dùng bấm Nhớ mới lưu.

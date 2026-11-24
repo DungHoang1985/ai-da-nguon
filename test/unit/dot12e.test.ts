@@ -1,4 +1,4 @@
-/** Đợt 12 phần E: bộ nhớ dài hạn giữa các hội thoại (tasks/dot-12-bo-nho.md) — tiêu chí E1 */
+/** Đợt 12 phần E: bộ nhớ dài hạn giữa các hội thoại (tasks/dot/dot-12/dot-12-bo-nho.md) — tiêu chí E1 */
 import * as assert from "assert";
 import { getProvider } from "../../src/core/providers";
 import { runTurn } from "../../src/core/agent/turn";

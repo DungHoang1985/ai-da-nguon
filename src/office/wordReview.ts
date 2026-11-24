@@ -1,7 +1,7 @@
 /* global Word */
 /** Đợt 1B — công cụ "soát và tra" của Word: soát nhất quán bằng mã, đọc phần ngoài thân văn bản (chú thích, đầu và chân trang,
  *  bookmark, trường, ô điền mẫu, hộp văn bản), kiểm thể thức trang, so sánh với phiên bản khác. Cả bốn đều CHỈ ĐỌC.
- *  Căn cứ kỹ thuật: bảng thăm dò trong tasks/dot-1b.md (đo trong Word ngày 15/11/2026). */
+ *  Căn cứ kỹ thuật: bảng thăm dò trong tasks/dot/dot-1b/dot-1b.md (đo trong Word ngày 15/11/2026). */
 import { ToolSpec } from "../core/agent/types";
 import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseLabel } from "../core/outline";
 import { ALL_CHECKS, IssueKind, checkConsistency } from "../core/consistency";

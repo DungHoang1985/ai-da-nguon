@@ -1,4 +1,4 @@
-/** Đợt 8 — các chỗ sửa theo lượt soát mã độc lập (tasks/dot-8-bang-chung/soat-ma-dot-8.md) */
+/** Đợt 8 — các chỗ sửa theo lượt soát mã độc lập (tasks/dot/dot-8/bang-chung/soat-ma-dot-8.md) */
 import * as assert from "assert";
 import { controlRefusal, fillControlOoxml, findBlanks, formatDate } from "../../src/core/formfill";
 import { checkConsistency } from "../../src/core/consistency";

@@ -1,5 +1,5 @@
 /** Đợt 0A – bước 4: đổi nhà cung cấp giữa hội thoại.
- *  Bảng thử lấy từ tasks/ra-soat-2026-11-15/ma-tran-doi-nha-cung-cap.txt (10 kiểu lịch sử × 11 nguồn đích). */
+ *  Bảng thử lấy từ tasks/luu/ra-soat-2026-11-15/ma-tran-doi-nha-cung-cap.txt (10 kiểu lịch sử × 11 nguồn đích). */
 import * as assert from "assert";
 import { PROVIDERS, getProvider } from "../../src/core/providers";
 import { buildStepRequest, isToolUnsupportedError } from "../../src/core/agent/llm";

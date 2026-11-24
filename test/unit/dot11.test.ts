@@ -1,4 +1,4 @@
-/** Đợt 11: rút gọn token mỗi lượt Excel và PowerPoint (tasks/dot-11.md) — viết gọn (mọi chế độ) và nạp công cụ theo việc (chỉ Miễn phí). */
+/** Đợt 11: rút gọn token mỗi lượt Excel và PowerPoint (tasks/dot/dot-11/dot-11.md) — viết gọn (mọi chế độ) và nạp công cụ theo việc (chỉ Miễn phí). */
 import * as assert from "assert";
 import { getProvider } from "../../src/core/providers";
 import { runTurn } from "../../src/core/agent/turn";
@@ -271,7 +271,7 @@ describe("Đợt 11 — chạy một lượt ở chế độ Miễn phí", () =>
 });
 
 describe("Đợt 11 — chặn phình lại (số ký tự phần cố định của một lượt)", () => {
-  // Mốc 4.10.0: Excel 31.754, PowerPoint 23.293 (tasks/dot-11-bang-chung/do-token-*-moc-4100.json)
+  // Mốc 4.10.0: Excel 31.754, PowerPoint 23.293 (tasks/dot/dot-11/bang-chung/do-token-*-moc-4100.json)
   // Đợt 12 (22/11/2026): Excel nâng trần +400 / +350 cho tham số `more` của excel_format_range (định dạng nhiều vùng khác kiểu trong một lệnh,
   // bài X6 chạm trần 12 bước vì 7 lệnh định dạng rời) — đo: Trả phí 25.891, Miễn phí 15.135
   // Đợt 12 phần E (23/11/2026): Trả phí +400 / +450 cho công cụ remember (đo: Excel ≈26.280, PowerPoint 19.308); Miễn phí giữ trần (remember nằm trong nhóm bo_nho)

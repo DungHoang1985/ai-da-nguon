@@ -1,4 +1,4 @@
-/** Xoay vòng nguồn miễn phí (Đợt 9, `tasks/dot-9.md` mục 4 bước 4). Chỉ dùng ở chế độ Miễn phí; danh sách ứng viên do bên gọi
+/** Xoay vòng nguồn miễn phí (Đợt 9, `tasks/dot/dot-9/dot-9.md` mục 4 bước 4). Chỉ dùng ở chế độ Miễn phí; danh sách ứng viên do bên gọi
  *  dựng từ nguồn có bậc miễn phí và đã có key, nên ở đây không bao giờ có nguồn trả phí.
  *  - Nguồn im lặng, hết lượt theo phút, máy chủ lỗi / quá tải, mất mạng → chuyển nguồn kế tiếp NGAY (không thử lại cùng nguồn),
  *    nguồn đó nghỉ 60 giây (hoặc lâu hơn theo retry-after).

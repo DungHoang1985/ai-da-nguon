@@ -1,4 +1,4 @@
-/** Đợt 4 · Các ca từ lần soát mã độc lập 16/11/2026 (tasks/dot-4-bang-chung/soat-ma-doc-lap.md). Số trong tên kiểm thử là số phát hiện. */
+/** Đợt 4 · Các ca từ lần soát mã độc lập 16/11/2026 (tasks/dot/dot-4/bang-chung/soat-ma-doc-lap.md). Số trong tên kiểm thử là số phát hiện. */
 import * as assert from "assert";
 import { LOG_SHEET, isLogSheet, namesSheet, targetsLogSheet } from "../../src/core/auditlog";
 import { findFormulaRisks, formulaRisksOf } from "../../src/core/formularisk";

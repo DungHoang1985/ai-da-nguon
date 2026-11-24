@@ -36,7 +36,7 @@ export interface Provider {
 }
 
 /** "Phương ngữ" của một nguồn nhận kiểu yêu cầu Anthropic (POST …/messages). Thiếu trường nào = giống api.anthropic.com.
- *  Căn cứ: tài liệu chính thức và phép đo CORS ngày 17/11/2026, bảng ở tasks/dot-6.md. */
+ *  Căn cứ: tài liệu chính thức và phép đo CORS ngày 17/11/2026, bảng ở tasks/dot/dot-6/dot-6.md. */
 export interface AnthropicDialect {
   /** Cách gửi key: "x-api-key" (mặc định) hoặc "bearer" (Authorization: Bearer) */
   auth?: "x-api-key" | "bearer";
