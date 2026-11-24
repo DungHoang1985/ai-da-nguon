@@ -7,7 +7,7 @@ Cập nhật 24/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 ## 1. Trạng thái
 
-- **Đang chạy: v4.11.13** (phát hành 25/11/2026; trên bản cục bộ trước phát hành: Tự kiểm tra Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
+- **Đang chạy: v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
 - **Đang làm:** không có việc dở. Không còn worktree nào; nhánh cục bộ chỉ còn `main` và `claude/ab-dinh-dang-gon` (báo cáo thử A/B, cố ý không phát hành).
 
 ## 2. Phiên bản gần đây
