@@ -396,3 +396,42 @@ export function overviewForPrompt(ov: any, budget = 6000): string {
   }
   return s;
 }
+
+/** B1 (rà soát kiến trúc 20/11/2026): Hoàn tác Excel chỉ chụp được vùng tới 10.000 ô (`snapshot` trong excelCore.ts).
+ *  Câu hỏi và kết quả phải nói đúng việc có Hoàn tác hay không — dùng chung một ngưỡng. */
+export const MAX_UNDO_CELLS = 10000;
+
+function groupDigits(n: number): string {
+  return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+/** Đuôi câu hỏi theo số ô của vùng sẽ bị đổi. */
+export function undoNote(cells: number): string {
+  return cells > MAX_UNDO_CELLS ? ` — vùng ${groupDigits(cells)} ô, quá lớn để chụp lại nên KHÔNG hoàn tác được` : " (có thể Hoàn tác)";
+}
+
+/** Đuôi câu kết quả khi thao tác đã chạy mà không có bản chụp (vùng quá lớn). */
+export function noUndoSuffix(hasSnapshot: boolean): string {
+  return hasSnapshot ? "" : " (vùng trên 10.000 ô nên KHÔNG có Hoàn tác cho thao tác này)";
+}
+
+/** B23 (anh chọn 25/11/2026): PowerPoint chỉ hỏi khi THAY hoặc XÓA chữ dài đang có — thay chữ ngắn (tiêu đề, ô vài chữ) không hỏi vì đã có Hoàn tác.
+ *  Ngưỡng: hình có trên LONG_SHAPE_TEXT ký tự, ô bảng có trên LONG_CELL_TEXT ký tự. Chữ mới vẫn chứa nguyên chữ cũ (chỉ thêm vào) thì không tính. */
+export const LONG_SHAPE_TEXT = 200;
+export const LONG_CELL_TEXT = 100;
+
+export function longOverwrite(items: { where: string; old: string; next: string; limit: number }[]): string | null {
+  const hit = items.filter((x) => {
+    const old = String(x.old ?? "").trim();
+    const next = String(x.next ?? "");
+    return old.length > x.limit && old !== next.trim() && !next.includes(old);
+  });
+  if (!hit.length) return null;
+  const first = hit[0];
+  const head = String(first.old).trim().replace(/\s+/g, " ").slice(0, 60);
+  const more = hit.length > 1 ? ` và ${hit.length - 1} chỗ khác` : "";
+  return `Thay chữ dài đang có ở ${first.where} (${String(first.old).trim().length} ký tự: "${head}…")${more}.`;
+}
+
+/** B3: không đọc được vùng đích để kiểm ghi đè thì hỏi (như Word), không cho chạy im lặng. */
+export const OVERWRITE_UNCHECKED = "Không kiểm được vùng đích (có thể đang có dữ liệu sẽ bị ghi đè; vùng trên 10.000 ô thì không hoàn tác được).";

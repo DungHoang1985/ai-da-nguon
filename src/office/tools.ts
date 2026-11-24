@@ -8,10 +8,27 @@ import { withAuditTrail } from "./excelTrail";
 import { ALL_TOOL_GROUPS } from "../core/toolgroups";
 
 export function getHostTools(host: HostName, settings: () => unknown): HostToolSet | null {
-  if (host === "Excel") return withAuditTrail(excelTools, { settings: () => settings() as any, describe: describeCall });
+  if (host === "Excel") return withWriteQueue(withAuditTrail(excelTools, { settings: () => settings() as any, describe: describeCall }), "Excel");
   if (host === "Word") return createWordTools(settings);
-  if (host === "PowerPoint") return pptTools;
+  if (host === "PowerPoint") return withWriteQueue(pptTools, "PowerPoint");
   return null;
+}
+
+/** B6 (rà soát kiến trúc 20/11/2026): công cụ GHI của Excel, PowerPoint chạy lần lượt như Word (wordTools.ts tự có hàng đợi).
+ *  Công cụ bị hết hạn chờ vẫn chạy ngầm trong Office; lệnh ghi kế không được chen vào giữa (bản chụp Hoàn tác, nhật ký sẽ lẫn nhau).
+ *  Hàng đợi theo ứng dụng, ở cấp mô-đun: khung chat và nút Tự kiểm tra dùng chung. Công cụ chỉ đọc không xếp hàng. */
+const writeQueues: Record<string, Promise<unknown>> = {};
+export function withWriteQueue(set: HostToolSet, key: string): HostToolSet {
+  const writes = new Set(set.specs.filter((sp) => sp.write).map((sp) => sp.name));
+  return {
+    ...set,
+    execute(name, args, ctx) {
+      if (!writes.has(name)) return set.execute(name, args, ctx);
+      const job = (writeQueues[key] || Promise.resolve()).then(() => set.execute(name, args, ctx));
+      writeQueues[key] = job.catch(() => undefined);
+      return job;
+    },
+  };
 }
 
 const where = (a: any) => {

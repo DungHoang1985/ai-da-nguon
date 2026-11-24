@@ -2,7 +2,7 @@
 /** Công cụ để AI thao tác trực tiếp trên sổ tính Excel. Mỗi thao tác ghi đều lưu ảnh chụp để Hoàn tác. */
 import { convertDateTexts, dateTextToSerial, isDateNumberFormat } from "../core/datetext";
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
-import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, splitAreas, topLeft, truncate } from "./util";
+import { cellAddress, lettersToCol, noUndoSuffix, normalize2D, sanitizeSheetName, splitAddress, splitAreas, topLeft, truncate } from "./util";
 import { bulkTrail, getRange, restoreFrom, snapshot } from "./excelCore";
 import { EXCEL_ADV_SPECS, excelRisk, executeExcelAdvanced } from "./excelAdvanced";
 import { EXCEL_MODEL_SPECS, excelModelRisk, executeExcelModel } from "./excelModel";
@@ -366,7 +366,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         );
         return {
           ok: true,
-          message: `Đã ghi ${vals.length * vals[0].length} ô vào ${target.address}${unText ? ` (${unText} ô công thức đang ở định dạng chữ "@" đã đổi về General để công thức chạy)` : ""}${dates ? ` (${dates} ô chữ dạng ngày ghi thành ngày thật, đọc theo ngày/tháng/năm)` : ""}`,
+          message: `Đã ghi ${vals.length * vals[0].length} ô vào ${target.address}${noUndoSuffix(!!snap)}${unText ? ` (${unText} ô công thức đang ở định dạng chữ "@" đã đổi về General để công thức chạy)` : ""}${dates ? ` (${dates} ô chữ dạng ngày ghi thành ngày thật, đọc theo ngày/tháng/năm)` : ""}`,
           address: target.address,
           result_preview: target.values.slice(0, 12).map((row) => row.slice(0, 10)),
           ...(errors.length ? { formula_errors: errors.slice(0, 20) } : {}),
@@ -598,7 +598,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         await ctx.sync();
         const undo = restoreFrom(snap, `Sắp xếp ${range.address}`);
         if (undo) log.push(undo);
-        return { ok: true, message: `Đã sắp xếp ${range.address} theo cột ${col}` };
+        return { ok: true, message: `Đã sắp xếp ${range.address} theo cột ${col}${noUndoSuffix(!!snap)}` };
       });
 
     case "excel_clear_range":
@@ -612,7 +612,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         if (undo) log.push(undo);
         // Xóa định dạng không đổi nội dung ô: không cần dòng chi tiết từng ô
         const tr = what === "Formats" ? undefined : await bulkTrail(ctx, range, snap);
-        return { ok: true, ...(tr ? { __trail: tr } : {}), message: `Đã xóa (${a.what || "contents"}) ${range.address}` };
+        return { ok: true, ...(tr ? { __trail: tr } : {}), message: `Đã xóa (${a.what || "contents"}) ${range.address}${noUndoSuffix(!!snap)}` };
       });
 
     case "excel_select_range":
@@ -628,7 +628,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
   throw new Error(`Không có công cụ ${name}`);
 }
 
-const RISKY_NAMES = new Set(["excel_write_range", "excel_clear_range", "excel_insert_delete", "excel_sheet"]);
+const RISKY_NAMES = new Set(["excel_write_range", "excel_clear_range", "excel_sort_range", "excel_insert_delete", "excel_sheet"]);
 const MODEL_RISKY = new Set(["excel_edit_chart", "excel_named_range", "excel_clean_data", "excel_protect"]);
 const MODEL_NAMES = new Set(EXCEL_MODEL_SPECS.map((sp) => sp.name));
 

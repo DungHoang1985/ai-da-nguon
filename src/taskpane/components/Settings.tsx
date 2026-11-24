@@ -44,6 +44,8 @@ interface Props {
   host?: HostName;
   /** Về khung chat (trang Cài đặt có nút quay lại) */
   onBack?: () => void;
+  /** B2: đang có lượt AI chạy ở khung chat — không cho chạy Tự kiểm tra song song trên cùng tài liệu */
+  aiBusy?: boolean;
 }
 
 type Status = { kind: "ok" | "err" | "busy"; text: string } | undefined;
@@ -416,13 +418,13 @@ const ExcelTrailCard: React.FC<Props> = ({ storage, onChanged }) => {
   );
 };
 
-const SelfTestCard: React.FC<Props> = ({ storage, host }) => {
+const SelfTestCard: React.FC<Props> = ({ storage, host, aiBusy }) => {
   const s = useStyles();
   const [steps, setSteps] = React.useState<TestStep[] | null>(null);
   const [running, setRunning] = React.useState(false);
   const tools = host ? getHostTools(host, () => storage.getSettings()) : null;
   const test = async () => {
-    if (!tools) return;
+    if (!tools || aiBusy) return;
     setRunning(true);
     setSteps([]);
     try {
@@ -441,9 +443,10 @@ const SelfTestCard: React.FC<Props> = ({ storage, host }) => {
         Word, phần thử nằm trong một vùng riêng ở cuối văn bản và phần còn lại được kiểm là không đổi; Excel và PowerPoint nên chạy trên tài liệu trống.
       </Text>
       <div className={s.row}>
-        <Button onClick={test} disabled={!tools || running}>
+        <Button onClick={test} disabled={!tools || running || !!aiBusy} title={aiBusy ? "AI đang chạy ở khung chat: chờ xong hoặc bấm Dừng rồi chạy tự kiểm tra" : undefined}>
           Chạy tự kiểm tra
         </Button>
+        {aiBusy && !running && <Text size={200}>AI đang chạy ở khung chat — chờ xong rồi chạy.</Text>}
         {running && <Spinner size="tiny" />}
         {steps && !running && (
           <Text weight="semibold" className={failed ? s.err : s.ok}>

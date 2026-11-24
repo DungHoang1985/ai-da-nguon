@@ -7,13 +7,14 @@ Cập nhật 24/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 ## 1. Trạng thái
 
-- **Đang chạy: v4.11.12** (phát hành 24/11/2026, `main@8949e53` → `gh-pages@0a7a64f`; Tự kiểm tra Word 41/41 trên bản phát hành; trên bản cục bộ trước phát hành Word 41/41, Excel 42/42; kiểm thử máy 896/896). Bước đẩy `gh-pages` kiểu mới (token chỉ ở lệnh push) đã chạy đạt.
+- **Đang chạy: v4.11.13** (phát hành 25/11/2026; trên bản cục bộ trước phát hành: Tự kiểm tra Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
 - **Đang làm:** không có việc dở. Không còn worktree nào; nhánh cục bộ chỉ còn `main` và `claude/ab-dinh-dang-gon` (báo cáo thử A/B, cố ý không phát hành).
 
 ## 2. Phiên bản gần đây
 
 | Bản | Ngày | Nội dung | Chi tiết |
 |---|---|---|---|
+| 4.11.13 | 25/11 | Nhóm "an toàn dữ liệu" của rà soát kiến trúc: B1 câu hỏi Excel nói đúng Hoàn tác (vùng trên 10.000 ô báo KHÔNG hoàn tác được; sắp xếp vùng lớn hỏi), B3 Excel không kiểm được vùng đích thì hỏi, B4 PowerPoint không xóa khi chưa chụp được bản Hoàn tác, B23 PowerPoint hỏi khi thay chữ dài (hình > 200, ô bảng > 100 ký tự), B6 lệnh ghi Excel / PowerPoint chạy lần lượt, B2 chặn gửi trùng và khóa Tự kiểm tra khi AI đang chạy. Tự kiểm tra Word 41/41, Excel 43/43, PowerPoint 27/27 (2 bước mới). B2 chưa thử trong Office (cần lượt gọi model) | `tasks/viec-le/ra-soat-kien-truc/` |
 | 4.11.12 | 24/11 | Gộp 8 chỗ sửa của rà soát kiến trúc 20/11 (nằm quên ở một worktree, chưa từng phát hành): khối suy nghĩ OpenRouter bỏ khi tóm tắt / lưu, nút Chèn của Excel ghi chữ của AI thành chữ (không thành công thức), CI không giữ token ở `.git/config`, tóm tắt và soát lập luận báo thử lại, kiểm thử chặn lệch sổ công cụ. Nút Chèn trong Excel mới có Kiểm thử máy | `tasks/viec-le/ra-soat-kien-truc/` |
 | 4.11.10 + 4.11.11 | 24/11 | Hai buổi thử model miễn phí soạn văn bản: kiểm ngưỡng luật (`legalcheck.ts`), kiểm thứ / từ lạ / luật hết hiệu lực / sai dấu (`textcheck.ts`), loại `giay_uy_quyen`, nghị quyết, bên cá nhân ký "BÊN B", cảnh báo "kể đã sửa A → B mà không ghi". Điểm TB: Nemotron 5,7 → 8,3; Cohere 5,5 → 7,5; dots 4,7 → 6,5. Soát mã độc lập: sửa hết 3 cao + 8 TB | `tasks/viec-le/thu-mien-phi-vong3/`, `thu-mien-phi-hdcn/`, `thu-mien-phi-vbhc/` |
 | 4.11.9 | 23/11 | "Điều N" không khớp nhầm mục "N." của phụ lục đánh số lại | `tasks/viec-le/va-tra-dieu-khoan/` |
@@ -75,14 +76,14 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ### Chờ anh quyết hoặc làm
 
-- Rà soát kiến trúc 20/11 còn bảng "Phát hiện để lại" B1–B23 (`tasks/viec-le/ra-soat-kien-truc/ra-soat-kien-truc-2026-11-20.md`); khuyến nghị lúc đó: B1 (Hoàn tác Excel vùng lớn) và B2 (gửi trùng) trước.
+- Rà soát kiến trúc 20/11, bảng "Phát hiện để lại" (`tasks/viec-le/ra-soat-kien-truc/ra-soat-kien-truc-2026-11-20.md`): nhóm 1 (B1, B2, B3, B4, B6, B23) xong ở 4.11.13. Còn: nhóm 2 kiến trúc (B7 tách `Chat.tsx`, B8 sổ công cụ một nguồn, B9 `quirks`, B13 tách `wordTools.ts`) — việc lớn, cần kế hoạch riêng; nhóm 3 hiệu năng (B10 gói 1,26 MB, B15 lint, B16, B18); nhóm 4 bảo mật nhỏ (B5, B11, B12, B17, B19, B20, B21, B22). B14 giữ nguyên.
 - Hai thư mục mồ côi `dot-0a-office-addon-compare-47836b`, `dot-4-a4b5e7` trong `.claude\worktrees\`: đưa vào Thùng rác.
 - Xóa các khóa "AI Da Nguon (Office)" thừa ở `openrouter.ai/settings/keys`.
 - Nguồn Gemini trên máy còn nhớ "Gemini 2.5 Flash" (Google ngừng cấp cho người dùng mới): chọn lại Gemini 3.8 Flash.
 
 ## 5. Bước tiếp theo
 
-1. Chọn mục ở bảng B1–B23 của rà soát kiến trúc (mục 4).
+1. Chọn nhóm tiếp theo của rà soát kiến trúc (mục 4): khuyến nghị nhóm 3 (khung mở nhanh hơn) hoặc lập kế hoạch nhóm 2.
 2. **Buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được" ở mục 4.
 3. Việc tùy chọn (mục D của `tasks/dot/dot-5/dot-5.md`), anh chọn: tải bản ghi hội thoại, gợi ý gạch chân bấm để chấp nhận trong Word, connectors (MCP), công cụ chạy mã Office.js do AI viết, phím tắt mở khung, đọc một trang web cụ thể, Outlook, Sign in with Poe, hàm `=AI(…)` trong ô Excel. Đã làm: điền mẫu (Đợt 8), bộ nhớ dài hạn (Đợt 12 E).
 

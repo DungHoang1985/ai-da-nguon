@@ -73,12 +73,13 @@ describe("Đợt 4 · Soát mã · Công thức cần hỏi", () => {
     const dup = await spec.risky!({ action: "remove_duplicates", address: "A1:D8", columns: ["A"] });
     assert.match(dup!, /Xóa các dòng trùng/);
     assert.match(dup!, /không quá 10\.000 ô/);
-    // #16 Thay hàng loạt bằng công thức có hàm cần hỏi (Excel.run không có ngoài Office → phần đếm trả null, phần công thức vẫn hỏi)
+    // #16 Thay hàng loạt bằng công thức có hàm cần hỏi (Excel.run không có ngoài Office → phần đếm báo không kiểm được, phần công thức vẫn hỏi)
     (globalThis as any).Excel = { run: async () => Promise.reject(new Error("ngoài Office")) };
     try {
       const rep = await spec.risky!({ action: "replace_all", address: "A1:D8", find: "x", replace: '=WEBSERVICE("http://x/"&A1)' });
       assert.match(rep!, /WEBSERVICE/);
-      assert.strictEqual(await spec.risky!({ action: "replace_all", address: "A1:D8", find: "Chờ", replace: "Xong" }), null);
+      // B3 (4.11.13): không đếm được số ô sẽ bị thay thì hỏi, không cho chạy im lặng
+      assert.match((await spec.risky!({ action: "replace_all", address: "A1:D8", find: "Chờ", replace: "Xong" }))!, /Không kiểm được/);
     } finally {
       delete (globalThis as any).Excel;
     }

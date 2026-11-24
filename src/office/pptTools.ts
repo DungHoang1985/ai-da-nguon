@@ -645,7 +645,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
   throw new Error(`Không có công cụ ${name}`);
 }
 
-const PPT_RISKY = new Set(["ppt_delete_slide", "ppt_delete_shape"]);
+const PPT_RISKY = new Set(["ppt_delete_slide", "ppt_delete_shape", "ppt_set_shape_text", "ppt_edit_table"]);
 const ALL_PPT_SPECS = [...PPT_SPECS, ...PPT_ADV_SPECS, ...PPT_DESIGN_SPECS];
 
 /** Lời nhắc riêng của PowerPoint. Đợt 11: viết gọn — các dòng kể công cụ chuyên gộp thành PPT_SPECIAL_LINE (chế độ Miễn phí thay bằng

@@ -20,6 +20,12 @@
 - Phép kiểm rủi ro của công cụ ghi phải chạy trên dữ liệu đã chuẩn hóa bằng đúng hàm công cụ dùng (`normalize2D`).
 - Tự kiểm tra Excel chạy với nhật ký tắt và sheet nhật ký thử riêng.
 
+## Câu hỏi trước thao tác ghi (4.11.13)
+
+- Câu hỏi chỉ nói "(có thể Hoàn tác)" khi vùng không quá 10.000 ô (`MAX_UNDO_CELLS`, `undoNote` trong `src/office/util.ts` — cùng ngưỡng với `snapshot`); vùng lớn hơn phải nói KHÔNG hoàn tác được, và kết quả công cụ thêm `noUndoSuffix`.
+- Sắp xếp vùng trên 10.000 ô phải hỏi (vùng nhỏ có Hoàn tác thì không hỏi).
+- Không đọc được vùng đích để kiểm ghi đè / đếm ô / đọc bố trí khóa thì **hỏi** (`OVERWRITE_UNCHECKED`), không `.catch(() => null)` cho chạy im lặng.
+
 ## Kiểm toán mô hình và công thức cần hỏi
 
 - `modelaudit.ts` và `formularisk.ts` ưu tiên không báo nhầm: thêm mẫu phải kèm kiểm thử cho cả ca phải bắt và ca dễ báo nhầm (tham chiếu bảng `[2024]`, hàng số nhập tay xen công thức, gạch đầu dòng "- …").

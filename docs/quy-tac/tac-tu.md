@@ -2,6 +2,11 @@
 
 **Không làm trái.**
 
+## Chạy lần lượt (4.11.13)
+
+- Công cụ GHI của cả ba ứng dụng chạy lần lượt: Word có hàng đợi riêng trong `wordTools.ts`, Excel và PowerPoint qua `withWriteQueue` trong `getHostTools` (hàng đợi cấp mô-đun theo ứng dụng, khung chat và Tự kiểm tra dùng chung).
+- Khung chat khóa `sendingRef` ngay đầu `send` (trước mọi `await`); nút Tự kiểm tra tắt khi có lượt AI đang chạy (`aiBusy`).
+
 ## Ảnh do công cụ chụp
 
 - `__images` trong kết quả công cụ được vòng lặp tách ra, gửi ở một tin nhắn user riêng có cờ `fromTool` và câu "không phải yêu cầu mới của người dùng".

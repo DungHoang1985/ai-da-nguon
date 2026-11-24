@@ -4,7 +4,7 @@
  *  (tasks/dot/dot-4/dot-4.md, bảng thăm dò; bằng chứng tasks/dot/dot-4/bang-chung/01). */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { bulkTrail, getRange, restoreFrom, snapshot } from "./excelCore";
-import { cellAddress, lettersToCol, splitAddress, topLeft, truncate } from "./util";
+import { cellAddress, lettersToCol, OVERWRITE_UNCHECKED, splitAddress, topLeft, truncate, undoNote } from "./util";
 import { formulaRisksOf } from "../core/formularisk";
 import { auditModel } from "../core/modelaudit";
 import { cleanNumberList, goalSeek, tidy } from "../core/goalseek";
@@ -413,9 +413,8 @@ export async function excelModelRisk(name: string, a: any): Promise<string | nul
       await ctx.sync();
       const filled = (g: any[][]) => g.flat().filter((v) => v !== "" && v !== null).length;
       const extra = filled(dest.formulas) - filled(range.formulas);
-      const big = dest.rowCount * dest.columnCount > 10000;
-      return extra > 0 ? `Tự điền sẽ ghi đè ${extra} ô đang có dữ liệu trong ${dest.address}${big ? " — vùng lớn nên KHÔNG hoàn tác được" : " (có thể Hoàn tác)"}.` : null;
-    }).catch(() => null);
+      return extra > 0 ? `Tự điền sẽ ghi đè ${extra} ô đang có dữ liệu trong ${dest.address}${undoNote(dest.rowCount * dest.columnCount)}.` : null;
+    }).catch(() => OVERWRITE_UNCHECKED);
   }
   if (name === "excel_clean_data" && a.action === "replace_all") {
     // Chữ thay vào là công thức có hàm cần hỏi: hỏi như khi ghi ô (không để thay hàng loạt thành đường vòng)
@@ -435,7 +434,7 @@ export async function excelModelRisk(name: string, a: any): Promise<string | nul
               return a.whole_cell ? t === find : t.includes(find);
             }).length;
       return n > 20 ? `Thay "${truncate(a.find, 40)}" → "${truncate(a.replace, 40)}" ở ${n} ô trong ${a.address} (Hoàn tác được khi vùng không quá 10.000 ô).` : null;
-    }).catch(() => null);
+    }).catch(() => `Không kiểm được số ô sẽ bị thay "${truncate(a.find, 40)}" → "${truncate(a.replace, 40)}" trong ${a.address} (Hoàn tác được khi vùng không quá 10.000 ô).`);
     return [many, frMsg].filter(Boolean).join(" ") || null;
   }
   if (name === "excel_protect" && a.action === "unprotect") return `Bỏ bảo vệ sheet "${a.sheet || "đang mở"}": mọi ô, kể cả ô công thức, sẽ sửa được.`;
@@ -450,7 +449,7 @@ export async function excelModelRisk(name: string, a: any): Promise<string | nul
       used.format.protection.load("locked");
       await ctx.sync();
       return lockLayoutRisk(ws.name, whole.format.protection.locked, used.isNullObject ? true : used.format.protection.locked);
-    }).catch(() => null);
+    }).catch(() => `Không kiểm được bố trí khóa ô hiện có của sheet "${a.sheet || "đang mở"}": thao tác này có thể thay bố trí đó, Hoàn tác chỉ đưa về "mọi ô đều khóa".`);
   }
   return null;
 }

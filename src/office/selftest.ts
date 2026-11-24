@@ -197,6 +197,17 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       expect(!none, "Cảnh báo nhầm ở vùng trống");
       return msg!;
     });
+    await step("4.11.13 · Hỏi trước nói đúng Hoàn tác: vùng trên 10.000 ô thì báo KHÔNG hoàn tác được, sắp xếp vùng lớn cũng hỏi", async () => {
+      const small = await riskOf("excel_clear_range", { sheet, address: "A1:B2" });
+      expect(small && /có thể Hoàn tác/.test(small), `Vùng nhỏ: ${small}`);
+      const big = await riskOf("excel_clear_range", { sheet, address: "A1:Z1000" });
+      expect(big && /KHÔNG hoàn tác được/.test(big) && !/có thể Hoàn tác/.test(big), `Vùng 26.000 ô: ${big}`);
+      const sortSmall = await riskOf("excel_sort_range", { sheet, address: "A1:B4", column: "A" });
+      expect(!sortSmall, `Sắp xếp vùng nhỏ không cần hỏi: ${sortSmall}`);
+      const sortBig = await riskOf("excel_sort_range", { sheet, address: "A1:Z1000", column: "A" });
+      expect(sortBig && /KHÔNG hoàn tác được/.test(sortBig), `Sắp xếp vùng lớn: ${sortBig}`);
+      return big!;
+    });
     await step("Tìm kiếm", async () => {
       const r = await run("excel_find", { text: "Doanh thu", sheet });
       expect(r.total_cells >= 1, r.message);
@@ -356,6 +367,24 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
     await step("Thêm ô chữ", async () =>
       (await run("ppt_add_textbox", { slide: slideNo, text: "Ô chữ thử", left: 600, top: 440, width: 300, height: 40, font_size: 14 })).message
     );
+    await step("4.11.13 · Thay chữ dài đang có thì hỏi trước; chữ ngắn hoặc chỉ thêm vào thì không", async () => {
+      const ov = await run("ppt_get_overview");
+      const t = ov.slides.find((x: any) => x.slide === slideNo).shapes.find((x: any) => x.text === "Ô chữ thử");
+      expect(t, "Không thấy ô chữ thử");
+      const short = await riskOf("ppt_set_shape_text", { slide: slideNo, shape: t.name, text: "Ngắn" });
+      expect(!short, `Chữ ngắn không cần hỏi: ${short}`);
+      const long = "Đoạn chữ dài để thử câu hỏi ghi đè. ".repeat(8);
+      await run("ppt_set_shape_text", { slide: slideNo, shape: t.name, text: long });
+      try {
+        const warn = await riskOf("ppt_set_shape_text", { slide: slideNo, shape: t.name, text: "Ngắn" });
+        expect(warn && /Thay chữ dài/.test(warn), `Không hỏi khi thay chữ dài: ${warn}`);
+        const append = await riskOf("ppt_set_shape_text", { slide: slideNo, shape: t.name, text: long + " Thêm." });
+        expect(!append, `Chỉ thêm vào không cần hỏi: ${append}`);
+        return warn!;
+      } finally {
+        await run("ppt_set_shape_text", { slide: slideNo, shape: t.name, text: "Ô chữ thử" });
+      }
+    });
     await step("Thêm hình", async () =>
       (
         await run("ppt_add_shape", {

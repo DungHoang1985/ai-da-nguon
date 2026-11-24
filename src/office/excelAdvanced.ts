@@ -2,7 +2,7 @@
 /** Công cụ Excel nâng cao: tìm kiếm, quét lỗi, lần công thức, lọc, PivotTable, định dạng có điều kiện, danh sách chọn, nhận xét ô, chèn/xóa hàng cột, thao tác sheet. */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { getRange, restoreFrom, snapshot } from "./excelCore";
-import { cellAddress, lettersToCol, normalize2D, sanitizeSheetName, splitAddress, topLeft, truncate } from "./util";
+import { cellAddress, lettersToCol, MAX_UNDO_CELLS, normalize2D, noUndoSuffix, OVERWRITE_UNCHECKED, sanitizeSheetName, splitAddress, topLeft, truncate, undoNote } from "./util";
 import { formulaRiskMessage } from "../core/formularisk";
 
 const addressProp = { type: "string", description: "e.g. 'Sheet1!A1:D20'." };
@@ -201,6 +201,16 @@ function colPlus(letters: string, n: number): string {
   return out;
 }
 
+/** Số ô của vùng a.address (null = không đọc được). Dùng cho câu hỏi Hoàn tác (B1). */
+async function rangeCells(a: any): Promise<number | null> {
+  return Excel.run(async (ctx) => {
+    const { range } = getRange(ctx, a.address, a.sheet);
+    range.load("rowCount,columnCount");
+    await ctx.sync();
+    return range.rowCount * range.columnCount;
+  }).catch(() => null);
+}
+
 /** Cảnh báo cho thao tác rủi ro (hiện hộp xác nhận) */
 export async function excelRisk(name: string, a: any): Promise<string | null> {
   if (name === "excel_write_range") {
@@ -214,14 +224,24 @@ export async function excelRisk(name: string, a: any): Promise<string | null> {
       const cols = vals[0]?.length || 1;
       const { range } = getRange(ctx, a.address, a.sheet);
       const target = range.getCell(0, 0).getResizedRange(Math.max(rows, 1) - 1, Math.max(cols, 1) - 1);
-      target.load("address,formulas");
+      target.load("address,formulas,rowCount,columnCount");
       await ctx.sync();
       const filled = target.formulas.flat().filter((v) => v !== "" && v !== null).length;
-      return filled ? `Ghi đè ${filled} ô đang có dữ liệu tại ${target.address} (có thể Hoàn tác).` : null;
-    }).catch(() => null);
+      return filled ? `Ghi đè ${filled} ô đang có dữ liệu tại ${target.address}${undoNote(target.rowCount * target.columnCount)}.` : null;
+    }).catch(() => OVERWRITE_UNCHECKED);
     return [overwrite, formulaRisk].filter(Boolean).join(" ") || null;
   }
-  if (name === "excel_clear_range") return `Xóa ${a.what === "all" ? "nội dung và định dạng" : a.what === "formats" ? "định dạng" : "nội dung"} vùng ${a.sheet ? a.sheet + "!" : ""}${a.address} (có thể Hoàn tác).`;
+  if (name === "excel_clear_range") {
+    const cells = await rangeCells(a);
+    const note = cells === null ? " (không kiểm được cỡ vùng; vùng trên 10.000 ô thì KHÔNG hoàn tác được)" : undoNote(cells);
+    return `Xóa ${a.what === "all" ? "nội dung và định dạng" : a.what === "formats" ? "định dạng" : "nội dung"} vùng ${a.sheet ? a.sheet + "!" : ""}${a.address}${note}.`;
+  }
+  // B1: sắp xếp vùng lớn không chụp được để Hoàn tác → hỏi; vùng nhỏ có Hoàn tác thì không hỏi như trước
+  if (name === "excel_sort_range") {
+    const cells = await rangeCells(a);
+    if (cells === null) return `Sắp xếp vùng ${a.sheet ? a.sheet + "!" : ""}${a.address}: không kiểm được cỡ vùng; vùng trên 10.000 ô thì KHÔNG hoàn tác được.`;
+    return cells > MAX_UNDO_CELLS ? `Sắp xếp vùng ${a.sheet ? a.sheet + "!" : ""}${a.address}${undoNote(cells)}.` : null;
+  }
   if (name === "excel_insert_delete" && String(a.action).startsWith("delete"))
     return `Xóa ${a.count || 1} ${String(a.action).includes("rows") ? "hàng" : "cột"} từ ${a.at}${a.sheet ? " ở sheet " + a.sheet : ""}. Công thức đang tham chiếu tới đó sẽ báo #REF!; Hoàn tác chỉ khôi phục nội dung.`;
   if (name === "excel_sheet" && a.action === "delete") return `Xóa sheet "${a.sheet || "đang mở"}" — KHÔNG hoàn tác được.`;
@@ -628,7 +648,7 @@ export async function executeExcelAdvanced(name: string, a: any, log: UndoEntry[
             if (r) await r.undo();
           },
         });
-        return { ok: true, message: `Đã xóa ${n} ${isRows ? "hàng" : "cột"} tại ${a.at}` };
+        return { ok: true, message: `Đã xóa ${n} ${isRows ? "hàng" : "cột"} tại ${a.at}${!used.isNullObject && !snap ? " (phần có dữ liệu trên 10.000 ô: Hoàn tác chỉ chèn lại hàng/cột trống, KHÔNG khôi phục nội dung)" : ""}` };
       });
 
     case "excel_sheet":

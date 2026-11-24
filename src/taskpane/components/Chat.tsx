@@ -248,6 +248,8 @@ interface Props {
   onOpenSettings: () => void;
   /** Vừa đăng nhập ở màn chào: báo App dựng lại để danh sách nguồn có key được đọc lại */
   onKeysChanged?: () => void;
+  /** B2: báo trang Cài đặt đang có lượt AI chạy (nút Tự kiểm tra tạm khóa) */
+  onBusyChange?: (busy: boolean) => void;
 }
 
 const WEB_PROVIDERS = (p: { id: string; kind: string; dialect?: { webSearch?: boolean } }) =>
@@ -351,7 +353,7 @@ const finalText = (it: Item) =>
         .trim()
     : it.text;
 
-const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysChanged }) => {
+const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysChanged, onBusyChange }) => {
   const s = useStyles();
   const [settings, setSettingsState] = React.useState(storage.getSettings());
   const updateSettings = (patch: any) => {
@@ -385,6 +387,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
   /** Esc đóng danh sách "/" cho đến khi nội dung ô nhập đổi */
   const [slashClosedFor, setSlashClosedFor] = React.useState<string | null>(null);
   const busyRef = React.useRef(false);
+  // B2 (rà soát kiến trúc 20/11/2026): khóa ngay đầu send — trước đây send chờ readSelection() rồi mới setBusy, Enter lần hai chạy hai lượt song song
+  const sendingRef = React.useRef(false);
   const prevBusy = React.useRef(false);
   /** Bản mới nhất của các mục hiển thị và mã hội thoại, để lưu theo từng bước mà không chờ React vẽ lại */
   const itemsRef = React.useRef<Item[]>([]);
@@ -605,6 +609,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
   /** Lưu hội thoại khi lượt kết thúc (xong, bị dừng hoặc lỗi) */
   React.useEffect(() => {
     busyRef.current = busy;
+    if (busy) sendingRef.current = false;
+    onBusyChange?.(busy);
     if (prevBusy.current && !busy && items.length) {
       saveConversation().then(refreshConvs);
       share();
@@ -767,10 +773,20 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     const p = getProvider(providerId);
     const typed = (text ?? input).trim();
     if (!p || !typed) return;
+    if (busyRef.current || sendingRef.current) return;
     if (cat.blockReason) {
       setNotice({ text: cat.blockReason, err: true });
       return;
     }
+    sendingRef.current = true;
+    try {
+      await prepareAndRun(p, typed, opts);
+    } finally {
+      sendingRef.current = false;
+    }
+  };
+
+  const prepareAndRun = async (p: NonNullable<ReturnType<typeof getProvider>>, typed: string, opts?: { continueTask?: boolean }) => {
     setNotice(undefined);
     const slash = resolveSlash(typed, skills, commands);
     let content = slash.content;

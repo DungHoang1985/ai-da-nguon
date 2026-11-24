@@ -3,6 +3,7 @@
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { nextTableFont, tableFits } from "../core/tablefit";
 import { currentSlideId, deleteShapeUndo, findShape, remapSlide, restoreFont, shapeOn, slideAt, supports } from "./pptCore";
+import { LONG_CELL_TEXT, LONG_SHAPE_TEXT, longOverwrite } from "./util";
 
 const slideProp = { type: "number" };
 const shapeProp = { type: "string", description: "Name, or number on the slide." };
@@ -113,9 +114,39 @@ export const PPT_ADV_SPECS: ToolSpec[] = [
 ];
 
 export async function pptRisk(name: string, a: any): Promise<string | null> {
-  const undoable = supports("1.8") ? " (có thể Hoàn tác)" : " — KHÔNG hoàn tác được trên máy này";
+  // B4: không xuất được slide thì công cụ dừng trước khi xóa, nên khi đã xóa luôn có Hoàn tác
+  const undoable = supports("1.8") ? " (có thể Hoàn tác)" : " — PowerPoint trên máy này không chụp được slide để Hoàn tác nên add-in sẽ không xóa";
   if (name === "ppt_delete_slide") return `Xóa slide ${a.slide}${undoable}.`;
   if (name === "ppt_delete_shape") return `Xóa hình "${a.shape}" trên slide ${a.slide}${undoable}.`;
+  // B23: thay chữ dài đang có thì hỏi; đọc không được thì để công cụ tự báo lỗi (không hỏi thừa)
+  if (name === "ppt_set_shape_text")
+    return PowerPoint.run(async (ctx) => {
+      const { slide, index } = await slideAt(ctx, a.slide);
+      const shp = await shapeOn(ctx, slide, a.shape);
+      shp.load("name");
+      shp.textFrame.textRange.load("text");
+      await ctx.sync();
+      const m = longOverwrite([{ where: `hình "${shp.name}" slide ${index}`, old: shp.textFrame.textRange.text, next: String(a.text ?? ""), limit: LONG_SHAPE_TEXT }]);
+      return m ? `${m} (có thể Hoàn tác)` : null;
+    }).catch(() => null);
+  if (name === "ppt_edit_table" && Array.isArray(a.cells) && a.cells.length && supports("1.8"))
+    return PowerPoint.run(async (ctx) => {
+      const { slide, index } = await slideAt(ctx, a.slide);
+      const shp = await shapeOn(ctx, slide, a.shape);
+      shp.load("type");
+      await ctx.sync();
+      if (String(shp.type) !== "Table") return null;
+      const t = shp.getTable();
+      const cells = a.cells.slice(0, 300).map((c: any) => ({ c, cell: t.getCellOrNullObject(Number(c?.row), Number(c?.col)) }));
+      cells.forEach((x: any) => x.cell.load("text"));
+      await ctx.sync();
+      const m = longOverwrite(
+        cells
+          .filter((x: any) => !x.cell.isNullObject)
+          .map((x: any) => ({ where: `ô (hàng ${x.c.row}, cột ${x.c.col}) bảng slide ${index}`, old: x.cell.text, next: String(x.c.text ?? ""), limit: LONG_CELL_TEXT }))
+      );
+      return m ? `${m} (có thể Hoàn tác)` : null;
+    }).catch(() => null);
   return null;
 }
 
@@ -265,6 +296,9 @@ export function restoreSlideUndo(b64: string, oldId: string, index0: number, rem
       }),
   };
 }
+
+/** B4 (rà soát kiến trúc 20/11/2026): xóa slide / hình chỉ khi đã chụp được bản để Hoàn tác. */
+const NO_SNAPSHOT_DELETE = "Không chụp được slide để Hoàn tác (PowerPoint trên máy này chưa hỗ trợ xuất slide, hoặc xuất lỗi) nên KHÔNG xóa. Báo người dùng tự xóa bằng tay nếu vẫn muốn.";
 
 export async function exportSlide(ctx: PowerPoint.RequestContext, slide: PowerPoint.Slide): Promise<string | null> {
   if (!supports("1.8")) return null;
@@ -708,10 +742,11 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
         if (count <= 1) throw new Error("Không xóa slide cuối cùng còn lại.");
         const id = slide.id;
         const b64 = await exportSlide(ctx, slide);
+        if (!b64) throw new Error(NO_SNAPSHOT_DELETE);
         slide.delete();
         await ctx.sync();
-        if (b64) log.push(restoreSlideUndo(b64, id, index - 1, false, `Xóa slide ${index}`));
-        return { ok: true, message: `Đã xóa slide ${index}${b64 ? "" : " (không hoàn tác được)"}` };
+        log.push(restoreSlideUndo(b64, id, index - 1, false, `Xóa slide ${index}`));
+        return { ok: true, message: `Đã xóa slide ${index}` };
       });
 
     case "ppt_update_shape":
@@ -812,11 +847,12 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
         const { slide, index } = await slideAt(ctx, a.slide);
         const shp = await shapeOn(ctx, slide, a.shape);
         const b64 = await exportSlide(ctx, slide);
+        if (!b64) throw new Error(NO_SNAPSHOT_DELETE);
         const nm = shp.name;
         shp.delete();
         await ctx.sync();
-        if (b64) log.push(restoreSlideUndo(b64, slide.id, index - 1, true, `Xóa hình ${nm}`));
-        return { ok: true, message: `Đã xóa hình ${nm} ở slide ${index}${b64 ? "" : " (không hoàn tác được)"}` };
+        log.push(restoreSlideUndo(b64, slide.id, index - 1, true, `Xóa hình ${nm}`));
+        return { ok: true, message: `Đã xóa hình ${nm} ở slide ${index}` };
       });
   }
   return undefined;

@@ -1,9 +1,7 @@
 /* global Excel */
 /** Hàm dùng chung cho các công cụ Excel: lấy vùng, chụp trạng thái và tạo thao tác Hoàn tác. */
 import { UndoEntry } from "../core/agent/types";
-import { splitAddress } from "./util";
-
-const MAX_UNDO_CELLS = 10000;
+import { MAX_UNDO_CELLS, splitAddress } from "./util";
 
 export function getRange(ctx: Excel.RequestContext, address: string, sheet?: string) {
   if (!address) throw new Error("Thiếu địa chỉ ô (address).");

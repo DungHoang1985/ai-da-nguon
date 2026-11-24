@@ -28,15 +28,16 @@ const App: React.FC = () => {
   const host = hostName();
   const [view, setView] = React.useState<"chat" | "settings">("chat");
   const [version, setVersion] = React.useState(0);
+  const [aiBusy, setAiBusy] = React.useState(false);
 
   return (
     <div className={s.root}>
       <div className={s.page} style={{ display: view === "chat" ? "flex" : "none" }}>
-        <Chat storage={storage} host={host} version={version} onOpenSettings={() => setView("settings")} onKeysChanged={() => setVersion((v) => v + 1)} />
+        <Chat storage={storage} host={host} version={version} onOpenSettings={() => setView("settings")} onKeysChanged={() => setVersion((v) => v + 1)} onBusyChange={setAiBusy} />
       </div>
       {view === "settings" && (
         <div className={s.page}>
-          <Settings storage={storage} host={host} onChanged={() => setVersion((v) => v + 1)} onBack={() => setView("chat")} />
+          <Settings storage={storage} host={host} aiBusy={aiBusy} onChanged={() => setVersion((v) => v + 1)} onBack={() => setView("chat")} />
         </div>
       )}
     </div>
