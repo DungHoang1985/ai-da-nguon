@@ -1,0 +1,133 @@
+{
+ "ngay": "2026-11-22T21:03:59.410Z",
+ "trinhDuyet": "Edg/158.0.4370.33",
+ "cheDo": "Edge --headless=new, hồ sơ tạm riêng, không cửa sổ",
+ "trang": "https://dunghoang1985.github.io/ai-da-nguon/taskpane.html | secure=true",
+ "ketQua": [
+  {
+   "ten": "Máy chủ thử: CORS + cho phép mạng riêng",
+   "url": "http://127.0.0.1:<cong-thu>/cors-pna/v1/messages",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 8,
+   "traLoi": "{\"error\":\"thu-401\"}"
+  },
+  {
+   "ten": "Máy chủ thử: chỉ CORS",
+   "url": "http://127.0.0.1:<cong-thu>/cors/v1/messages",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 2,
+   "traLoi": "{\"error\":\"thu-401\"}"
+  },
+  {
+   "ten": "Máy chủ thử: không tiêu đề cho phép",
+   "url": "http://127.0.0.1:<cong-thu>/none/v1/messages",
+   "ketQua": "bi-chan",
+   "ms": 1,
+   "loi": "TypeError: Failed to fetch"
+  },
+  {
+   "ten": "Máy chủ thử qua tên localhost: CORS + mạng riêng",
+   "url": "http://localhost:<cong-thu>/cors-pna/v1/messages",
+   "ketQua": "doc-duoc",
+   "ma": 401,
+   "ms": 3,
+   "traLoi": "{\"error\":\"thu-401\"}"
+  },
+  {
+   "ten": "Antigravity language_server (cổng cục bộ, không token)",
+   "url": "http://127.0.0.1:60559/",
+   "ketQua": "bi-chan",
+   "ms": 3,
+   "loi": "TypeError: Failed to fetch"
+  }
+ ],
+ "yeuCauMayChuThuNhan": [
+  {
+   "mode": "cors-pna",
+   "method": "OPTIONS",
+   "headers": {
+    "access-control-request-method": "POST",
+    "access-control-request-headers": "anthropic-version,authorization,content-type",
+    "origin": "https://dunghoang1985.github.io",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-dest": "empty"
+   }
+  },
+  {
+   "mode": "cors-pna",
+   "method": "POST",
+   "headers": {
+    "content-type": "application/json",
+    "origin": "https://dunghoang1985.github.io",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty"
+   }
+  },
+  {
+   "mode": "cors",
+   "method": "OPTIONS",
+   "headers": {
+    "access-control-request-method": "POST",
+    "access-control-request-headers": "anthropic-version,authorization,content-type",
+    "origin": "https://dunghoang1985.github.io",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-dest": "empty"
+   }
+  },
+  {
+   "mode": "cors",
+   "method": "POST",
+   "headers": {
+    "content-type": "application/json",
+    "origin": "https://dunghoang1985.github.io",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty"
+   }
+  },
+  {
+   "mode": "none",
+   "method": "OPTIONS",
+   "headers": {
+    "access-control-request-method": "POST",
+    "access-control-request-headers": "anthropic-version,authorization,content-type",
+    "origin": "https://dunghoang1985.github.io",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-dest": "empty"
+   }
+  },
+  {
+   "mode": "cors-pna",
+   "method": "OPTIONS",
+   "headers": {
+    "access-control-request-method": "POST",
+    "access-control-request-headers": "anthropic-version,authorization,content-type",
+    "origin": "https://dunghoang1985.github.io",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-dest": "empty"
+   }
+  },
+  {
+   "mode": "cors-pna",
+   "method": "POST",
+   "headers": {
+    "content-type": "application/json",
+    "origin": "https://dunghoang1985.github.io",
+    "sec-fetch-site": "cross-site",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty"
+   }
+  }
+ ],
+ "thongBaoTrinhDuyet": [
+  "Access to fetch at 'http://127.0.0.1:58649/none/v1/messages' from origin 'https://dunghoang1985.github.io' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.",
+  "Access to fetch at 'http://127.0.0.1:60559/' from origin 'https://dunghoang1985.github.io' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource."
+ ]
+}

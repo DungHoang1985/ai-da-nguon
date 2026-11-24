@@ -1,0 +1,51 @@
+{
+ "ngay": "2026-11-22T21:02:28.518Z",
+ "trinhDuyet": "Edg/158.0.4370.33",
+ "cheDo": "Edge --headless=new, hồ sơ tạm riêng, không cửa sổ",
+ "trang": "https://dunghoang1985.github.io/ai-da-nguon/taskpane.html | secure=true",
+ "ketQua": [
+  {
+   "ten": "Máy chủ thử: CORS + cho phép mạng riêng",
+   "url": "http://127.0.0.1:<cong-thu>/cors-pna/v1/messages",
+   "ketQua": "bi-chan",
+   "ms": 2,
+   "loi": "TypeError: Failed to fetch"
+  },
+  {
+   "ten": "Máy chủ thử: chỉ CORS",
+   "url": "http://127.0.0.1:<cong-thu>/cors/v1/messages",
+   "ketQua": "bi-chan",
+   "ms": 1,
+   "loi": "TypeError: Failed to fetch"
+  },
+  {
+   "ten": "Máy chủ thử: không tiêu đề cho phép",
+   "url": "http://127.0.0.1:<cong-thu>/none/v1/messages",
+   "ketQua": "bi-chan",
+   "ms": 1,
+   "loi": "TypeError: Failed to fetch"
+  },
+  {
+   "ten": "Máy chủ thử qua tên localhost: CORS + mạng riêng",
+   "url": "http://localhost:<cong-thu>/cors-pna/v1/messages",
+   "ketQua": "bi-chan",
+   "ms": 2,
+   "loi": "TypeError: Failed to fetch"
+  },
+  {
+   "ten": "Antigravity language_server (cổng cục bộ, không token)",
+   "url": "http://127.0.0.1:60559/",
+   "ketQua": "bi-chan",
+   "ms": 2,
+   "loi": "TypeError: Failed to fetch"
+  }
+ ],
+ "yeuCauMayChuThuNhan": [],
+ "thongBaoTrinhDuyet": [
+  "Access to fetch at 'http://127.0.0.1:54946/cors-pna/v1/messages' from origin 'https://dunghoang1985.github.io' has been blocked by CORS policy: Permission was denied for this request to access the `loopback` address space.",
+  "Access to fetch at 'http://127.0.0.1:54946/cors/v1/messages' from origin 'https://dunghoang1985.github.io' has been blocked by CORS policy: Permission was denied for this request to access the `loopback` address space.",
+  "Access to fetch at 'http://127.0.0.1:54946/none/v1/messages' from origin 'https://dunghoang1985.github.io' has been blocked by CORS policy: Permission was denied for this request to access the `loopback` address space.",
+  "Access to fetch at 'http://localhost:54946/cors-pna/v1/messages' from origin 'https://dunghoang1985.github.io' has been blocked by CORS policy: Permission was denied for this request to access the `loopback` address space.",
+  "Access to fetch at 'http://127.0.0.1:60559/' from origin 'https://dunghoang1985.github.io' has been blocked by CORS policy: Permission was denied for this request to access the `loopback` address space."
+ ]
+}

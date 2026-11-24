@@ -10,3 +10,6 @@ _ban-0-cu/
 
 # Cấu hình chạy thử cục bộ của Claude Code
 .claude/launch.json
+
+# Bằng chứng lớn hoặc có lời AI / thông tin riêng: giữ trên máy, không lên kho công khai
+_luu-cuc-bo/
