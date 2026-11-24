@@ -119,7 +119,7 @@ B14 (sau lượt này): giấy ủy quyền bỏ trống trích yếu cũng đư
 
 ## Chưa làm, để lại
 
-- **Chưa phát hành**: nhánh `claude/thu-mien-phi-vong-3` (tách từ `e20dd9a`, tức 4.11.10 chưa phát hành) — phát hành là gộp vào `main` rồi đẩy.
+- **Đã phát hành 24/11/2026** (gộp cả 4.11.10): `main@ab0cae4` → `gh-pages@b5eb0a5`, GitHub Actions đạt; Tự kiểm tra Word trên bản phát hành **41/41** (`tu-kiem-tra-4.11.11-phat-hanh.json`).
 - dots-3-note: khi rà văn bản vẫn không gọi `word_check_consistency` và vẫn tự viết số hiệu nghị định. Có thể cân nhắc: khi yêu cầu có "rà soát / sửa lỗi" ở chế độ Miễn phí thì add-in tự chạy soát bằng mã và đưa kết quả vào lượt đầu (không chờ model gọi).
 - Model hay tự đặt "Hà Nội" làm địa danh khi đề không cho (Nemotron, Cohere).
 - Các mục mức thấp của bản soát mã (liệt kê ở trên).
