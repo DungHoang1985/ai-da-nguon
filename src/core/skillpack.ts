@@ -373,6 +373,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
       "soan thong bao", "viet thong bao", "du thao thong bao", "giay moi", "soan bien ban", "lap bien ban", "viet bien ban", "soan bao cao", "du thao bao cao", "viet bao cao",
       "soan ke hoach", "lap ke hoach", "soan van ban gui", "soan van ban de nghi", "quoc hieu",
       "nghi quyet", "soan nghi quyet", "du thao nghi quyet", "bien ban hop", "dai hoi dong co dong", "hoi dong quan tri",
+      "giay uy quyen", "ra soat van ban", "soat van ban", "sua loi chinh ta", "soat loi chinh ta",
     ],
     body: `# Soạn thảo văn bản hành chính
 
@@ -382,7 +383,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 1. Xác định trước khi viết: loại văn bản; cơ quan ban hành (và cơ quan chủ quản nếu có); gửi ai; nội dung chính; ai ký và ký với quyền hạn gì. Người dùng đã nêu đủ ý chính thì soạn ngay; chỉ hỏi khi thiếu tên cơ quan ban hành hoặc thiếu nội dung chính.
 2. KHÔNG bịa số văn bản, ngày ký, tên người ký, ký hiệu đơn vị, số liệu, căn cứ pháp lý. Chưa biết thì bỏ trống tham số: công cụ tự chừa chỗ. Số văn bản luôn để trống cho văn thư cấp.
 3. Dựng bằng MỘT lần gọi word_create_admin_document (công cụ tự trình bày đúng mọi thành phần, đặt khổ giấy, lề, số trang khi văn bản đang trống). Không tự chèn từng dòng quốc hiệu, bảng, phần ký bằng công cụ khác.
-   - doc_type: cong_van, to_trinh, bao_cao, quyet_dinh, nghi_quyet, thong_bao, giay_moi, bien_ban, ke_hoach, khac (kèm title). Hợp đồng (kể cả khi người dùng muốn "theo thể thức hành chính"): doc_type hop_dong, làm theo kỹ năng soan-hop-dong (use_skill), không dùng khac.
+   - doc_type: cong_van, to_trinh, bao_cao, quyet_dinh, nghi_quyet, thong_bao, giay_moi, bien_ban, ke_hoach, giay_uy_quyen, khac (kèm title). Hợp đồng (kể cả khi người dùng muốn "theo thể thức hành chính"): doc_type hop_dong, làm theo kỹ năng soan-hop-dong (use_skill), không dùng khac.
    - symbol: chữ viết tắt tên loại + chữ viết tắt tên cơ quan, ví dụ TTr-ABC, BC-ABC, QĐ-ABC, TB-ABC, GM-ABC, BB-ABC, KH-ABC. Công văn không có chữ viết tắt tên loại: chữ viết tắt cơ quan + đơn vị soạn thảo, ví dụ ABC-PC. Chỉ điền khi người dùng đã cho chữ viết tắt của cơ quan hoặc tài liệu có sẵn; không biết thì bỏ trống, không tự đặt.
    - subject: trích yếu ngắn, nêu đúng việc (công văn: phần sau "V/v").
    - to: nơi nhận ở phần Kính gửi (công văn, tờ trình, báo cáo gửi cấp trên). recipients: các dòng Nơi nhận.
@@ -398,18 +399,19 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
    - Quyết định: dòng đầu là chức danh hoặc tập thể ban hành viết hoa, ví dụ "# HỘI ĐỒNG QUẢN TRỊ CÔNG TY CỔ PHẦN ABC", "# GIÁM ĐỐC CÔNG TY ABC" (thay ABC bằng tên thật); các dòng căn cứ nghiêng "_Căn cứ …;_", dòng cuối "_Theo đề nghị của …._" kết bằng dấu chấm; "# QUYẾT ĐỊNH:"; rồi "## Điều 1. …", "## Điều 2. …"; điều cuối nêu hiệu lực và người chịu trách nhiệm thi hành. Nơi nhận ghi "Như Điều …" (điều nêu người thi hành). Tập thể ban hành thì ký "TM. <TẬP THỂ>" + "CHỦ TỊCH".
    - Nghị quyết (doc_type nghi_quyet; của tập thể: Hội đồng quản trị, Đại hội đồng cổ đông, Hội đồng thành viên): dòng "# <TẬP THỂ> <TÊN TỔ CHỨC>" (ví dụ "# HỘI ĐỒNG QUẢN TRỊ CÔNG TY CỔ PHẦN …"); căn cứ nghiêng (Luật Doanh nghiệp, Điều lệ, biên bản họp ngày …, nêu số thành viên dự họp và tán thành); "# QUYẾT NGHỊ:" (không phải "QUYẾT ĐỊNH:"); "## Điều 1. …" mỗi nội dung được thông qua một điều; điều cuối: hiệu lực và người thi hành. Ký "TM. <TẬP THỂ>" + chức vụ "CHỦ TỊCH" (Đại hội đồng cổ đông: "TM. ĐẠI HỘI ĐỒNG CỔ ĐÔNG" + "CHỦ TỌA"). Số người dùng đưa đủ dạng (có năm, có ký hiệu) thì đưa nguyên vào number.
    - Thông báo: nội dung thông báo, đối tượng, thời gian, yêu cầu thực hiện, đầu mối liên hệ.
-   - Giấy mời: dòng "<cơ quan> trân trọng kính mời: …"; "Tới dự: …"; "Chủ trì: …"; "Thời gian: …"; "Địa điểm: …".
+   - Giấy mời: subject ngắn (ví dụ "Họp bàn …"); dòng "<cơ quan> trân trọng kính mời: …"; "Tới dự: …"; "Chủ trì: …"; "Thời gian: …"; "Địa điểm: …". Ngày ban hành TRƯỚC ngày họp; chưa biết thì bỏ trống.
+   - Giấy ủy quyền (giay_uy_quyen): hai bên, phạm vi, thời hạn; ghi rõ có được ủy quyền lại không (chỉ khi bên ủy quyền đồng ý — Bộ luật Dân sự 2015). Ký hai bên: left_signer_name người nhận; signer_title, signer_name người ủy quyền.
    - Biên bản: thời gian bắt đầu, địa điểm, thành phần tham dự, chủ trì, thư ký, nội dung, giờ kết thúc (chưa biết thì để "…"); ký hai bên: left_signer_title "THƯ KÝ", signer_title "CHỦ TỌA" (không thêm signer_authority).
    - Biên bản họp Đại hội đồng cổ đông (Luật Doanh nghiệp 2020): tỷ lệ dự họp = cổ phần biểu quyết của cổ đông dự họp / tổng cổ phần biểu quyết, đủ điều kiện khi trên 50% (Điều 145). Từng vấn đề: số và tỷ lệ tán thành, không tán thành, không có ý kiến trên tổng phiếu của cổ đông dự họp (cộng lại 100%). Thông qua khi từ 65% với vấn đề ở khoản 1 Điều 148 (loại cổ phần, ngành nghề, cơ cấu quản lý, dự án đầu tư hoặc bán tài sản từ 35% tổng tài sản, tổ chức lại, giải thể), vấn đề khác trên 50%, trừ khi Điều lệ khác. Ghi cả phép chia.
-   - Thẩm quyền công ty cổ phần (kèm "trừ khi Điều lệ quy định khác"): hợp đồng vay, giao dịch từ 35% tổng tài sản (báo cáo tài chính gần nhất) do Hội đồng quản trị thông qua (điểm h khoản 2 Điều 153); đầu tư, bán tài sản từ 35% do Đại hội đồng cổ đông quyết định (điểm d khoản 2 Điều 138). Tính tỷ lệ trước khi kết luận.
+   - Thẩm quyền công ty cổ phần (trừ khi Điều lệ khác): hợp đồng vay, giao dịch từ 35% tổng tài sản (báo cáo tài chính gần nhất) do Hội đồng quản trị thông qua (điểm h khoản 2 Điều 153); đầu tư, bán tài sản từ 35% do Đại hội đồng cổ đông quyết định (điểm d khoản 2 Điều 138). Tính tỷ lệ trước.
    - ${CAN_CU_HIEN_HANH}
    - Đề mục trong nội dung: phần "I., II.", mục "1., 2.", điểm "a), b)"; đánh số liên tục, không nhảy, không trùng.
 5. Căn cứ pháp lý chỉ ghi khi có trong tài liệu, tệp đính kèm hoặc người dùng cung cấp; lần đầu viện dẫn ghi đủ tên loại, số, ký hiệu, ngày, cơ quan ban hành, trích yếu. Không có thì ghi "[cần bổ sung căn cứ]" và báo người dùng.
-6. Viết hoa: tên cơ quan viết hoa chữ đầu các từ chỉ loại hình, chức năng (Sở Xây dựng, Ủy ban nhân dân tỉnh …); "khoản", "điểm" viết thường, "Điều", "Chương" viết hoa khi viện dẫn; "cơ quan nhà nước", "quản lý nhà nước" viết thường chữ "nhà nước"; chức vụ viết hoa khi đi liền tên người.
+6. Viết hoa: tên cơ quan viết hoa chữ đầu các từ chỉ loại hình, chức năng (Sở Xây dựng, Ủy ban nhân dân tỉnh …); "khoản", "điểm" viết thường, "Điều", "Chương" viết hoa khi viện dẫn; chức vụ viết hoa khi đi liền tên người.
 7. Sau khi dựng: kết quả có check_now thì sửa ngay từng mục; gọi word_check_page_format để xác nhận lề, khổ giấy, phông, cỡ chữ; còn chỗ trống thì không nói "sẵn sàng ký"; báo người dùng danh sách chỗ còn trống (trường blanks của công cụ) cần điền trước khi ký. Sửa câu chữ sau đó thì dùng word_set_paragraph_text trên đúng đoạn, không dựng lại cả văn bản.
 
 ## B. Soát và sửa văn bản có sẵn
-1. Đọc văn bản (word_read_paragraphs), kiểm trang bằng word_check_page_format, đọc đầu và chân trang bằng word_read_parts.
+1. Gọi word_check_consistency TRƯỚC (mã bắt thứ lệch ngày, luật hết hiệu lực, sai dấu; tin kết quả, không tự tính thứ), rồi đọc văn bản, kiểm trang (word_check_page_format). Căn cứ hết hiệu lực: thay bằng tên và năm, không tự viết số hiệu.
 2. Đối chiếu với chuẩn dưới đây, lập bảng: Thành phần | Chuẩn | Hiện trạng | Xử lý.
 3. Người dùng chỉ nhờ KIỂM thì chỉ báo kết quả theo bảng, không sửa. Khi được nhờ sửa thể thức: phông, cỡ, kiểu chữ, canh lề, thụt đầu dòng, cách đoạn, giãn dòng (word_format_text với font_name, font_size, bold, italic, alignment, first_line_indent_mm, space_after_pt, line_spacing), viết hoa chỗ rõ ràng, dấu câu của Kính gửi và Nơi nhận; lề và khổ giấy thì nêu số đo hiện tại và số đo sẽ đặt rồi mới gọi word_set_page_format (thay đổi này áp cho cả văn bản). Hợp đồng và văn bản không phải văn bản hành chính: không áp chuẩn này trừ khi người dùng yêu cầu.
 4. KHÔNG tự sửa nội dung: câu chữ, số liệu, ngày tháng, số hiệu văn bản viện dẫn, người ký. Thấy sai thì ghi nhận xét (word_add_comment) để người dùng quyết.
@@ -445,7 +447,8 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 1. Nắm trước khi viết: loại hợp đồng (thi công xây dựng, tư vấn, cung cấp vật tư, mua bán, dịch vụ…); Bên A, Bên B; đối tượng (công trình, gói thầu, địa điểm, khối lượng); giá và cách tính giá; thời hạn; người đại diện ký. Soạn MẪU hợp đồng, hoặc người dùng đã nêu loại hợp đồng: soạn ngay, chỗ chưa có thông tin để "…", rồi kê các chỗ đó; không hỏi trước. Chỉ hỏi (một lần) khi người dùng muốn hợp đồng cho một việc cụ thể mà chưa rõ cả loại lẫn đối tượng.
 2. KHÔNG bịa: số hợp đồng, ngày ký, mã số thuế, tài khoản, địa chỉ, người đại diện, giá trị, căn cứ pháp lý. Chưa biết thì để "…" cho người dùng điền; căn cứ chỉ ghi khi có trong tài liệu, tệp đính kèm hoặc người dùng đưa. KHÔNG tự viết số hiệu, ngày ban hành của luật, nghị định theo trí nhớ (rất dễ sai số, sai năm, có khi văn bản không tồn tại): chưa có nguồn thì để dòng "_Căn cứ [cần bổ sung căn cứ pháp lý];_" và báo người dùng.
    ${CAN_CU_HIEN_HANH}
-   Hợp đồng mà bên bán, bên chuyển nhượng là doanh nghiệp bán nhà, đất trong dự án: đó là kinh doanh bất động sản — dùng Luật Kinh doanh bất động sản và mẫu ở nghị định quy định chi tiết luật này; nêu điều này với người dùng, và hỏi (một lần, sau khi đã soạn) bên bán có phải chủ đầu tư dự án không nếu đề bài chưa nói.
+   Hợp đồng mà bên bán, bên chuyển nhượng là doanh nghiệp bán nhà, đất trong dự án: đó là kinh doanh bất động sản — dùng Luật Kinh doanh bất động sản và mẫu ở nghị định quy định chi tiết luật này; nêu điều này với người dùng, và hỏi (một lần, sau khi đã soạn) bên bán có phải chủ đầu tư dự án không nếu đề bài chưa nói (đã nói thì không hỏi).
+   Ngưỡng luật hay gặp — người dùng đưa số trái luật thì KHÔNG chép im lặng: soạn theo mức luật cho phép, hoặc giữ số đó nhưng nêu rõ rủi ro trong câu trả lời. Chủ đầu tư thu tiền đặt cọc mua nhà ở, công trình: không quá 5% giá bán (Luật Kinh doanh bất động sản 2023). Hợp đồng lao động (Bộ luật Lao động 2019): thử việc tối đa 60 ngày với việc cần trình độ cao đẳng trở lên (180 ngày với người quản lý doanh nghiệp), lương thử việc ít nhất 85%, hợp đồng xác định thời hạn tối đa 36 tháng; thời hạn 24 tháng từ 01/01 kết thúc ngày 31/12 năm sau.
 3. Dựng bằng MỘT lần gọi word_create_admin_document với doc_type "hop_dong" (không dùng "khac"):
    - title: tên hợp đồng, ví dụ "HỢP ĐỒNG THI CÔNG XÂY DỰNG".
    - org: chỉ khi người dùng muốn tên đơn vị ở góc trái, ngang hàng với quốc hiệu bên phải (khi đó "Số: …" nằm dưới tên đơn vị). Không có org: quốc hiệu, tiêu ngữ canh giữa, "Số: …" dưới tên hợp đồng.
@@ -456,6 +459,7 @@ Với mỗi rủi ro nêu: mô tả, căn cứ (điều khoản/tài liệu nào
 4. Body, mỗi dòng một đoạn:
    - Căn cứ: mỗi căn cứ một dòng nghiêng "_Căn cứ …;_", dòng căn cứ cuối kết bằng dấu chấm.
    - "Hôm nay, ngày … tháng … năm …, tại …, chúng tôi gồm:"
+   - Bên là cá nhân (người lao động, người mua): "## BÊN MUA (BÊN B): Bà …" — phần ký tự ghi "BÊN B", không chức vụ, không đóng dấu; không đưa signer_title.
    - "## BÊN GIAO THẦU (BÊN A): <tên>" rồi từng dòng: "Đại diện: … Chức vụ: …", "Địa chỉ: …", "Điện thoại: …", "Mã số thuế: …", "Tài khoản số: … tại …". Bên B "## BÊN NHẬN THẦU (BÊN B): …" cùng các dòng đó.
    - "Hai bên thống nhất ký kết hợp đồng … với các điều khoản sau:"
    - Điều khoản: "## Điều 1. <tên điều>"; khoản "1.1.", "1.2." hoặc "1.", "2."; điểm "a)", "b)". Đánh số liên tục, không nhảy, không trùng.
@@ -533,11 +537,13 @@ function norm(s: string): string {
 
 /** Chọn Skill tự kích hoạt theo nội dung câu hỏi (tối đa 2), dựa trên từ khóa. */
 export function autoSelectSkills(message: string, skills: (Skill & { triggers?: string[] })[], max = 2): Skill[] {
-  const text = norm(message);
+  // So theo ranh giới từ: "hop voi" (chuẩn bị họp) không được khớp vào "khop voi" (khớp với) — vòng thử 3, 24/11/2026
+  const words = (x: string) => ` ${norm(x).replace(/[^a-z0-9]+/g, " ").trim()} `;
+  const text = words(message);
   const scored = skills
     .map((s) => {
       const triggers = s.triggers?.length ? s.triggers : [norm(s.name.replace(/-/g, " "))];
-      const hits = triggers.filter((t) => text.includes(norm(t)));
+      const hits = triggers.filter((t) => text.includes(words(t)));
       return { s, score: hits.reduce((n, t) => n + t.split(" ").length, 0) };
     })
     .filter((x) => x.score > 0)

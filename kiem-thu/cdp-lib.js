@@ -16,14 +16,18 @@ const toChat = async () => {
     await sleep(800);
   }
 };
-const busy = () => !!btn(/^Dừng/);
+// Chỉ nút Dừng của lượt đang chạy (aria-label "Dừng"); nút "Dừng ở đây" của thẻ "Làm tiếp?" không tính là bận (24/11/2026)
+const busy = () => !!btn(/^Dừng$/);
 /** Chữ đang hiện trong khung (phần cuối) */
 const tail = (n = 1800) => document.body.innerText.slice(-n);
 /** Chọn nhà cung cấp và model (model: biểu thức khớp mã model, ví dụ /haiku-5-5/); reload = tải lại danh mục */
 async function pick(providerId, modelRe, reload = false) {
   await toChat();
-  btn(/^Model đang dùng/).click();
-  await sleep(700);
+  // Nút "Model đang dùng" bật / tắt bảng chọn: bảng đang mở sẵn (lần trước bỏ dở) thì không bấm nữa
+  if (!document.querySelector('select[aria-label="Nhà cung cấp"]')) {
+    btn(/^Model đang dùng/).click();
+    await sleep(700);
+  }
   const sel = document.querySelector('select[aria-label="Nhà cung cấp"]');
   if (sel.value !== providerId) {
     setNative(sel, providerId);
@@ -68,7 +72,7 @@ async function send(text, opts = {}) {
       await sleep(500);
     }
     if (!stopped && opts.stopWhen && opts.stopWhen()) {
-      btn(/^Dừng/)?.click();
+      btn(/^Dừng$/)?.click();
       stopped = true;
     }
     await sleep(300);

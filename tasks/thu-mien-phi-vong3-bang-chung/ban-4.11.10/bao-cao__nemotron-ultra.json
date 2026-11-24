@@ -1,0 +1,388 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "luot1": {
+  "giay": 54,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Tình hình triển khai dự án Khu nhà ở Anh Quân Rive | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 1246
+ },
+ "lamTiep": [],
+ "luot2": null,
+ "tongGiay": 55,
+ "chat": "Soạn báo cáo của Công ty Cổ phần Đầu tư Anh Quân gửi Sở Xây dựng tỉnh Bình Minh về tình hình triển khai dự án Khu nhà ở Anh Quân Riverside đến hết quý III/2026. Số liệu: tổng mức đầu tư 450 tỷ đồng, lũy kế giải ngân 157,5 tỷ đồng; 120 căn nhà liền kề đã xong móng cả 120 căn, đã xong phần thô 48 căn; hạ tầng kỹ thuật hoàn thành khoảng 65% khối lượng. Hãy tính tỷ lệ giải ngân và tỷ lệ số căn đã xong phần thô. Khó khăn: còn 0,8 ha chưa bàn giao mặt bằng do vướng bồi thường 3 hộ dân. Kiến nghị Sở phối hợp với UBND phường An Phú đẩy nhanh giải phóng mặt bằng. Người ký: Tổng Giám đốc Nguyễn Anh Quân.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh, chuan-bi-hop\n✅ Dựng văn bản hành chính đúng thể thức: Tình hình triển khai dự án Khu nhà ở Anh Quân Rive — Đã dựng báo cáo đúng thể thức · còn 4 chỗ cần điền\nĐã soạn xong Báo cáo gửi Sở Xây dựng tỉnh Bình Minh về tình hình dự án Anh Quân Riverside đến hết quý III/2026. Văn bản đã dựng đúng thể thức hành chính (A4, lề chuẩn, Times New Roman 14, số trang), có theo dõi thay đổi.\n \nNội dung chính đã đưa vào:\n• Tổng đầu tư 450 tỷ, lũy kế giải ngân 157,5 tỷ → tỷ lệ giải ngân 35%.\n• 120 căn liền kề: móng 100%, phần thô xong 48 căn → tỷ lệ phần thô 40%.\n• Hạ tầng kỹ thuật hoàn thành ~65%.\n• Khó khăn: 0,8 ha chưa bàn giao do 3 hộ dân vướng bồi thường tại phường An Phú.\n• Kiến nghị Sở phối hợp UBND phường An Phú đẩy nhanh giải phóng mặt bằng quý IV/2026.\n• Ký: Tổng Giám đốc Nguyễn Anh Quân.\n \nCần điền bổ sung trước khi ký (4 chỗ trống):\n1. Số văn bản (để văn thư cấp)\n2. Ký hiệu văn bản\n3. Địa danh (nơi ban hành)\n4. Ngày tháng ban hành\n \nBạn hãy mở văn bản, điền 4 mục trên và kiểm tra lại căn cứ pháp lý (hiện đang để `[cần bổ sung căn cứ pháp lý]` ở mục I). Nếu muốn sửa câu chữ, chỉ cần cho biết đoạn nào.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 31.666 · ra 3.029 · đọc từ bộ nhớ đệm 13.152\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [
+  "2 lần gọi AI · Token: vào 31.666 · ra 3.029 · đọc từ bộ nhớ đệm 13.152"
+ ],
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "BÁO CÁO",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tình hình triển khai dự án Khu nhà ở Anh Quân Riverside đến hết quý III/2026",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Sở Xây dựng tỉnh Bình Minh",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "I. TỔNG QUAN DỰ ÁN",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ [cần bổ sung căn cứ pháp lý];",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Dự án Khu nhà ở Anh Quân Riverside do Công ty Cổ phần Đầu tư Anh Quân làm chủ đầu tư, tọa lạc tại phường An Phú, tỉnh Bình Minh. Tổng mức đầu tư: 450 tỷ đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "II. TÌNH HÌNH TRIỂN KHAI ĐẾN HẾT QUÝ III/2026",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Giải ngân vốn: Lũy kế giải ngân 157,5 tỷ đồng, đạt 35% tổng mức đầu tư.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Tiến độ xây dựng: 120 căn nhà liền kề đã hoàn thành móng 100%; đã xong phần thô 48 căn, đạt 40% tổng số căn.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3. Hạ tầng kỹ thuật: Hoàn thành khoảng 65% khối lượng thiết kế.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "III. KHÓ KHĂN, VẤN ĐỀ",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Còn 0,8 ha đất chưa bàn giao mặt bằng do vướng bồi thường, hỗ trợ 03 hộ dân tại phường An Phú, gây chậm tiến độ thi công khu vực còn lại.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "IV. NGUYÊN NHÂN VÀ PHƯƠNG HƯỚNG GIẢI QUYẾT",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Chậm thanh toán bồi thường do quy trình xác định giá đất, phê duyệt kế hoạch bồi thường kéo dài. Công ty đã chủ động phối hợp với UBND phường An Phú rà soát hồ sơ, đẩy nhanh giải phóng mặt bằng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "V. KIẾN NGHỊ",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính đề nghị Sở Xây dựng tỉnh Bình Minh phối hợp với UBND phường An Phú thúc đẩy giải quyết bồi thường, hỗ trợ, bàn giao mặt bằng 0,8 ha còn lại trong quý IV/2026 để đảm bảo tiến độ tổng thể dự án.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "VI. KẾT LUẬN VÀ ĐỀ XUẤT",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Công ty cam kết tiếp tục đẩy mạnh triển khai, đảm bảo hoàn thành mục tiêu năm 2026. Trân trọng báo cáo./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Sở Xây dựng tỉnh Bình Minh;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, Ban Giám đốc.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\t…, ngày      tháng      năm 2026\r\nBÁO CÁO\rTình hình triển khai dự án Khu nhà ở Anh Quân "
+  },
+  {
+   "loai": "Formatted",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\t…, ngày      tháng      năm 2026\r\n"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "Nơi nhận:\r- Như trên;\r- Sở Xây dựng tỉnh Bình Minh;\r- Lưu: VT, Ban Giám đốc.\tTỔNG GIÁM ĐỐC\r\r\r\r\rNguyễn Anh Quân\r\n"
+  }
+ ]
+}

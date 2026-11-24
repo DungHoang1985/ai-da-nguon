@@ -1,0 +1,317 @@
+{
+ "khungBan": "khung đang bận bài trước: đã bấm Dừng",
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Dots Studio: Dots3-Note Preview (free). Bấm để đổi 🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)"
+ },
+ "luot1": {
+  "giay": 95,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Họp bàn phương án bồi thường, hỗ trợ đối với 3户民 c | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 689
+ },
+ "lamTiep": [
+  {
+   "giay": 42,
+   "daHoi": [
+    "AI muốn: Thay \"Unauthorized\" → \"Uy ban\" ở [¶14] — lý do: Sửa chữ tiếng Anh \"Unauthorized\" thành \"Uy ban\" (thuật ngữ tiếng Việt đúng) | Cho phép | Cho phép hết lần này | Bỏ qua"
+   ],
+   "ten": "sau lượt 1"
+  }
+ ],
+ "luot2": null,
+ "tongGiay": 138,
+ "chat": "Soạn giấy mời của Công ty Cổ phần Đầu tư Anh Quân mời đại diện Ủy ban nhân dân phường An Phú dự cuộc họp bàn phương án bồi thường, hỗ trợ đối với 3 hộ dân còn vướng mặt bằng (diện tích 0,8 ha) thuộc dự án Khu nhà ở Anh Quân Riverside. Thời gian: 14h00 Thứ Tư, ngày 10/12/2026. Địa điểm: phòng họp tầng 3, trụ sở công ty. Đầu mối liên hệ: bà Lê Thị Hoa, Phòng Hành chính – Nhân sự. Người ký: Phó Tổng Giám đốc Trần Văn Bình ký thay Tổng Giám đốc.\nKỹ năng áp dụng: chuan-bi-hop, soan-thao-van-ban-hanh-chinh\n✅ Đọc kỹ năng soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: Họp bàn phương án bồi thường, hỗ trợ đối với 3户民 c — Đã dựng giấy mời đúng thể thức · còn 5 chỗ cần điền · 1 chỗ nghi sai cần kiểm\n✅ Đọc đoạn 0–30\n✅ Thay \"Unauthorized\" → \"Uy ban\" ở [¶12] — lý do: Sửa chữ tiếng Anh \"Unauthorized\" thành \"Uy ban\" (thuật ngữ tiếng Việt đúng)\n✅ Thay \"Unauthorized\" → \"Uy ban\" ở [¶13] — lý do: Sửa chữ tiếng Anh \"Unauthorized\" thành \"Uy ban\" (thuật ngữ tiếng Việt đúng)\n✅ Thay \"3户民\" → \"3 hộ dân\" ở [¶10] — lý do: Sửa chữ tiếng Trung/loại \"户民\" thành \"hộ dân\" (tiếng Việt đúng)\n⚠️ Thay \"3户民\" → \"3 hộ dân\" ở [¶13] — lý do: Sửa chữ tiếng Trung/loại \"户民\" thành \"hộ dân\" (tiếng Việt đúng) — Đoạn 13 không bắt đầu bằng “Công ty Cổ phần Đầu tư Anh Quân trân trọng kính mời: Đại diệ” và không tìm thấy đoạn nào như vậy: văn bản đã đổi so với lúc đọc. Đọc lại rồi mới sửa.\n✅ Đọc đoạn 13–14\n✅ Thay \"Uy ban ban nhân dân\" → \"Uy ban nhân dân\" ở [¶13] — lý do: Sửa \"Uy ban ban nhân dân\" thành \"Uy ban nhân dân\" (thuật ngữ đúng)\n✅ Đọc đoạn 13–14\n⚠️ Thay \"3户民\" → \"3 hộ dân\" ở [¶13] — lý do: Sửa chữ tiếng Trung/loại \"户民\" thành \"hộ dân\" (tiếng Việt đúng) — Thiếu expect: khi chỉ một đoạn bằng số (đoạn 13) phải kèm expect = khoảng 30 ký tự đầu của đoạn đó đúng như đã đọc, để công cụ không sửa nhầm đoạn khi chỉ số đã dời.\n✅ Thay \"3户民\" → \"3 hộ dân\" ở [¶13] — lý do: Sửa chữ tiếng Trung/loại \"户民\" thành \"hộ dân\" (tiếng Việt đúng)\n1 nhiệm vụ · 12 lần gọi AI · Token: vào 229.125 · ra 7.993 · đọc từ bộ nhớ đệm 217.088\nHoàn tác thay đổi (6)\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nLàm tiếp\n✅ Đọc đoạn 14–15\n✅ Thay \"Unauthorized\" → \"Uy ban\" ở [¶14] — lý do: Sửa chữ tiếng Anh \"Unauthorized\" thành \"Uy ban\" (thuật ngữ tiếng Việt đúng)\n✅ Đọc đoạn 16–17\n✅ Thay \"Thứ Tư\" → \"Thứ Năm\" ở [¶16] — lý do: Sửa thứ trong tuần: 10/12/2026 là Thứ Năm, không phải Thứ Tư\n✅ Đọc đoạn 0–30\n✅ Thay \"Uy ban ban nhân dân\" → \"Uy ban nhân dân\" ở [¶12] — lý do: Sửa \"Uy ban ban nhân dân\" thành \"Uy ban nhân dân\" (thuật ngữ đúng)\n✅ Thay \"Uy ban ban nhân dân\" → \"Uy ban nhân dân\" ở [¶14] — lý do: Sửa \"Uy ban ban nhân dân\" thành \"Uy ban nhân dân\" (thuật ngữ đúng)\nĐã hoàn thành soạn và sửa lỗi giấy mời. Các thay đổi đã thực hiện:\n \n1. Dựng giấy mời theo thể thức hành chính (A4, lề chuẩn, Times New Roman, phần đầu, phần ký đúng dạng bảng hai cột).\n2. Sửa các lỗi chính tả/duyệt:\n• \"Unauthorized\" → \"Uy ban\" (đoạn 12, 13, 14).\n• \"3户民\" → \"3 hộ dân\" (đoạn 10, 13).\n• \"Uy ban ban nhân dân\" → \"Uy ban nhân dân\" (đoạn 12, 14).\n• \"Thứ Tư\" → \"Thứ Năm\" (đoạn 16) vì 10/12/2026 là Thứ Năm.\n \nCác chỗ còn trống cần người dùng điền trước khi ký:\n• Số văn bản ( để văn thư cấp)\n• Ký hiệu văn bản\n• Địa danh\n• Ngày tháng ban hành\n• Đơn vị soạn thảo ở dòng \"Lưu: VT, …\"\n1 nhiệm vụ · 20 lần gọi AI · Token: vào 180.474 · ra 2.613 · đọc từ bộ nhớ đệm 159.744\nHoàn tác thay đổi (4)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nLượt này khoảng 23.183 token đầu vào.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [
+  "12 lần gọi AI · Token: vào 229.125 · ra 7.993 · đọc từ bộ nhớ đệm 217.088",
+  "20 lần gọi AI · Token: vào 180.474 · ra 2.613 · đọc từ bộ nhớ đệm 159.744"
+ ],
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "GIẤY MỜI",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Họp bàn phương án bồi thường, hỗ trợ đối với 3 hộ dân còn vướng mặt bằng (diện tích 0,8 ha) thuộc dự án Khu nhà ở Anh Quân Riverside",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Đại diện Uy ban nhân dân phường An Phú",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân trân trọng kính mời: Đại diện Uy ban nhân dân phường An Phú dự cuộc họp bàn phương án bồi thường, hỗ trợ đối với 3 hộ dân còn vướng mặt bằng (diện tích 0,8 ha) thuộc dự án Khu nhà ở Anh Quân Riverside.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tới dự: Đại diện Uy ban nhân dân phường An Phú.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Chủ trì: Phó Tổng Giám đốc Trần Văn Bình.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thời gian: 14h00 Thứ Năm, ngày 10/12/2026.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa điểm: phòng họp tầng 3, trụ sở công ty.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đầu mối liên hệ: bà Lê Thị Hoa, Phòng Hành chính – Nhân sự./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Như trên;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, ….",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "KT. TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "PHÓ TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Trần Văn Bình",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\t…, ngày      tháng      năm 2026\r\nGIẤY MỜI\rHọp bàn phương án bồi thường, hỗ trợ đối với "
+  },
+  {
+   "loai": "Formatted",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\t…, ngày      tháng      năm 2026\r\n"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "Nơi nhận:\r- Như trên;\r- Lưu: VT, ….\tKT. TỔNG GIÁM ĐỐC\rPHÓ TỔNG GIÁM ĐỐC\r\r\r\r\rTrần Văn Bình\r\n"
+  }
+ ]
+}

@@ -26,6 +26,9 @@ import { WORD_REVIEW_SPECS, createWordReviewTools } from "./wordReview";
 import { WORD_ADMIN_SPECS, createWordAdminTools } from "./wordAdmin";
 import { WORD_FORM_SPECS, createWordFormTools } from "./wordForm";
 import { WORD_SPECIAL_LINE } from "../core/toolgroups";
+import { newTextCheck } from "../core/textcheck";
+/** Lệnh ghi chữ mới mà kết quả cần kiểm từ lạ (tham số text) */
+const NEW_TEXT_TOOLS = new Set(["word_set_paragraph_text", "word_insert_paragraphs", "word_insert_clause"]);
 import {
   ChangeSnap,
   beforeExcerpt,
@@ -2123,7 +2126,14 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
     const diffable = name !== "word_review_revision" && !UNDO_LABEL[name];
     const before = diffable ? await changeSnaps().catch(() => null) : null;
     try {
-      return await run(name, a, u);
+      const r = await run(name, a, u);
+      // Chữ mới ghi lẫn từ lạ ("DeniedĐến nay", "Collaboratively配合" — vòng thử 3, 24/11/2026): báo check_now để model sửa ngay
+      const written = name === "word_replace_text" ? a?.replace : NEW_TEXT_TOOLS.has(name) ? a?.text : undefined;
+      if (typeof written === "string" && written && r && typeof r === "object" && r.ok !== false) {
+        const c = newTextCheck(written, String(name === "word_replace_text" ? a?.find ?? "" : a?.expect ?? ""));
+        if (c) return { ...r, check_now: [c] };
+      }
+      return r;
     } finally {
       let d = { added: [] as string[], merged: [] as string[], removed: 0 };
       let wants: Wanted[] = [];

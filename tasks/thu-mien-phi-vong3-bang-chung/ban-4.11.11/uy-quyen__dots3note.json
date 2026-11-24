@@ -1,0 +1,325 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Dots Studio: Dots3-Note Preview (free). Bấm để đổi 🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)"
+ },
+ "luot1": {
+  "giay": 53,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: V/u*uỷ*quyền ký hợp đồng mua bán nhà ở thuộc dự án | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 712
+ },
+ "lamTiep": [],
+ "luot2": null,
+ "tongGiay": 53,
+ "chat": "Soạn giấy ủy quyền của ông Nguyễn Anh Quân, Tổng Giám đốc, người đại diện theo pháp luật của Công ty Cổ phần Đầu tư Anh Quân, ủy quyền cho ông Trần Văn Bình, Phó Tổng Giám đốc, ký các hợp đồng mua bán nhà ở thuộc dự án Khu nhà ở Anh Quân Riverside với khách hàng và các văn bản liên quan, thời hạn ủy quyền đến hết ngày 31/12/2027. Ông Bình có được ủy quyền lại cho Trưởng phòng Kinh doanh không? Ghi rõ trong giấy.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: V/u*uỷ*quyền ký hợp đồng mua bán nhà ở thuộc dự án — Đã dựng giấy ủy quyền đúng thể thức · còn 5 chỗ cần điền\nĐã soạn giấy*uỷ*quyền đúng thể thức hành chính, với các nội dung:\n \n• **Bên*uỷ*quyền**: Ông Nguyễn Anh Quân, Tổng Giám đốc, người đại diện pháp luật của Công ty Cổ phần Đầu tư Anh Quân.\n• **Người*uỷ*quyền**: Ông Trần Văn Bình, Phó Tổng Giám đốc.\n• Phạm vi: Ký các hợp đồng mua bán nhà ở thuộc dự án Khu nhà ở Anh Quân Riverside với khách hàng và các văn bản liên quan.\n• Thời hạn: đến hết ngày 31/12/2027.\n• **Quyền*uỷ*quyền lại: không được***uỷ*quyền lại cho Trưởng phòng Kinh doanh hoặc người khác, trừ khi có*uỷ*quyền bằng văn bản của ông Nguyễn Anh Quân (đã ghi rõ tại điểm 3).\n \n5 chỗ cần điền trước khi văn bản có thể ký:\n1. Số văn bản (để Văn thư cấp)\n2. Ký hiệu văn bản\n3. Địa danh (ví dụ: Hà Nội)\n4. Ngày tháng ban hành\n5. Đơn vị soạn thảo ở dòng \"Lưu:\"\n \nCác chỗ này để trống, cần người dùng cung cấp thêm. Sau khi điền xong, văn bản sẽ sẵn sàng để ký.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 24.742 · ra 4.608 · đọc từ bộ nhớ đệm 18.944\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [
+  "2 lần gọi AI · Token: vào 24.742 · ra 4.608 · đọc từ bộ nhớ đệm 18.944"
+ ],
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "…, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "GIẤY ỦY QUYỀN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "V/u uỷ quyền ký hợp đồng mua bán nhà ở thuộc dự án Khu nhà ở Anh Quân Riverside và các văn bản liên quan",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Ông Nguyễn Anh Quân, Tổng Giám đốc, người đại diện theo pháp luật của Công ty Cổ phần Đầu tư Anh Quân (sau đây gọi là \"Bên uỷ quyền\"),*uỷ*quyền cho ông Trần Văn Bình, Phó Tổng Giám đốc (sau đây gọi là \"Người uỷ quyền\") thực hiện các công việc sau:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Ký các hợp đồng mua bán nhà ở thuộc dự án Khu nhà ở Anh Quân Riverside với khách hàng và các văn bản liên quan.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Thời hạn uỷ quyền đến hết ngày 31/12/2027.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3. Người uỷ quyền không được uỷ quyền lại cho Trưởng phòng Kinh doanh hoặc người khác trừ khi có uỷ quyền bằng văn bản của ông Nguyễn Anh Quân./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "PHÓ TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Ông Trần Văn Bình",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Ông Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Ông Trần Văn Bình;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Lưu: VT, ….",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\t…, ngày      tháng      năm 2026\r\nGIẤY ỦY QUYỀN\rV/u uỷ quyền ký hợp đồng mua bán nhà ở t"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\t…, ngày      tháng      năm 2026\r\n"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "PHÓ TỔNG GIÁM ĐỐC\r\r\r\r\rÔng Trần Văn Bình\tTỔNG GIÁM ĐỐC\r\r\r\r\rÔng Nguyễn Anh Quân\r\n"
+  }
+ ]
+}

@@ -2,9 +2,12 @@
  *  tồn tại; thuật ngữ định nghĩa dùng lệch hoặc dùng mà chưa định nghĩa; một bên được gọi bằng nhiều tên; chỗ trống chưa điền;
  *  số bằng số không khớp bằng chữ. Hàm thuần, không cần Office — kiểm thử bằng npm test (test/unit/dot1b.test.ts).
  *  Đây là các phép dò theo mẫu: kết quả là điểm CẦN XEM, người đọc (hoặc AI) quyết định có phải lỗi không. */
+import { accentTypos } from "./adminDoc";
+import { legalThresholds } from "./legalcheck";
+import { expiredLaws, isVietSyllable, strangeWords, weekdayIssues } from "./textcheck";
 import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseKey, clauseLabel, clauseName, findClause, outlineByParagraph, romanValue } from "./outline";
 
-export type IssueKind = "numbering" | "reference" | "term" | "party" | "blank" | "amount";
+export type IssueKind = "numbering" | "reference" | "term" | "party" | "blank" | "amount" | "fact";
 
 export interface Issue {
   kind: IssueKind;
@@ -28,7 +31,7 @@ export interface ConsistencyResult {
   parties: string[];
 }
 
-export const ALL_CHECKS: IssueKind[] = ["numbering", "reference", "term", "party", "blank", "amount"];
+export const ALL_CHECKS: IssueKind[] = ["numbering", "reference", "term", "party", "blank", "amount", "fact"];
 
 const clean = (s: string) =>
   String(s ?? "")
@@ -753,6 +756,41 @@ export function checkAmounts(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
 
 // ───────────────────────── Gộp ─────────────────────────
 
+/** Kiểm sự kiện bằng mã (vòng thử 3, 24/11/2026: soát công văn có sẵn, model tính sai thứ, thay nghị định hết hiệu lực bằng số bịa,
+ *  bỏ sót lỗi dấu — trong khi các phép kiểm này đã có nhưng chỉ chạy lúc dựng văn bản mới): thứ trong tuần lệch ngày, văn bản đã hết
+ *  hiệu lực, cụm chuẩn sai dấu, từ không phải tiếng Việt, ngưỡng luật hay bị chép sai (cọc của chủ đầu tư, thử việc). */
+export function checkFacts(rows: ParaRow[], outline: OutlineItem[]): Issue[] {
+  const out: Issue[] = [];
+  let oddCount = 0;
+  const add = (row: ParaRow, message: string) => out.push({ kind: "fact", p: row.i, clause: clauseLabel(outline, clauseAt(outline, row.i)), message, excerpt: cut(clean(row.text), 120) });
+  for (const row of rows) {
+    const t = clean(row.text);
+    if (!t.trim()) continue;
+    for (const w of weekdayIssues([t])) add(row, `Thứ trong tuần sai: ${w} (đã tính bằng mã, tin kết quả này).`);
+    const old = expiredLaws([t]);
+    if (old.length) add(row, `Dẫn văn bản ĐÃ HẾT HIỆU LỰC: ${old.join("; ")}. Thay bằng văn bản đang có hiệu lực theo TÊN và NĂM; không tự viết số hiệu nghị định theo trí nhớ — chưa chắc thì để “[cần bổ sung căn cứ]” và báo người dùng.`);
+    const typo = accentTypos([t]);
+    if (typo.length) add(row, `Viết sai dấu: ${typo.join("; ")}.`);
+    // Đoạn ngoại ngữ (hợp đồng song ngữ) không soát từ lạ; cả văn bản tối đa 8 điểm loại này (soát mã 4.11.11, #9)
+    const words = t.match(/[\p{L}]{3,}/gu) || [];
+    const foreign = words.filter((w) => w === w.toLowerCase() && /^[a-z]+$/.test(w) && !isVietSyllable(w)).length;
+    if (oddCount < 8 && foreign * 3 < words.length) {
+      const odd = strangeWords([t]);
+      if (odd.length) {
+        add(row, `Từ không phải tiếng Việt hoặc hai chữ dính nhau: ${odd.join("; ")}.`);
+        oddCount++;
+      }
+    }
+  }
+  const all = rows.map((r) => clean(r.text));
+  for (const msg of legalThresholds(all)) {
+    const key = /cọc/.test(msg) ? /đặt cọc|tiền cọc/iu : /thử việc/iu.test(msg) ? /thử việc/iu : /thời hạn/iu;
+    const row = rows.find((r) => key.test(clean(r.text)) && /\d/.test(r.text)) || rows.find((r) => key.test(clean(r.text)));
+    if (row) add(row, msg);
+  }
+  return out;
+}
+
 export function checkConsistency(rows: ParaRow[], opts: { checks?: IssueKind[]; outline?: OutlineItem[] } = {}): ConsistencyResult {
   const outline = opts.outline || buildOutline(rows);
   const want = new Set(opts.checks && opts.checks.length ? opts.checks : ALL_CHECKS);
@@ -769,6 +807,7 @@ export function checkConsistency(rows: ParaRow[], opts: { checks?: IssueKind[]; 
   }
   if (want.has("blank")) issues.push(...checkBlanks(rows, outline));
   if (want.has("amount")) issues.push(...checkAmounts(rows, outline));
+  if (want.has("fact")) issues.push(...checkFacts(rows, outline));
   const order = (k: IssueKind) => ALL_CHECKS.indexOf(k);
   issues.sort((a, b) => order(a.kind) - order(b.kind) || a.p - b.p);
   return { issues, terms, parties };

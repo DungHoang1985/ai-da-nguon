@@ -51,7 +51,7 @@ import { clearAttachedFiles, listAttachedImages, registerAttachedFile } from "..
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
 import { SHOW_SIZE_FROM, sizeNote } from "../../core/inputsize";
-import { REDO_WITH_TOOLS, TaskSoFar, mergeTaskFacts, taskSoFar, toolFailureClaim, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
+import { REDO_WITH_TOOLS, TaskSoFar, mergeTaskFacts, taskSoFar, toolFailureClaim, unbackedEditClaims, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
 import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, claimCommand, clearBeat, connectionLine, connections, describePayload, normalizeApp, reply, sweep, takeCommand } from "../../core/crossapp";
 import { executeIncoming } from "../../office/crossExec";
 import { RefTarget, findRefs } from "../../core/refs";
@@ -881,6 +881,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     /** Công cụ đã gọi trong lượt và số lệnh ghi không thành công — để nhận ra ca "nói đã sửa mà không ghi" */
     const called: string[] = [];
     let failedWrites = 0;
+    /** Tham số của các lệnh ghi thành công trong lượt — đối chiếu với các chỗ "A" → "B" AI kể đã sửa (vòng thử 3, 24/11/2026) */
+    const writtenArgs: string[] = [];
     let needSep = false;
     let retrying = false;
     const clearRetry = () => {
@@ -1029,6 +1031,13 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
             // Công cụ ghi báo lỗi, trả ok=false hoặc "thay 0 chỗ" thì tài liệu chưa đổi
             const done = isWrite && writeSucceeded(ev.result, ev.error);
             if (isWrite && !done) failedWrites++;
+            if (done) {
+              try {
+                writtenArgs.push(JSON.stringify(ev.call.args ?? {}));
+              } catch {
+                /* tham số không chuyển được thành chữ: bỏ qua */
+              }
+            }
             patchLast((it) => ({
               ...it,
               wrote: it.wrote || done,
@@ -1102,7 +1111,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       } else if (useAgent && hostTools) {
         // Lượt kết thúc bình thường: AI khẳng định đã thay đổi tài liệu mà không có thao tác ghi nào thành công → cảnh báo trên khung
         patchLast((it) => {
-          const w = unverifiedWriteClaim(factsOf(it)) || toolFailureClaim(factsOf(it));
+          // Lượt "Làm tiếp": lệnh ghi của lượt trước không có ở đây → không đối chiếu từng chỗ (tránh báo nhầm)
+          const w = unverifiedWriteClaim(factsOf(it)) || toolFailureClaim(factsOf(it)) || (opts?.continueTask ? null : unbackedEditClaims(finalText(it), writtenArgs));
           return w ? { ...it, claimWarning: w.text } : it;
         });
       }

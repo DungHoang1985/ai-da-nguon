@@ -1,0 +1,386 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Cohere command-a-plus-05-2026. Bấm để đổi 🆓 Cohere · command-a-plus-05-2026"
+ },
+ "luot1": {
+  "giay": 19,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Ủy quyền ký hợp đồng mua bán nhà ở dự án Khu nhà ở | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 721
+ },
+ "lamTiep": [],
+ "luot2": null,
+ "tongGiay": 19,
+ "chat": "Soạn giấy ủy quyền của ông Nguyễn Anh Quân, Tổng Giám đốc, người đại diện theo pháp luật của Công ty Cổ phần Đầu tư Anh Quân, ủy quyền cho ông Trần Văn Bình, Phó Tổng Giám đốc, ký các hợp đồng mua bán nhà ở thuộc dự án Khu nhà ở Anh Quân Riverside với khách hàng và các văn bản liên quan, thời hạn ủy quyền đến hết ngày 31/12/2027. Ông Bình có được ủy quyền lại cho Trưởng phòng Kinh doanh không? Ghi rõ trong giấy.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: Ủy quyền ký hợp đồng mua bán nhà ở dự án Khu nhà ở — Đã dựng giấy ủy quyền đúng thể thức · còn 4 chỗ cần điền\n✅ Đọc đoạn 0–30\n✅ Đọc đoạn 30–39\nĐã dựng giấy ủy quyền đúng thể thức. Văn bản có 4 chỗ trống cần điền trước khi ký:\n \n1. Số văn bản (để văn thư cấp)\n2. Ký hiệu văn bản\n3. Ngày tháng ban hành (tháng và năm)\n4. Đơn vị soạn thảo ở dòng \"Lưu: VT, ….\"\n \nGiấy ủy quyền đã ghi rõ: ông Trần Văn Bình được ký hợp đồng mua bán nhà ở dự án Khu nhà ở Anh Quân Riverside đến hết 31/12/2027, và chỉ được ủy quyền lại cho Trưởng phòng Kinh doanh khi có sự đồng ý bằng văn bản của Công ty Cổ phần Đầu tư Anh Quân.\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🆓 Cohere · command-a-plus-05-2026",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [],
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Hà Nội, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "GIẤY ỦY QUYỀN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Ủy quyền ký hợp đồng mua bán nhà ở dự án Khu nhà ở Anh Quân Riverside",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 1. Bên ủy quyền",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân, do ông Nguyễn Anh Quân, Tổng Giám đốc, người đại diện theo pháp luật.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 2. Bên nhận ủy quyền",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Ông Trần Văn Bình, Phó Tổng Giám đốc.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 3. Phạm vi ủy quyền",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Ký các hợp đồng mua bán nhà ở thuộc dự án Khu nhà ở Anh Quân Riverside với khách hàng và các văn bản liên quan.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 4. Thời hạn ủy quyền",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đến hết ngày 31 tháng 12 năm 2027.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 5. Quyền ủy quyền lại",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Ông Bình được ủy quyền lại cho Trưởng phòng Kinh doanh chỉ khi được sự đồng ý bằng văn bản của Bên ủy quyền.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 6. Hiệu lực",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Giấy ủy quyền này có hiệu lực từ ngày ký và thay thế mọi ủy quyền trước đây về cùng nội dung./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "PHÓ TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Trần Văn Bình",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Lưu: VT, ….",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\tHà Nội, ngày      tháng      năm 2026\r\nGIẤY ỦY QUYỀN\rỦy quyền ký hợp đồng mua bán nhà ở "
+  },
+  {
+   "loai": "Formatted",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\tHà Nội, ngày      tháng      năm 2026\r\n"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "PHÓ TỔNG GIÁM ĐỐC\r\r\r\r\rTrần Văn Bình\tTỔNG GIÁM ĐỐC\r\r\r\r\rNguyễn Anh Quân\r\n"
+  }
+ ]
+}

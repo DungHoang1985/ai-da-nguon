@@ -1,0 +1,164 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "luot1": {
+  "giay": 40,
+  "daHoi": [
+   "AI muốn: Thay \"đề nghi\" → \"đề nghị\" ở [¶2] — lý do: Sửa lỗi chính tả: thiếu dấu \"đề nghị\" | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 532
+ },
+ "lamTiep": [],
+ "luot2": null,
+ "tongGiay": 40,
+ "chat": "Rà soát văn bản đang mở và sửa trực tiếp trong văn bản: lỗi chính tả, căn cứ pháp lý đã hết hiệu lực, chỗ ghi thứ không khớp với ngày. Sửa xong liệt kê ngắn các chỗ đã sửa.\nKỹ năng áp dụng: chuan-bi-hop\n✅ Đọc đoạn 0–11\n✅ Thay \"đề nghi\" → \"đề nghị\" ở [¶2] — lý do: Sửa lỗi chính tả: thiếu dấu \"đề nghị\"\n✅ Thay \"dư án\" → \"dự án\" ở [¶5] — lý do: Sửa lỗi chính tả: \"dư án\" → \"dự án\"\n✅ Thay \"Thứ Hai, ngày 15/12/2026\" → \"Thứ Ba, ngày 15/12/2026\" ở [¶5] — lý do: Sửa thứ không khớp ngày: 15/12/2026 là Thứ Ba, không phải Thứ Hai\n✅ Sửa [¶4] — lý do: Cập nhật căn cứ pháp lý: Luật KDBĐS 2014 đã hết hiệu lực, thay bằng Luật KDBĐS 2023; Nghị định 99/2015/NĐ-CP đã thay thế bằng Nghị định 10/2024/NĐ-CP\n✅ Đọc đoạn 0–11\nĐã rà soát và sửa 4 chỗ (tất cả ghi bằng Theo dõi thay đổi, chờ duyệt):\n \nĐoạn\tLỗi gốc\tĐã sửa thành\tLý do\n2\t„đề nghi“\tđề nghị\tThiếu dấu (chính tả)\n4\tLuật KDBĐS 2014 + Nghị định 99/2015/NĐ-CP\tLuật KDBĐS 2023 + Nghị định 10/2024/NĐ-CP\tCăn cứ cũ đã hết hiệu lực/thay thế\n5\t„dư án“\tdự án\tThiếu dấu (chính tả)\n5\t„Thứ Hai, ngày 15/12/2026“\tThứ Ba, ngày 15/12/2026\t15/12/2026 rơi vào Thứ Ba, không phải Thứ Hai\n \nVăn bản hiện đã đúng chính tả, căn cứ pháp lý hiện hành và thứ/ngày nhất quán.\n1 nhiệm vụ · 7 lần gọi AI · Token: vào 73.906 · ra 2.095 · đọc từ bộ nhớ đệm 52.608\nHoàn tác thay đổi (4)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [
+  "7 lần gọi AI · Token: vào 73.906 · ra 2.095 · đọc từ bộ nhớ đệm 52.608"
+ ],
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Số: 118/2026/CV-AQ",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "V/v đề nghịnghi hướng dẫn thủ tục bàn giao nhà ở cho khách hàng",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Sở Xây dựng tỉnh Bình Minh",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Kinh doanh bất động sản năm 20232014 và Nghị định số 10/202499/2015/NĐ-CP quy định chi tiết Luật Nhà ở;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân là chủ đầu tư dựdư án Khu nhà ở Anh Quân Riverside tại phường An Phú. Đến nay công ty đã hoàn thành 48 căn nhà liền kề và dự kiến tổ chức bàn giao cho khách hàng vào Thứ BaHai, ngày 15/12/2026.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Để việc bàn giao đúng quy định, công ty kính đề nghị Sở hướng dẫn hồ sơ, thủ tục cần thiết trước khi bàn giao nhà ở cho khách hàng.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Trân trong cảm ơn./.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "nghị"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "nghi"
+  },
+  {
+   "loai": "Added",
+   "chu": "2023"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "2014"
+  },
+  {
+   "loai": "Added",
+   "chu": "10/2024"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "99/2015"
+  },
+  {
+   "loai": "Added",
+   "chu": "dự"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "dư"
+  },
+  {
+   "loai": "Added",
+   "chu": "Ba"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "Hai"
+  }
+ ]
+}

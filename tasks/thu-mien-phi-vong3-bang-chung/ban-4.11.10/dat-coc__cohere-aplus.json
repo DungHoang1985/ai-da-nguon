@@ -1,0 +1,675 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: Cohere command-a-plus-05-2026. Bấm để đổi 🆓 Cohere · command-a-plus-05-2026"
+ },
+ "luot1": {
+  "giay": 34,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 2446
+ },
+ "lamTiep": [
+  {
+   "giay": 27,
+   "daHoi": [
+    "AI muốn: Thay \"Căn cứ Nghị định số 99/2015/NĐ-CP ngày 2\" → \"_Căn cứ Nghị định số 30/2021/NĐ-CP ngày \" ở [¶8] — lý do: Sửa căn cứ pháp lý đã hết hiệu lực thành văn bản hiện hành | Cho phép | Cho phép h"
+   ],
+   "ten": "sau lượt 1"
+  }
+ ],
+ "luot2": null,
+ "tongGiay": 62,
+ "chat": "Soạn hợp đồng đặt cọc giữa Công ty Cổ phần Đầu tư Anh Quân (chủ đầu tư dự án Khu nhà ở Anh Quân Riverside) và bà Phạm Thị Lan để mua căn nhà liền kề LK-12 thuộc dự án. Đây là nhà ở hình thành trong tương lai, Sở Xây dựng đã có văn bản thông báo đủ điều kiện được bán ngày 05/12/2026. Giá bán 6,2 tỷ đồng (đã gồm thuế giá trị gia tăng), tiền đặt cọc bằng 10% giá bán, hai bên ký hợp đồng mua bán trong 30 ngày kể từ ngày đặt cọc.\nKỹ năng áp dụng: soan-hop-dong\n✅ Dựng văn bản hành chính đúng thể thức — Đã dựng hợp đồng đúng thể thức · còn 1 chỗ cần điền · 1 chỗ nghi sai cần kiểm\n✅ Thay \"_Căn cứ Nghị định số 99/2015/NĐ-CP ngày \" → \"_Căn cứ Nghị định số 30/2021/NĐ-CP ngày \" — lý do: Sửa căn cứ pháp lý đã hết hiệu lực thành văn bản hiện hành\n✅ Đọc đoạn 0–10\n✅ Thay \"Căn cứ Nghị định số 99/2015/NĐ-CP ngày 2\" → \"_Căn cứ Nghị định số 30/2021/NĐ-CP ngày \" — lý do: Sửa căn cứ pháp lý đã hết hiệu lực\n✅ Tìm \"Nghị định số 99/2015\" trong văn bản\n✅ Đọc đoạn 8–9\n⚠️ Thay \"Căn cứ Nghị định số 99/2015/NĐ-CP ngày 2\" → \"_Căn cứ Nghị định số 30/2021/NĐ-CP ngày \" ở [¶8] — lý do: Sửa căn cứ pháp lý đã hết hiệu lực thành văn bản hiện hành — Đoạn 8 không bắt đầu bằng “Căn cứ Nghị định số 99/2015/NĐ-CP ngày 20 tháng 10 năm 2015 ” và không tìm thấy đoạn nào như vậy: văn bản đã đổi so với lúc đọc. Đọc lại rồi mới sửa.\n✅ Đọc đoạn 0–20\n✅ Thay \"Căn cứ Nghị định số 99/2015/NĐ-CP ngày 2\" → \"_Căn cứ Nghị định số 30/2021/NĐ-CP ngày \" — lý do: Sửa căn cứ pháp lý đã hết hiệu lực\n✅ Tìm \"Nghị định số 30/2021\" trong văn bản\n⚠️ Sửa [¶8] — lý do: Sửa căn cứ pháp lý đã hết hiệu lực thành văn bản hiện hành — Đoạn 8 không bắt đầu bằng “Căn cứ Nghị định số 99/2015/NĐ-CP ngày 20 tháng 10 năm 2015 ” và không tìm thấy đoạn nào như vậy: văn bản đã đổi so với lúc đọc. Đọc lại rồi mới sửa.\n✅ Xem mục lục điều khoản\nHoàn tác thay đổi (1)\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nLàm tiếp\n✅ Đọc đoạn 8–9\n⚠️ Thay \"Căn cứ Nghị định số 99/2015/NĐ-CP ngày 2\" → \"_Căn cứ Nghị định số 30/2021/NĐ-CP ngày \" ở [¶8] — lý do: Sửa căn cứ pháp lý đã hết hiệu lực thành văn bản hiện hành — Đoạn 8 không bắt đầu bằng “Căn cứ Nghị định số 99/2015/NĐ-CP ngày 20 tháng 10 năm 2015 ” và không tìm thấy đoạn nào như vậy: văn bản đã đổi so với lúc đọc. Đọc lại rồi mới sửa.\n✅ Đọc đoạn 8–8\n✅ Tìm \"Nghị định số 99/2015\" trong văn bản\n⚠️ Sửa [¶8] — lý do: Sửa căn cứ pháp lý đã hết hiệu lực thành văn bản hiện hành — Đoạn 8 không bắt đầu bằng “Căn cứ Nghị định số 99/2015/NĐ-CP ngày 20 tháng 10 năm 2015 ” và không tìm thấy đoạn nào như vậy: văn bản đã đổi so với lúc đọc. Đọc lại rồi mới sửa.\n✅ Tìm \"Căn cứ Nghị định số 99/2015\" trong văn bản\n✅ Đọc đoạn 0–15\n↪ Cohere · command-a-plus-05-2026: hết lượt tạm thời — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free.\n \n⚠️ Thay \"Căn cứ Nghị định số 99/2015/NĐ-CP ngày 2\" → \"_Căn cứ Nghị định số 30/2021/NĐ-CP ngày \" ở [¶8] — lý do: Sửa căn cứ pháp lý đã hết hiệu lực thành văn bản hiện hành — Đoạn 8 không bắt đầu bằng “Căn cứ Nghị định số 99/2015/NĐ-CP ngày 20 tháng 10 năm 2015 ” và không tìm thấy đoạn nào như vậy: văn bản đã đổi so với lúc đọc. Đọc lại rồi mới sửa.\n⚠️ Thay \"Căn cứ Nghị định số 99/2015/NĐ-CP ngày 2\" → \"_Căn cứ Nghị định số 30/2021/NĐ-CP ngày \" ở [¶8] — lý do: Sửa căn cứ pháp lý đã hết hiệu lực thành văn bản hiện hành — Đoạn 8 không bắt đầu bằng “Căn cứ Nghị định số 99/2015/NĐ-CP ngày 20 tháng 10 năm 2015 ” và không tìm thấy đoạn nào như vậy: văn bản đã đổi so với lúc đọc. Đọc lại rồi mới sửa.\n1 nhiệm vụ · 21 lần gọi AI · Token: vào 43.598 · ra 688 · đọc từ bộ nhớ đệm 21.920\nAI dừng ở bước 9: word_replace_text báo cùng một lỗi 2 bước liên tiếp. Đã ghi 0 thao tác vào tài liệu.\nThử tiếp\nDừng ở đây\nTrả lời bởi OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free (đã tự đổi nguồn; model đang chọn không trả lời lượt này)\nChèn vào chỗ con trỏ\nSao chép\nHỏi trước\n🆓 Cohere · command-a-plus-05-2026",
+ "doiNguon": [
+  "↪ Cohere · command-a-plus-05-2026: hết lượt tạm thời — đổi sang OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free."
+ ],
+ "traLoiBoi": [
+  "Trả lời bởi OpenRouter · nvidia/nemotron-3-ultra-550b-a55b:free (đã tự đổi nguồn; model đang chọn không trả lời lượt này)"
+ ],
+ "lanGoiAI": [
+  "21 lần gọi AI · Token: vào 43.598 · ra 688 · đọc từ bộ nhớ đệm 21.920"
+ ],
+ "doanVan": [
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "HỢP ĐỒNG ĐẶT CỌC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 6,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Nhà ở năm 2023;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Kinh doanh bất động sản năm 2023;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Nghị định số 99/2015/NĐ-CP ngày 20 tháng 10 năm 2015 quy định chi tiết thi hành Luật Nhà ở (sửa đổi, bổ sung bởi Nghị định số 30/2021/NĐ-CP);",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Văn bản thông báo số 1234/SXĐT ngày 05 tháng 12 năm 2026 của Sở Xây dựng về việc nhà ở hình thành trong tương lai đủ điều kiện được bán;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hôm nay, ngày … tháng … năm …, tại …, chúng tôi gồm:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "BÊN GIAO THẦU (BÊN A):",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đại diện: … Chức vụ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa chỉ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điện thoại: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Mã số thuế: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tài khoản số: … tại …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "BÊN NHẬN THẦU (BÊN B):",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Bà Phạm Thị Lan",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đại diện: … Chức vụ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa chỉ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điện thoại: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Mã số thuế: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hai bên thống nhất ký kết hợp đồng đặt cọc với các điều khoản sau:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 1. Đối tượng hợp đồng",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1.1. Bên A đồng ý nhận đặt cọc từ Bên B cho việc mua căn nhà liền kề LK-12 thuộc dự án Khu nhà ở Anh Quân Riverside (sau đây gọi là “Nhà ở”).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1.2. Nhà ở là nhà ở hình thành trong tương lai, đã được Sở Xây dựng thông báo đủ điều kiện được bán theo văn bản số 1234/SXĐT ngày 05/12/2026.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 2. Giá bán và đặt cọc",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2.1. Giá bán của Nhà ở là 6.200.000.000 đồng (sáu tỷ hai trăm triệu đồng), đã bao gồm thuế giá trị gia tăng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2.2. Tiền đặt cọc là 620.000.000 đồng (sáu trăm hai mươi triệu đồng), tương đương 10% giá bán.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2.3. Bên B có trách nhiệm thanh toán tiền đặt cọc cho Bên A trong vòng 07 ngày kể từ ngày ký hợp đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 3. Thời hạn ký hợp đồng mua bán",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3.1. Hai bên cam kết ký kết hợp đồng mua bán Nhà ở trong thời hạn 30 ngày kể từ ngày Bên A nhận đủ tiền đặt cọc.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3.2. Nếu quá thời hạn quy định tại khoản 3.1 mà hai bên không ký kết được hợp đồng mua bán, hợp đồng đặt cọc này sẽ tự động chấm dứt và Bên A có trách nhiệm hoàn lại toàn bộ tiền đặt cọc cho Bên B.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 4. Quyền và nghĩa vụ của các bên",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.1. Bên A có quyền:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "a) Nhận tiền đặt cọc và quản lý theo quy định;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "b) Yêu cầu Bên B thực hiện việc ký kết hợp đồng mua bán trong thời hạn quy định.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.2. Bên A có nghĩa vụ:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "a) Cung cấp đầy đủ thông tin, hồ sơ pháp lý liên quan đến Nhà ở;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "b) Hoàn lại tiền đặt cọc trong trường hợp chấm dứt hợp đồng theo quy định tại Điều 3.2.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.3. Bên B có quyền:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "a) Được hoàn lại toàn bộ tiền đặt cọc nếu Bên A vi phạm nghĩa vụ quy định tại điểm b khoản 4.2;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "b) Được ưu tiên ký kết hợp đồng mua bán Nhà ở theo thỏa thuận.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.4. Bên B có nghĩa vụ:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "a) Thanh toán đúng hạn tiền đặt cọc;",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "b) Thực hiện việc ký kết hợp đồng mua bán trong thời hạn quy định.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 5. Giải quyết tranh chấp",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "5.1. Mọi tranh chấp phát sinh từ hoặc liên quan đến hợp đồng này sẽ được giải quyết trước hết bằng thương lượng, hòa giải.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "5.2. Nếu không giải quyết được bằng thương lượng, tranh chấp sẽ được trình lên Tòa án nhân dân có thẩm quyền giải quyết theo quy định pháp luật.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 6. Điều khoản chung",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "6.1. Hợp đồng này có hiệu lực kể từ ngày ký.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "6.2. Hợp đồng được lập thành 02 bản, mỗi bên giữ 01 bản có giá trị pháp lý như nhau.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "6.3. Mọi sửa đổi, bổ sung hợp đồng này phải được lập thành văn bản, có chữ ký của đại diện có thẩm quyền của hai bên.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "ĐẠI DIỆN BÊN A",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "(Ký, ghi rõ họ tên, đóng dấu)",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Đại diện Bên A",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "ĐẠI DIỆN BÊN B",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "(Ký, ghi rõ họ tên, đóng dấu)",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Đại diện Bên B",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\rHỢP ĐỒNG ĐẶT CỌC\rSố:      /…\r\rCăn cứ Luật Nhà ở năm 2023;\rCăn cứ Luật Kinh doanh bất động sản năm 2023;\rCăn cứ Nghị định số 99/2015/NĐ-C"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "ĐẠI DIỆN BÊN A\r(Ký, ghi rõ họ tên, đóng dấu)\r\r\r\r\rĐại diện Bên A\tĐẠI DIỆN BÊN B\r(Ký, ghi rõ họ tên, đóng dấu)\r\r\r\r\rĐại diện Bên B\r\n"
+  }
+ ]
+}

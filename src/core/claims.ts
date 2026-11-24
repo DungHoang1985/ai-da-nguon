@@ -237,11 +237,48 @@ const reToolBroken = new RegExp(
 );
 export function toolFailureClaim(f: TurnFacts & { toolErrors?: number }): ClaimWarning | null {
   if (f.toolsCalled.length || f.failedWrites || f.toolErrors) return null;
-  const s = sentences(f.answer).find((x) => reToolBroken.test(x) && !/\?\s*$/.test(x));
+  // Câu giả định ("Nếu công cụ gặp lỗi…") và câu phủ định ("Công cụ không gặp lỗi") không phải lời đổ lỗi (soát mã 4.11.11, #13)
+  const s = sentences(f.answer).find((x) => reToolBroken.test(x) && !/\?\s*$/.test(x) && !/^\s*(?:nếu|trường hợp|khi)\s/iu.test(x) && !/không\s+(?:gặp\s+|bị\s+)?(?:lỗi|sự cố)/iu.test(x));
   if (!s) return null;
   return {
     sentence: s,
     text: `Cảnh báo: AI nói công cụ bị lỗi (“${s.length > 90 ? s.slice(0, 90) + "…" : s}”) nhưng ${f.continued ? "trong cả nhiệm vụ" : "lượt này"} AI không gọi công cụ nào — công cụ không hề lỗi. Bấm "Yêu cầu làm lại bằng công cụ" hoặc đổi model.`,
+  };
+}
+
+/** AI kể từng chỗ đã sửa dạng “A” → “B” mà không lệnh ghi thành công nào của lượt chứa “B” (vòng thử 3, 24/11/2026: Cohere kể 5 chỗ
+ *  đã sửa — “Trân trong” → “Trân trọng”, thứ, căn cứ — nhưng chỉ ghi 2). Cảnh báo `unverifiedWriteClaim` chỉ bắt khi CẢ lượt không ghi gì.
+ *  Chỉ xét cặp có ngoặc kép hai đầu và mũi tên / chữ "thành"; ưu tiên không báo nhầm. `written`: tham số của các lệnh ghi thành công. */
+export function unbackedEditClaims(answer: string, written: string[]): ClaimWarning | null {
+  if (!written.length) return null;
+  // Chỉ khi AI khẳng định ĐÃ sửa (soát mã 4.11.11, #10: chép lại danh sách "sai → đúng" của công cụ kèm "tôi chưa sửa" không phải lời nhận)
+  if (!/(?:đã|vừa)\s+(?:sửa|đổi|thay|chỉnh|cập nhật|hoàn thành|hoàn tất)/iu.test(answer)) return null;
+  const norm = (s: string) =>
+    s
+      .normalize("NFC")
+      .replace(/…|\.{3}/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLocaleLowerCase("vi-VN");
+  const pool = norm(written.join("\n"));
+  const Q = `["“”„'‘’]`;
+  const re = new RegExp(`${Q}([^"“”„'‘’\\n]{1,80})${Q}\\s*(?:→|->|=>|⇒|thành)\\s*${Q}([^"“”„'‘’\\n]{1,80})${Q}`, "gu");
+  const missing: string[] = [];
+  for (const m of answer.matchAll(re)) {
+    // Dòng đề xuất, chưa làm thì không tính
+    const at = m.index ?? 0;
+    const line = answer.slice(answer.lastIndexOf("\n", at) + 1, answer.indexOf("\n", at) < 0 ? undefined : answer.indexOf("\n", at));
+    if (/chưa|đề xuất|đề nghị|nên|gợi ý|có thể|cần\s/iu.test(line)) continue;
+    const to = norm(m[2]);
+    if (!to || to === norm(m[1]) || pool.includes(to)) continue;
+    const pair = `“${m[1].trim()}” → “${m[2].trim()}”`;
+    if (!missing.includes(pair)) missing.push(pair);
+  }
+  if (!missing.length) return null;
+  const shown = missing.slice(0, 3).join("; ") + (missing.length > 3 ? ` và ${missing.length - 3} chỗ khác` : "");
+  return {
+    sentence: missing[0],
+    text: `Cảnh báo: AI kể đã sửa ${shown} nhưng không có lệnh ghi nào của lượt này ghi chữ đó — ${missing.length > 1 ? "những chỗ này" : "chỗ này"} CHƯA được sửa trong tài liệu. Kiểm lại hoặc nhờ AI sửa tiếp.`,
   };
 }
 

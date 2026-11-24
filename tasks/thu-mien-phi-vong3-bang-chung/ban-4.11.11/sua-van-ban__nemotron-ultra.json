@@ -1,0 +1,164 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "luot1": {
+  "giay": 28,
+  "daHoi": [
+   "AI muốn: Thay \"đề nghi\" → \"đề nghị\" ở [¶2] — lý do: Sửa lỗi chính tả: \"đề nghi\" → \"đề nghị\" | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 573
+ },
+ "lamTiep": [],
+ "luot2": null,
+ "tongGiay": 29,
+ "chat": "Rà soát văn bản đang mở và sửa trực tiếp trong văn bản: lỗi chính tả, căn cứ pháp lý đã hết hiệu lực, chỗ ghi thứ không khớp với ngày. Sửa xong liệt kê ngắn các chỗ đã sửa.\nKỹ năng áp dụng: soan-thao-van-ban-hanh-chinh\n✅ Xem tổng quan văn bản\n✅ Đọc đoạn 0–11\n✅ Soát nhất quán: đánh số, dẫn chiếu, thuật ngữ, tên các bên, chỗ trống, số và chữ — 5 điểm cần xem: sự kiện (thứ, ngày, căn cứ, chính tả) 5\n✅ Thay \"đề nghi\" → \"đề nghị\" ở [¶2] — lý do: Sửa lỗi chính tả: \"đề nghi\" → \"đề nghị\"\n✅ Sửa [¶4] — lý do: Cập nhật căn cứ pháp lý: thay Luật KDBĐS 2014 bằng Luật KDBĐS 2023, Luật Nhà ở 2023; xóa nghị định hết hiệu lực\n✅ Thay \"dư án\" → \"dự án\" ở [¶5] — lý do: Sửa lỗi chính tả: \"dư án\" → \"dự án\"\n✅ Thay \"Thứ Hai, ngày 15/12/2026\" → \"Thứ Ba, ngày 15/12/2026\" ở [¶5] — lý do: Sửa thứ trong tuần: 15/12/2026 là Thứ Ba, không phải Thứ Hai\n✅ Thay \"Trân trong\" → \"Trân trọng\" ở [¶7] — lý do: Sửa lỗi chính tả: \"Trân trong\" → \"Trân trọng\"\n✅ Đọc đoạn 0–11\nĐã sửa 5 lỗi trong văn bản (ghi bằng Theo dõi thay đổi, chờ duyệt):\n \n1. Đoạn 2 (trích yếu): “đề nghi” → “đề nghị”\n2. Đoạn 4 (căn cứ pháp lý): thay Luật KDBĐS 2014, Nghị định 99/2015/NĐ-CP (hết hiệu lực) bằng “Luật Kinh doanh bất động sản năm 2023; Luật Nhà ở năm 2023; và các văn bản hướng dẫn thi hành”\n3. Đoạn 5: “dư án” → “dự án”\n4. Đoạn 5: thứ sai — 15/12/2026 là Thứ Ba (không phải Thứ Hai) → đã sửa\n5. Đoạn 7: “Trân trong” → “Trân trọng”\n1 nhiệm vụ · 9 lần gọi AI · Token: vào 140.339 · ra 1.460 · đọc từ bộ nhớ đệm 105.216\nHoàn tác thay đổi (5)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [
+  "9 lần gọi AI · Token: vào 140.339 · ra 1.460 · đọc từ bộ nhớ đệm 105.216"
+ ],
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Số: 118/2026/CV-AQ",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "V/v đề nghịnghi hướng dẫn thủ tục bàn giao nhà ở cho khách hàng",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Sở Xây dựng tỉnh Bình Minh",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Kinh doanh bất động sản năm 2023; Luật Nhà ở năm 2023; và các văn bản hướng dẫn thi hành2014 và Nghị định số 99/2015/NĐ-CP quy định chi tiết Luật Nhà ở;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân là chủ đầu tư dựdư án Khu nhà ở Anh Quân Riverside tại phường An Phú. Đến nay công ty đã hoàn thành 48 căn nhà liền kề và dự kiến tổ chức bàn giao cho khách hàng vào Thứ BaHai, ngày 15/12/2026.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Để việc bàn giao đúng quy định, công ty kính đề nghị Sở hướng dẫn hồ sơ, thủ tục cần thiết trước khi bàn giao nhà ở cho khách hàng.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Trân trọngtrong cảm ơn./.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "nghị"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "nghi"
+  },
+  {
+   "loai": "Added",
+   "chu": "2023; Luật Nhà ở năm 2023; và các văn bản hướng dẫn thi hành"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "2014 và Nghị định số 99/2015/NĐ-CP quy định chi tiết Luật Nhà ở"
+  },
+  {
+   "loai": "Added",
+   "chu": "dự"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "dư"
+  },
+  {
+   "loai": "Added",
+   "chu": "Ba"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "Hai"
+  },
+  {
+   "loai": "Added",
+   "chu": "trọng"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "trong"
+  }
+ ]
+}

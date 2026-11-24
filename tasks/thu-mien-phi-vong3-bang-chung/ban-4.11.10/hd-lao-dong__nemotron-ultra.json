@@ -1,0 +1,775 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "luot1": {
+  "giay": 94,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Có thời hạn 24 tháng | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 2843
+ },
+ "lamTiep": [],
+ "luot2": null,
+ "tongGiay": 94,
+ "chat": "Soạn hợp đồng lao động giữa Công ty Cổ phần Đầu tư Anh Quân và ông Lê Minh Tuấn, kỹ sư xây dựng (tốt nghiệp đại học), làm việc tại Ban Quản lý dự án. Hợp đồng xác định thời hạn 24 tháng kể từ ngày 01/01/2027, lương 25.000.000 đồng/tháng. Trước khi ký hợp đồng, ông Tuấn thử việc 90 ngày, lương thử việc bằng 70% mức lương chính thức. Người ký phía công ty: Tổng Giám đốc Nguyễn Anh Quân.\nKỹ năng áp dụng: kiem-tra-truoc-ky, soan-hop-dong\n✅ Dựng văn bản hành chính đúng thể thức: Có thời hạn 24 tháng — Đã dựng hợp đồng đúng thể thức · còn 1 chỗ cần điền\nĐã soạn Hợp đồng lao động đúng thể thức (doc_type `hop_dong`), 57 đoạn, ký 2 bên, trang A4 lề chuẩn. Văn bản đang bật Theo dõi thay đổi (mọi sửa đổi sau này sẽ ghi có theo dõi).\n \nCác chỗ cần điền trước khi ký (đang để \"…\" trong văn bản):\n1. Số hợp đồng (dòng \"Số:\" phía trên tên hợp đồng)\n2. Ngày, tháng, năm ký và địa điểm ký (đoạn \"Hôm nay, ngày … tháng … năm …, tại …\")\n3. Thông tin Bên A: địa chỉ, điện thoại, mã số thuế, tài khoản ngân hàng\n4. Thông tin Bên B: địa chỉ, CMND/CCCD/Hộ chiếu (số, ngày cấp, nơi cấp), ngày sinh, điện thoại, email\n5. Địa điểm làm việc cụ thể (Điều 1.2)\n6. Ngày bắt đầu/kết thúc thử việc (Điều 3.1)\n7. Ngày thanh toán lương hàng tháng và tài khoản nhận lương (Điều 4.2)\n8. Số ngày nghỉ phép năm (Điều 5.3)\n9. Nội dung Quyền/nghĩa vụ chi tiết (Điều 8.1, 8.2)\n10. Số bản hợp đồng (Điều 11.1 đã ghi 02 bản – xác nhận lại)\n \n> Lưu ý: Hợp đồng quy định thử việc 90 ngày *trước khi ký hợp đồng này* (Điều 3), nhưng ngày bắt đầu thử việc chưa điền. Cần thống nhất ngày đó (thường là 01/10/2026 nếu hợp đồng chính thức có hiệu lực 01/01/2027).\n \nMuốn sửa câu chữ nào, cho biết nội dung muốn đổi (hoặc bôi đen đoạn đó) — tôi sẽ dùng `word_set_paragraph_text` sửa đúng chỗ, giữ định dạng.\n1 nhiệm vụ · 2 lần gọi AI · Token: vào 30.759 · ra 5.552 · đọc từ bộ nhớ đệm 17.536\nHoàn tác thay đổi (1)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [
+  "2 lần gọi AI · Token: vào 30.759 · ra 5.552 · đọc từ bộ nhớ đệm 17.536"
+ ],
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "HỢP ĐỒNG LAO ĐỘNG",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Có thời hạn 24 tháng",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 6,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Lao động năm 2019;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Doanh nghiệp năm 2020;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Đề nghị tuyển dụng số … ngày … tháng … năm … của Ban Quản lý dự án;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hôm nay, ngày … tháng … năm …, tại …, chúng tôi gồm:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "BÊN TUYỂN DỤNG (BÊN A): CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đại diện: Nguyễn Anh Quân Chức vụ: TỔNG GIÁM ĐỐC",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa chỉ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điện thoại: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Mã số thuế: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tài khoản số: … tại …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "BÊN LAO ĐỘNG (BÊN B): LÊ MINH TUẤN",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Chức vụ: KỸ SƯ XÂY DỰNG",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đơn vị công tác: BAN QUẢN LÝ DỰ ÁN",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa chỉ: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Số CMND/CCCD/Hộ chiếu: … Ngày cấp: … Nơi cấp: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Ngày sinh: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điện thoại: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Email: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hai bên thống nhất ký kết hợp đồng lao động có thời hạn 24 tháng với các điều khoản sau:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 1. Việc làm và địa điểm làm việc",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Bên B được tuyển dụng làm việc tại vị trí: Kỹ sư xây dựng, thuộc Ban Quản lý dự án.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Địa điểm làm việc: … (cụ thể tại văn phòng/ch công trình …).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 2. Thời hạn hợp đồng lao động",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Hợp đồng lao động có thời hạn 24 (hai mươi bốn) tháng, có hiệu lực từ ngày 01 tháng 01 năm 2027 đến hết ngày 31 tháng 12 năm 2028.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Sau khi hết hạn, nếu hai bên không chấm dứt hợp đồng thì hợp đồng tự động chuyển thành hợp đồng lao động không xác định thời hạn theo quy định của pháp luật.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 3. Thử việc",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Trước khi ký hợp đồng này, Bên B đã trải qua thời gian thử việc 90 (chín mươi) ngày, kể từ ngày … tháng … năm … đến ngày … tháng … năm ….",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Lương thử việc: 17.500.000 đồng/tháng (bằng chữ: Mười bảy triệu năm trăm nghìn đồng), bằng 70% mức lương chính thức.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3. Kết quả thử việc: Bên B đáp ứng yêu cầu, được ký hợp đồng lao động chính thức.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 4. Lương và phương thức thanh toán",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Mức lương chính thức: 25.000.000 đồng/tháng (bằng chữ: Hai mươi lăm triệu đồng).",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Lương được thanh toán theo tháng, vào ngày … hàng tháng, chuyển khoản vào tài khoản số … tại ngân hàng … do Bên B cung cấp.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3. Bên A chịu trách nhiệm trích khấu trừ, đóng bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp theo quy định.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 5. Giờ làm việc, nghỉ ngơi",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Giờ làm việc: 08 giờ 00 phút đến 17 giờ 00 phút, từ Thứ 2 đến Thứ 6 hàng tuần; nghỉ trưa 60 phút.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Nghỉ cuối tuần: Thứ 7, Chủ nhật; nghỉ các ngày lễ, Tết theo quy định của pháp luật và quy chế lao động của Bên A.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3. Nghỉ phép năm: … ngày/năm.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 6. Bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Hai bên thực hiện đóng bảo hiểm xã hội, bảo hiểm y tế, bảo hiểm thất nghiệp theo quy định của luật pháp.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Bên A chịu trách nhiệm khấu trừ phần Bên B phải đóng và nộp cùng phần Bên A phải đóng vào quỹ bảo hiểm xã hội.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 7. An toàn, vệ sinh lao động",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Bên A cung cấp phương tiện bảo hộ lao động, đảm bảo điều kiện an toàn, vệ sinh lao động theo quy định.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Bên B tuân thủ quy trình an toàn, vệ sinh lao động, quy chế nội bộ của Bên A.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 8. Quyền và nghĩa vụ của hai bên",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Quyền và nghĩa vụ của Bên A: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Quyền và nghĩa vụ của Bên B: …",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 9. Thay đổi, gia hạn, chấm dứt hợp đồng lao động",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Việc thay đổi, gia hạn, chấm dứt hợp đồng lao động tuân thủ quy định của Luật Lao động năm 2019.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 10. Giải quyết tranh chấp",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Mọi tranh chấp phát sinh trong quá trình thi hành hợp đồng, hai bên thương lượng giải quyết; không thương lượng được thì yêu cầu giải quyết tại Tòa án nhân dân có thẩm quyền.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 11. Điều khoản chung",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1. Hợp đồng này có 02 (hai) bản, mỗi bên giữ 01 (một) bản, có giá trị pháp lý như nhau.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2. Hợp đồng có hiệu lực kể từ ngày ký.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3. Các vấn đề chưa quy định trong hợp đồng, hai bên tuân thủ theo quy định của pháp luật hiện hành.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "ĐẠI DIỆN BÊN A",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "(Ký, ghi rõ họ tên, đóng dấu)",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "ĐẠI DIỆN BÊN B",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "KỸ SƯ XÂY DỰNG",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "(Ký, ghi rõ họ tên, đóng dấu)",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Lê Minh Tuấn",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\rSố:      /…\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nHỢP ĐỒNG LAO ĐỘNG\rCó thời hạn 24 tháng\r\rCăn cứ Luật Lao động năm 2019;\rCăn cứ Luật Doanh"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\rSố:      /…\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\n"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "ĐẠI DIỆN BÊN A\rTỔNG GIÁM ĐỐC\r(Ký, ghi rõ họ tên, đóng dấu)\r\r\r\r\rNguyễn Anh Quân\tĐẠI DIỆN BÊN B\rKỸ SƯ XÂY DỰNG\r(Ký, ghi rõ họ tên, đóng dấu)\r\r\r\r\rLê Minh Tuấn\r\n"
+  }
+ ]
+}

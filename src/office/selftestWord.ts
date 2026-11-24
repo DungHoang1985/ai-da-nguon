@@ -765,11 +765,11 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       await ctx.sync();
     });
 
-  await step("Soát nhất quán bằng mã: nhảy số, dẫn chiếu hỏng, thuật ngữ lệch, chỗ trống, số lệch chữ", async () => {
+  await step("Soát nhất quán bằng mã: nhảy số, dẫn chiếu hỏng, thuật ngữ lệch, chỗ trống, số lệch chữ, thứ lệch ngày", async () => {
     const low = code.toLowerCase();
     const P = {
       def: `“Ngày Thử ${code}” là ngày chạy bài kiểm tra soát nhất quán.`,
-      bad: `Sau ngày thử ${low} các bên ký biên bản theo Điều 97.8, trả 1.500.000 đồng (Một triệu sáu trăm nghìn đồng) vào tài khoản số ……… SOAT${code}.`,
+      bad: `Sau ngày thử ${low} các bên ký biên bản theo Điều 97.8, trả 1.500.000 đồng (Một triệu sáu trăm nghìn đồng) vào tài khoản số ……… SOAT${code}, bàn giao vào Thứ Hai, ngày 15/12/2026.`,
       jump: `97.3 Khoản thử nhảy số SOAT${code}.`,
     };
     await addTemp([P.def, P.bad, P.jump]);
@@ -792,15 +792,16 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
       expect(has("term", iBad, /Ngày Thử/), "Không báo thuật ngữ viết lệch “ngày thử …”");
       expect(has("blank", iBad, /trống/), "Không báo chỗ trống “………”");
       expect(has("amount", iBad, /1\.600\.000/), "Không báo số tiền lệch chữ");
+      expect(has("fact", iBad, /15\/12\/2026 là Thứ Ba/), "Không báo thứ lệch ngày (15/12/2026 là Thứ Ba)");
       const only = await run("word_check_consistency", { checks: ["amount"] });
       expect(only.issues.every((x: any) => x.kind === "amount") && only.issues.some((x: any) => x.i === iBad), "Lọc theo loại soát không đúng");
       await removeTemp([P.def.slice(0, 20), "SOAT" + code]);
       const again = await run("word_check_consistency", {});
       const s = await need(START);
       const e = await need(END);
-      const left = again.issues.filter((x: any) => x.i > s && x.i < e && /97\.8|Ngày Thử|1\.600\.000|97\.3/.test(x.message + (x.excerpt || "")));
+      const left = again.issues.filter((x: any) => x.i > s && x.i < e && /97\.8|Ngày Thử|1\.600\.000|97\.3|15\/12\/2026/.test(x.message + (x.excerpt || "")));
       expect(left.length === 0, `Sau khi gỡ đoạn cài lỗi vẫn còn báo ${left.length} điểm`);
-      return `Cài 5 lỗi trong vùng thử: báo đủ 5 (nhảy số, dẫn chiếu, thuật ngữ, chỗ trống, số lệch chữ) trong ${total} điểm của cả văn bản; gỡ đoạn cài lỗi thì hết báo`;
+      return `Cài 6 lỗi trong vùng thử: báo đủ 6 (nhảy số, dẫn chiếu, thuật ngữ, chỗ trống, số lệch chữ, thứ lệch ngày) trong ${total} điểm của cả văn bản; gỡ đoạn cài lỗi thì hết báo`;
     } finally {
       await removeTemp([P.def.slice(0, 20), "SOAT" + code]);
     }

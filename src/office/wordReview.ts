@@ -33,7 +33,7 @@ export const WORD_REVIEW_SPECS: ToolSpec[] = [
   {
     name: "word_check_consistency",
     description:
-      "Instant code check of the whole document: numbering gaps/duplicates, references to missing clauses, inconsistent or undefined terms, a party with several names, unfilled blanks, figure vs words mismatches. Returns points with paragraph index, clause number, excerpt. Use it FIRST to check or proofread before signing, then read only the flagged places to confirm (pattern-based). Report every point (count by total) with clause and paragraph numbers.",
+      "Instant code check of the whole document: numbering, references to missing clauses, inconsistent/undefined terms, party names, blanks, figure vs words, wrong weekday for a date, expired laws, accent typos. Returns points with paragraph index, clause, excerpt. Use it FIRST to review or proofread, then read only flagged places to confirm. Report every point with clause and paragraph numbers.",
     parameters: {
       type: "object",
       properties: {
@@ -92,6 +92,7 @@ export const WORD_REVIEW_SPECS: ToolSpec[] = [
 
 const KIND_VI: Record<IssueKind, string> = {
   numbering: "đánh số",
+  fact: "sự kiện (thứ, ngày, căn cứ, chính tả)",
   reference: "dẫn chiếu",
   term: "thuật ngữ",
   party: "tên các bên",

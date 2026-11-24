@@ -2,9 +2,10 @@
  *  hàm thuần, biến các trường AI đưa thành một "bản vẽ" gồm bảng không viền và các đoạn đã có sẵn cỡ chữ, kiểu chữ, căn lề.
  *  Phần Office.js (wordAdmin.ts) chỉ việc dựng theo bản vẽ, nên thể thức đúng dù model mạnh hay yếu.
  *  Số đo theo chuẩn trình bày văn bản hành chính đang áp dụng: A4, Times New Roman, cỡ chữ 13–14. */
-import { expiredLaws, strangeWords, stripModelMarkup, weekdayIssues } from "./textcheck";
+import { legalThresholds } from "./legalcheck";
+import { expiredLaws, isVietSyllable, issueAfterEvent, strangeWords, stripModelMarkup, weekdayIssues } from "./textcheck";
 
-export const DOC_TYPES = ["cong_van", "to_trinh", "bao_cao", "quyet_dinh", "nghi_quyet", "thong_bao", "giay_moi", "bien_ban", "ke_hoach", "hop_dong", "khac"] as const;
+export const DOC_TYPES = ["cong_van", "to_trinh", "bao_cao", "quyet_dinh", "nghi_quyet", "thong_bao", "giay_moi", "bien_ban", "ke_hoach", "giay_uy_quyen", "hop_dong", "khac"] as const;
 export type DocType = (typeof DOC_TYPES)[number];
 
 /** Tên loại in trên văn bản (công văn không có tên loại) */
@@ -18,6 +19,7 @@ export const TYPE_TITLE: Record<DocType, string> = {
   giay_moi: "GIẤY MỜI",
   bien_ban: "BIÊN BẢN",
   ke_hoach: "KẾ HOẠCH",
+  giay_uy_quyen: "GIẤY ỦY QUYỀN",
   hop_dong: "HỢP ĐỒNG",
   khac: "",
 };
@@ -385,11 +387,26 @@ export function contentChecks(lines: string[], refs: string[] = []): string[] {
   if (ph.length) out.push(`Còn chữ mẫu chưa thay bằng nội dung thật: ${ph.slice(0, 3).map((x) => `“${x}”`).join("; ")}`);
   const typo = accentTypos(lines, refs);
   if (typo.length) out.push(`Viết sai dấu tên riêng hoặc cụm chuẩn: ${typo.join("; ")}`);
+  // Ngưỡng luật hay bị chép sai (cọc của chủ đầu tư, thử việc) — vòng thử 3, 24/11/2026
+  out.push(...legalThresholds(lines));
   return out;
 }
 
 /** Cụm chuẩn trong văn bản doanh nghiệp: so cùng chữ, khác dấu thì gần như chắc là gõ sai ("HỘI ĐÒNG", "CỔ PHẪN", "Anh Quan") */
-const STD_PHRASES = ["họp Đại hội đồng cổ đông", "cuộc họp", "tiến hành họp", "nghị sự", "Hội đồng quản trị", "Đại hội đồng cổ đông", "Tổng Giám đốc", "Giám đốc", "Chủ tịch", "Chủ tọa", "cổ phần", "cổ đông", "Biên bản", "Quyết định", "Nghị quyết", "tán thành", "Ban kiểm soát", "Điều lệ"];
+const STD_PHRASES = ["họp Đại hội đồng cổ đông", "cuộc họp", "tiến hành họp", "nghị sự", "Hội đồng quản trị", "Đại hội đồng cổ đông", "Tổng Giám đốc", "Giám đốc", "Chủ tịch", "Chủ tọa", "cổ phần", "cổ đông", "Biên bản", "Quyết định", "Nghị quyết", "tán thành", "Ban kiểm soát", "Điều lệ",
+  // Cụm hay gõ sai dấu khi soát công văn có sẵn (vòng thử 3, 24/11/2026: "đề nghi", "dư án", "Trân trong" lọt qua cả model)
+  "đề nghị", "trân trọng", "dự án", "hợp đồng", "chủ đầu tư", "thủ tục", "hướng dẫn",
+  // "Unauthorized ban nhân dân" → model tự sửa thành "Uy ban" (vòng thử 3, dots-3-note)
+  "Ủy ban nhân dân"];
+/** Cụm ĐÚNG chính tả trùng chữ cái với cụm chuẩn (soát mã 4.11.11, #8): không báo "có phần" → "cổ phần", "Trần Trọng" (tên người) → "trân trọng" */
+const VALID_TWINS = new Set(["có phần", "có đông", "cổ động", "cố động", "để nghỉ", "trần trọng", "tan thành"]);
+/** Hai kiểu đặt dấu thanh đều đúng chính tả ("Ủy"/"Uỷ", "hòa"/"hoà"): đưa về một kiểu trước khi so */
+const toneKey = (s: string) =>
+  s.replace(/[oòóỏõọuùúủũụ][aàáảãạyỳýỷỹỵeèéẻẽẹ]/gu, (m) => {
+    const d = m.normalize("NFD");
+    const tone = (d.match(/[\u0300\u0301\u0303\u0309\u0323]/) || [""])[0];
+    return d.replace(/[\u0300\u0301\u0303\u0309\u0323]/g, "") + tone;
+  });
 
 /** Chỗ viết cùng chữ cái nhưng khác dấu so với tên riêng người dùng đưa (tên đơn vị, người ký) và các cụm chuẩn.
  *  Chỉ so cụm từ hai chữ trở lên hoặc tên riêng; tối đa 6 mục dạng `“viết sai” → “đúng”`. */
@@ -409,7 +426,7 @@ export function accentTypos(lines: string[], refs: string[] = [], max = 6): stri
         const before = at === 0 ? " " : base[at - 1];
         const after = base[at + key0.length] ?? " ";
         const got = lo.slice(at, at + key0.length);
-        if (!/[a-z0-9]/.test(before) && !/[a-z0-9]/.test(after) && got !== want) {
+        if (!/[a-z0-9]/.test(before) && !/[a-z0-9]/.test(after) && got !== want && toneKey(got) !== toneKey(want) && !VALID_TWINS.has(got)) {
           const shown = l.slice(at, at + key0.length);
           const msg = `“${shown}” → “${ph}”`;
           if (!out.includes(msg)) out.push(msg);
@@ -508,15 +525,17 @@ function planContract(a: AdminDocInput): AdminDocPlan {
   }
   blocks[blocks.length - 1] = { ...(blocks[blocks.length - 1] as ParaBlock), keepNext: true, after: 12 };
 
-  // Phần ký: cột trái Bên A, cột phải Bên B
-  const side = (auth: string, ttl: string): Para[] => {
+  // Phần ký: cột trái Bên A, cột phải Bên B. Bên là cá nhân (người lao động, người mua nhà) không có "ĐẠI DIỆN", chức vụ, con dấu
+  // (vòng thử 3, 24/11/2026: dots-3-note in "ĐẠI DIỆN BÊN B / KỸ SƯ XÂY DỰNG / (Ký, ghi rõ họ tên, đóng dấu)" cho người lao động)
+  const person = { A: partyIsPerson(bodyLines, "A"), B: partyIsPerson(bodyLines, "B") };
+  const side = (auth: string, ttl: string, isPerson: boolean): Para[] => {
     const ps: Para[] = [{ text: auth, size, bold: true, align: "Centered", keepNext: true }];
-    if (ttl) ps.push({ text: ttl, size, bold: true, align: "Centered", keepNext: true });
-    ps.push({ text: "(Ký, ghi rõ họ tên, đóng dấu)", size: 12, italic: true, align: "Centered", keepNext: true });
+    if (ttl && !isPerson) ps.push({ text: ttl, size, bold: true, align: "Centered", keepNext: true });
+    ps.push({ text: isPerson ? "(Ký, ghi rõ họ tên)" : "(Ký, ghi rõ họ tên, đóng dấu)", size: 12, italic: true, align: "Centered", keepNext: true });
     return ps;
   };
   const lName = personName(a.left_signer_name);
-  const rName = clean(a.signer_name);
+  const rName = personName(a.signer_name);
   if (!lName) blanks.push("họ tên người ký Bên A");
   if (!rName) blanks.push("họ tên người ký Bên B");
   // Nhãn "ĐẠI DIỆN BÊN A/B" do công cụ tự đặt: model đưa lại nhãn này ở chức vụ thì in hai lần, đưa lộn bên thì lộn cột
@@ -527,8 +546,11 @@ function planContract(a: AdminDocInput): AdminDocPlan {
   };
   const lAuth = upper(clean(a.left_signer_authority));
   const rAuth = upper(clean(a.signer_authority));
-  const left = side(lAuth && !/BÊN\s+B$/u.test(lAuth) ? lAuth : "ĐẠI DIỆN BÊN A", sideTitle(a.left_signer_title));
-  const right = side(rAuth && !/BÊN\s+A$/u.test(rAuth) ? rAuth : "ĐẠI DIỆN BÊN B", sideTitle(a.signer_title));
+  const label = (auth: string, other: "A" | "B", me: "A" | "B") =>
+    person[me] && (!auth || /^ĐẠI DIỆN(?!\p{L})/u.test(auth)) ? `BÊN ${me}` : auth && !(other === "A" ? /BÊN\s+A$/u : /BÊN\s+B$/u).test(auth) ? auth : `ĐẠI DIỆN BÊN ${me}`;
+  const left = side(label(lAuth, "B", "A"), sideTitle(a.left_signer_title), person.A);
+  const right = side(label(rAuth, "A", "B"), sideTitle(a.signer_title), person.B);
+  if (person.A || person.B) notes.push(`bên ${[person.A ? "A" : "", person.B ? "B" : ""].filter(Boolean).join(", ")} là cá nhân: phần ký ghi “BÊN …”, không có chức vụ, không đóng dấu`);
   // Hai cột cao bằng nhau để họ tên hai bên nằm cùng hàng
   while (left.length < right.length) left.push(empty(size));
   while (right.length < left.length) right.push(empty(size));
@@ -538,7 +560,36 @@ function planContract(a: AdminDocInput): AdminDocPlan {
   blocks.push({ kind: "table", widths: [TEXT_WIDTH_MM / 2, TEXT_WIDTH_MM / 2], rows: [[left, right]] });
   const foreign = foreignRuns(bodyLines);
   const checks = contentChecks([...bodyLines, title, subject], [org, lName, rName]);
+  // Chép nguyên ví dụ của kỹ năng: "## BÊN GIAO THẦU (BÊN A):" không tên, trong hợp đồng đặt cọc (vòng thử 3, 24/11/2026)
+  const noName = bodyLines.map(plain).filter((l) => /^BÊN(?!\p{L})[^:]{0,60}:\s*$/iu.test(l));
+  if (noName.length) checks.push(`Dòng giới thiệu bên chưa có tên: ${noName.slice(0, 2).map((l) => `“${l}”`).join("; ")} — ghi tên bên (hoặc “…”) và vai trò đúng loại hợp đồng (bán/mua, giao thầu/nhận thầu, sử dụng lao động/người lao động…)`);
+  if (/GIAO THẦU|NHẬN THẦU/u.test(bodyLines.join("\n")) && !/THẦU|THI CÔNG|XÂY DỰNG|TƯ VẤN|CUNG CẤP|DỊCH VỤ/u.test(title))
+    checks.push(`Hợp đồng “${title}” mà các bên lại gọi là bên giao thầu / nhận thầu (chép từ ví dụ): đổi vai trò cho đúng loại hợp đồng`);
   return { type: "hop_dong", blocks, blanks: [...new Set(blanks)], notes, size, ...(foreign.length ? { foreign } : {}), ...(checks.length ? { checks } : {}) };
+}
+
+/** Tên tổ chức (pháp nhân, cơ quan): có con dấu, ký qua người đại diện */
+const ORG_WORDS = /(?<!\p{L})(công ty|tổng công ty|doanh nghiệp|tập đoàn|ngân hàng|hợp tác xã|liên hiệp|liên doanh|chi nhánh|văn phòng|ủy ban|ubnd|sở|bộ|cục|tổng cục|ban|trung tâm|viện|trường|bệnh viện|hội|quỹ|tổ chức|cơ quan|đơn vị|nhà máy|xí nghiệp|tnhh|cổ phần|jsc|ltd|kho bạc|điện lực|công an|tòa án|toà án|viện kiểm sát|chi cục|phòng|đài|báo|nhà xuất bản|corporation|company|group|inc|llc|limited|electronics)(?!\p{L})/iu;
+/** Dòng giới thiệu một bên trong body ("## BÊN MUA (BÊN B): BÀ PHẠM THỊ LAN", "Bên B (người lao động): Lê Minh Tuấn"):
+ *  bên là cá nhân khi tên mở đầu bằng Ông/Bà/Anh/Chị, hoặc tên không có chữ nào của tổ chức. Không thấy dòng thì coi là tổ chức. */
+export function partyIsPerson(lines: string[], side: "A" | "B"): boolean {
+  const re = side === "A" ? /^BÊN(?:[^:\n]{0,60}?[(\s]BÊN\s+A[)\s][^:\n]*|\s+A(?![\p{L}])[^:\n]{0,60}):\s*(.+)$/iu : /^BÊN(?:[^:\n]{0,60}?[(\s]BÊN\s+B[)\s][^:\n]*|\s+B(?![\p{L}])[^:\n]{0,60}):\s*(.+)$/iu;
+  for (const raw of lines) {
+    const line = plain(raw).normalize("NFC");
+    // Chỉ xét phần giới thiệu các bên, trước điều khoản đầu tiên (soát mã 4.11.11, #3: "Bên A có trách nhiệm: …" ở Điều 5)
+    if (/^điều\s+\d/iu.test(line)) break;
+    const m = re.exec(line);
+    if (!m) continue;
+    // Câu điều khoản có động từ trước dấu hai chấm không phải dòng giới thiệu bên
+    if (/trách nhiệm|nghĩa vụ|quyền|cam kết|phải|được|đồng ý|chịu|thanh toán/iu.test(line.slice(0, line.indexOf(":")))) continue;
+    const name = m[1].replace(/[*_]/g, "").trim();
+    if (!name || /^…|^\.\.\./.test(name)) return false;
+    if (/^(ông|bà|anh|chị)\s/iu.test(name)) return true;
+    // Họ tên người Việt: 2–5 âm tiết tiếng Việt, không có chữ của tổ chức ("SAMSUNG ELECTRONICS VIỆT NAM" là tổ chức)
+    const words = name.replace(/[,(].*$/, "").trim().split(/\s+/);
+    return words.length >= 2 && words.length <= 5 && words.every((w) => isVietSyllable(w)) && !ORG_WORDS.test(name);
+  }
+  return false;
 }
 
 export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
@@ -552,6 +603,12 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   // (thử 23/11/2026: Cohere dùng quyet_dinh với title "NGHỊ QUYẾT VỀ VIỆC …")
   if ((type === "khac" || type === "quyet_dinh") && /^NGHỊ QUYẾT\b/u.test(upper(clean(a.title)))) type = "nghi_quyet";
   if (rawType.startsWith("nghi_quyet")) type = "nghi_quyet";
+  // Giấy ủy quyền trước 4.11.11 chưa có loại riêng: model dựng thành công văn "V/v Ủy quyền …", có Kính gửi, một bên ký
+  // (vòng thử 3, 24/11/2026: dots-3-note) → nhận lại thành giấy ủy quyền
+  const uq = /^(GIẤY )?(ỦY|UỶ) QUYỀN(?!\p{L})/u;
+  // Cohere dùng giay_moi kèm title "GIẤY ỦY QUYỀN": tên loại người dùng đưa thắng loại model chọn
+  if (rawType.startsWith("giay_uy_quyen") || uq.test(upper(clean(a.title))) || ((type === "khac" || (type === "cong_van" && !list(a.to).length)) && uq.test(upper(clean(a.subject)).replace(/^V\/V:?\s*/u, ""))))
+    type = "giay_uy_quyen";
   const size = Number(a.font_size) === 13 ? 13 : 14;
   /** Cặp cỡ chữ Quốc hiệu / Tiêu ngữ tăng giảm cùng cỡ nội dung: 12/13 hoặc 13/14 */
   const hdr = size - 1;
@@ -653,7 +710,7 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   let to = list(a.to);
   if (!to.length && echo.found.to?.length) to = list(echo.found.to);
   // Quyết định, nghị quyết, biên bản không có "Kính gửi" (thử 23/11/2026: Cohere đưa Kính gửi vào quyết định bổ nhiệm) → chuyển sang Nơi nhận
-  const movedTo = type === "quyet_dinh" || type === "nghi_quyet" || type === "bien_ban" ? to : [];
+  const movedTo = type === "quyet_dinh" || type === "nghi_quyet" || type === "bien_ban" || type === "giay_uy_quyen" ? to : [];
   if (movedTo.length) {
     notes.push(`${TYPE_TITLE[type].toLocaleLowerCase("vi-VN")} không có phần Kính gửi: đã chuyển ${movedTo.length} nơi sang Nơi nhận`);
     to = [];
@@ -698,7 +755,8 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   const sName = personName(a.signer_name).replace(/^(?:(?:pgs|gs|ths|ts|ks|ls)\.?,?\s*|(?:luật sư|tiến sĩ|thạc sĩ|giáo sư|phó giáo sư|kỹ sư)\s+)+/i, "");
   if (!sTitle && !authority) blanks.push("quyền hạn, chức vụ người ký");
   if (!sName) blanks.push("họ tên người ký");
-  const lTitle = upper(clean(a.left_signer_title));
+  // Giấy ủy quyền: hai bên cùng ký — trái người nhận ủy quyền, phải người ủy quyền (chức vụ người đứng đầu)
+  const lTitle = upper(clean(a.left_signer_title)) || (type === "giay_uy_quyen" ? "NGƯỜI NHẬN ỦY QUYỀN" : "");
   const lName = personName(a.left_signer_name);
   let recipients = [...movedTo, ...list(a.recipients).filter((r) => !movedTo.includes(r))];
   const needsNhuTren = to.length > 0 || type === "cong_van" || type === "to_trinh" || type === "bao_cao";
@@ -734,6 +792,13 @@ export function planAdminDocument(input: AdminDocInput): AdminDocPlan {
   }
   const foreign = foreignRuns(bodyLines);
   checks.push(...contentChecks([...bodyLines, title, subject, authority, sTitle, lTitle], [org, sName, lName]));
+  if (type === "giay_moi") {
+    const late = issueAfterEvent(date, bodyLines);
+    if (late) checks.push(late);
+  }
+  // Model bỏ trống trích yếu, công cụ để "…" mà model không điền (vòng thử 3: dots-3-note, Nemotron 3 Ultra đều để giấy mời có dòng "…")
+  if (!subject && (type === "giay_moi" || type === "giay_uy_quyen"))
+    checks.push(`Trích yếu (dòng ngay dưới tên loại “${title}”) đang là “…”: viết một dòng ngắn nêu đúng việc (ví dụ “Họp bàn …”, “Về việc …”) bằng word_set_paragraph_text vào đoạn đó`);
   return { type, blocks, blanks: [...new Set(blanks)], notes, size, ...(foreign.length ? { foreign } : {}), ...(checks.length ? { checks } : {}) };
 }
 

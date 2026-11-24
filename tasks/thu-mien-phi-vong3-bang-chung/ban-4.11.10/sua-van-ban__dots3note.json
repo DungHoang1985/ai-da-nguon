@@ -1,0 +1,156 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Dots Studio: Dots3-Note Preview (free). Bấm để đổi 🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)"
+ },
+ "luot1": {
+  "giay": 73,
+  "daHoi": [
+   "AI muốn: Thay \"dư án\" → \"dự án\" ở [¶5] — lý do: Sửa chính tả: \"dư án\" thành \"dự án\" | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 545
+ },
+ "lamTiep": [],
+ "luot2": null,
+ "tongGiay": 73,
+ "chat": "Rà soát văn bản đang mở và sửa trực tiếp trong văn bản: lỗi chính tả, căn cứ pháp lý đã hết hiệu lực, chỗ ghi thứ không khớp với ngày. Sửa xong liệt kê ngắn các chỗ đã sửa.\nKỹ năng áp dụng: chuan-bi-hop\n✅ Xem tổng quan văn bản\n✅ Đọc đoạn 0–11\n✅ Soát nhất quán: đánh số, dẫn chiếu, thuật ngữ, tên các bên, chỗ trống, số và chữ — không thấy điểm nào\n✅ Thay \"dư án\" → \"dự án\" ở [¶5] — lý do: Sửa chính tả: \"dư án\" thành \"dự án\"\n✅ Thay \"Luật Kinh doanh bất động sản năm 2014\" → \"Luật Kinh doanh bất động sản năm 2023\" ở [¶4] — lý do: Cập nhật pháp lý đã hết hiệu lực: Luật Kinh doanh bất động sản năm 2014 đã được thay thế bởi Luật năm 2023 (hiệu lực 01/01/2024)\n✅ Thay \"Nghị định số 99/2015/NĐ-CP quy định chi \" → \"Nghị định số 33/2023/NĐ-CP quy định chi \" ở [¶4] — lý do: Cập nhật pháp lý đã hết hiệu lực: Nghị định 99/2015/NĐ-CP đã được thay thế bởi Nghị định 33/2023/NĐ-CP\n⚠️ Thêm nhận xét: Lưu ý: Ngày 15/12/2026 là thứ Sáu, không phải thứ — Thiếu expect: khi chỉ một đoạn bằng số (đoạn 5) phải kèm expect = khoảng 30 ký tự đầu của đoạn đó đúng như đã đọc, để công cụ không sửa nhầm đoạn khi chỉ số đã dời.\n✅ Thêm nhận xét: Lưu ý: Ngày 15/12/2026 là thứ Sáu, không phải thứ\nĐã hoàn thành rà soát và sửa các lỗi trong văn bản:\n \n1. Lỗi chính tả:\n• Đoạn 5: \"dư án\" → \"dự án\"\n \n2. Căn cứ pháp lý đã hết hiệu lực:\n• Đoạn 4: \"Luật Kinh doanh bất động sản năm 2014\" → \"Luật Kinh doanh bất động sản năm 2023\" (Luật mới có hiệu lực từ 01/01/2024)\n• Đoạn 4: \"Nghị định số 99/2015/NĐ-CP\" → \"Nghị định số 33/2023/NĐ-CP\" (Nghị định mới thay thế)\n \n3. Lỗi thứ ngày không khớp:\n• Đoạn 5: Ghi \"Thứ Hai, ngày 15/12/2026\" nhưng ngày 15/12/2026 là thứ Sáu. Đã thêm nhận xét提醒 người dùng kiểm tra và điều chỉnh (có thể giữ ngày 15/12/2026 đổi thành \"Thứ Sáu\", hoặc giữ \"Thứ Hai\" chọn ngày khác).\n1 nhiệm vụ · 9 lần gọi AI · Token: vào 79.416 · ra 5.376 · đọc từ bộ nhớ đệm 72.704\nHoàn tác thay đổi (4)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [
+  "9 lần gọi AI · Token: vào 79.416 · ra 5.376 · đọc từ bộ nhớ đệm 72.704"
+ ],
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Số: 118/2026/CV-AQ",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "V/v đề nghi hướng dẫn thủ tục bàn giao nhà ở cho khách hàng",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Kính gửi: Sở Xây dựng tỉnh Bình Minh",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Kinh doanh bất động sản năm 20232014 và Nghị định số 33/202399/2015/NĐ-CP quy định chi tiết Luật Kinh doanh bất động sảnNhà ở;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân là chủ đầu tư dựdư án Khu nhà ở Anh Quân Riverside tại phường An Phú. Đến nay công ty đã hoàn thành 48 căn nhà liền kề và dự kiến tổ chức bàn giao cho khách hàng vào Thứ Hai, ngày 15/12/2026.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Để việc bàn giao đúng quy định, công ty kính đề nghị Sở hướng dẫn hồ sơ, thủ tục cần thiết trước khi bàn giao nhà ở cho khách hàng.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Trân trong cảm ơn./.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "TỔNG GIÁM ĐỐC",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "Nguyễn Anh Quân",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "2023"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "2014"
+  },
+  {
+   "loai": "Added",
+   "chu": "33/2023"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "99/2015"
+  },
+  {
+   "loai": "Added",
+   "chu": "Kinh doanh bất động sản"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "Nhà ở"
+  },
+  {
+   "loai": "Added",
+   "chu": "dự"
+  },
+  {
+   "loai": "Deleted",
+   "chu": "dư"
+  }
+ ]
+}

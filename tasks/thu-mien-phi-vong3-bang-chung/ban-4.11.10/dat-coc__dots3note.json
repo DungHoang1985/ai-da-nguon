@@ -1,0 +1,636 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter Dots Studio: Dots3-Note Preview (free). Bấm để đổi 🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)"
+ },
+ "luot1": {
+  "giay": 93,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 2122
+ },
+ "lamTiep": [],
+ "luot2": null,
+ "tongGiay": 93,
+ "chat": "Soạn hợp đồng đặt cọc giữa Công ty Cổ phần Đầu tư Anh Quân (chủ đầu tư dự án Khu nhà ở Anh Quân Riverside) và bà Phạm Thị Lan để mua căn nhà liền kề LK-12 thuộc dự án. Đây là nhà ở hình thành trong tương lai, Sở Xây dựng đã có văn bản thông báo đủ điều kiện được bán ngày 05/12/2026. Giá bán 6,2 tỷ đồng (đã gồm thuế giá trị gia tăng), tiền đặt cọc bằng 10% giá bán, hai bên ký hợp đồng mua bán trong 30 ngày kể từ ngày đặt cọc.\nKỹ năng áp dụng: soan-hop-dong\n✅ Dựng văn bản hành chính đúng thể thức — Đã dựng hợp đồng đúng thể thức · còn 1 chỗ cần điền\n✅ Tìm \"递交\" trong văn bản\n✅ Sửa [¶48] — lý do: Sửa chữ không phải tiếng Việt '递交' thành 'trình'\nĐã soạn xong hợp đồng đặt cọc. Dưới đây là các điểm cần người dùng điền trước khi ký:\n \n• Số hợp đồng: để trống (công cụ báo cần điền).\n• Ngày ký và địa điểm: các dòng \"Hôm nay, ngày ... tháng ... năm ..., tại ...\" để trống.\n• Thông tin bên bán (Công ty CP Đầu tư Anh Quân): đại diện, chức vụ, địa chỉ, điện thoại, mã số thuế, tài khoản – đều để trống.\n• Thông tin bên mua (Bà Phạm Thị Lan): địa chỉ, CMND/Căn cước, ngày cấp – để trống.\n• Điều 3: ngày thanh toán tiền đặt cọc, hình thức thanh toán (tiền mặt/chuyển khoản) – để trống.\n• Điều 4.3: tỷ lệ phần trăm bồi thường nếu bên bán không ký hợp đồng mua bán – để trống.\n• Điều 6.3: số bản hợp đồng – để trống.\n• Căn cứ pháp lý: số hiệu nghị định 2024 và số văn bản thông báo của Sở Xây dựng – để trống, cần người dùng cung cấp.\n \nLưu ý thêm: theo quy định về kinh doanh bất động sản, cần xác định bên bán (Công ty CP Đầu tư Anh Quân) có phải là chủ đầu tư dự án Khu nhà ở Anh Quân Riverside không. Nếu có, hợp đồng phải tuân theo mẫu của nghị định quy định chi tiết Luật Kinh doanh bất động sản; nếu không, cần điều chỉnh. Vui lòng thông báo để mình điều chỉnh nếu cần.\n1 nhiệm vụ · 4 lần gọi AI · Token: vào 42.869 · ra 7.808 · đọc từ bộ nhớ đệm 30.720\nHoàn tác thay đổi (2)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · Dots Studio: Dots3-Note Preview (free)",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [
+  "4 lần gọi AI · Token: vào 42.869 · ra 7.808 · đọc từ bộ nhớ đệm 30.720"
+ ],
+ "doanVan": [
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "HỢP ĐỒNG ĐẶT CỌC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 6,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Bộ luật Dân sự năm 2015;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Luật Kinh doanh bất động sản năm 2023;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Nghị định số .../2024/NĐ-CP ngày ... năm 2024 quy định chi tiết một số điều của Luật Kinh doanh bất động sản;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Căn cứ Văn bản thông báo đủ điều kiện được bán nhà ở hình thành trong tương lai số ... ngày 05/12/2026 của Sở Xây dựng ..;",
+   "al": "Justified",
+   "b": false,
+   "i": true,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hôm nay, ngày ... tháng ... năm ..., tại ..., chúng tôi gồm:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "BÊN BÁN (BÊN A): CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đại diện: ... Chức vụ: ...",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa chỉ: ...",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điện thoại: ... Fax: ...",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Mã số thuế: ...",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tài khoản số: ... tại ...",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "BÊN MUA (BÊN B): BÀ PHẠM THỊ LAN",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đại diện: Bà PHẠM THỊ LAN",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa chỉ: ...",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điện thoại: ...",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "CMND/Căn cước công dân số: ... cấp ngày ... tại ...",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Hai bên thống nhất ký kết HỢP ĐỒNG ĐẶT CỌC với các điều khoản sau:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 1. ĐỐI TƯỢNG",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1.1. BÊN A cam kết bán, BÊN B cam kết mua căn nhà liền kề số LK-12 thuộc dự án Khu nhà ở Anh Quân Riverside, địa chỉ ..., thành phố ..., tỉnh ..., Việt Nam (sau đây gọi là \"Căn nhà\").",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "1.2. Căn nhà là nhà ở hình thành trong tương lai, đã được cấp phép xây dựng và có văn bản thông báo đủ điều kiện được bán theo quy định pháp luật.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 2. GIÁ BÁN",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2.1. Giá bán Căn nhà là: 6,2 tỷ đồng (bằng chữ: sáu tỷ hai trăm triệu đồng), đã bao gồm thuế giá trị gia tăng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "2.2. Giá bán trên đã bao gồm các loại phí, lệ phí liên quan đến việc mua bán Căn nhà.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 3. TIỀN ĐẶT CỌC",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3.1. BÊN B đặt cọc cho BÊN A số tiền là 620 triệu đồng (bằng chữ: sáu trăm hai mươi triệu đồng), tương đương 10% giá bán Căn nhà.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3.2. BÊN B phải thanh toán tiền đặt cọc trong vòng ... ngày kể từ ngày ký hợp đồng này.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "3.3. Tiền đặt cọc được thanh toán bằng hình thức ... (tiền mặt/chuyển khoản) vào ngày ... năm ....",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 4. THỜI HẠN KÝ HỢP ĐỒNG MUA BÁN",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.1. Hai bên cam kết ký kết Hợp đồng mua bán Căn nhà trong vòng 30 ngày kể từ ngày BÊN B thanh toán tiền đặt cọc.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.2. Trong thời hạn trên, BÊN A có nghĩa vụ chuẩn bị hồ sơ, thủ tục để ký kết Hợp đồng mua bán.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "4.3. Nếu BÊN A không thực hiện được nghĩa vụ trên, BÊN A phải hoàn trả lại tiền đặt cọc và bồi thường số tiền tương đương ...% số tiền đặt cọc.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 5. QUYỀN VÀ NGHĨA VỤ",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "5.1. BÊN A:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Giao Căn nhà đúng tiến độ, chất lượng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Thực hiện thủ tục đăng ký, công chứng Hợp đồng.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Bảo hành Căn nhà theo quy định.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "5.2. BÊN B:",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Thanh toán đủ tiền theo tiến độ.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Nhận Căn nhà, thực hiện đăng ký sở hữu.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "- Tuân thủ an toàn lao động, vệ sinh môi trường.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Điều 6. ĐIỀU KHOẢN CHUNG",
+   "al": "Justified",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "6.1. Hợp đồng có hiệu lực từ ngày ký.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "6.2. Giải quyết tranh hòa giải, nếu không thành, trình Tòa án nhân dân có thẩm quyền.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "6.3. Hợp đồng lập thành ... bản, mỗi bên giữ ... bản.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "ĐẠI DIỆN BÊN A",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "(Ký, ghi rõ họ tên, đóng dấu)",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "...",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "ĐẠI DIỆN BÊN B",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "(Ký, ghi rõ họ tên, đóng dấu)",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Phạm Thị Lan",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\rHỢP ĐỒNG ĐẶT CỌC\rSố:      /…\r\rCăn cứ Bộ luật Dân sự năm 2015;\rCăn cứ Luật Kinh doanh bất động sản năm 2023;\rCăn cứ Nghị định số .../2024"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "ĐẠI DIỆN BÊN A\rGIÁM ĐỐC\r(Ký, ghi rõ họ tên, đóng dấu)\r\r\r\r\r...\tĐẠI DIỆN BÊN B\r(Ký, ghi rõ họ tên, đóng dấu)\r\r\r\r\r\rPhạm Thị Lan\r\n"
+  }
+ ]
+}

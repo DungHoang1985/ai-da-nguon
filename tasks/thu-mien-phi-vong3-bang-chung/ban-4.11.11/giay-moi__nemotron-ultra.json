@@ -1,0 +1,298 @@
+{
+ "model": {
+  "daChon": "Model đang dùng: OpenRouter NVIDIA: Nemotron 3 Ultra (free). Bấm để đổi 🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)"
+ },
+ "luot1": {
+  "giay": 62,
+  "daHoi": [
+   "AI muốn: Dựng văn bản hành chính đúng thể thức: Họp bàn phương án bồi thường, hỗ trợ 3 hộ dân vướn | Cho phép | Cho phép hết lần này | Bỏ qua → all"
+  ],
+  "chuWord": 669
+ },
+ "lamTiep": [],
+ "luot2": null,
+ "tongGiay": 63,
+ "chat": "Soạn giấy mời của Công ty Cổ phần Đầu tư Anh Quân mời đại diện Ủy ban nhân dân phường An Phú dự cuộc họp bàn phương án bồi thường, hỗ trợ đối với 3 hộ dân còn vướng mặt bằng (diện tích 0,8 ha) thuộc dự án Khu nhà ở Anh Quân Riverside. Thời gian: 14h00 Thứ Tư, ngày 10/12/2026. Địa điểm: phòng họp tầng 3, trụ sở công ty. Đầu mối liên hệ: bà Lê Thị Hoa, Phòng Hành chính – Nhân sự. Người ký: Phó Tổng Giám đốc Trần Văn Bình ký thay Tổng Giám đốc.\nKỹ năng áp dụng: chuan-bi-hop, soan-thao-van-ban-hanh-chinh\n✅ Dựng văn bản hành chính đúng thể thức: Họp bàn phương án bồi thường, hỗ trợ 3 hộ dân vướn — Đã dựng giấy mời đúng thể thức · còn 3 chỗ cần điền · 1 chỗ nghi sai cần kiểm\n✅ Đọc đoạn 0–20\n✅ Sửa [¶15] — lý do: Sửa thứ trong tuần cho đúng: 10/12/2026 là Thứ Năm chứ không phải Thứ Tư.\nĐã soạn giấy mời đúng thể thức và sửa lỗi thứ trong tuần (10/12/2026 là Thứ Năm, đã đổi từ Thứ Tư).\n \nNội dung chính đã dựng:\n• Cơ quan ban hành: CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\n• Mời: Đại diện Ủy ban nhân dân phường An Phú\n• Nội dung: Họp bàn phương án bồi thường, hỗ trợ 3 hộ dân vướng mặt bằng (0,8 ha) dự án Anh Quân Riverside\n• Thời gian: 14h00 Thứ Năm, ngày 10 tháng 12 năm 2026 (đã sửa)\n• Địa điểm: Phòng họp tầng 3, trụ sở công ty\n• Đầu mối liên hệ: Bà Lê Thị Hoa, Phòng Hành chính – Nhân sự\n• Người ký: Phó Tổng Giám đốc Trần Văn Bình ký thay Tổng Giám đốc (quyền hạn: KT. TỔNG GIÁM ĐỐC)\n \nCần điền trước khi ký (3 chỗ trống):\n1. Số văn bản (để văn thư cấp)\n2. Ký hiệu văn bản\n3. Ngày tháng ban hành (phải trước ngày 10/12/2026)\n \nVăn bản đã có theo dõi thay đổi, định dạng trang A4, lề chuẩn hành chính. Bạn hãy điền 3 mục trên thì bản mời sẵn sàng gửi.\n1 nhiệm vụ · 4 lần gọi AI · Token: vào 67.853 · ra 2.572 · đọc từ bộ nhớ đệm 43.840\nHoàn tác thay đổi (2)\nChèn vào chỗ con trỏ\nSao chép\nSửa đổi được ghi bằng Theo dõi thay đổi — vào thẻ Review để Chấp nhận / Từ chối từng chỗ, hoặc bấm Hoàn tác thay đổi để gỡ cả lượt.\nHỏi trước\n🌐 Web ✕\n🆓 OpenRouter · NVIDIA: Nemotron 3 Ultra (free)",
+ "doiNguon": [],
+ "traLoiBoi": [],
+ "lanGoiAI": [
+  "4 lần gọi AI · Token: vào 67.853 · ra 2.572 · đọc từ bộ nhớ đệm 43.840"
+ ],
+ "doanVan": [
+  {
+   "t": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Độc lập - Tự do - Hạnh phúc",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 2,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Số:      /…",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 13,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Hà Nội, ngày      tháng      năm 2026",
+   "al": "Centered",
+   "b": false,
+   "i": true,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "GIẤY MỜI",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Họp bàn phương án bồi thường, hỗ trợ 3 hộ dân vướng mặt bằng dự án Anh Quân Riverside",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 3,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Công ty Cổ phần Đầu tư Anh Quân trân trọng kính mời đại diện Ủy ban nhân dân phường An Phú tới dự cuộc họp bàn phương án bồi thường, hỗ trợ đối với 3 hộ dân còn vướng mặt bằng (diện tích 0,8 ha) thuộc dự án Khu nhà ở Anh Quân Riverside.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Tới dự: Đại diện Ủy ban nhân dân phường An Phú.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Chủ trì: Phó Tổng Giám đốc Trần Văn Bình.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Thời gian: 14h00 Thứ Năm, ngày 10 tháng 12 năm 2026.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Địa điểm: Phòng họp tầng 3, trụ sở Công ty Cổ phần Đầu tư Anh Quân.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Đầu mối liên hệ: Bà Lê Thị Hoa, Phòng Hành chính – Nhân sự./.",
+   "al": "Justified",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 0
+  },
+  {
+   "t": "Nơi nhận:",
+   "al": "Left",
+   "b": true,
+   "i": true,
+   "sz": 12,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Ủy ban nhân dân phường An Phú;",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "- Lưu: VT, Phòng Hành chính – Nhân sự.",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "KT. TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "PHÓ TỔNG GIÁM ĐỐC",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Centered",
+   "b": false,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "Trần Văn Bình",
+   "al": "Centered",
+   "b": true,
+   "i": false,
+   "sz": 14,
+   "f": "Times New Roman",
+   "tb": 1
+  },
+  {
+   "t": "",
+   "al": "Left",
+   "b": false,
+   "i": false,
+   "sz": 11,
+   "f": "Calibri",
+   "tb": 0
+  }
+ ],
+ "suaDoi": [
+  {
+   "loai": "Added",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\tHà Nội, ngày      tháng      năm 2026\r\nGIẤY MỜI\rHọp bàn phương án bồi thường, hỗ trợ 3 h"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "CÔNG TY CỔ PHẦN ĐẦU TƯ ANH QUÂN\r\r\tCỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM\rĐộc lập - Tự do - Hạnh phúc\r\r\r\nSố:      /…\tHà Nội, ngày      tháng      năm 2026\r\n"
+  },
+  {
+   "loai": "Formatted",
+   "chu": "Nơi nhận:\r- Ủy ban nhân dân phường An Phú;\r- Lưu: VT, Phòng Hành chính – Nhân sự.\tKT. TỔNG GIÁM ĐỐC\rPHÓ TỔNG GIÁM ĐỐC\r\r\r\r\rTrần Văn Bình\r\n"
+  }
+ ]
+}
