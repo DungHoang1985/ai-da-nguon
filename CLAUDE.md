@@ -15,6 +15,7 @@ Add-in Office dùng API key của nhiều nhà cung cấp; AI tự thao tác tr�
 | Nguồn AI, chế độ Miễn phí / Trả phí, đăng nhập, đo token, model mặc định | `docs/quy-tac/nguon-ai.md` |
 | Vòng tác tử, tệp đính kèm, bộ nhớ dài hạn, ghi chéo ứng dụng, kỹ năng | `docs/quy-tac/tac-tu.md` |
 | Kiểm trong Office | `docs/kiem-thu-office.md` |
+| Đụng tới Office.js, WebView2, bài thử, phát hành | `docs/bai-hoc.md` (tìm theo từ khóa, không cần đọc hết) |
 
 3. Chỉ đọc khi cần: kế hoạch gốc `tasks/ke-hoach-v4.md`; chi tiết từng đợt `tasks/dot/dot-<N>/dot-<N>.md` (bằng chứng ở `bang-chung/` cùng thư mục); bản vá và buổi thử lẻ `tasks/viec-le/`; bảng so sánh với bản chính thức `docs/so-sanh-claude-chinh-thuc.md`; tài liệu cũ `tasks/luu/`.
 
@@ -65,7 +66,7 @@ src/dialog/              dang-nhap.html/.ts — trang hộp thoại đăng nhậ
 test/unit/               mocha (dữ liệu mẫu ở test/fixtures/)
 kiem-thu/                kiểm trong Office bằng mã (cdp.mjs, cdp-bai/, tệp thử, desktop ẩn)
 cai-dat/                 tệp .cmd cài và gỡ add-in (registry WEF\Developer)
-docs/                    quy-tac/ (quy tắc theo phần), kiem-thu-office.md, so-sanh-claude-chinh-thuc.md
+docs/                    quy-tac/ (quy tắc theo phần), bai-hoc.md, kiem-thu-office.md, so-sanh-claude-chinh-thuc.md
 tasks/                   HANDOFF.md · ke-hoach-v4.md · dot/ · viec-le/ · luu/
 ```
 
@@ -77,7 +78,7 @@ tasks/                   HANDOFF.md · ke-hoach-v4.md · dot/ · viec-le/ · luu
 - Câu hỏi cần anh duyệt: ô tích chọn, 2–4 phương án, khuyến nghị đặt đầu kèm "(Khuyến nghị)", tối đa 4 câu. Điều tự kiểm được thì không hỏi.
 - Trước khi làm: nêu tiêu chí nghiệm thu. Khi giao: bảng Tiêu chí · Kết quả (Đạt / Không đạt / Chưa kiểm được) · Bằng chứng. Không có bằng chứng thì không ghi Đạt.
 - Bước không đạt: làm lại tối đa 3 lần, rồi dừng và báo.
-- Cuối phiên: cập nhật `tasks/HANDOFF.md` (đã xong · đang làm · quyết định · vấn đề mở · bước tiếp theo · bài học), giữ dưới 15 KB — chi tiết cũ chuyển vào `tasks/luu/`, chi tiết đợt vào tệp đợt. Anh sửa kết quả hoặc lỗi lặp lại: ghi vào Bài học.
+- Cuối phiên: cập nhật `tasks/HANDOFF.md` (đã xong · đang làm · quyết định · vấn đề mở · bước tiếp theo · bài học), giữ dưới 15 KB — chi tiết cũ chuyển vào `tasks/luu/`, chi tiết đợt vào tệp đợt. Anh sửa kết quả hoặc lỗi lặp lại: ghi vào đầu `docs/bai-hoc.md`.
 
 ## Quy tắc kỹ thuật chung
 

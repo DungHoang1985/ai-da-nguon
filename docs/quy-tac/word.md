@@ -1,6 +1,6 @@
 # Quy tắc Word — đọc trước khi sửa mã Word
 
-Mọi điều dưới đây đã thăm dò trong Office hoặc đã trả giá; **không làm trái**. Bài học Office.js chi tiết hơn nằm ở mục Bài học của `tasks/HANDOFF.md` và `tasks/luu/`.
+Mọi điều dưới đây đã thăm dò trong Office hoặc đã trả giá; **không làm trái**. Bài học Office.js chi tiết hơn nằm ở `docs/bai-hoc.md`.
 
 ## Chung
 

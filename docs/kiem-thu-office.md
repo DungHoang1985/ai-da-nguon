@@ -1,6 +1,6 @@
 # Kiểm trong Office bằng mã
 
-Không cần điều khiển màn hình, dùng được cả khi anh không ngồi trước máy. Giới hạn và bảng thăm dò desktop ẩn ở mục Bài học của `tasks/HANDOFF.md`.
+Không cần điều khiển màn hình, dùng được cả khi anh không ngồi trước máy. Giới hạn và bảng thăm dò desktop ẩn ở `docs/bai-hoc.md`.
 
 ## Công cụ
 
@@ -11,7 +11,7 @@ Không cần điều khiển màn hình, dùng được cả khi anh không ng�
 - Lệnh COM tới Office thử phải chạy bên trong desktop ẩn (`desktop-rieng.ps1 -Lenh powershell.exe -ThamSo …`).
 - Ba ứng dụng cùng lúc: mở Word bằng `mo-office.ps1`, rồi `Start-Process excel.exe` / `powerpnt.exe` kèm biến môi trường cổng gỡ lỗi; mỗi khung một tiến trình `cdp.mjs serve 9229/<Ứng dụng> dist`.
 - Hộp thoại đăng nhập là một trang riêng trên cùng cổng: `node kiem-thu/cdp.mjs list 9229` liệt kê các trang (giá trị tham số nhạy cảm chỉ in độ dài); `9229#openrouter.ai` hoặc `9229#dang-nhap` chọn trang đó cho `eval`, `shot`, `nav`; `serve` tự gắn vào hộp thoại để nó cũng nhận bản cục bộ.
-- Xem bản in của văn bản Word: Word COM `ExportAsFixedFormat` ra PDF rồi `pypdfium2` ra PNG (cách làm ở mục Bài học của HANDOFF).
+- Xem bản in của văn bản Word: Word COM `ExportAsFixedFormat` ra PDF rồi `pypdfium2` ra PNG (cách làm ở `docs/bai-hoc.md`).
 - Đo token mỗi lượt: `kiem-thu/do-token.ts`.
 
 ## Tệp thử
