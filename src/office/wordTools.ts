@@ -447,6 +447,11 @@ const REVIEWABLE = ["word_set_paragraph_text", "word_insert_clause", "word_repla
 WORD_SPECS.forEach((sp) => {
   if (REVIEWABLE.includes(sp.name)) sp.reviewable = true;
 });
+/** Cổng soát lập luận (4.13.1, anh chọn 25/11/2026): các lệnh ghi câu chữ vào thân văn bản. Chế độ Miễn phí công cụ soát nằm nhóm "soat". */
+const EXPLAIN_GATED = ["word_replace_text", "word_set_paragraph_text", "word_insert_clause", "word_replace_selection", "word_insert_paragraphs"];
+WORD_SPECS.forEach((sp) => {
+  if (EXPLAIN_GATED.includes(sp.name)) sp.needsExplain = { tool: EXPLAIN_TOOL, hint: 'gọi load_tools nhóm "soat" trước' };
+});
 
 /** Từ 3.6 không còn công tắc tắt Track Changes: mọi sửa đổi của AI trong Word luôn ghi có theo dõi (anh duyệt 15/11/2026). */
 export type WordSettings = unknown;

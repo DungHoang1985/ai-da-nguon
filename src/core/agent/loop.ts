@@ -166,12 +166,22 @@ const stopError = () => new DOMException("Đã dừng", "AbortError");
 
 /** Trả về toàn bộ hội thoại sau lần chạy (không gồm system). Khi bị dừng hoặc lỗi, phần đã làm vẫn nằm trong
  *  mảng đã báo qua onHistory. */
+/** Câu nhắc của cổng soát lập luận (4.13.1) — lệnh chưa chạy, model gọi công cụ soát rồi ghi, hoặc gọi lại nếu chỉ là sửa máy móc */
+export const EXPLAIN_GATE_PREFIX = "CHƯA GHI vào văn bản (add-in nhắc một lần mỗi lượt).";
+/** Câu mở đầu tin nhắn "Làm tiếp" của khung (Chat.tsx CONTINUE_TASK): lượt tiếp nối, không phải yêu cầu mới */
+const CONTINUE_MARK = "[Add-in: lượt trước do ADD-IN dừng lại";
+export function explainGateNote(tool: string, hint?: string): string {
+  return `${EXPLAIN_GATE_PREFIX} Nếu đây là câu chữ pháp lý bạn tự soạn hoặc đổi nghĩa (nghĩa vụ, mức phạt, thời hạn, số tiền, định nghĩa, căn cứ pháp luật…): gọi ${tool} trước, nêu căn cứ cho sửa đổi này, rồi làm theo kết quả${hint ? ` (${tool} chưa có trong danh sách thì ${hint})` : ""}. Nếu chỉ là sửa máy móc (chính tả, định dạng, câu người dùng đọc nguyên văn) thì gọi lại đúng lệnh này.`;
+}
+
 export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
   const maxSteps = o.maxSteps ?? 20;
   const msgs: AgentMessage[] = [...o.messages];
   const base = msgs.length;
   const allSpecs: ToolSpec[] = [...o.tools.specs, ...(o.extra?.specs || [])];
   const specMap = new Map(allSpecs.map((t) => [t.name, t]));
+  /** Công cụ soát lập luận mà cổng 4.13.1 chờ (gọi thành công là mở cổng cho cả lượt) */
+  const explainTools = new Set(allSpecs.map((t) => t.needsExplain?.tool).filter((x): x is string => !!x));
   const extraNames = new Set((o.extra?.specs || []).map((t) => t.name));
 
   const push = (m: AgentMessage) => {
@@ -193,6 +203,23 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
 
   let truncatedRun = 0;
   let reviewBlocks = 0;
+  /** Cổng soát lập luận (4.13.1): đã gọi công cụ soát thành công trong lượt / đã nhắc một lần */
+  let explainDone = false;
+  let explainReminded = false;
+  // Lượt "Làm tiếp": đã soát thành công ở phần trước của cùng nhiệm vụ (từ yêu cầu thật gần nhất) thì không nhắc lại
+  if (explainTools.size) {
+    for (let k = msgs.length - 1; k >= 0; k--) {
+      const m: any = msgs[k];
+      if (m.role === "user") {
+        if (JSON.stringify(m.content ?? "").includes(CONTINUE_MARK)) continue;
+        break;
+      }
+      if (m.role === "tool" && explainTools.has(m.name) && !/"ok":false/.test(String(m.content))) {
+        explainDone = true;
+        break;
+      }
+    }
+  }
   /** Dùng chung cho mọi bước của lượt: nhà cung cấp đã từ chối tham số suy nghĩ thì các bước sau không gửi nữa */
   const callState: { plain?: boolean } = {};
   /** Số lệnh ghi đã chạy thành công trong lượt (để thẻ "Làm tiếp?" nêu rõ đã làm gì) */
@@ -295,6 +322,8 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
     const toolImages: { mime: string; data: string; label?: string }[] = [];
     const stepFails = new Map<string, { run: number; sameArgs: number; args: string }>();
     let stuck: { tool: string; error: string; times: number } | undefined;
+    /** Cổng soát lập luận đã chặn trong bước này: các lệnh ghi điều khoản khác cùng bước cũng chặn (không để lệnh thứ hai lọt) */
+    let gatedThisStep = false;
     for (let i = 0; i < res.toolCalls.length; i++) {
       const call = res.toolCalls[i];
       if (aborted()) {
@@ -307,7 +336,14 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       // Chạy trước khi hiện bước ghi và trước khi hỏi người dùng.
       let blocked = "";
       const reviewSpec = specMap.get(call.name);
-      if (o.review && reviewSpec?.reviewable && !call.args?.__invalid_json && reviewBlocks < MAX_REVIEW_BLOCKS) {
+      // Cổng soát lập luận (4.13.1): xét trước bước soát tùy chọn và trước khi hỏi người dùng (không tốn lượt soát, không hỏi hai lần)
+      const gate = reviewSpec?.needsExplain;
+      if (gate && !explainDone && (!explainReminded || gatedThisStep) && !call.args?.__invalid_json) {
+        explainReminded = true;
+        gatedThisStep = true;
+        blocked = explainGateNote(gate.tool, gate.hint);
+      }
+      if (!blocked && o.review && reviewSpec?.reviewable && !call.args?.__invalid_json && reviewBlocks < MAX_REVIEW_BLOCKS) {
         o.onEvent({ type: "review_start", call });
         let verdict: { ok: boolean; note?: string };
         try {
@@ -409,14 +445,15 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
               : undefined
           : undefined);
       const sp = specMap.get(call.name);
+      if (!failText && explainTools.has(call.name)) explainDone = true;
       if (sp?.look && !failText) lookPending.clear();
       else if (sp?.needsLook && writeSucceeded(result, error)) lookPending.add(call.name);
       if (specMap.get(call.name)?.write) {
         if (!writeSucceeded(result, error)) {
-          if (!failText?.startsWith(USER_DENIED) && !failText?.startsWith(NOT_RUN_STOPPED)) unresolved.set(call.name, (unresolved.get(call.name) || 0) + 1);
+          if (!failText?.startsWith(USER_DENIED) && !failText?.startsWith(NOT_RUN_STOPPED) && !failText?.startsWith(EXPLAIN_GATE_PREFIX)) unresolved.set(call.name, (unresolved.get(call.name) || 0) + 1);
         } else unresolved.delete(call.name);
       }
-      if (failText && !failText.startsWith(USER_DENIED)) {
+      if (failText && !failText.startsWith(USER_DENIED) && !failText.startsWith(EXPLAIN_GATE_PREFIX)) {
         const sig = `${call.name}|${failText}`;
         let args = "";
         try {

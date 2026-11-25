@@ -63,6 +63,9 @@ export interface ToolSpec {
   needsLook?: boolean;
   /** Công cụ xem lại hình thức (ảnh slide, kiểm bài): gọi sau các lệnh `needsLook` là đã kiểm */
   look?: boolean;
+  /** Cổng soát lập luận (4.13.1): lệnh ghi câu chữ điều khoản lần đầu trong lượt mà chưa gọi công cụ `tool` thì không ghi, nhắc model
+   *  soát trước (một lần mỗi lượt; gọi lại đúng lệnh là chạy). `hint` = chỉ đường thêm khi công cụ đang ẩn (chế độ nạp theo nhóm). */
+  needsExplain?: { tool: string; hint?: string };
 }
 
 /** Số token của một lần gọi model (đã quy về cùng nghĩa cho mọi nhà cung cấp). */

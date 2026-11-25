@@ -176,3 +176,91 @@ describe("4.13.0 · Người soát trong runTurn", () => {
     assert.ok(!v.tools || !v.tools.length);
   });
 });
+
+describe("4.13.1 · Cổng soát lập luận trước lệnh ghi điều khoản", () => {
+  const sse = (delta: any) => new Response(`data: ${JSON.stringify({ choices: [{ delta }] })}\n\ndata: [DONE]\n\n`, { status: 200 });
+  const callTool = (name: string, args: any = {}) => sse({ tool_calls: [{ index: 0, id: "c" + Math.random(), type: "function", function: { name, arguments: JSON.stringify(args) } }] });
+  const setup = (replies: Response[]) => {
+    const ran: string[] = [];
+    const asked: string[] = [];
+    const bodies: any[] = [];
+    const tools: HostToolSet = {
+      host: "Word",
+      specs: [
+        { name: "word_replace_text", description: "d", parameters: { type: "object", properties: {} }, write: true, needsExplain: { tool: EXPLAIN_TOOL, hint: "gọi load_tools" } },
+        { name: "word_set_paragraph_text", description: "d", parameters: { type: "object", properties: {} }, write: true, needsExplain: { tool: EXPLAIN_TOOL } },
+        { name: EXPLAIN_TOOL, description: "d", parameters: { type: "object", properties: {} } },
+      ],
+      overview: async () => ({}),
+      systemPrompt: () => "S",
+      execute: async (n) => {
+        ran.push(n);
+        return { ok: true };
+      },
+    };
+    const fetchFn = async (_u: any, init: any) => {
+      bodies.push(JSON.parse(init.body));
+      return replies.shift()!;
+    };
+    const run = (history: any[] = [], text = "x") =>
+      runTurn({ provider: getProvider("groq")!, key: "K", model: "m", host: "Word", text, history, onEvent: () => {}, fetchFn, retryDelaysMs: [], agent: { tools, log: [], askBeforeWrite: true, approve: async (c: any) => (asked.push(c.name), true) } } as any);
+    return { ran, asked, bodies, run };
+  };
+  it("Ghi trước khi soát → không chạy, không hỏi người dùng, kết quả nhắc gọi công cụ soát; soát xong thì ghi", async () => {
+    const t = setup([callTool("word_replace_text"), callTool(EXPLAIN_TOOL), callTool("word_replace_text"), sse({ content: "Xong." })]);
+    const r = await t.run();
+    assert.ok(!r.error, String(r.error));
+    assert.deepStrictEqual(t.ran, [EXPLAIN_TOOL, "word_replace_text"]);
+    assert.strictEqual(t.asked.length, 1);
+    const firstResult = JSON.stringify(t.bodies[1].messages.slice(-1));
+    assert.ok(firstResult.includes("CHƯA GHI") && firstResult.includes(EXPLAIN_TOOL) && firstResult.includes("load_tools"));
+  });
+  it("Sửa máy móc: gọi lại đúng lệnh thì chạy (chỉ nhắc một lần mỗi lượt)", async () => {
+    const t = setup([callTool("word_replace_text"), callTool("word_replace_text"), callTool("word_replace_text"), sse({ content: "Xong." })]);
+    await t.run();
+    assert.deepStrictEqual(t.ran, ["word_replace_text", "word_replace_text"]);
+  });
+  it("Lệnh không gắn cổng thì không bị nhắc", async () => {
+    const t = setup([callTool(EXPLAIN_TOOL), sse({ content: "Xong." })]);
+    await t.run();
+    assert.deepStrictEqual(t.ran, [EXPLAIN_TOOL]);
+  });
+  const two = () =>
+    sse({
+      tool_calls: [
+        { index: 0, id: "p1", type: "function", function: { name: "word_replace_text", arguments: "{}" } },
+        { index: 1, id: "p2", type: "function", function: { name: "word_set_paragraph_text", arguments: "{}" } },
+      ],
+    });
+  it("Hai lệnh ghi điều khoản trong cùng một bước: chặn cả hai; bước sau gọi lại thì chạy", async () => {
+    const t = setup([two(), two(), sse({ content: "Xong." })]);
+    await t.run();
+    assert.deepStrictEqual(t.ran, ["word_replace_text", "word_set_paragraph_text"]);
+  });
+  it("Bị chặn ở lệnh này rồi ghi bằng lệnh khác sau khi soát: cổng cuối lượt không nhắc nhầm 'lệnh lỗi chưa xử lý'", async () => {
+    const t = setup([callTool("word_replace_text"), callTool(EXPLAIN_TOOL), callTool("word_set_paragraph_text"), sse({ content: "Đã sửa xong Điều 5." })]);
+    await t.run();
+    assert.deepStrictEqual(t.ran, [EXPLAIN_TOOL, "word_set_paragraph_text"]);
+    assert.strictEqual(t.bodies.length, 4, "có thêm lần gọi model do cổng cuối lượt nhắc nhầm");
+  });
+  it("Lượt Làm tiếp: đã soát ở phần trước của cùng nhiệm vụ thì không nhắc lại; yêu cầu mới thì nhắc", async () => {
+    const hist = [
+      { role: "user", content: "Sửa Điều 5" },
+      { role: "assistant", content: "", toolCalls: [{ id: "e1", name: EXPLAIN_TOOL, args: {} }] },
+      { role: "tool", toolCallId: "e1", name: EXPLAIN_TOOL, content: '{"ok":true}' },
+      { role: "assistant", content: "(dừng)" },
+    ];
+    const t = setup([callTool("word_replace_text"), sse({ content: "Xong." })]);
+    await t.run(hist, "[Add-in: lượt trước do ADD-IN dừng lại (chạm trần số bước). Người dùng vừa bấm “Làm tiếp”.] Làm tiếp");
+    assert.deepStrictEqual(t.ran, ["word_replace_text"]);
+    const t2 = setup([callTool("word_replace_text"), callTool("word_replace_text"), sse({ content: "Xong." })]);
+    await t2.run(hist, "Sửa tiếp Điều 6");
+    assert.deepStrictEqual(t2.ran, ["word_replace_text"]);
+    assert.strictEqual(t2.bodies.length, 3);
+  });
+  it("Bộ công cụ Word: các lệnh ghi câu chữ gắn cổng, lệnh đọc thì không", () => {
+    const gated = WORD_SPECS.filter((s) => s.needsExplain).map((s) => s.name).sort();
+    assert.deepStrictEqual(gated, ["word_insert_clause", "word_insert_paragraphs", "word_replace_selection", "word_replace_text", "word_set_paragraph_text"]);
+    assert.ok(WORD_SPECS.filter((s) => s.needsExplain).every((s) => s.write && s.needsExplain!.tool === EXPLAIN_TOOL));
+  });
+});
