@@ -44,35 +44,53 @@ async function run(responses: Response[], exec: (name: string, args: any) => any
   });
   return { msgs, events, calls };
 }
-const gateNotes = (msgs: AgentMessage[]) => msgs.filter((m) => m.role === "user" && (m as any).fromTool && /Add-in nhắc: trong lượt này/.test(String(m.content)));
+const gateNotes = (msgs: AgentMessage[]) => msgs.filter((m) => m.role === "user" && (m as any).fromTool && /Add-in nhắc: câu trả lời vừa rồi nói đã làm/.test(String(m.content)));
 
-describe("Cổng cuối lượt: lệnh lỗi chưa xử lý", () => {
-  it("Lệnh ghi lỗi rồi model định kết thúc → add-in nhắc một lần, model trả lời tiếp", async () => {
+describe("Cổng cuối lượt: nói đã sửa khi lệnh ghi lỗi", () => {
+  it("Lệnh ghi lỗi mà model nói đã sửa → add-in nhắc một lần, model trả lời lại", async () => {
     const { msgs, events, calls } = await run(
-      [toolCall("ghi", '{"o":"A1"}', "c1"), say("Đã sửa xong."), say("Chưa sửa được A1 vì không tìm thấy chỗ cần sửa.")],
+      [toolCall("ghi", '{"o":"A1"}', "c1"), say("Đã sửa xong A1."), say("Chưa sửa được A1 vì không tìm thấy chỗ cần sửa.")],
       () => ({ ok: false, error: "Không tìm thấy" })
     );
     assert.strictEqual(calls, 3);
     const notes = gateNotes(msgs);
     assert.strictEqual(notes.length, 1);
-    assert.match(String(notes[0].content), /1 lệnh công cụ báo lỗi.*\(ghi\)/);
+    assert.match(String(notes[0].content), /1 lệnh ghi báo lỗi.*\(ghi\)/);
     assert.match(String(notes[0].content), /không phải yêu cầu mới của người dùng/);
     assert.deepStrictEqual((events.find((e) => e.type === "error_gate") as any).tools, ["ghi"]);
-    // Lịch sử chỉ thêm: câu "Đã sửa xong." vẫn còn nguyên, nhắc nằm sau nó, câu cuối là câu trả lời mới
-    const i = msgs.findIndex((m) => m.role === "assistant" && m.content === "Đã sửa xong.");
+    // Lịch sử chỉ thêm: câu cũ vẫn còn nguyên, nhắc nằm ngay sau nó, câu cuối là câu trả lời mới
+    const i = msgs.findIndex((m) => m.role === "assistant" && m.content === "Đã sửa xong A1.");
     assert.ok(i > 0 && msgs[i + 1] === notes[0]);
     assert.strictEqual(msgs[msgs.length - 1].content, "Chưa sửa được A1 vì không tìm thấy chỗ cần sửa.");
   });
+  it("Lệnh ghi thay 0 chỗ (replaced = 0) cũng tính là chưa ghi", async () => {
+    const { msgs, calls } = await run([toolCall("ghi", '{"o":"A1"}', "c1"), say("Đã thay xong."), say("Chưa thay được.")], () => ({ ok: true, replaced: 0 }));
+    assert.strictEqual(calls, 3);
+    assert.strictEqual(gateNotes(msgs).length, 1);
+  });
+  it("Model đã nói rõ chưa làm được → không nhắc (Chạy thật 25/11/2026)", async () => {
+    const { msgs, calls } = await run(
+      [toolCall("ghi", '{"o":"A1"}', "c1"), say("Không tìm thấy cụm “thời hạn 36 tháng” trong văn bản. Anh muốn sửa cụm nào?")],
+      () => ({ ok: false, error: "Không tìm thấy" })
+    );
+    assert.strictEqual(calls, 2);
+    assert.strictEqual(gateNotes(msgs).length, 0);
+  });
+  it("Chỉ lệnh đọc lỗi (tìm không thấy) → không nhắc, dù câu trả lời nói đã sửa", async () => {
+    const { msgs, calls } = await run([toolCall("doc", "{}", "c1"), say("Đã sửa xong.")], () => ({ ok: false, error: "Không tìm thấy" }));
+    assert.strictEqual(calls, 2);
+    assert.strictEqual(gateNotes(msgs).length, 0);
+  });
   it("Chỉ nhắc tối đa một lần mỗi lượt", async () => {
-    const { msgs, calls } = await run([toolCall("doc", "{}", "c1"), say("Xong."), say("Vẫn xong.")], () => {
-      throw new Error("Đọc hỏng");
+    const { msgs, calls } = await run([toolCall("ghi", '{"o":"A1"}', "c1"), say("Đã sửa."), say("Đã sửa rồi.")], () => {
+      throw new Error("Ghi hỏng");
     });
     assert.strictEqual(calls, 3);
     assert.strictEqual(gateNotes(msgs).length, 1);
   });
-  it("Lỗi rồi gọi lại cùng công cụ thành công → không nhắc", async () => {
+  it("Lệnh ghi lỗi rồi gọi lại thành công → không nhắc", async () => {
     let n = 0;
-    const { msgs, calls } = await run([toolCall("doc", "{}", "c1"), toolCall("doc", "{}", "c2"), say("Đã đọc.")], () => {
+    const { msgs, calls } = await run([toolCall("ghi", '{"o":"A1"}', "c1"), toolCall("ghi", '{"o":"A1"}', "c2"), say("Đã sửa A1.")], () => {
       if (++n === 1) throw new Error("Bận");
       return { ok: true };
     });
@@ -80,7 +98,7 @@ describe("Cổng cuối lượt: lệnh lỗi chưa xử lý", () => {
     assert.strictEqual(gateNotes(msgs).length, 0);
   });
   it("Người dùng từ chối lệnh → không tính là lỗi, không nhắc", async () => {
-    const { msgs, calls } = await run([toolCall("ghi", '{"o":"A1"}', "c1"), say("Anh không cho phép nên em dừng.")], () => ({ ok: true }), {
+    const { msgs, calls } = await run([toolCall("ghi", '{"o":"A1"}', "c1"), say("Đã dừng, chưa sửa vì anh không cho phép.")], () => ({ ok: true }), {
       confirmRisky: true,
       approve: async () => false,
     });
@@ -88,7 +106,7 @@ describe("Cổng cuối lượt: lệnh lỗi chưa xử lý", () => {
     assert.strictEqual(gateNotes(msgs).length, 0);
   });
   it("Đang ở bước cuối của trần → không nhắc (không vượt trần số bước)", async () => {
-    const { msgs, calls } = await run([toolCall("doc", "{}", "c1"), say("Xong.")], () => ({ ok: false, error: "x" }), { maxSteps: 2 });
+    const { msgs, calls } = await run([toolCall("ghi", '{"o":"A1"}', "c1"), say("Đã sửa xong.")], () => ({ ok: false, error: "x" }), { maxSteps: 2 });
     assert.strictEqual(calls, 2);
     assert.strictEqual(gateNotes(msgs).length, 0);
   });
@@ -99,7 +117,7 @@ describe("Cổng cuối lượt: lệnh lỗi chưa xử lý", () => {
         ["doc", 1],
       ])
     );
-    assert.match(s, /3 lệnh công cụ báo lỗi/);
+    assert.match(s, /3 lệnh ghi báo lỗi/);
     assert.match(s, /\(doc, word_replace_text \(×2\)\)/);
   });
 });

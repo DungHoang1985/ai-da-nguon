@@ -10,7 +10,8 @@
 ## Đọc lại sau khi ghi, cổng cuối lượt (25/11/2026, `tasks/viec-le/rea-claude-chinh-thuc/`)
 
 - Lời nhắc dặn **đọc lại sau khi ghi** (một lần cho mọi chỗ vừa ghi, cuối việc); đã bỏ quy tắc cũ "KHÔNG ĐỌC LẠI" theo quyết định của anh Dũng 25/11/2026. Kết quả lệnh ghi đã trả nội dung sau khi ghi thì tính là đã đọc.
-- Cổng cuối lượt trong `loop.ts`: model định kết thúc khi còn lệnh báo lỗi chưa được gọi lại thành công (cùng tên công cụ) → thêm ghi chú add-in (vai người dùng, cờ `fromTool`) rồi cho model trả lời tiếp, **tối đa một lần mỗi lượt**, không chạy ở bước cuối của trần. Người dùng từ chối và "chưa thực hiện vì bấm Dừng" không tính là lỗi.
+- Cổng cuối lượt trong `loop.ts` (4.11.15): chỉ nhắc khi câu trả lời cuối có lời KHẲNG ĐỊNH đã sửa (`findWriteClaim` của `claims.ts`) mà còn lệnh GHI chưa thành công (lỗi, `ok:false`, thay 0 chỗ — `writeSucceeded`) chưa được gọi lại thành công cùng tên → thêm ghi chú add-in (vai người dùng, cờ `fromTool`) rồi cho model trả lời lại, **tối đa một lần mỗi lượt**, không chạy ở bước cuối của trần. Người dùng từ chối và "chưa thực hiện vì bấm Dừng" không tính là lỗi.
+- KHÔNG xét lệnh đọc lỗi và KHÔNG nhắc khi model đã nói rõ chưa làm được: bản 4.11.14 xét mọi lệnh lỗi, Chạy thật 25/11/2026 thấy model đã báo đúng "không tìm thấy" vẫn bị nhắc và đi tìm thêm 6 bước tới hết trần.
 - Ghi chú của cổng chỉ THÊM vào cuối lịch sử, không sửa tin nhắn cũ; nằm ngoài lời nhắc hệ thống.
 
 ## Ảnh do công cụ chụp

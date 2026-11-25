@@ -3,6 +3,7 @@
  *  và mọi lệnh gọi công cụ đều có kết quả đi kèm — để lượt sau AI biết chính xác mình đã làm gì. */
 import { Provider } from "../providers";
 import { callModelStep } from "./llm";
+import { findWriteClaim, writeSucceeded } from "../claims";
 import type { FreeRotation } from "./rotation";
 import { AgentEvent, AgentMessage, ExtraTools, HostToolSet, StepResult, ToolCall, ToolSpec, UndoEntry } from "./types";
 
@@ -29,15 +30,17 @@ export const NOT_RUN_TRUNCATED =
 export const STUCK_SAME_ARGS = 2;
 export const STUCK_SAME_ERROR = 3;
 
-/** Cổng cuối lượt (phỏng theo bản chính thức, phân tích mã 25/11/2026): model định kết thúc lượt trong khi còn lệnh báo lỗi
- *  chưa được gọi lại thành công → add-in thêm nhắc này rồi cho model trả lời tiếp, tối đa một lần mỗi lượt. */
+/** Cổng cuối lượt (phỏng theo bản chính thức, phân tích mã 25/11/2026): model định kết thúc lượt bằng câu KHẲNG ĐỊNH đã sửa
+ *  (findWriteClaim) trong khi còn lệnh GHI báo lỗi chưa được gọi lại thành công → add-in thêm nhắc này rồi cho model trả lời tiếp,
+ *  tối đa một lần mỗi lượt. Chạy thật 25/11/2026 (bản đầu xét mọi lệnh lỗi, kể cả "tìm không thấy"): Cohere đã nói đúng là không
+ *  tìm thấy và hỏi lại, cổng vẫn nhắc nên model đi tìm thêm 6 bước tới hết trần — vì vậy chỉ xét lệnh ghi và chỉ khi có lời nhận đã làm. */
 export function errorGateNote(failed: Map<string, number>): string {
   const total = [...failed.values()].reduce((a, b) => a + b, 0);
   const list = [...failed.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([name, n]) => (n > 1 ? `${name} (×${n})` : name))
     .join(", ");
-  return `[Add-in nhắc: trong lượt này ${total} lệnh công cụ báo lỗi và chưa được gọi lại thành công (${list}). Không được nói các việc đó đã xong. Hãy thử lại, làm cách khác, hoặc nói rõ với người dùng việc nào chưa làm được và vì sao. Đây là nhắc của add-in, không phải yêu cầu mới của người dùng.]`;
+  return `[Add-in nhắc: câu trả lời vừa rồi nói đã làm, nhưng trong lượt này ${total} lệnh ghi báo lỗi và chưa được gọi lại thành công (${list}) — tài liệu chưa có thay đổi đó. Không được nói các việc đó đã xong. Trả lời lại cho đúng: nói rõ việc nào chưa làm được và vì sao; chỉ thử lại nếu biết rõ cách sửa lỗi. Đây là nhắc của add-in, không phải yêu cầu mới của người dùng.]`;
 }
 
 /** Trần số bước của một lượt theo ứng dụng (số đo Chạy thật: Word và Excel 3–4 lần gọi AI cho một việc, PowerPoint 6–8).
@@ -257,7 +260,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       continue;
     }
     truncatedRun = 0;
-    if (!res.toolCalls.length && unresolved.size && !errorGateFired && step < maxSteps) {
+    if (!res.toolCalls.length && unresolved.size && !errorGateFired && step < maxSteps && findWriteClaim(res.text).strength !== "none") {
       // Cổng cuối lượt: còn lệnh lỗi chưa xử lý → nhắc một lần rồi cho model trả lời tiếp (lịch sử vẫn chỉ thêm)
       errorGateFired = true;
       o.onEvent({ type: "error_gate", tools: [...unresolved.keys()] });
@@ -387,8 +390,11 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
               ? result.message
               : undefined
           : undefined);
-      if (failText && !failText.startsWith(USER_DENIED) && !failText.startsWith(NOT_RUN_STOPPED)) unresolved.set(call.name, (unresolved.get(call.name) || 0) + 1);
-      else if (!failText) unresolved.delete(call.name);
+      if (specMap.get(call.name)?.write) {
+        if (!writeSucceeded(result, error)) {
+          if (!failText?.startsWith(USER_DENIED) && !failText?.startsWith(NOT_RUN_STOPPED)) unresolved.set(call.name, (unresolved.get(call.name) || 0) + 1);
+        } else unresolved.delete(call.name);
+      }
       if (failText && !failText.startsWith(USER_DENIED)) {
         const sig = `${call.name}|${failText}`;
         let args = "";

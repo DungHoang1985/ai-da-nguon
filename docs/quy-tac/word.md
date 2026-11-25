@@ -46,5 +46,5 @@ Mọi điều dưới đây đã thăm dò trong Office hoặc đã trả giá; 
 
 ## Cảnh báo "AI nói đã sửa mà không ghi" (`claims.ts`)
 
-- Chỉ là phần hiển thị: không ghi vào lịch sử gửi model, không đổi lời nhắc hệ thống.
+- Cảnh báo chỉ là phần hiển thị: không ghi vào lịch sử gửi model, không đổi lời nhắc hệ thống. Riêng `findWriteClaim` còn được cổng cuối lượt trong `loop.ts` dùng để quyết định có nhắc model hay không (4.11.15); sửa mẫu câu là ảnh hưởng cả cổng.
 - Ưu tiên không báo nhầm — thêm mẫu câu phải kèm kiểm thử cho cả ca phải bắt và ca dễ báo nhầm.
