@@ -7,7 +7,7 @@ Cập nhật 25/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 ## 1. Trạng thái
 
-- **Đang chạy: v4.11.16**; **4.12.0 đang phát hành** (Tự kiểm tra bản cục bộ: Word 42/42, Excel 43/43, PowerPoint 27/27). Trước đó: **v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
+- **Đang chạy: v4.12.0** (phát hành 25/11/2026, `main@f019df1` → `gh-pages@5acbf31`; Tự kiểm tra trên bản phát hành: Word 42/42, Excel 43/43, PowerPoint 27/27; kiểm thử máy 942/942). Trước đó: **v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
 - **Đang làm:** không có việc dở về mã (phiên 24/11 kết thúc sạch sau khi phát hành 4.11.13). 25/11: phân tích mã add-in Claude chính thức cho Word/Excel/PowerPoint xong (`tasks/viec-le/rea-claude-chinh-thuc/rea-claude-chinh-thuc.md`); **mức 1 đã phát hành (4.11.14, thu hẹp cổng ở 4.11.15)**: đọc lại sau khi ghi (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý, hai dòng chuẩn Word (sửa hẹp, đánh số lại). Tự kiểm tra Word 41/41 trên bản phát hành 4.11.14 và bản cục bộ 4.11.15; Chạy thật cổng: hai ca đạt (bài `kiem-thu/cdp-bai/cong-cuoi-luot.js`). Không còn worktree nào; nhánh cục bộ chỉ còn `main` và `claude/ab-dinh-dang-gon` (báo cáo thử A/B, cố ý không phát hành).
 
 ## 2. Phiên bản gần đây
