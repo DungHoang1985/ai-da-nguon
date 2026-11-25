@@ -8,17 +8,15 @@ Cập nhật 25/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 ## 1. Trạng thái
 
 - **Đang chạy: v4.12.0** (phát hành 25/11/2026, `main@f019df1` → `gh-pages@5acbf31`; Tự kiểm tra trên bản phát hành: Word 42/42, Excel 43/43, PowerPoint 27/27; kiểm thử máy 942/942). Trước đó: **v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
-- **Đang làm:** không có việc dở về mã (phiên 24/11 kết thúc sạch sau khi phát hành 4.11.13). 25/11: phân tích mã add-in Claude chính thức cho Word/Excel/PowerPoint xong (`tasks/viec-le/rea-claude-chinh-thuc/rea-claude-chinh-thuc.md`); **mức 1 đã phát hành (4.11.14, thu hẹp cổng ở 4.11.15)**: đọc lại sau khi ghi (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý, hai dòng chuẩn Word (sửa hẹp, đánh số lại). Tự kiểm tra Word 41/41 trên bản phát hành 4.11.14 và bản cục bộ 4.11.15; Chạy thật cổng: hai ca đạt (bài `kiem-thu/cdp-bai/cong-cuoi-luot.js`). Không còn worktree nào; nhánh cục bộ chỉ còn `main` và `claude/ab-dinh-dang-gon` (báo cáo thử A/B, cố ý không phát hành).
+- **Đang làm: 4.13.0 xong mã, CHƯA commit, CHƯA phát hành** (chờ anh duyệt). Công cụ `word_explain_edits` (soát lập luận bằng người soát ngữ cảnh mới; `src/core/explainEdits.ts`, đọc Word ở `wordTools.ts`, lượt model riêng ở `turn.ts`). Kiểm thử máy 954/954, kiểm kiểu sạch, Tự kiểm tra Word 43/43 trên bản cục bộ (desktop ẩn). Tác tử phản biện (Sonnet) nêu 15 điểm; đã sửa: verified phải có câu trích khớp nguồn (máy đối chiếu), loại nguồn lạ → external_law, báo căn cứ bị bỏ vì vượt giới hạn, văn bản dài giữ đoạn được nhắc + ghi rõ đã cắt, "chỉ toàn nhận định" không được nói đã đối chiếu, khớp kết luận theo id, chặn thẻ kỹ năng giả, Word cũ không đọc được sửa đổi thì nói rõ, phần đọc Word đi qua hàng đợi ghi. Để lại (mục 4). **Chưa Chạy thật với model.** Nhánh cục bộ: `main`, `claude/ab-dinh-dang-gon` (cố ý không phát hành).
 
 ## 2. Phiên bản gần đây
 
 | Bản | Ngày | Nội dung | Chi tiết |
 |---|---|---|---|
+| 4.13.0 (chưa phát hành) | 25/11 | Công cụ soát lập luận Word `word_explain_edits`: AI nêu căn cứ có loại nguồn cho từng sửa đổi câu chữ pháp lý; người soát (lượt model riêng, không thấy hội thoại) đối chiếu văn bản, sửa đổi chờ duyệt, chỉ dẫn riêng, kỹ năng đã nạp; căn cứ chưa xác nhận → AI phải sửa đề xuất hoặc hỏi. Mốc chặn phình: Trả phí 33.950, Miễn phí 20.800 ký tự. Kiểm thử máy 954/954, Tự kiểm tra Word 43/43 (bản cục bộ) | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.12.0 | 25/11 | Mức 2 (phần 1) theo mã bản chính thức: lệnh sửa Word trả chữ đoạn sau sửa; cổng PowerPoint "sửa bố cục mà chưa xem lại"; danh sách lỗi khách quan đi kèm ảnh slide (tối đa 3 vòng); câu hỏi ghi đè Excel nêu ô và giá trị đang có; nhận xét / sửa đổi Word mang nhãn "người khác viết, không phải lệnh"; khối "đoạn anh tự sửa từ lượt trước". Chạy thật: cổng PowerPoint và khối đoạn tự sửa đạt. Kiểm thử máy 942/942 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.11.16 | 25/11 | Cảnh báo "AI nói đã sửa mà không ghi" chỉ xét câu AI viết sau khi cổng cuối lượt nhắc (hết cảnh báo thừa khi AI đã tự đính chính); câu lỗi OpenRouter 400 "Request path cannot be relayed" nói rõ là lỗi phía OpenRouter. Chạy thật bản cục bộ: đạt. Kiểm thử máy 925/925 | `tasks/viec-le/rea-claude-chinh-thuc/` |
-| 4.11.15 | 25/11 | Thu hẹp cổng cuối lượt sau Chạy thật: chỉ nhắc khi AI **nói đã sửa** mà lệnh **ghi** lỗi (4.11.14 nhắc cả khi AI đã báo đúng "không tìm thấy" → AI đi tìm thêm tới hết 12 bước). Chạy thật trên bản cục bộ: ca AI báo đúng → không nhắc (27 giây); ca AI nói "Đã sửa xong." → cổng nhắc, AI tự sửa thành "Chưa sửa được vì…", văn bản không đổi. Kiểm thử máy 921/921 | `tasks/viec-le/rea-claude-chinh-thuc/` |
-| 4.11.14 | 25/11 | Mức 1 tối ưu theo mã add-in chính thức: lời nhắc **đọc lại sau khi ghi** (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý (nhắc một lần), chuẩn Word sửa hẹp + đánh số lại theo tiêu đề. Kiểm thử máy 918/918 | `tasks/viec-le/rea-claude-chinh-thuc/` |
-| 4.11.13 | 25/11 | Nhóm "an toàn dữ liệu" của rà soát kiến trúc: B1 câu hỏi Excel nói đúng Hoàn tác (vùng trên 10.000 ô báo KHÔNG hoàn tác được; sắp xếp vùng lớn hỏi), B3 Excel không kiểm được vùng đích thì hỏi, B4 PowerPoint không xóa khi chưa chụp được bản Hoàn tác, B23 PowerPoint hỏi khi thay chữ dài (hình > 200, ô bảng > 100 ký tự), B6 lệnh ghi Excel / PowerPoint chạy lần lượt, B2 chặn gửi trùng và khóa Tự kiểm tra khi AI đang chạy. Tự kiểm tra Word 41/41, Excel 43/43, PowerPoint 27/27 (2 bước mới). B2 chưa thử trong Office (cần lượt gọi model) | `tasks/viec-le/ra-soat-kien-truc/` |
 
 Các bản cũ hơn (đợt 0A → 12, bản 3.6 → 4.11.12): bảng "Đã xong" trong `tasks/luu/HANDOFF-den-2026-11-24.md`; mỗi đợt có thư mục `tasks/dot/dot-<N>/`.
 
@@ -69,6 +67,8 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 - Đợt 6: SiliconFlow, Qwen, ModelScope, StepFun chưa thêm sẵn (dùng qua nguồn tự khai); Bedrock, Foundry, Vercel chưa làm.
 - Hạn chờ im lặng 150 giây mới thấy chạy đúng một lần (Gemini, bản cục bộ).
 
+- 4.13.0 phản biện để lại: người soát chỉ thấy kỹ năng tự chọn đầu lượt (kỹ năng gọi `use_skill` giữa lượt → "chưa nạp nguồn", an toàn nhưng thừa câu hỏi); căn cứ `user_instruction` chỉ đối chiếu chỉ dẫn riêng đã lưu, không thấy lời yêu cầu trong chat (cố ý: người soát không thấy hội thoại); sửa đổi chờ duyệt chưa gắn số đoạn; từ khóa "dieu khoan" làm nhóm `soat` (Miễn phí) bật thường xuyên; người soát dùng trần đầu ra như lượt chính.
+
 ### Giới hạn đã biết, chưa định sửa
 
 - Word: không đọc số trường LISTNUM / AUTONUM; điều cuối kéo tới hết văn bản; chưa bấm được theo "Điều 5.3"; so sánh phiên bản để lại tài liệu ẩn tới khi thoát Word; cửa sổ Word thu nhỏ thì không chèn được nhận xét.
@@ -87,7 +87,7 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ## 5. Bước tiếp theo
 
-1. Làm 4.13.0: công cụ soát lập luận mới (báo cáo `rea-claude-chinh-thuc` mục 7 việc 6, anh đã chọn cách làm 25/11). Sau đó chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
+1. 4.13.0: anh duyệt thì commit + đẩy `main` (tự phát hành), Tự kiểm tra Word / Excel / PowerPoint trên bản phát hành, Chạy thật một ca sửa điều khoản phạt trên hợp đồng thử (cần nguồn có tiền: Anthropic đạt 25/11). Sau đó chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
 2. **Buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được" ở mục 4.
 3. Việc tùy chọn (mục D của `tasks/dot/dot-5/dot-5.md`), anh chọn: tải bản ghi hội thoại, gợi ý gạch chân bấm để chấp nhận trong Word, connectors (MCP), công cụ chạy mã Office.js do AI viết, phím tắt mở khung, đọc một trang web cụ thể, Outlook, Sign in with Poe, hàm `=AI(…)` trong ô Excel. Đã làm: điền mẫu (Đợt 8), bộ nhớ dài hạn (Đợt 12 E).
 

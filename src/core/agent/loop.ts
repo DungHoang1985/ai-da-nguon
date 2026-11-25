@@ -5,7 +5,7 @@ import { Provider } from "../providers";
 import { callModelStep } from "./llm";
 import { findWriteClaim, writeSucceeded } from "../claims";
 import type { FreeRotation } from "./rotation";
-import { AgentEvent, AgentMessage, ExtraTools, HostToolSet, StepResult, ToolCall, ToolSpec, UndoEntry } from "./types";
+import { AgentEvent, AgentMessage, ExtraTools, HostToolSet, StepResult, ToolCall, ToolSpec, UndoEntry, Verifier } from "./types";
 
 export const MAX_TOOL_RESULT_CHARS = 30000;
 /** Hạn chờ mặc định cho một bước công cụ (bản chính thức: 5 phút mỗi bước, 30 giây cho một sửa chữ ở Word). */
@@ -152,6 +152,8 @@ export interface RunAgentOptions {
   sleep?: (ms: number, signal?: AbortSignal) => Promise<void>;
   /** Chế độ Miễn phí: gọi model qua vòng xoay nguồn (nguồn, key, model, nhận ảnh lấy theo nguồn đang chạy) — Đợt 9 */
   rotation?: FreeRotation;
+  /** Người soát ngữ cảnh mới cho công cụ soát lập luận (4.13.0) — đưa vào ngữ cảnh chạy công cụ */
+  verifier?: Verifier;
   /** Nạp công cụ theo việc (Đợt 10): chọn bộ công cụ gửi model ở mỗi bước theo lịch sử hiện tại. Công cụ không gửi vẫn chạy được nếu model gọi đúng tên. */
   toolFilter?: (all: ToolSpec[], msgs: AgentMessage[]) => ToolSpec[];
 }
@@ -351,7 +353,7 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
         // Hạn chờ chỉ tính lúc công cụ chạy, không tính lúc chờ người dùng duyệt
         const run = extraNames.has(call.name)
           ? o.extra!.execute(call.name, call.args || {})
-          : o.tools.execute(call.name, call.args || {}, { log: o.log, said: res.text, request: o.request });
+          : o.tools.execute(call.name, call.args || {}, { log: o.log, said: res.text, request: o.request, verifier: o.verifier });
         running = Promise.resolve(run);
         result = await withTimeout(running, spec.timeoutMs ?? o.toolTimeoutMs ?? TOOL_TIMEOUT_MS, call.name, o.signal);
       } catch (e: any) {

@@ -208,6 +208,10 @@ function describeBase(call: ToolCall): string {
       return `Chuyển tới [¶${a.paragraph_index}]`;
     case "word_check_consistency":
       return "Soát nhất quán: đánh số, dẫn chiếu, thuật ngữ, tên các bên, chỗ trống, số và chữ";
+    case "word_explain_edits": {
+      const n = Array.isArray(a.edits) ? a.edits.reduce((k: number, e: any) => k + (Array.isArray(e?.claims) ? e.claims.length : 0), 0) : 0;
+      return `Soát lập luận trước khi sửa: ${Array.isArray(a.edits) ? a.edits.length : 0} sửa đổi, ${n} căn cứ (người soát riêng đối chiếu)`;
+    }
     case "word_read_parts":
       return "Đọc chú thích, đầu và chân trang, bookmark, trường, ô điền mẫu, hộp văn bản";
     case "word_check_page_format":

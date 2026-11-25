@@ -96,7 +96,7 @@ export interface HostToolSet {
   host: string;
   specs: ToolSpec[];
   /** said = lời model nói ở bước đó, request = yêu cầu của người dùng ở lượt đó (cho nhật ký soát lại của Excel; công cụ không đưa hai thứ này trở lại model) */
-  execute(name: string, args: any, ctx: { log: UndoEntry[]; said?: string; request?: string }): Promise<any>;
+  execute(name: string, args: any, ctx: { log: UndoEntry[]; said?: string; request?: string; verifier?: Verifier }): Promise<any>;
   overview(): Promise<any>;
   /** Lời nhắc hệ thống CỐ ĐỊNH của ứng dụng (không chứa trạng thái tài liệu) — để bộ nhớ đệm lời nhắc có tác dụng */
   systemPrompt(): string;
@@ -111,6 +111,14 @@ export interface HostToolSet {
 }
 
 /** Công cụ dùng chung mọi ứng dụng (use_skill, read_other_app…) */
+/** Người soát ngữ cảnh mới cho công cụ soát lập luận (4.13.0): một lượt model riêng, không thấy hội thoại. `instructions`, `skills` là
+ *  chỉ dẫn riêng và kỹ năng đã nạp của lượt — để người soát đối chiếu căn cứ loại user_instruction / skill_instruction. */
+export interface Verifier {
+  ask(system: string, user: string): Promise<string>;
+  instructions?: string;
+  skills?: { name: string; body: string }[];
+}
+
 export interface ExtraTools {
   specs: ToolSpec[];
   execute(name: string, args: any): Promise<any>;

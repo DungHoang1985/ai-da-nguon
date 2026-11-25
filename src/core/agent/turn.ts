@@ -7,7 +7,7 @@ import { callModelStep } from "./llm";
 import type { FreeRotation } from "./rotation";
 import { STOP_NOTE, runAgent } from "./loop";
 import { buildPlainSystem, buildSystemPrompt, buildTurnMessage } from "./prompt";
-import { AgentEvent, AgentMessage, ExtraTools, FilePart, HostToolSet, ToolCall, UndoEntry, Usage } from "./types";
+import { AgentEvent, AgentMessage, ExtraTools, FilePart, HostToolSet, ToolCall, UndoEntry, Usage, Verifier } from "./types";
 import { ApiError } from "../errors";
 import { ModelInfo, biggerModels, estimateInputTokens, fitsContext, tooLargeMessage } from "../inputsize";
 import { ToolGroup, freeBasePrompt, groupsNote, hideGroupTools, requestGroups, usedGroups, visibleSpecs, withLoadTools } from "../toolgroups";
@@ -263,8 +263,41 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
           return parseReviewVerdict(res.text);
         }
       : undefined;
+    // Người soát ngữ cảnh mới cho công cụ soát lập luận (4.13.0): một lượt model riêng, không nằm trong hội thoại chính
+    const verifier: Verifier = {
+      instructions: o.instructions,
+      skills: a.autoSkills,
+      ask: async (sys: string, user: string) => {
+        const res = await step({
+          provider: o.provider,
+          key: o.key,
+          model: o.model,
+          tools: [],
+          signal: o.signal,
+          onText: () => {},
+          maxOutput: o.maxOutput,
+          fetchFn: o.fetchFn,
+          retryDelaysMs: o.retryDelaysMs,
+          sleep: o.sleep,
+          onRetry: (r) => o.onEvent({ type: "retry", ...r }),
+          messages: [
+            { role: "system", content: sys },
+            { role: "user", content: user },
+          ],
+        });
+        if (res.usage) {
+          // Như lượt soát cũ: không lấy số token của người soát làm thước đo độ đầy ngữ cảnh của hội thoại chính
+          const keep = lastInputTokens;
+          onUsage(res.usage);
+          lastInputTokens = keep;
+          o.onEvent({ type: "usage", step: 0, usage: res.usage });
+        }
+        return res.text;
+      },
+    };
     try {
       const msgs = await runAgent({
+        verifier,
         provider: o.provider,
         key: o.key,
         model: o.model,

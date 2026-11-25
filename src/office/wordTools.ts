@@ -2,9 +2,10 @@
 /** Công cụ để AI thao tác trực tiếp trên văn bản Word. Sửa đổi được ghi bằng Theo dõi thay đổi (Track Changes).
  *  Bản 4.0 (Đợt 1A): mục lục điều khoản, tìm và đọc theo điều, chống sửa nhầm đoạn, sửa mức từ, đọc đúng khi văn bản đang có
  *  sửa đổi, chèn điều khoản kế thừa đánh số, Hoàn tác. Căn cứ kỹ thuật: bảng thăm dò trong tasks/dot/dot-1a/dot-1a.md. */
-import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
+import { HostToolSet, ToolSpec, UndoEntry, Verifier } from "../core/agent/types";
 import { officeErrorHint } from "../core/errors";
 import { diffUserChanges, snapshotOf } from "../core/userChanges";
+import { EXPLAIN_TOOL, VERIFIER_SYSTEM, assembleResult, buildVerifierInput, normalizeEditsInfo, parseVerdicts } from "../core/explainEdits";
 import {
   RESULT_JSON_BUDGET,
   escapeWordSearch,
@@ -349,6 +350,40 @@ export const WORD_SPECS: ToolSpec[] = [
       required: ["action"],
     },
     write: true,
+  },
+  {
+    name: EXPLAIN_TOOL,
+    description:
+      "Before writing self-drafted legal wording (clause, definition, obligation, deadline, amount, deletion, accept/reject redline): give each planned edit's claims about the CURRENT document. A fresh reviewer without this chat checks them against the document, redlines, user instructions, loaded skills. Never ground on 'the user asked'. Skip mechanical edits.",
+    parameters: {
+      type: "object",
+      properties: {
+        edits: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              target: { type: "string", description: "e.g. Điều 5.2, [¶12]" },
+              proposed_text: { type: "string" },
+              claims: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    claim: { type: "string" },
+                    basis: { type: "string", enum: ["document_text", "tracked_change", "skill_instruction", "user_instruction", "external_law", "model_judgment"] },
+                    source: { type: "string", description: "clause, skill or law" },
+                  },
+                  required: ["claim", "basis"],
+                },
+              },
+            },
+            required: ["target", "proposed_text", "claims"],
+          },
+        },
+      },
+      required: ["edits"],
+    },
   },
   {
     name: "word_read_tables",
@@ -2152,7 +2187,43 @@ export function createWordTools(getSettings: () => WordSettings): HostToolSet {
   /** Các công cụ ghi chạy lần lượt: công cụ bị hết hạn chờ vẫn chạy ngầm trong Office, công cụ kế không được chen vào giữa
    *  (hai lần chụp danh sách sửa đổi của Hoàn tác sẽ lẫn nhau). */
   let queue: Promise<unknown> = Promise.resolve();
-  function execute(name: string, a: any, ctx: { log: UndoEntry[] }): Promise<any> {
+  /** Soát lập luận (4.13.0): đọc văn bản kèm số điều và danh sách sửa đổi chờ duyệt, nhờ người soát ngữ cảnh mới kiểm từng căn cứ.
+   *  Phần đọc Word đi qua hàng đợi ghi (không đọc giữa lúc một lệnh ghi đang chạy); lần gọi người soát thì ngoài hàng đợi. */
+  async function explainEdits(a: any, verifier?: Verifier) {
+    const { edits, dropped } = normalizeEditsInfo(a?.edits);
+    if (!edits.length || edits.every((e) => !e.claims.length)) throw new Error("Thiếu edits: mỗi sửa đổi định làm cần target, proposed_text và ít nhất một căn cứ (claims).");
+    const read = queue.then(() => Word.run(async (ctx) => {
+      const { rows } = await loadRows(ctx, true);
+      const nums = withNums(rows, buildOutline(rows)) as { text: string; num?: string; deleted?: boolean }[];
+      const doc = rows
+        .map((r, k) => (r.deleted ? "" : `[¶${r.i}]${nums[k]?.num ? ` (${nums[k].num})` : ""} ${r.text}`))
+        .filter(Boolean)
+        .join("\n");
+      // Word chưa có API đọc sửa đổi thì nói rõ, để người soát trả could_not_verify chứ không phải "không có sửa đổi đó"
+      let tc = "(không đọc được: Word trên máy chưa hỗ trợ đọc sửa đổi — căn cứ loại tracked_change trả could_not_verify)";
+      if (supports("1.6")) {
+        const list = ctx.document.body.getTrackedChanges();
+        list.load("items/type,items/text,items/author");
+        await ctx.sync();
+        tc = list.items
+          .slice(0, 200)
+          .map((t, k) => `${k}. ${t.type} · ${t.author}: “${truncate(t.text, 200)}”`)
+          .join("\n");
+        if (list.items.length > 200) tc += `\n[DANH SÁCH BỊ CẮT: còn ${list.items.length - 200} sửa đổi không đưa — không thấy thì trả could_not_verify]`;
+      }
+      return { document: doc, tracked: tc };
+    }));
+    queue = read.catch(() => undefined);
+    const { document, tracked } = await read;
+    const input = buildVerifierInput({ edits, document, tracked, instructions: verifier?.instructions, skills: verifier?.skills });
+    if (!input.order.length) return assembleResult(edits, [], [], { dropped });
+    if (!verifier) throw new Error("Lượt này không có người soát (add-in không gọi được lượt model riêng): chưa kiểm được căn cứ nào.");
+    const text = await verifier.ask(VERIFIER_SYSTEM, input.text);
+    return assembleResult(edits, input.order, parseVerdicts(text, input.order.length, input.sources), { dropped, cut: input.cut });
+  }
+
+  function execute(name: string, a: any, ctx: { log: UndoEntry[]; verifier?: Verifier }): Promise<any> {
+    if (name === EXPLAIN_TOOL) return explainEdits(a, ctx.verifier);
     const job = queue.then(() => executeNow(name, a, ctx));
     queue = job.catch(() => undefined);
     return job;

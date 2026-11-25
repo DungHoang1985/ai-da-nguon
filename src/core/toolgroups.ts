@@ -40,8 +40,8 @@ export const WORD_TOOL_GROUPS: ToolGroup[] = [
   {
     id: "soat",
     label: "soát nhất quán, so phiên bản, phần ngoài thân văn bản",
-    tools: ["word_check_consistency", "word_compare_versions", "word_read_parts"],
-    keywords: ["soat", "kiem tra", "ra soat", "nhat quan", "truoc khi ky", "trinh ky", "ban cuoi", "so sanh", "phien ban", "doi chieu", "chu thich", "dau trang", "chan trang", "bookmark", "footnote", "header", "footer", "hop van ban", "loi chinh ta", "danh so"],
+    tools: ["word_check_consistency", "word_compare_versions", "word_read_parts", "word_explain_edits"],
+    keywords: ["soat", "kiem tra", "ra soat", "nhat quan", "truoc khi ky", "trinh ky", "ban cuoi", "so sanh", "phien ban", "doi chieu", "chu thich", "dau trang", "chan trang", "bookmark", "footnote", "header", "footer", "hop van ban", "loi chinh ta", "danh so", "dieu khoan", "sua hop dong", "don khoi kien", "ban an", "y kien phap ly"],
     skills: ["kiem-tra-truoc-ky", "ra-soat-hop-dong", "soan-thao-van-ban-hanh-chinh"],
   },
   {

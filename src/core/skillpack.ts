@@ -29,6 +29,7 @@ export const CORE_GUIDES: Record<string, string> = {
 - Sửa tối thiểu, đúng chỗ, giữ nguyên kiểu chữ, đánh số, định dạng; góp ý thì dùng nhận xét neo đúng cụm chữ.
 - Sửa hẹp tới cụm chữ đổi (thêm vừa đủ ngữ cảnh để khớp một chỗ, lặp nguyên văn ngữ cảnh); không thay cả câu cho vài chữ, không đổi từ ngữ ngoài yêu cầu (trong hợp đồng là đổi nội dung).
 - Đánh số lại điều, mục: sửa từng tiêu đề, không thay hàng loạt một chữ số trơn (nhầm số tiền, năm).
+- Câu chữ pháp lý tự soạn (nghĩa vụ, thời hạn, số tiền, định nghĩa, xóa điều khoản, nhận / từ chối sửa đổi): soát lập luận trước khi ghi — văn bản tố tụng, hành chính, ý kiến pháp lý: mọi sửa như vậy; hợp đồng: bồi thường, phạt, sở hữu trí tuệ, hạn chế cạnh tranh, điều khoản lệch một bên. Căn cứ chưa xác nhận → sửa đề xuất hoặc hỏi trước khi ghi.
 - Căn cứ pháp lý không có trong tài liệu hoặc tệp đính kèm thì ghi "cần đối chiếu văn bản gốc".
 - Kiểm tra nhất quán: thuật ngữ định nghĩa, tham chiếu chéo, đánh số, ngày tháng, số tiền bằng số và bằng chữ, tên các bên.
 - Soạn văn bản hành chính theo kỹ năng soan-thao-van-ban-hanh-chinh.`,

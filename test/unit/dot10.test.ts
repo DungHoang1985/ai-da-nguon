@@ -236,14 +236,15 @@ describe("Đợt 10 — chặn phình lại (số ký tự phần cố định c
   // Đợt 12 phần E (23/11/2026): +400 cho công cụ remember (đề xuất nhớ) — Trả phí luôn gửi đủ; Miễn phí để trong nhóm bo_nho
   // Bản 4.11.8 (23/11/2026): +500 cho loại hop_dong của word_create_admin_document và kỹ năng soan-hop-dong (một dòng danh mục)
   // 25/11/2026: +1.000 Trả phí, +50 Miễn phí cho quy tắc đọc lại sau khi ghi, báo cáo đúng việc đã làm và hai dòng chuẩn Word (sửa hẹp, đánh số lại)
-  it("Trả phí: ≤ 32.600 ký tự (mốc 4.9.0: 40.922; giảm ≥ 20%)", () => {
+  // 4.13.0 (25/11/2026): +1.350 Trả phí (công cụ word_explain_edits, chủ yếu lược đồ tham số), +350 Miễn phí (một dòng chuẩn Word; công cụ nằm nhóm soat)
+  it("Trả phí: ≤ 33.950 ký tự (mốc 4.9.0: 40.922; giảm ≥ 17%)", () => {
     const n = sizeOf(buildSystemPrompt(baseParts), [...WORD_SPECS, ...common.specs]);
-    assert.ok(n <= 32600, `đang ${n}`);
+    assert.ok(n <= 33950, `đang ${n}`);
   });
-  it("Miễn phí, nhóm lõi: ≤ 20.450 ký tự (giảm ≥ 50%)", () => {
+  it("Miễn phí, nhóm lõi: ≤ 20.800 ký tự (giảm ≥ 49%)", () => {
     const ex = withLoadTools(common, G);
     const n = sizeOf(buildSystemPrompt({ ...baseParts, toolGroups: groupsNote(G) }), visibleSpecs([...WORD_SPECS, ...ex.specs], G, new Set()));
-    assert.ok(n <= 20450, `đang ${n}`);
+    assert.ok(n <= 20800, `đang ${n}`);
   });
   it("Danh mục kỹ năng: kỹ năng Word dựng sẵn đều có mô tả ngắn ≤ 200 ký tự", () => {
     for (const s of skills) assert.ok(s.brief && s.brief.length <= 200, s.name);

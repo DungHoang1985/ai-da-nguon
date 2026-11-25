@@ -513,8 +513,9 @@ describe("Đợt 1B – tệp đính kèm và công cụ Word mới", () => {
       assert.ok(WORD_SYSTEM_PROMPT.includes(name), `lời nhắc hệ thống chưa nhắc ${name}`);
     }
     // 29 công cụ tới 4.7; Đợt 8 thêm word_list_form_fields, word_fill_form
-    assert.strictEqual(WORD_SPECS.length, 31);
-    assert.strictEqual(new Set(WORD_SPECS.map((x) => x.name)).size, 31);
+    // 4.13.0 thêm word_explain_edits (soát lập luận)
+    assert.strictEqual(WORD_SPECS.length, 32);
+    assert.strictEqual(new Set(WORD_SPECS.map((x) => x.name)).size, 32);
   });
   it("Công cụ ghi chữ vào điều khoản được đánh dấu để soát lập luận; công cụ khác thì không", () => {
     const reviewable = WORD_SPECS.filter((x) => x.reviewable).map((x) => x.name).sort();

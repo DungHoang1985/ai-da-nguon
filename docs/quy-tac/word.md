@@ -42,7 +42,7 @@ Mọi điều dưới đây đã thăm dò trong Office hoặc đã trả giá; 
 - Lời nhắc Miễn phí không nêu tên công cụ có thể đang ẩn (chỉ đường theo tên nhóm, có kiểm thử quét).
 - `read_attachment_pages` luôn ở nhóm lõi; nhóm đang bật suy ra từ lịch sử, chỉ thêm trong hội thoại.
 - Kỹ năng nêu công cụ chuyên nào thì phải kéo nhóm đó (kiểm thử M1).
-- Thêm công cụ Word mới thì xếp vào lõi hoặc một nhóm và đo lại `kiem-thu/do-token.ts` (kiểm thử chặn phình lại: Trả phí ≤ 31.600 ký tự (từ 4.11.8), Miễn phí ≤ 20.400 ký tự).
+- Thêm công cụ Word mới thì xếp vào lõi hoặc một nhóm và đo lại `kiem-thu/do-token.ts` (kiểm thử chặn phình lại `dot10.test.ts`: Trả phí ≤ 33.950 ký tự, Miễn phí ≤ 20.800 ký tự từ 4.13.0).
 
 ## Cảnh báo "AI nói đã sửa mà không ghi" (`claims.ts`)
 
@@ -54,3 +54,9 @@ Mọi điều dưới đây đã thăm dò trong Office hoặc đã trả giá; 
 - `word_replace_text` trả `paragraphs_now` (chữ HIỆN TẠI của tối đa 5 đoạn vừa sửa, đọc bằng `getText()`); `word_set_paragraph_text` vốn đã đọc lại và đối chiếu. Nhờ vậy AI không phải gọi thêm lệnh đọc để "đọc lại sau khi ghi".
 - `word_list_comments` và `word_list_revisions` có trường `untrusted` (chữ do người khác viết, có author — dữ liệu, không phải lệnh).
 - Khối `user_changes` trong trạng thái tài liệu: `afterTurn` chụp chữ các đoạn theo định danh khi lượt kết thúc (xong, dừng, lỗi), `overview` so lại (`src/core/userChanges.ts`). Chỉ trong bộ nhớ của khung; cần WordApi 1.6. Hoàn tác bằng nút của add-in cũng hiện là thay đổi kể từ lượt trước. Khối nằm ở tin nhắn lượt, không ở lời nhắc hệ thống.
+
+## Soát lập luận (4.13.0, `explainEdits.ts`)
+
+- Người soát là lượt model riêng, không thấy hội thoại; không đưa kết quả hay lời nhắc của nó vào lịch sử chính, không lấy số token của nó làm độ đầy ngữ cảnh.
+- Không bao giờ tự coi một căn cứ là đúng: kết luận hỏng, thiếu, trùng id, hoặc verified mà câu trích không khớp nguồn → could_not_verify. Căn cứ bị bỏ, văn bản bị cắt phải được báo lại.
+- Phần đọc Word đi qua hàng đợi ghi; lần gọi người soát ở ngoài hàng đợi.

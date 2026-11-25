@@ -269,3 +269,11 @@
 
   - (18/11/2026) **PowerPoint qua Office.js, đã đo:** ghi chữ có ký tự “ư” vào ô giữ chỗ (`textRange.text = …`) làm PowerPoint đổi CẢ dòng sang Times New Roman; chữ có “ổ”, “ậ”, “ý” thì không. `textRange.font.name` của cả khung vẫn trả phông chủ đề — phải đọc `getSubstring(…).font.name` theo từng dòng mới thấy. Cách chữa: đọc phông trước khi ghi, ghi xong đặt lại `font.name` cho những dòng bị đổi (`setTextKeepFont` trong `pptCore.ts`). Slide dựng bằng pptxgenjs rồi chèn vào thì tiêu đề luôn Times New Roman: lấy phông ô tiêu đề của bố cục mà trả lại.
   - (18/11/2026) Thấy công cụ kiểm "báo lỗi" lặp đi lặp lại thì đo trước khi kết luận là báo nhầm: ở đây phép kiểm đúng, còn công cụ ghi mới là thứ sai. Cách tách nhanh: nhờ AI chép nguyên văn kết quả công cụ, rồi đọc cùng thuộc tính bằng Office.js thô trong khung và một bài thăm dò 9 ca (mỗi ca đổi một yếu tố).
+
+## Bổ sung 25/11/2026: các bản 4.11.13–4.11.15 (chuyển từ HANDOFF.md)
+
+| Bản | Ngày | Nội dung | Chi tiết |
+|---|---|---|---|
+| 4.11.15 | 25/11 | Thu hẹp cổng cuối lượt sau Chạy thật: chỉ nhắc khi AI **nói đã sửa** mà lệnh **ghi** lỗi (4.11.14 nhắc cả khi AI đã báo đúng "không tìm thấy" → AI đi tìm thêm tới hết 12 bước). Chạy thật trên bản cục bộ: ca AI báo đúng → không nhắc (27 giây); ca AI nói "Đã sửa xong." → cổng nhắc, AI tự sửa thành "Chưa sửa được vì…", văn bản không đổi. Kiểm thử máy 921/921 | `tasks/viec-le/rea-claude-chinh-thuc/` |
+| 4.11.14 | 25/11 | Mức 1 tối ưu theo mã add-in chính thức: lời nhắc **đọc lại sau khi ghi** (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý (nhắc một lần), chuẩn Word sửa hẹp + đánh số lại theo tiêu đề. Kiểm thử máy 918/918 | `tasks/viec-le/rea-claude-chinh-thuc/` |
+| 4.11.13 | 25/11 | Nhóm "an toàn dữ liệu" của rà soát kiến trúc: B1 câu hỏi Excel nói đúng Hoàn tác (vùng trên 10.000 ô báo KHÔNG hoàn tác được; sắp xếp vùng lớn hỏi), B3 Excel không kiểm được vùng đích thì hỏi, B4 PowerPoint không xóa khi chưa chụp được bản Hoàn tác, B23 PowerPoint hỏi khi thay chữ dài (hình > 200, ô bảng > 100 ký tự), B6 lệnh ghi Excel / PowerPoint chạy lần lượt, B2 chặn gửi trùng và khóa Tự kiểm tra khi AI đang chạy. Tự kiểm tra Word 41/41, Excel 43/43, PowerPoint 27/27 (2 bước mới). B2 chưa thử trong Office (cần lượt gọi model) | `tasks/viec-le/ra-soat-kien-truc/` |

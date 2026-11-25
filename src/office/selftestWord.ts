@@ -1511,6 +1511,47 @@ export async function runWordSelfTest({ tools, step, run, expect, riskOf, log, S
     return `Sửa tay đoạn [¶${i}] → lượt sau báo đúng đoạn đó (chữ cũ / chữ mới); chụp lại thì không còn báo`;
   });
 
+  await step("4.13.0 · Soát lập luận: người soát nhận đúng văn bản kèm số điều và sửa đổi chờ duyệt; văn bản không đổi", async () => {
+    const i = await need(T.art1);
+    const before = await countAll();
+    let seen = "";
+    const verifier = {
+      instructions: `Chỉ dẫn thử ${code}`,
+      ask: async (_sys: string, user: string) => {
+        seen = user;
+        return JSON.stringify([{ id: 1, verdict: "verified", quote: T.art1 }, { id: 2, verdict: "not_found" }]);
+      },
+    };
+    const args = {
+      edits: [
+        {
+          target: `[¶${i}]`,
+          proposed_text: `Thanh toán và phạt ${code}`,
+          claims: [
+            { claim: "Tiêu đề hiện là Thanh toán", basis: "document_text", source: `[¶${i}]` },
+            { claim: "Người dùng muốn bảo hành dài hơn", basis: "user_instruction" },
+            { claim: "Tiêu đề nên nói rõ phạt", basis: "model_judgment" },
+          ],
+        },
+      ],
+    };
+    const res = await tools.execute("word_explain_edits", args, { log, verifier } as any);
+    expect(seen.includes(`[¶${i}]`) && seen.includes(T.art1), "Người soát không nhận được đoạn cần đối chiếu kèm chỉ số");
+    expect(seen.includes(`Chỉ dẫn thử ${code}`), "Người soát không nhận được chỉ dẫn riêng");
+    expect(!seen.includes("Tiêu đề nên nói rõ phạt"), "Căn cứ loại nhận định vẫn bị gửi người soát");
+    expect(res.checked === 2 && res.verified === 1 && res.not_found === 1 && res.judgment === 1 && res.has_unverified_claims === true, `Kết quả ghép sai: ${res.brief}`);
+    const after = await countAll();
+    expect(after.changes === before.changes && after.comments === before.comments, "Soát lập luận đã làm đổi văn bản");
+    let refused = false;
+    try {
+      await tools.execute("word_explain_edits", args, { log });
+    } catch {
+      refused = true;
+    }
+    expect(refused, "Không có người soát mà vẫn trả kết quả");
+    return `Người soát nhận đoạn [¶${i}] và chỉ dẫn riêng; ${res.brief}; không có người soát → báo lỗi, không tự cho là đúng`;
+  });
+
   await step("Chuyển tới đoạn", async () => (await run("word_go_to", { paragraph_index: await need(T.art1) })).message);
 
   await step("Dọn vùng thử; phần văn bản ngoài vùng thử không đổi", async () => {
