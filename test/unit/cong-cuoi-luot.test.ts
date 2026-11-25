@@ -5,6 +5,8 @@ import { getProvider } from "../../src/core/providers";
 import { errorGateNote, runAgent } from "../../src/core/agent/loop";
 import { EFFICIENCY_RULES, REPORT_RULES, buildSystemPrompt } from "../../src/core/agent/prompt";
 import { CORE_GUIDES } from "../../src/core/skillpack";
+import { answerAfterGate, unverifiedWriteClaim } from "../../src/core/claims";
+import { messageForStatus } from "../../src/core/errors";
 import { AgentEvent, AgentMessage, HostToolSet, ToolSpec } from "../../src/core/agent/types";
 
 const P = (id: string) => getProvider(id)!;
@@ -141,5 +143,33 @@ describe("Lời nhắc: đọc lại sau khi ghi, báo cáo đúng việc đã l
   });
   it("Lời nhắc hệ thống không chứa thứ hay đổi (giữ bộ nhớ đệm)", () => {
     assert.strictEqual(buildSystemPrompt({ base: "B", host: "Word", guide: CORE_GUIDES.Word }), sys);
+  });
+});
+
+describe("4.11.16: cảnh báo sau cổng, câu lỗi OpenRouter", () => {
+  const YEU_CAU = "Thay cụm “thời hạn 36 tháng” thành “thời hạn 24 tháng”.";
+  const truocCong = "Đã sửa xong.";
+  const sauCong = "Chưa sửa được vì không tìm thấy cụm “thời hạn 36 tháng” trong văn bản.";
+  const facts = (answer: string) => ({ userText: YEU_CAU, answer, wrote: false, toolsCalled: ["word_replace_text"], failedWrites: 1 });
+  it("Cổng đã nhắc và AI tự đính chính → chỉ xét câu sau cổng, không cảnh báo", () => {
+    // Chữ sau cổng nối tiếp vào cùng khối (appendText thêm "\n" đầu bước mới)
+    const parts = [truocCong + "\n" + sauCong];
+    const cut = truocCong.length;
+    assert.strictEqual(answerAfterGate(parts, cut), sauCong);
+    assert.strictEqual(unverifiedWriteClaim(facts(answerAfterGate(parts, cut))), null);
+  });
+  it("Cổng đã nhắc mà AI vẫn nói đã sửa → vẫn cảnh báo", () => {
+    const parts = [truocCong + "\nĐã sửa xong rồi."];
+    assert.ok(unverifiedWriteClaim(facts(answerAfterGate(parts, truocCong.length))));
+  });
+  it("Cổng không chạy → xét cả chữ của lượt như trước", () => {
+    assert.strictEqual(answerAfterGate(["  Đã sửa", "Điều 3. "]), "Đã sửa\nĐiều 3.");
+    assert.ok(unverifiedWriteClaim(facts(answerAfterGate([truocCong]))));
+  });
+  it("OpenRouter 400 'Request path cannot be relayed' → báo lỗi phía OpenRouter, không đổ cho key", () => {
+    const m = messageForStatus(400, "Request path cannot be relayed");
+    assert.match(m, /lỗi phía OpenRouter/);
+    assert.ok(!/Key không đúng/.test(m));
+    assert.strictEqual(messageForStatus(400, "bad"), "Lỗi 400 (bad)");
   });
 });

@@ -241,6 +241,11 @@ export function messageForStatus(status: number, detail = ""): string {
     }
     return status === 401 ? `Key không đúng hoặc đã hết hạn${d}` : `Key không đúng hoặc không có quyền${d}`;
   }
+  // OpenRouter 25/11/2026: mọi model (cả kênh kiểu Anthropic) trả 400 này sau khi nhận key thật; key giả vẫn ra 401 bình thường,
+  // đường dẫn đúng, cùng ngày người dùng khác cũng gặp → lỗi chuyển tiếp phía OpenRouter, không phải key hay add-in.
+  if (status === 400 && /cannot be relayed/i.test(detail)) {
+    return `OpenRouter không chuyển tiếp được yêu cầu (lỗi phía OpenRouter, không phải do key hay add-in). Thử lại sau hoặc đổi sang nguồn khác${d}`;
+  }
   if (status === 402) return `Tài khoản hết tiền hoặc cần nạp thêm${d}`;
   if (status === 404) return `Không tìm thấy model hoặc địa chỉ API${d}`;
   if (status === 429) return `Hết hạn mức (gọi quá nhiều). Thử lại sau hoặc đổi model${d}`;

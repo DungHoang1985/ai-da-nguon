@@ -282,6 +282,13 @@ export function unbackedEditClaims(answer: string, written: string[]): ClaimWarn
   };
 }
 
+/** Câu trả lời dùng để soát lời khẳng định: cả chữ của lượt, hoặc — khi cổng cuối lượt đã nhắc AI (4.11.15) — chỉ phần AI viết
+ *  sau lúc nhắc (`cut` = độ dài chữ các khối nối bằng xuống dòng lúc đó). Phần trước là câu AI đã tự đính chính, cảnh báo nữa là thừa. */
+export function answerAfterGate(parts: string[], cut?: number): string {
+  const all = parts.join("\n");
+  return (cut === undefined ? all : all.slice(cut)).trim();
+}
+
 /** Công cụ ghi có thật sự thay đổi tài liệu không: lỗi, trả ok=false, hoặc báo thay 0 chỗ đều không tính */
 export function writeSucceeded(result: any, error?: string): boolean {
   if (error) return false;

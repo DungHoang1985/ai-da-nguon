@@ -51,7 +51,7 @@ import { clearAttachedFiles, listAttachedImages, registerAttachedFile } from "..
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
 import { SHOW_SIZE_FROM, sizeNote } from "../../core/inputsize";
-import { REDO_WITH_TOOLS, TaskSoFar, mergeTaskFacts, taskSoFar, toolFailureClaim, unbackedEditClaims, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
+import { REDO_WITH_TOOLS, TaskSoFar, answerAfterGate, mergeTaskFacts, taskSoFar, toolFailureClaim, unbackedEditClaims, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
 import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, claimCommand, clearBeat, connectionLine, connections, describePayload, normalizeApp, reply, sweep, takeCommand } from "../../core/crossapp";
 import { executeIncoming } from "../../office/crossExec";
 import { RefTarget, findRefs } from "../../core/refs";
@@ -343,6 +343,9 @@ const Rich: React.FC<{ text: string; host: string; onNav: (r: RefTarget) => void
   }
   return <span style={{ whiteSpace: "normal" }}>{out}</span>;
 };
+
+/** Các khối chữ của câu trả lời (để cắt phần trước lúc cổng cuối lượt nhắc AI — 4.11.15) */
+const textParts = (it: Item): string[] => (it.segments ? it.segments.filter((sg) => sg.type === "text").map((sg: any) => sg.text) : it.text ? [it.text] : []);
 
 const finalText = (it: Item) =>
   it.segments
@@ -897,6 +900,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     /** Công cụ đã gọi trong lượt và số lệnh ghi không thành công — để nhận ra ca "nói đã sửa mà không ghi" */
     const called: string[] = [];
     let failedWrites = 0;
+    /** Độ dài chữ (các khối nối bằng xuống dòng) lúc cổng cuối lượt nhắc AI; undefined = cổng không chạy.
+     *  Chữ sau cổng được nối tiếp vào khối cuối nên cắt theo vị trí ký tự, không đếm khối. */
+    let gateCut: number | undefined;
     /** Tham số của các lệnh ghi thành công trong lượt — đối chiếu với các chỗ "A" → "B" AI kể đã sửa (vòng thử 3, 24/11/2026) */
     const writtenArgs: string[] = [];
     let needSep = false;
@@ -1089,6 +1095,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
             setNotice({ text: "Nguồn đang dùng không nhận chế độ suy nghĩ với model này: đã gửi lại yêu cầu ở chế độ thường." });
           } else if (ev.type === "limit") {
             patchLast((it) => ({ ...it, paused: { steps: ev.maxSteps, writes: ev.writes } }));
+          } else if (ev.type === "error_gate") {
+            patchLast((it) => {
+              gateCut = textParts(it).join("\n").length;
+              return it;
+            });
           } else if (ev.type === "stuck") {
             patchLast((it) => ({ ...it, paused: { steps: ev.step, writes: ev.writes, stuck: `${ev.tool} báo cùng một lỗi ${ev.times} bước liên tiếp` } }));
           } else if (ev.type === "retry") {
@@ -1110,8 +1121,10 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       // Kể cả khi bị dừng hay lỗi giữa chừng: các bước đã làm vẫn hoàn tác được
       if (log.length) patchLast((it) => ({ ...it, undo: log }));
       // Ghi lại việc đã làm của cả nhiệm vụ kể cả khi lượt dừng giữa chừng (chạm trần số bước, lỗi): lượt "Làm tiếp" sau gộp vào
+      // Cổng cuối lượt đã nhắc thì chỉ xét câu trả lời AI viết lại sau đó (câu "Đã sửa xong" trước đó AI đã tự đính chính)
+      const answerOf = (it: Item) => answerAfterGate(textParts(it), gateCut);
       const factsOf = (it: Item) =>
-        mergeTaskFacts(prevTask, { userText: opts?.continueTask ? request : typed, answer: finalText(it), wrote: !!it.wrote, toolsCalled: called, failedWrites });
+        mergeTaskFacts(prevTask, { userText: opts?.continueTask ? request : typed, answer: answerOf(it), wrote: !!it.wrote, toolsCalled: called, failedWrites });
       if (useAgent && hostTools) patchLast((it) => ({ ...it, task: taskSoFar(factsOf(it)) }));
       if (res.error) {
         const e: any = res.error;
@@ -1128,7 +1141,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         // Lượt kết thúc bình thường: AI khẳng định đã thay đổi tài liệu mà không có thao tác ghi nào thành công → cảnh báo trên khung
         patchLast((it) => {
           // Lượt "Làm tiếp": lệnh ghi của lượt trước không có ở đây → không đối chiếu từng chỗ (tránh báo nhầm)
-          const w = unverifiedWriteClaim(factsOf(it)) || toolFailureClaim(factsOf(it)) || (opts?.continueTask ? null : unbackedEditClaims(finalText(it), writtenArgs));
+          const w = unverifiedWriteClaim(factsOf(it)) || toolFailureClaim(factsOf(it)) || (opts?.continueTask ? null : unbackedEditClaims(answerOf(it), writtenArgs));
           return w ? { ...it, claimWarning: w.text } : it;
         });
       }

@@ -7,13 +7,14 @@ Cập nhật 25/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 ## 1. Trạng thái
 
-- **Đang chạy: v4.11.15** (phát hành 25/11/2026, `main@d52a3e8` → `gh-pages@34f57a5`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 921/921). Trước đó: **v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
+- **Đang chạy: v4.11.15** (4.11.15: `main@d52a3e8` → `gh-pages@34f57a5`, Tự kiểm tra trên bản phát hành Word 41/41, Excel 43/43, PowerPoint 27/27). 4.11.16 đang phát hành. Trước đó: **v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
 - **Đang làm:** không có việc dở về mã (phiên 24/11 kết thúc sạch sau khi phát hành 4.11.13). 25/11: phân tích mã add-in Claude chính thức cho Word/Excel/PowerPoint xong (`tasks/viec-le/rea-claude-chinh-thuc/rea-claude-chinh-thuc.md`); **mức 1 đã phát hành (4.11.14, thu hẹp cổng ở 4.11.15)**: đọc lại sau khi ghi (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý, hai dòng chuẩn Word (sửa hẹp, đánh số lại). Tự kiểm tra Word 41/41 trên bản phát hành 4.11.14 và bản cục bộ 4.11.15; Chạy thật cổng: hai ca đạt (bài `kiem-thu/cdp-bai/cong-cuoi-luot.js`). Không còn worktree nào; nhánh cục bộ chỉ còn `main` và `claude/ab-dinh-dang-gon` (báo cáo thử A/B, cố ý không phát hành).
 
 ## 2. Phiên bản gần đây
 
 | Bản | Ngày | Nội dung | Chi tiết |
 |---|---|---|---|
+| 4.11.16 | 25/11 | Cảnh báo "AI nói đã sửa mà không ghi" chỉ xét câu AI viết sau khi cổng cuối lượt nhắc (hết cảnh báo thừa khi AI đã tự đính chính); câu lỗi OpenRouter 400 "Request path cannot be relayed" nói rõ là lỗi phía OpenRouter. Chạy thật bản cục bộ: đạt. Kiểm thử máy 925/925 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.11.15 | 25/11 | Thu hẹp cổng cuối lượt sau Chạy thật: chỉ nhắc khi AI **nói đã sửa** mà lệnh **ghi** lỗi (4.11.14 nhắc cả khi AI đã báo đúng "không tìm thấy" → AI đi tìm thêm tới hết 12 bước). Chạy thật trên bản cục bộ: ca AI báo đúng → không nhắc (27 giây); ca AI nói "Đã sửa xong." → cổng nhắc, AI tự sửa thành "Chưa sửa được vì…", văn bản không đổi. Kiểm thử máy 921/921 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.11.14 | 25/11 | Mức 1 tối ưu theo mã add-in chính thức: lời nhắc **đọc lại sau khi ghi** (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý (nhắc một lần), chuẩn Word sửa hẹp + đánh số lại theo tiêu đề. Kiểm thử máy 918/918 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.11.13 | 25/11 | Nhóm "an toàn dữ liệu" của rà soát kiến trúc: B1 câu hỏi Excel nói đúng Hoàn tác (vùng trên 10.000 ô báo KHÔNG hoàn tác được; sắp xếp vùng lớn hỏi), B3 Excel không kiểm được vùng đích thì hỏi, B4 PowerPoint không xóa khi chưa chụp được bản Hoàn tác, B23 PowerPoint hỏi khi thay chữ dài (hình > 200, ô bảng > 100 ký tự), B6 lệnh ghi Excel / PowerPoint chạy lần lượt, B2 chặn gửi trùng và khóa Tự kiểm tra khi AI đang chạy. Tự kiểm tra Word 41/41, Excel 43/43, PowerPoint 27/27 (2 bước mới). B2 chưa thử trong Office (cần lượt gọi model) | `tasks/viec-le/ra-soat-kien-truc/` |
@@ -49,8 +50,8 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ### Chưa kiểm được vì thiếu tiền hoặc key (cần anh)
 
-- 25/11: key Groq trên máy bị Groq từ chối ("Invalid API Key") — cần anh dán key mới. OpenRouter trả lỗi 400 "Request path cannot be relayed" cho cả Nemotron 3 Ultra lẫn Gemma 4 31B (free); Gemini báo quá tải; vòng xoay tự sang Cohere nên vẫn chạy được. Chưa rõ do OpenRouter hay do cách gọi — cần thăm dò.
-- Cảnh báo "AI nói đã sửa mà không ghi" vẫn hiện sau khi cổng đã khiến AI tự đính chính (vì xét cả chữ của lượt) — đúng sự thật nhưng thừa; nên chỉ xét câu trả lời sau cùng.
+- 25/11: key Groq trên máy bị Groq từ chối ("Invalid API Key") — cần anh dán key mới.
+- 25/11: OpenRouter trả 400 "Request path cannot be relayed" cho MỌI model (cả kênh kiểu Anthropic) khi dùng key thật; key giả vẫn ra 401 bình thường, đường dẫn đúng, cùng ngày người dùng khác cũng gặp → lỗi phía OpenRouter (4.11.16 đã đổi câu báo). Kiểm lại vài hôm sau bằng nút "Kiểm tra từng nguồn"; vẫn lỗi thì anh xem tài khoản OpenRouter. Kết quả kiểm nguồn 25/11: đạt Anthropic, Cerebras, Cohere; DeepSeek, OpenAI hết tiền; Gemini im lặng 150 giây.
 
 - Gemini: 5 bài trên hợp đồng thử, PDF quét 3 và 7 trang, Suy nghĩ kỹ (gói miễn phí hết hạn mức rất nhanh; bảng B1, B2 ở `tasks/dot/dot-5/dot-5.md`). Công cụ của Đợt 7 chưa Chạy thật với Gemini.
 - DeepSeek (cả hai kênh): hết tiền. MiniMax, Kimi: chưa có key (tiêu chí 4 Đợt 6 cần một nguồn nhóm này có tiền).
