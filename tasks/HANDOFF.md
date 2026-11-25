@@ -7,7 +7,7 @@ Cập nhật 25/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 ## 1. Trạng thái
 
-- **Đang chạy: v4.11.15** (4.11.15: `main@d52a3e8` → `gh-pages@34f57a5`, Tự kiểm tra trên bản phát hành Word 41/41, Excel 43/43, PowerPoint 27/27). 4.11.16 đang phát hành. Trước đó: **v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
+- **Đang chạy: v4.11.16** (phát hành 25/11/2026, `main@838c8b6` → `gh-pages@ef0683c`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 925/925). Trước đó: **v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
 - **Đang làm:** không có việc dở về mã (phiên 24/11 kết thúc sạch sau khi phát hành 4.11.13). 25/11: phân tích mã add-in Claude chính thức cho Word/Excel/PowerPoint xong (`tasks/viec-le/rea-claude-chinh-thuc/rea-claude-chinh-thuc.md`); **mức 1 đã phát hành (4.11.14, thu hẹp cổng ở 4.11.15)**: đọc lại sau khi ghi (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý, hai dòng chuẩn Word (sửa hẹp, đánh số lại). Tự kiểm tra Word 41/41 trên bản phát hành 4.11.14 và bản cục bộ 4.11.15; Chạy thật cổng: hai ca đạt (bài `kiem-thu/cdp-bai/cong-cuoi-luot.js`). Không còn worktree nào; nhánh cục bộ chỉ còn `main` và `claude/ab-dinh-dang-gon` (báo cáo thử A/B, cố ý không phát hành).
 
 ## 2. Phiên bản gần đây
@@ -18,10 +18,8 @@ Cập nhật 25/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 | 4.11.15 | 25/11 | Thu hẹp cổng cuối lượt sau Chạy thật: chỉ nhắc khi AI **nói đã sửa** mà lệnh **ghi** lỗi (4.11.14 nhắc cả khi AI đã báo đúng "không tìm thấy" → AI đi tìm thêm tới hết 12 bước). Chạy thật trên bản cục bộ: ca AI báo đúng → không nhắc (27 giây); ca AI nói "Đã sửa xong." → cổng nhắc, AI tự sửa thành "Chưa sửa được vì…", văn bản không đổi. Kiểm thử máy 921/921 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.11.14 | 25/11 | Mức 1 tối ưu theo mã add-in chính thức: lời nhắc **đọc lại sau khi ghi** (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý (nhắc một lần), chuẩn Word sửa hẹp + đánh số lại theo tiêu đề. Kiểm thử máy 918/918 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.11.13 | 25/11 | Nhóm "an toàn dữ liệu" của rà soát kiến trúc: B1 câu hỏi Excel nói đúng Hoàn tác (vùng trên 10.000 ô báo KHÔNG hoàn tác được; sắp xếp vùng lớn hỏi), B3 Excel không kiểm được vùng đích thì hỏi, B4 PowerPoint không xóa khi chưa chụp được bản Hoàn tác, B23 PowerPoint hỏi khi thay chữ dài (hình > 200, ô bảng > 100 ký tự), B6 lệnh ghi Excel / PowerPoint chạy lần lượt, B2 chặn gửi trùng và khóa Tự kiểm tra khi AI đang chạy. Tự kiểm tra Word 41/41, Excel 43/43, PowerPoint 27/27 (2 bước mới). B2 chưa thử trong Office (cần lượt gọi model) | `tasks/viec-le/ra-soat-kien-truc/` |
-| 4.11.12 | 24/11 | Gộp 8 chỗ sửa của rà soát kiến trúc 20/11 (nằm quên ở một worktree, chưa từng phát hành): khối suy nghĩ OpenRouter bỏ khi tóm tắt / lưu, nút Chèn của Excel ghi chữ của AI thành chữ (không thành công thức), CI không giữ token ở `.git/config`, tóm tắt và soát lập luận báo thử lại, kiểm thử chặn lệch sổ công cụ. Nút Chèn trong Excel mới có Kiểm thử máy | `tasks/viec-le/ra-soat-kien-truc/` |
-| 4.11.10 + 4.11.11 | 24/11 | Hai buổi thử model miễn phí soạn văn bản: kiểm ngưỡng luật (`legalcheck.ts`), kiểm thứ / từ lạ / luật hết hiệu lực / sai dấu (`textcheck.ts`), loại `giay_uy_quyen`, nghị quyết, bên cá nhân ký "BÊN B", cảnh báo "kể đã sửa A → B mà không ghi". Điểm TB: Nemotron 5,7 → 8,3; Cohere 5,5 → 7,5; dots 4,7 → 6,5. Soát mã độc lập: sửa hết 3 cao + 8 TB | `tasks/viec-le/thu-mien-phi-vong3/`, `thu-mien-phi-hdcn/`, `thu-mien-phi-vbhc/` |
 
-Các bản cũ hơn (đợt 0A → 12, bản 3.6 → 4.11.9): bảng "Đã xong" trong `tasks/luu/HANDOFF-den-2026-11-24.md`; mỗi đợt có thư mục `tasks/dot/dot-<N>/`.
+Các bản cũ hơn (đợt 0A → 12, bản 3.6 → 4.11.12): bảng "Đã xong" trong `tasks/luu/HANDOFF-den-2026-11-24.md`; mỗi đợt có thư mục `tasks/dot/dot-<N>/`.
 
 ## 3. Quyết định còn hiệu lực
 
