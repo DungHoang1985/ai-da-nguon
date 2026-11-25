@@ -19,3 +19,8 @@
 - Không có API cho ghi chú diễn giả, số liệu của biểu đồ đã có, phông chủ đề (đọc từ gói của slide xuất ra), xóa bố cục.
 - Hình trùng tên phải chỉ bằng số thứ tự.
 - Số đo đưa cho AI phải sát với cái mắt thấy (so vùng chữ, không so khung rỗng).
+
+## Xem lại sau khi sửa bố cục (4.12.0, `tasks/viec-le/rea-claude-chinh-thuc/`)
+
+- Lệnh làm đổi bố cục mang cờ `needsLook` (danh sách `PPT_NEEDS_LOOK` trong `pptTools.ts`); `ppt_get_slide_image` và `ppt_check_deck` mang cờ `look`. Thêm công cụ ghi đổi bố cục mới thì thêm vào danh sách (kiểm thử chặn tên lạ).
+- Danh sách lỗi khách quan khi nhìn ảnh (`SLIDE_CHECKLIST`, `pptDesign.ts`) đi trong KẾT QUẢ công cụ, không trong lời nhắc hệ thống (giữ trần ký tự). Chỉ lỗi khách quan, không chấm thẩm mỹ; tối đa 3 vòng sửa cho cùng một lỗi rồi hỏi.

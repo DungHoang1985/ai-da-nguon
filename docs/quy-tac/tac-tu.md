@@ -12,7 +12,9 @@
 - Lời nhắc dặn **đọc lại sau khi ghi** (một lần cho mọi chỗ vừa ghi, cuối việc); đã bỏ quy tắc cũ "KHÔNG ĐỌC LẠI" theo quyết định của anh Dũng 25/11/2026. Kết quả lệnh ghi đã trả nội dung sau khi ghi thì tính là đã đọc.
 - Cổng cuối lượt trong `loop.ts` (4.11.15): chỉ nhắc khi câu trả lời cuối có lời KHẲNG ĐỊNH đã sửa (`findWriteClaim` của `claims.ts`) mà còn lệnh GHI chưa thành công (lỗi, `ok:false`, thay 0 chỗ — `writeSucceeded`) chưa được gọi lại thành công cùng tên → thêm ghi chú add-in (vai người dùng, cờ `fromTool`) rồi cho model trả lời lại, **tối đa một lần mỗi lượt**, không chạy ở bước cuối của trần. Người dùng từ chối và "chưa thực hiện vì bấm Dừng" không tính là lỗi.
 - KHÔNG xét lệnh đọc lỗi và KHÔNG nhắc khi model đã nói rõ chưa làm được: bản 4.11.14 xét mọi lệnh lỗi, Chạy thật 25/11/2026 thấy model đã báo đúng "không tìm thấy" vẫn bị nhắc và đi tìm thêm 6 bước tới hết trần.
+- Cổng thứ hai (4.12.0): lượt có lệnh `needsLook` chạy thành công mà sau đó chưa gọi công cụ `look` → nhắc xem lại một lần (chỉ khi bộ công cụ có công cụ `look`, hiện là PowerPoint).
 - Ghi chú của cổng chỉ THÊM vào cuối lịch sử, không sửa tin nhắn cũ; nằm ngoài lời nhắc hệ thống.
+- `afterTurn` của bộ công cụ chạy trong `finally` của `runTurn` (cả khi dừng, lỗi); lỗi của nó không làm hỏng lượt.
 
 ## Ảnh do công cụ chụp
 

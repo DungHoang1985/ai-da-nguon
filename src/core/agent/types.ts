@@ -59,6 +59,10 @@ export interface ToolSpec {
   timeoutMs?: number;
   /** Công cụ ghi chữ vào điều khoản: khi bật "Soát lập luận trước khi sửa", lần gọi được một lượt model riêng soát trước khi chạy */
   reviewable?: boolean;
+  /** Công cụ ghi làm đổi hình thức (bố cục slide): xong phải xem lại bằng công cụ `look` trước khi báo xong (cổng cuối lượt 4.12.0) */
+  needsLook?: boolean;
+  /** Công cụ xem lại hình thức (ảnh slide, kiểm bài): gọi sau các lệnh `needsLook` là đã kiểm */
+  look?: boolean;
 }
 
 /** Số token của một lần gọi model (đã quy về cùng nghĩa cho mọi nhà cung cấp). */
@@ -102,6 +106,8 @@ export interface HostToolSet {
   snapshot?(): Promise<{ title?: string; data: any }>;
   /** Chữ hiện tại của chỗ mà một lệnh ghi sắp sửa (để lượt soát lập luận đối chiếu); rỗng = không lấy được */
   reviewContext?(name: string, args: any): Promise<string>;
+  /** Gọi khi một lượt tác tử kết thúc (xong, dừng hay lỗi) — Word chụp chữ các đoạn để lượt sau báo chỗ người dùng tự sửa (4.12.1) */
+  afterTurn?(): Promise<void>;
 }
 
 /** Công cụ dùng chung mọi ứng dụng (use_skill, read_other_app…) */
@@ -130,6 +136,8 @@ export type AgentEvent =
   | { type: "stuck"; tool: string; error: string; times: number; step: number; writes: number }
   /** Cổng cuối lượt: model định kết thúc khi còn lệnh lỗi chưa xử lý, add-in nhắc và cho trả lời tiếp một lần */
   | { type: "error_gate"; tools: string[] }
+  /** Cổng cuối lượt thứ hai: đổi hình thức (bố cục slide) mà chưa xem lại, add-in nhắc và cho làm tiếp một lần */
+  | { type: "look_gate"; tools: string[] }
   /** Nhà cung cấp quá tải hoặc hết hạn mức tạm thời: sắp thử lại lần `attempt` sau `waitMs` */
   | { type: "retry"; attempt: number; max: number; waitMs: number; reason: string }
   /** Số token của bước vừa xong */

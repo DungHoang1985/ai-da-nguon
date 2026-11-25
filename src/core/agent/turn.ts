@@ -303,6 +303,13 @@ export async function runTurn(o: TurnOptions): Promise<TurnResult> {
     } catch (e) {
       // Đã có phần làm được (trả lời dở, bước công cụ) → giữ; chưa có gì → coi như chưa gửi câu hỏi này
       return result(latest.length > start.length ? latest : history, e);
+    } finally {
+      // Chụp trạng thái cuối lượt (Word: chữ các đoạn) để lượt sau biết người dùng tự sửa gì; lỗi khi chụp không làm hỏng lượt
+      try {
+        await a.tools.afterTurn?.();
+      } catch {
+        /* bỏ qua */
+      }
     }
   }
 

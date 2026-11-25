@@ -254,6 +254,28 @@ async function snapshotUndo(ctx: PowerPoint.RequestContext, slide: PowerPoint.Sl
   return !!b64;
 }
 
+/** Danh sách lỗi khách quan khi nhìn ảnh slide (4.12.0, phỏng theo danh sách người soát của bản chính thức — diễn đạt lại).
+ *  Nằm trong kết quả công cụ (không trong lời nhắc hệ thống) để không làm phình phần cố định của lượt. */
+export const SLIDE_CHECKLIST = [
+  "Hình, chữ chồng lên nhau; đường kẻ cắt qua chữ",
+  "Chữ tràn hoặc bị cắt ở mép khung, mép slide",
+  "Đường trang trí đặt cho tiêu đề một dòng nhưng tiêu đề đã xuống hai dòng",
+  "Dòng nguồn, chân trang dính vào nội dung phía trên",
+  "Các khối quá sát nhau (dưới khoảng 0,3 inch) hoặc khoảng trống chỗ rộng chỗ chật",
+  "Cách mép slide dưới khoảng 0,5 inch",
+  "Các cột, khối cùng loại không thẳng hàng",
+  "Chữ hoặc biểu tượng tương phản thấp với nền",
+  "Khung chữ quá hẹp làm chữ xuống dòng liên tục",
+  "Biểu đồ cột không có trục giá trị cũng không có nhãn số; biểu đồ đường nhiều đường mà không biết đường nào là gì",
+  "Hình, biểu đồ, chữ bị kéo méo",
+  "Chữ trong bảng nhỏ hơn khoảng 14pt; cột số trong bảng căn giữa thay vì căn phải",
+  "Sơ đồ quy trình xuống hàng mà không có mũi tên nối",
+  "Còn chữ mẫu, placeholder trống",
+  "Cỡ chữ ngược thứ bậc (thân bài to bằng tiêu đề) hoặc các ý cùng cấp khác cỡ",
+  "Một hình có màu lạc tông hẳn so với phần còn lại",
+  "Sửa – xem lại tối đa 3 vòng cho cùng một lỗi; còn lỗi thì dừng, nói rõ còn gì và hỏi người dùng",
+];
+
 export async function executePptDesign(name: string, a: any, log: UndoEntry[]): Promise<any> {
   switch (name) {
     case "ppt_get_slide_image":
@@ -292,8 +314,9 @@ export async function executePptDesign(name: string, a: any, log: UndoEntry[]): 
           slides: nums,
           brief: `${images.length ? "đã chụp ảnh slide " + list : "không có ảnh"}${layout.length ? ` · số đo: ${layout.length} điểm bố cục cần xem` : " · số đo: không thấy tràn, chồng"}`,
           message: images.length
-            ? `Ảnh slide ${list} được gửi kèm ngay sau kết quả này: hãy NHÌN ảnh để xem chữ có tràn khung, hình có chồng nhau, bố cục có cân không. Số đo bằng mã ở measured (chữ tràn chỉ là ước lượng — tin ảnh hơn).`
+            ? `Ảnh slide ${list} được gửi kèm ngay sau kết quả này: hãy NHÌN ảnh và soát theo check_list (chỉ lỗi khách quan, không chấm thẩm mỹ). Số đo bằng mã ở measured (chữ tràn chỉ là ước lượng — tin ảnh hơn).`
             : note,
+          ...(images.length ? { check_list: SLIDE_CHECKLIST } : {}),
           ...(note && images.length ? { note } : {}),
           measured: layout.map((i) => i.message),
           shapes: shapesOf(data[0]),

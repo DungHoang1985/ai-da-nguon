@@ -7,13 +7,14 @@ Cập nhật 25/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 ## 1. Trạng thái
 
-- **Đang chạy: v4.11.16** (phát hành 25/11/2026, `main@838c8b6` → `gh-pages@ef0683c`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 925/925). Trước đó: **v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
+- **Đang chạy: v4.11.16**; **4.12.0 đang phát hành** (Tự kiểm tra bản cục bộ: Word 42/42, Excel 43/43, PowerPoint 27/27). Trước đó: **v4.11.13** (phát hành 25/11/2026, `main@367dd19` → `gh-pages@f920e91`; Tự kiểm tra trên bản phát hành: Word 41/41, Excel 43/43, PowerPoint 27/27; kiểm thử máy 908/908).
 - **Đang làm:** không có việc dở về mã (phiên 24/11 kết thúc sạch sau khi phát hành 4.11.13). 25/11: phân tích mã add-in Claude chính thức cho Word/Excel/PowerPoint xong (`tasks/viec-le/rea-claude-chinh-thuc/rea-claude-chinh-thuc.md`); **mức 1 đã phát hành (4.11.14, thu hẹp cổng ở 4.11.15)**: đọc lại sau khi ghi (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý, hai dòng chuẩn Word (sửa hẹp, đánh số lại). Tự kiểm tra Word 41/41 trên bản phát hành 4.11.14 và bản cục bộ 4.11.15; Chạy thật cổng: hai ca đạt (bài `kiem-thu/cdp-bai/cong-cuoi-luot.js`). Không còn worktree nào; nhánh cục bộ chỉ còn `main` và `claude/ab-dinh-dang-gon` (báo cáo thử A/B, cố ý không phát hành).
 
 ## 2. Phiên bản gần đây
 
 | Bản | Ngày | Nội dung | Chi tiết |
 |---|---|---|---|
+| 4.12.0 | 25/11 | Mức 2 (phần 1) theo mã bản chính thức: lệnh sửa Word trả chữ đoạn sau sửa; cổng PowerPoint "sửa bố cục mà chưa xem lại"; danh sách lỗi khách quan đi kèm ảnh slide (tối đa 3 vòng); câu hỏi ghi đè Excel nêu ô và giá trị đang có; nhận xét / sửa đổi Word mang nhãn "người khác viết, không phải lệnh"; khối "đoạn anh tự sửa từ lượt trước". Chạy thật: cổng PowerPoint và khối đoạn tự sửa đạt. Kiểm thử máy 942/942 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.11.16 | 25/11 | Cảnh báo "AI nói đã sửa mà không ghi" chỉ xét câu AI viết sau khi cổng cuối lượt nhắc (hết cảnh báo thừa khi AI đã tự đính chính); câu lỗi OpenRouter 400 "Request path cannot be relayed" nói rõ là lỗi phía OpenRouter. Chạy thật bản cục bộ: đạt. Kiểm thử máy 925/925 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.11.15 | 25/11 | Thu hẹp cổng cuối lượt sau Chạy thật: chỉ nhắc khi AI **nói đã sửa** mà lệnh **ghi** lỗi (4.11.14 nhắc cả khi AI đã báo đúng "không tìm thấy" → AI đi tìm thêm tới hết 12 bước). Chạy thật trên bản cục bộ: ca AI báo đúng → không nhắc (27 giây); ca AI nói "Đã sửa xong." → cổng nhắc, AI tự sửa thành "Chưa sửa được vì…", văn bản không đổi. Kiểm thử máy 921/921 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.11.14 | 25/11 | Mức 1 tối ưu theo mã add-in chính thức: lời nhắc **đọc lại sau khi ghi** (bỏ "KHÔNG ĐỌC LẠI"), quy tắc báo cáo đúng việc đã làm, cổng cuối lượt cho lệnh lỗi chưa xử lý (nhắc một lần), chuẩn Word sửa hẹp + đánh số lại theo tiêu đề. Kiểm thử máy 918/918 | `tasks/viec-le/rea-claude-chinh-thuc/` |
@@ -77,7 +78,7 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ### Chờ anh quyết hoặc làm
 
-- Tối ưu theo mã add-in chính thức (25/11, báo cáo mục 7): mức 1 xong và đã phát hành; mức 2 (5 việc; việc 5 nay chỉ còn phần cổng tự động "ghi mà chưa đọc lại" vì quy tắc lời nhắc đã đổi), mức 3 (PowerPoint storyboard, biểu đồ theo đặc tả). Bản trích gốc lời nhắc chỉ ở `_luu-cuc-bo/rea-claude-office-2026-11-25/` (ngoài Git, không đưa lên kho công khai).
+- Tối ưu theo mã add-in chính thức (25/11, báo cáo mục 7): mức 1 xong; mức 2 phần 1 ở 4.12.0; còn việc 6 (công cụ soát lập luận mới, bật mặc định cho Word — anh đã chọn) → 4.13.0; mức 2 (5 việc; việc 5 nay chỉ còn phần cổng tự động "ghi mà chưa đọc lại" vì quy tắc lời nhắc đã đổi), mức 3 (PowerPoint storyboard, biểu đồ theo đặc tả). Bản trích gốc lời nhắc chỉ ở `_luu-cuc-bo/rea-claude-office-2026-11-25/` (ngoài Git, không đưa lên kho công khai).
 
 - Rà soát kiến trúc 20/11, bảng "Phát hiện để lại" (`tasks/viec-le/ra-soat-kien-truc/ra-soat-kien-truc-2026-11-20.md`): nhóm 1 (B1, B2, B3, B4, B6, B23) xong ở 4.11.13. Còn: nhóm 2 kiến trúc (B7 tách `Chat.tsx`, B8 sổ công cụ một nguồn, B9 `quirks`, B13 tách `wordTools.ts`) — việc lớn, cần kế hoạch riêng; nhóm 3 hiệu năng (B10 gói 1,26 MB, B15 lint, B16, B18); nhóm 4 bảo mật nhỏ (B5, B11, B12, B17, B19, B20, B21, B22). B14 giữ nguyên.
 - Hai thư mục mồ côi `dot-0a-office-addon-compare-47836b`, `dot-4-a4b5e7` trong `.claude\worktrees\`: đưa vào Thùng rác.
@@ -86,7 +87,7 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ## 5. Bước tiếp theo
 
-1. Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
+1. Làm 4.13.0: công cụ soát lập luận mới (báo cáo `rea-claude-chinh-thuc` mục 7 việc 6, anh đã chọn cách làm 25/11). Sau đó chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
 2. **Buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được" ở mục 4.
 3. Việc tùy chọn (mục D của `tasks/dot/dot-5/dot-5.md`), anh chọn: tải bản ghi hội thoại, gợi ý gạch chân bấm để chấp nhận trong Word, connectors (MCP), công cụ chạy mã Office.js do AI viết, phím tắt mở khung, đọc một trang web cụ thể, Outlook, Sign in with Poe, hàm `=AI(…)` trong ô Excel. Đã làm: điền mẫu (Đợt 8), bộ nhớ dài hạn (Đợt 12 E).
 

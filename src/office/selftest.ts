@@ -188,11 +188,13 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
       return "D1:D4 đã trống";
     });
     let pivotSheet = "";
-    await step("Cảnh báo trước khi ghi đè ô có dữ liệu", async () => {
+    await step("Cảnh báo trước khi ghi đè ô có dữ liệu (nêu ô và giá trị đang có)", async () => {
       const spec = tools.specs.find((x) => x.name === "excel_write_range");
       expect(spec?.risky, "Công cụ ghi chưa có kiểm tra rủi ro");
       const msg = await spec!.risky!({ sheet, address: "A1", values: [["x", "y"]] });
       expect(msg && /Ghi đè 2 ô/.test(msg), `Không cảnh báo đúng: ${msg}`);
+      // 4.12.0: câu hỏi nêu từng ô sẽ mất kèm giá trị đang có
+      expect(/A1: “[^”]+”; B1: “[^”]+”/.test(msg!), `Không nêu ô và giá trị đang có: ${msg}`);
       const none = await spec!.risky!({ sheet, address: "Z50", values: [["x"]] });
       expect(!none, "Cảnh báo nhầm ở vùng trống");
       return msg!;
@@ -744,11 +746,15 @@ export async function runSelfTest(tools: HostToolSet, onProgress: (steps: TestSt
         if (!img) throw new Skip(r.message || "Máy không chụp được ảnh slide");
         expect(img.mime === "image/png" && img.data.startsWith("iVBOR") && img.data.length > 2000, "Ảnh slide không phải PNG hợp lệ");
         expect(r.measured.some((m: string) => m.includes(`Tran ${tag}`) && /tràn khung/.test(m)), `Không đo ra chữ tràn: ${JSON.stringify(r.measured)}`);
+        // 4.12.0: ảnh đi kèm danh sách lỗi khách quan (có quy tắc tối đa 3 vòng); công cụ mang cờ cho cổng "sửa bố cục mà chưa xem lại"
+        expect(Array.isArray(r.check_list) && r.check_list.some((x: string) => /3 vòng/.test(x)), "Ảnh slide thiếu danh sách lỗi khách quan");
+        const specOf = (nm: string) => tools.specs.find((x) => x.name === nm);
+        expect(specOf("ppt_format_text")?.needsLook && specOf("ppt_add_slide")?.needsLook && specOf("ppt_get_slide_image")?.look && specOf("ppt_check_deck")?.look, "Thiếu cờ needsLook / look cho cổng xem lại");
         await go("ppt_format_text", { slide: n, shape: `Tran ${tag}`, font_size: 10 });
         await go("ppt_update_shape", { slide: n, shape: `Tran ${tag}`, width: 560, height: 110 });
         const again = await go("ppt_get_slide_image", { slide: n });
         expect(!again.measured.some((m: string) => m.includes(`Tran ${tag}`)), `Sửa rồi vẫn đo ra tràn: ${JSON.stringify(again.measured)}`);
-        return `Ảnh PNG ${Math.round((img.data.length * 3) / 4 / 1024)} KB; đo ra tràn khung → giảm cỡ chữ và nới khung → hết tràn`;
+        return `Ảnh PNG ${Math.round((img.data.length * 3) / 4 / 1024)} KB kèm ${r.check_list.length} mục soát lỗi; đo ra tràn khung → giảm cỡ chữ và nới khung → hết tràn; cờ cổng xem lại đủ`;
       });
 
       await step("Đợt 7 · Thêm 3 slide trong một lệnh (Hoàn tác gỡ cả lô); đặt ảnh đính kèm vào slide đúng tỷ lệ, có Hoàn tác", async () => {

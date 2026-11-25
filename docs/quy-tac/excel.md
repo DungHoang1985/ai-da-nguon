@@ -29,3 +29,7 @@
 ## Kiểm toán mô hình và công thức cần hỏi
 
 - `modelaudit.ts` và `formularisk.ts` ưu tiên không báo nhầm: thêm mẫu phải kèm kiểm thử cho cả ca phải bắt và ca dễ báo nhầm (tham chiếu bảng `[2024]`, hàng số nhập tay xen công thức, gạch đầu dòng "- …").
+
+## Câu hỏi ghi đè (4.12.0)
+
+- Câu hỏi trước khi ghi đè nêu tối đa 5 ô sẽ mất kèm giá trị / công thức đang có (`excelRisk`, `excelAdvanced.ts`); Tự kiểm tra có bước kiểm dạng câu này.

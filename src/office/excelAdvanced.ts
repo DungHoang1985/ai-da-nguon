@@ -227,7 +227,15 @@ export async function excelRisk(name: string, a: any): Promise<string | null> {
       target.load("address,formulas,rowCount,columnCount");
       await ctx.sync();
       const filled = target.formulas.flat().filter((v) => v !== "" && v !== null).length;
-      return filled ? `Ghi đè ${filled} ô đang có dữ liệu tại ${target.address}${undoNote(target.rowCount * target.columnCount)}.` : null;
+      if (!filled) return null;
+      // 4.12.0: nêu vài ô sẽ bị ghi đè kèm giá trị đang có, để người dùng thấy cái gì sẽ mất (bản chính thức: báo danh sách ô)
+      const shown: string[] = [];
+      target.formulas.forEach((row, r) =>
+        row.forEach((v, c) => {
+          if (shown.length < 5 && v !== "" && v !== null) shown.push(`${cellAddress(tl.col + c, tl.row + r)}: “${String(v).length > 30 ? String(v).slice(0, 30) + "…" : String(v)}”`);
+        })
+      );
+      return `Ghi đè ${filled} ô đang có dữ liệu tại ${target.address} (${shown.join("; ")}${filled > shown.length ? "; …" : ""})${undoNote(target.rowCount * target.columnCount)}.`;
     }).catch(() => OVERWRITE_UNCHECKED);
     return [overwrite, formulaRisk].filter(Boolean).join(" ") || null;
   }

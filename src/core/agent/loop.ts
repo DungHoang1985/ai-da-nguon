@@ -30,6 +30,12 @@ export const NOT_RUN_TRUNCATED =
 export const STUCK_SAME_ARGS = 2;
 export const STUCK_SAME_ERROR = 3;
 
+/** Cổng cuối lượt thứ hai (4.12.0, phỏng theo bản chính thức): lượt có lệnh làm đổi hình thức (`needsLook`, bố cục slide) mà sau đó
+ *  chưa gọi công cụ xem lại (`look`) → nhắc model xem lại trước khi báo xong, tối đa một lần mỗi lượt. */
+export function lookGateNote(changed: string[], lookTools: string[]): string {
+  return `[Add-in nhắc: lượt này đã đổi hình thức (${changed.join(", ")}) nhưng chưa xem lại kết quả. Gọi ${lookTools.join(" hoặc ")} cho các chỗ vừa sửa, sửa lỗi nếu có, rồi mới báo xong; hoặc nói rõ là chưa kiểm hình thức. Đây là nhắc của add-in, không phải yêu cầu mới của người dùng.]`;
+}
+
 /** Cổng cuối lượt (phỏng theo bản chính thức, phân tích mã 25/11/2026): model định kết thúc lượt bằng câu KHẲNG ĐỊNH đã sửa
  *  (findWriteClaim) trong khi còn lệnh GHI báo lỗi chưa được gọi lại thành công → add-in thêm nhắc này rồi cho model trả lời tiếp,
  *  tối đa một lần mỗi lượt. Chạy thật 25/11/2026 (bản đầu xét mọi lệnh lỗi, kể cả "tìm không thấy"): Cohere đã nói đúng là không
@@ -194,6 +200,10 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
   /** Lệnh báo lỗi trong lượt mà sau đó chưa có lần gọi thành công cùng công cụ: tên công cụ → số lần lỗi (cho cổng cuối lượt) */
   const unresolved = new Map<string, number>();
   let errorGateFired = false;
+  /** Lệnh làm đổi hình thức đã chạy thành công mà chưa được xem lại (cổng thứ hai) */
+  const lookPending = new Set<string>();
+  let lookGateFired = false;
+  const lookTools = allSpecs.filter((t) => t.look).map((t) => t.name);
   for (let step = 1; step <= maxSteps; step++) {
     if (aborted()) {
       markStopped();
@@ -265,6 +275,12 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       errorGateFired = true;
       o.onEvent({ type: "error_gate", tools: [...unresolved.keys()] });
       push(addinNote(errorGateNote(unresolved)));
+      continue;
+    }
+    if (!res.toolCalls.length && lookPending.size && lookTools.length && !lookGateFired && step < maxSteps) {
+      lookGateFired = true;
+      o.onEvent({ type: "look_gate", tools: [...lookPending] });
+      push(addinNote(lookGateNote([...lookPending], lookTools)));
       continue;
     }
     if (!res.toolCalls.length) {
@@ -390,6 +406,9 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
               ? result.message
               : undefined
           : undefined);
+      const sp = specMap.get(call.name);
+      if (sp?.look && !failText) lookPending.clear();
+      else if (sp?.needsLook && writeSucceeded(result, error)) lookPending.add(call.name);
       if (specMap.get(call.name)?.write) {
         if (!writeSucceeded(result, error)) {
           if (!failText?.startsWith(USER_DENIED) && !failText?.startsWith(NOT_RUN_STOPPED)) unresolved.set(call.name, (unresolved.get(call.name) || 0) + 1);

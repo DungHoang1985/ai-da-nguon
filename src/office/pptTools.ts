@@ -647,6 +647,23 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
 
 const PPT_RISKY = new Set(["ppt_delete_slide", "ppt_delete_shape", "ppt_set_shape_text", "ppt_edit_table"]);
 const ALL_PPT_SPECS = [...PPT_SPECS, ...PPT_ADV_SPECS, ...PPT_DESIGN_SPECS];
+/** Cổng cuối lượt 4.12.0 (phỏng theo bản chính thức): lệnh làm đổi bố cục slide phải được xem lại (ảnh slide hoặc kiểm bài) trước khi báo xong */
+export const PPT_NEEDS_LOOK = new Set([
+  "ppt_add_slide",
+  "ppt_add_slides",
+  "ppt_add_shape",
+  "ppt_add_textbox",
+  "ppt_add_table",
+  "ppt_add_chart",
+  "ppt_add_process_flow",
+  "ppt_insert_image",
+  "ppt_update_shape",
+  "ppt_format_text",
+  "ppt_set_shape_text",
+  "ppt_edit_table",
+  "ppt_set_layout",
+]);
+export const PPT_LOOK = new Set(["ppt_get_slide_image", "ppt_check_deck"]);
 
 /** Lời nhắc riêng của PowerPoint. Đợt 11: viết gọn — các dòng kể công cụ chuyên gộp thành PPT_SPECIAL_LINE (chế độ Miễn phí thay bằng
  *  dòng theo tên nhóm); dòng trùng chuẩn làm việc PowerPoint (độ dài tiêu đề, số ý, lề, "slide N") bỏ, giữ ở chuẩn làm việc. */
@@ -667,7 +684,12 @@ export const PPT_SYSTEM_PROMPT = [
 
 export const pptTools: HostToolSet = {
   host: "PowerPoint",
-  specs: ALL_PPT_SPECS.map((sp) => (PPT_RISKY.has(sp.name) ? { ...sp, risky: (args: any) => pptRisk(sp.name, args) } : sp)),
+  specs: ALL_PPT_SPECS.map((sp) => ({
+    ...sp,
+    ...(PPT_RISKY.has(sp.name) ? { risky: (args: any) => pptRisk(sp.name, args) } : {}),
+    ...(PPT_NEEDS_LOOK.has(sp.name) ? { needsLook: true } : {}),
+    ...(PPT_LOOK.has(sp.name) ? { look: true } : {}),
+  })),
   execute: async (name, a, ctx) => {
     if (PPT_DESIGN_SPECS.some((sp) => sp.name === name)) return executePptDesign(name, a || {}, ctx.log);
     const adv = PPT_ADV_SPECS.some((sp) => sp.name === name);

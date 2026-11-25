@@ -75,7 +75,7 @@ Mức 1 — sửa lời nhắc và vòng tác tử, nhỏ, lợi ngay (cả ba �
 | 3 | Lỗi giữa chừng: không chạy lại cả lệnh, đọc lại rồi làm tiếp | Lời nhắc + gợi ý trong câu lỗi trả về |
 | 4 | Word: sửa hẹp tới cụm chữ, chữ ngữ cảnh lặp nguyên văn; đánh số lại theo tiêu đề, cấm thay chữ số trơn | Bổ sung mô tả `word_replace_text` và `docs/quy-tac/word.md` |
 
-Mức 2 — tính năng vừa:
+Mức 2 — tính năng vừa. **25/11/2026 anh chọn**: soát lập luận bằng công cụ mới AI tự gọi, bật mặc định cho Word (việc 6, bản 4.13.0); kiểm slide do chính AI làm theo danh sách (việc 7); đọc lại bằng mã = Word trả chữ sau sửa + cổng PowerPoint (việc 5); làm khối đoạn tự sửa (việc 9). Việc 5, 7, 8, 9 đã phát hành ở 4.12.0.
 
 | # | Việc | Ghi chú |
 |---|---|---|

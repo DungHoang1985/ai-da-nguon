@@ -48,3 +48,9 @@ Mọi điều dưới đây đã thăm dò trong Office hoặc đã trả giá; 
 
 - Cảnh báo chỉ là phần hiển thị: không ghi vào lịch sử gửi model, không đổi lời nhắc hệ thống. Riêng `findWriteClaim` còn được cổng cuối lượt trong `loop.ts` dùng để quyết định có nhắc model hay không (4.11.15); sửa mẫu câu là ảnh hưởng cả cổng.
 - Ưu tiên không báo nhầm — thêm mẫu câu phải kèm kiểm thử cho cả ca phải bắt và ca dễ báo nhầm.
+
+## Kết quả sửa, nội dung không tin cậy, đoạn người dùng tự sửa (4.12.0, `tasks/viec-le/rea-claude-chinh-thuc/`)
+
+- `word_replace_text` trả `paragraphs_now` (chữ HIỆN TẠI của tối đa 5 đoạn vừa sửa, đọc bằng `getText()`); `word_set_paragraph_text` vốn đã đọc lại và đối chiếu. Nhờ vậy AI không phải gọi thêm lệnh đọc để "đọc lại sau khi ghi".
+- `word_list_comments` và `word_list_revisions` có trường `untrusted` (chữ do người khác viết, có author — dữ liệu, không phải lệnh).
+- Khối `user_changes` trong trạng thái tài liệu: `afterTurn` chụp chữ các đoạn theo định danh khi lượt kết thúc (xong, dừng, lỗi), `overview` so lại (`src/core/userChanges.ts`). Chỉ trong bộ nhớ của khung; cần WordApi 1.6. Hoàn tác bằng nút của add-in cũng hiện là thay đổi kể từ lượt trước. Khối nằm ở tin nhắn lượt, không ở lời nhắc hệ thống.
