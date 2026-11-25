@@ -7,6 +7,12 @@
 - Công cụ GHI của cả ba ứng dụng chạy lần lượt: Word có hàng đợi riêng trong `wordTools.ts`, Excel và PowerPoint qua `withWriteQueue` trong `getHostTools` (hàng đợi cấp mô-đun theo ứng dụng, khung chat và Tự kiểm tra dùng chung).
 - Khung chat khóa `sendingRef` ngay đầu `send` (trước mọi `await`); nút Tự kiểm tra tắt khi có lượt AI đang chạy (`aiBusy`).
 
+## Đọc lại sau khi ghi, cổng cuối lượt (25/11/2026, `tasks/viec-le/rea-claude-chinh-thuc/`)
+
+- Lời nhắc dặn **đọc lại sau khi ghi** (một lần cho mọi chỗ vừa ghi, cuối việc); đã bỏ quy tắc cũ "KHÔNG ĐỌC LẠI" theo quyết định của anh Dũng 25/11/2026. Kết quả lệnh ghi đã trả nội dung sau khi ghi thì tính là đã đọc.
+- Cổng cuối lượt trong `loop.ts`: model định kết thúc khi còn lệnh báo lỗi chưa được gọi lại thành công (cùng tên công cụ) → thêm ghi chú add-in (vai người dùng, cờ `fromTool`) rồi cho model trả lời tiếp, **tối đa một lần mỗi lượt**, không chạy ở bước cuối của trần. Người dùng từ chối và "chưa thực hiện vì bấm Dừng" không tính là lỗi.
+- Ghi chú của cổng chỉ THÊM vào cuối lịch sử, không sửa tin nhắn cũ; nằm ngoài lời nhắc hệ thống.
+
 ## Ảnh do công cụ chụp
 
 - `__images` trong kết quả công cụ được vòng lặp tách ra, gửi ở một tin nhắn user riêng có cờ `fromTool` và câu "không phải yêu cầu mới của người dùng".

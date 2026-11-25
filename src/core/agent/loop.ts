@@ -29,6 +29,17 @@ export const NOT_RUN_TRUNCATED =
 export const STUCK_SAME_ARGS = 2;
 export const STUCK_SAME_ERROR = 3;
 
+/** Cổng cuối lượt (phỏng theo bản chính thức, phân tích mã 25/11/2026): model định kết thúc lượt trong khi còn lệnh báo lỗi
+ *  chưa được gọi lại thành công → add-in thêm nhắc này rồi cho model trả lời tiếp, tối đa một lần mỗi lượt. */
+export function errorGateNote(failed: Map<string, number>): string {
+  const total = [...failed.values()].reduce((a, b) => a + b, 0);
+  const list = [...failed.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, n]) => (n > 1 ? `${name} (×${n})` : name))
+    .join(", ");
+  return `[Add-in nhắc: trong lượt này ${total} lệnh công cụ báo lỗi và chưa được gọi lại thành công (${list}). Không được nói các việc đó đã xong. Hãy thử lại, làm cách khác, hoặc nói rõ với người dùng việc nào chưa làm được và vì sao. Đây là nhắc của add-in, không phải yêu cầu mới của người dùng.]`;
+}
+
 /** Trần số bước của một lượt theo ứng dụng (số đo Chạy thật: Word và Excel 3–4 lần gọi AI cho một việc, PowerPoint 6–8).
  *  Chạm trần thì khung hỏi "Làm tiếp?" chứ không tự chạy tiếp. */
 export function stepCapFor(host: string): number {
@@ -177,6 +188,9 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
   let writes = 0;
   /** Lỗi công cụ của bước trước: "tên|lỗi" → { số bước liên tiếp, số bước liên tiếp y nguyên tham số, tham số lần cuối } */
   let prevFails = new Map<string, { run: number; sameArgs: number; args: string }>();
+  /** Lệnh báo lỗi trong lượt mà sau đó chưa có lần gọi thành công cùng công cụ: tên công cụ → số lần lỗi (cho cổng cuối lượt) */
+  const unresolved = new Map<string, number>();
+  let errorGateFired = false;
   for (let step = 1; step <= maxSteps; step++) {
     if (aborted()) {
       markStopped();
@@ -243,6 +257,13 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
       continue;
     }
     truncatedRun = 0;
+    if (!res.toolCalls.length && unresolved.size && !errorGateFired && step < maxSteps) {
+      // Cổng cuối lượt: còn lệnh lỗi chưa xử lý → nhắc một lần rồi cho model trả lời tiếp (lịch sử vẫn chỉ thêm)
+      errorGateFired = true;
+      o.onEvent({ type: "error_gate", tools: [...unresolved.keys()] });
+      push(addinNote(errorGateNote(unresolved)));
+      continue;
+    }
     if (!res.toolCalls.length) {
       // Trả lời rỗng (bị từ chối, bị chặn, lệnh gọi công cụ hỏng): nói rõ trên khung, không để lượt kết thúc im lặng
       if (!res.text.trim()) o.onEvent({ type: "text", delta: `(Model không trả lời gì${res.finishReason ? ` — lý do nhà cung cấp báo: ${res.finishReason}` : ""}. Thử gửi lại, diễn đạt khác, hoặc đổi model.)` });
@@ -366,6 +387,8 @@ export async function runAgent(o: RunAgentOptions): Promise<AgentMessage[]> {
               ? result.message
               : undefined
           : undefined);
+      if (failText && !failText.startsWith(USER_DENIED) && !failText.startsWith(NOT_RUN_STOPPED)) unresolved.set(call.name, (unresolved.get(call.name) || 0) + 1);
+      else if (!failText) unresolved.delete(call.name);
       if (failText && !failText.startsWith(USER_DENIED)) {
         const sig = `${call.name}|${failText}`;
         let args = "";

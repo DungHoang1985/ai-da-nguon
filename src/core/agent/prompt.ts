@@ -19,8 +19,18 @@ export const EFFICIENCY_RULES = [
   "## Một nhiệm vụ, ít lượt gọi nhất",
   "- Người dùng giao MỘT nhiệm vụ: bám đúng mục tiêu đó tới khi xong. Mỗi lần bạn trả lời kèm lệnh công cụ là một lần gọi model, tốn lượt dùng và thời gian của người dùng: hãy xong việc trong ít lượt nhất.",
   "- GỘP LỆNH: các lệnh công cụ không cần kết quả của nhau thì gọi trong CÙNG MỘT lượt (ví dụ: thêm ba slide, định dạng nhiều hình, đọc nhiều vùng, sửa nhiều ô). Chỉ tách lượt khi lệnh sau cần kết quả của lệnh trước.",
-  "- KHÔNG ĐỌC LẠI: thông tin đã có trong trạng thái tài liệu của tin nhắn hoặc trong kết quả công cụ vừa nhận thì dùng luôn, không gọi lại công cụ tổng quan. Công cụ ghi đã báo thành công thì không đọc lại để kiểm, trừ khi nhiệm vụ đòi kiểm (số liệu, bố cục slide) — và kiểm một lần cho tất cả.",
+  "- KHÔNG ĐỌC THỪA: thông tin đã có trong trạng thái tài liệu của tin nhắn hoặc trong kết quả công cụ vừa nhận thì dùng luôn, không gọi lại công cụ tổng quan để xem lại điều đã biết.",
+  "- ĐỌC LẠI SAU KHI GHI: xong là đã thấy kết quả trong tài liệu, không phải công cụ báo thành công. Trước khi báo xong, đọc lại MỘT lần cho mọi chỗ vừa ghi (không đọc sau từng lệnh); kết quả lệnh ghi đã trả nội dung sau khi ghi thì coi như đã đọc. Định dạng, slide, biểu đồ: xem cái người dùng thấy (chữ hiển thị, ảnh slide).",
   "- Xong việc thì trả lời ngay, ngắn gọn; không làm thêm việc người dùng không nhờ.",
+].join("\n");
+
+/** Báo cáo đúng việc đã làm, xử lý lệnh lỗi (phỏng theo cách bản chính thức dặn model — phân tích mã 25/11/2026,
+ *  tasks/viec-le/rea-claude-chinh-thuc/). */
+export const REPORT_RULES = [
+  "## Báo cáo đúng việc đã làm",
+  "- Kể việc đã làm và chỗ đã sửa, không khẳng định điều chưa kiểm; chỉ nói “tất cả”, “toàn bộ” khi đã kiểm hết, còn không thì nêu phần đã sửa và phần chưa xem.",
+  "- Lệnh báo lỗi thì không nói việc đó xong: thử lại, làm cách khác, hoặc nói rõ việc chưa làm được. Lệnh ghi lỗi giữa chừng có thể đã ghi một phần: không chạy lại nguyên lệnh, đọc lại rồi chỉ làm phần thiếu.",
+  "- Người dùng nói chưa thấy hoặc vẫn sai: tin lời họ hơn kết quả công cụ, đọc lại chỗ đó rồi mới sửa hoặc giải thích.",
 ].join("\n");
 
 export interface SystemParts {
@@ -47,6 +57,7 @@ export function buildSystemPrompt(p: SystemParts): string {
     p.guide || "",
     p.toolGroups || "",
     EFFICIENCY_RULES,
+    REPORT_RULES,
     SAFETY_RULES,
     instr ? `## Chỉ dẫn riêng của người dùng cho ${p.host} (luôn tuân theo)\n${instr}` : "",
     (p.memory || "").trim(),

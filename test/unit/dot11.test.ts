@@ -275,7 +275,8 @@ describe("Đợt 11 — chặn phình lại (số ký tự phần cố định c
   // Đợt 12 (22/11/2026): Excel nâng trần +400 / +350 cho tham số `more` của excel_format_range (định dạng nhiều vùng khác kiểu trong một lệnh,
   // bài X6 chạm trần 12 bước vì 7 lệnh định dạng rời) — đo: Trả phí 25.891, Miễn phí 15.135
   // Đợt 12 phần E (23/11/2026): Trả phí +400 / +450 cho công cụ remember (đo: Excel ≈26.280, PowerPoint 19.308); Miễn phí giữ trần (remember nằm trong nhóm bo_nho)
-  const CAP: Record<string, { paid: number; free: number }> = { Excel: { paid: 26400, free: 15250 }, PowerPoint: { paid: 19350, free: 14100 } };
+  // 25/11/2026: +700 cho quy tắc đọc lại sau khi ghi và báo cáo đúng việc đã làm (REPORT_RULES, mức 1 tối ưu theo mã bản chính thức)
+  const CAP: Record<string, { paid: number; free: number }> = { Excel: { paid: 27100, free: 15950 }, PowerPoint: { paid: 20050, free: 14800 } };
   for (const h of HOSTS) {
     const parts = { base: h.prompt, guide: CORE_GUIDES[h.host], host: h.host, skillCatalog: skillCatalog(skillsOf(h.host)) };
     it(`${h.host}, Trả phí: ≤ ${CAP[h.host].paid} ký tự`, () => {

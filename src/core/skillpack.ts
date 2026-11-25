@@ -27,6 +27,8 @@ export const CORE_GUIDES: Record<string, string> = {
   Word: `## Chuẩn làm việc với Word (luôn áp dụng)
 - Rà soát toàn diện thì đọc đủ văn bản trước khi kết luận, vì các điều khoản tác động lẫn nhau.
 - Sửa tối thiểu, đúng chỗ, giữ nguyên kiểu chữ, đánh số, định dạng; góp ý thì dùng nhận xét neo đúng cụm chữ.
+- Sửa hẹp tới cụm chữ đổi (thêm vừa đủ ngữ cảnh để khớp một chỗ, lặp nguyên văn ngữ cảnh); không thay cả câu cho vài chữ, không đổi từ ngữ ngoài yêu cầu (trong hợp đồng là đổi nội dung).
+- Đánh số lại điều, mục: sửa từng tiêu đề, không thay hàng loạt một chữ số trơn (nhầm số tiền, năm).
 - Căn cứ pháp lý không có trong tài liệu hoặc tệp đính kèm thì ghi "cần đối chiếu văn bản gốc".
 - Kiểm tra nhất quán: thuật ngữ định nghĩa, tham chiếu chéo, đánh số, ngày tháng, số tiền bằng số và bằng chữ, tên các bên.
 - Soạn văn bản hành chính theo kỹ năng soan-thao-van-ban-hanh-chinh.`,

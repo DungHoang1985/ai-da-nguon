@@ -128,6 +128,8 @@ export type AgentEvent =
   | { type: "limit"; maxSteps: number; writes: number }
   /** Dừng sớm: một công cụ báo cùng một lỗi nhiều bước liên tiếp */
   | { type: "stuck"; tool: string; error: string; times: number; step: number; writes: number }
+  /** Cổng cuối lượt: model định kết thúc khi còn lệnh lỗi chưa xử lý, add-in nhắc và cho trả lời tiếp một lần */
+  | { type: "error_gate"; tools: string[] }
   /** Nhà cung cấp quá tải hoặc hết hạn mức tạm thời: sắp thử lại lần `attempt` sau `waitMs` */
   | { type: "retry"; attempt: number; max: number; waitMs: number; reason: string }
   /** Số token của bước vừa xong */

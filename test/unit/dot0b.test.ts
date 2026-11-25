@@ -569,7 +569,8 @@ describe("Đợt 0B: an toàn", () => {
   it("Hạn chờ cho bước công cụ: quá hạn thì báo model, vòng lặp chạy tiếp", async () => {
     await assert.rejects(withTimeout(new Promise(() => {}), 10, "doc_write"), /chạy quá/);
     assert.strictEqual(await withTimeout(Promise.resolve(5), 10, "x"), 5);
-    const responses = [oaCall("c1", "doc_read", "{}"), oaText("Bước đọc bị treo.")];
+    // Câu thứ ba: cổng cuối lượt (25/11/2026) nhắc một lần vì lệnh đọc lỗi chưa được gọi lại
+    const responses = [oaCall("c1", "doc_read", "{}"), oaText("Đọc xong."), oaText("Bước đọc bị treo.")];
     const slow: HostToolSet = { ...fakeTools([]), execute: () => new Promise(() => {}) };
     const ends: any[] = [];
     const msgs = await runAgent({

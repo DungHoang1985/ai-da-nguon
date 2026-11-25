@@ -358,6 +358,8 @@ describe("Tác tử: vòng lặp", () => {
     const responses = [
       sse([{ choices: [{ delta: { tool_calls: [{ index: 0, id: "c1", function: { name: "khong_ton_tai", arguments: "{}" } }] } }] }]),
       sse([{ choices: [{ delta: { content: "Xin lỗi." } }] }]),
+      // Cổng cuối lượt (25/11/2026): còn lệnh lỗi chưa xử lý → add-in nhắc, model trả lời thêm một lần
+      sse([{ choices: [{ delta: { content: "Chưa làm được vì không có công cụ đó." } }] }]),
     ];
     const ends: any[] = [];
     await runAgent({
