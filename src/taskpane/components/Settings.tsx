@@ -4,7 +4,8 @@ import { ArrowLeftRegular } from "@fluentui/react-icons";
 import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { HostName } from "../../office/host";
 import { getHostTools } from "../../office/tools";
-import { TestStep, runSelfTest } from "../../office/selftest";
+// B10 (rà soát kiến trúc, 26/11/2026): mã Tự kiểm tra (~140 KB) chỉ nạp khi bấm nút — chỉ lấy kiểu ở đây, không kéo mã vào gói khung
+import type { TestStep } from "../../office/selftest";
 import { CUSTOM_PREFIX, Provider, allProviders, getProvider, normalizeBaseUrl } from "../../core/providers";
 import { UsageMode, freeKeyWarning, normalizeFreeOrder, providerInMode } from "../../core/modes";
 import { Storage } from "../../core/storage";
@@ -428,7 +429,15 @@ const SelfTestCard: React.FC<Props> = ({ storage, host, aiBusy }) => {
     setRunning(true);
     setSteps([]);
     try {
-      await runSelfTest(tools, setSteps);
+      let mod: typeof import("../../office/selftest");
+      try {
+        mod = await import(/* webpackChunkName: "tu-kiem-tra" */ "../../office/selftest");
+      } catch (e: any) {
+        // Không nạp được phần Tự kiểm tra (mạng, bản cũ trong bộ nhớ tạm): báo thành một bước lỗi, không để nút đứng im
+        setSteps([{ name: "Nạp phần Tự kiểm tra", ok: false, detail: `${e?.message || e}. Tải lại khung (Ctrl+F5) rồi thử lại.` }]);
+        return;
+      }
+      await mod.runSelfTest(tools, setSteps);
     } finally {
       setRunning(false);
     }

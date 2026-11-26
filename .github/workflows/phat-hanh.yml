@@ -45,6 +45,10 @@ jobs:
       - name: Kiểm kiểu (tsc)
         run: npx tsc --noEmit -p .
 
+      # B15 (26/11/2026): lỗi lint (hook React sai chỗ, lỗi JS cơ bản) chặn phát hành; cảnh báo Office.js chỉ báo
+      - name: Lint (eslint)
+        run: npm run lint
+
       - name: Đóng gói (npm run build)
         run: npm run build
 

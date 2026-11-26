@@ -69,3 +69,14 @@ Sắp theo mức; "Office" = cần Tự kiểm tra hoặc Chạy thật trong Of
 3. **Ước tính tiền mỗi lượt**: khung đã có số token mỗi tin; ghép bảng giá (OpenRouter trả `pricing` trong danh mục, đang đọc ở `models.ts:73`) để hiện "≈ 0,02 USD" cạnh mỗi câu trả lời và tổng theo hội thoại — giúp chọn model ở chế độ Trả phí.
 4. **Xem trước thay đổi Excel**: trước lệnh ghi lớn, hiện bảng "ô · cũ → mới" (đã có `diffCells` trong `auditlog.ts`) để bấm Đồng ý, tương tự Track Changes của Word.
 5. **Phát hành an toàn hơn**: tách CI thành job đóng gói (chỉ đọc) và job đẩy (không cài gói); thêm bước Tự kiểm tra bằng `kiem-thu/cdp.mjs` thành danh sách kiểm trước phát hành có máy ghi số.
+
+## Nhóm 3 — làm ở 4.13.3 (26/11/2026)
+
+| Mục | Kết quả | Đo / bằng chứng |
+|---|---|---|
+| B10 | Mã Tự kiểm tra (`selftest*`) nạp bằng `import()` khi bấm nút; lỗi nạp hiện thành một bước lỗi. **Chưa làm**: tách công cụ theo ứng dụng (cần nạp công cụ bất đồng bộ trong `Chat.tsx`, đụng ghi chéo) | Gói `taskpane` 1.293.744 → 1.145.405 byte; tệp riêng `tu-kiem-tra` 152.578 byte. Đo theo bản đồ nguồn: bộ biểu tượng Fluent đã được lọc ở bản cuối, không phải nguyên nhân |
+| B16 | Chỉ ts-loader; gỡ `babel.config.json`, `@babel/*`, `babel-loader`, `source-map-loader`, `@types/webpack` | Gói không đổi kích thước (Babel 8 mặc định đích hiện đại) — chỉ bớt một lượt dịch |
+| B18 | `Rich`, `Linked` bọc `React.memo`; `onNav` dùng `useCallback([host])`, đặt trước hai chỗ `return` sớm | Lần đầu đặt hook sau `return` sớm (sẽ vỡ khung khi chọn chế độ) — bắt kịp, nay lint chặn |
+| B15 | `eslint.config.mjs` riêng: lỗi JS cơ bản + `react-hooks/rules-of-hooks` (thư mục giao diện) mức lỗi; quy tắc Office.js mức cảnh báo (chỉ `src/office`); bỏ quy tắc định dạng. CI chạy `npm run lint`, lỗi thì không phát hành | 0 lỗi, 285 cảnh báo. Thử cài một hook sau `return` sớm: lint báo lỗi đúng chỗ |
+
+Tự kiểm tra bản cục bộ 4.13.3: Word 43/43, Excel 44/44, PowerPoint 27/27. Tác tử phản biện (model khác, không thấy lập luận): không lỗi nghiêm trọng; đã làm: khai báo trực tiếp `eslint`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` (trước chỉ có gián tiếp qua `office-addin-lint`), đồng bộ số bản trong lock, hai chỗ vụn ở `Chat.tsx`.

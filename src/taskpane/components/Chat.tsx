@@ -256,7 +256,9 @@ const WEB_PROVIDERS = (p: { id: string; kind: string; dialect?: { webSearch?: bo
   p.id === "openrouter" || (p.kind === "anthropic" && (!p.dialect || !!p.dialect.webSearch)) || p.kind === "gemini";
 
 /** Chữ thường + liên kết bấm được tới ô/đoạn/slide */
-const Linked: React.FC<{ text: string; host: string; onNav: (r: RefTarget) => void; cls: string }> = ({ text, host, onNav, cls }) => (
+// B18 (rà soát kiến trúc, 26/11/2026): Linked và Rich ghi nhớ theo props — mỗi token mới chỉ vẽ lại đoạn đang chạy, không phân tích lại
+// Markdown của mọi câu trả lời cũ. Cần onNav ổn định (useCallback trong Chat).
+const Linked = React.memo<{ text: string; host: string; onNav: (r: RefTarget) => void; cls: string }>(({ text, host, onNav, cls }) => (
   <>
     {findRefs(text, host).map((p, i) =>
       p.ref ? (
@@ -276,10 +278,10 @@ const Linked: React.FC<{ text: string; host: string; onNav: (r: RefTarget) => vo
       )
     )}
   </>
-);
+));
 
 /** Hiển thị Markdown đơn giản: **đậm**, tiêu đề #, gạch đầu dòng, bảng; địa chỉ ô/đoạn/slide bấm được */
-const Rich: React.FC<{ text: string; host: string; onNav: (r: RefTarget) => void }> = ({ text, host, onNav }) => {
+const Rich = React.memo<{ text: string; host: string; onNav: (r: RefTarget) => void }>(({ text, host, onNav }) => {
   const s = useStyles();
   const inline = (str: string) =>
     str.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
@@ -342,7 +344,7 @@ const Rich: React.FC<{ text: string; host: string; onNav: (r: RefTarget) => void
     out.push(<div key={i}>{line.trim() ? inline(line) : " "}</div>);
   }
   return <span style={{ whiteSpace: "normal" }}>{out}</span>;
-};
+});
 
 /** Các khối chữ của câu trả lời (để cắt phần trước lúc cổng cuối lượt nhắc AI — 4.11.15) */
 const textParts = (it: Item): string[] => (it.segments ? it.segments.filter((sg) => sg.type === "text").map((sg: any) => sg.text) : it.text ? [it.text] : []);
@@ -622,6 +624,12 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     prevBusy.current = busy;
   }, [busy]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Ổn định qua các lần vẽ (B18): Rich / Linked ghi nhớ theo props. Hook: phải đứng TRƯỚC hai chỗ return sớm ngay dưới
+  const onNav = React.useCallback(
+    (ref: RefTarget) => navigateTo(host, ref).catch((e) => setNotice({ text: "Không chuyển tới được: " + networkErrorMessage(e), err: true })),
+    [host]
+  );
+
   // Đợt 9: chọn chế độ khi bắt đầu (cả người dùng bản cũ); chọn xong không hiện lại, đổi được ở bảng chọn model và Cài đặt
   if (!mode) {
     return (
@@ -744,9 +752,6 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     pending?.resolve(ok);
     setPending(null);
   };
-
-  const onNav = (ref: RefTarget) =>
-    navigateTo(host, ref).catch((e) => setNotice({ text: "Không chuyển tới được: " + networkErrorMessage(e), err: true }));
 
   const onFiles = async (files: FileList | null) => {
     if (!files || !files.length) return;

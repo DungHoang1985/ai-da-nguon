@@ -39,13 +39,9 @@ module.exports = async (env, options) => {
     },
     module: {
       rules: [
-        {
-          test: /\.ts$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
-          },
-        },
+        // B16 (rà soát kiến trúc 20/11/2026, làm 26/11): chỉ ts-loader. Trước đây tệp .ts còn qua thêm babel-loader (.tsx thì không):
+        // một lượt dịch thừa — đo 26/11: bỏ đi gói taskpane không đổi kích thước (Babel 8 mặc định đích trình duyệt hiện đại).
+        // Đích dịch theo tsconfig.json.
         {
           test: /\.tsx?$/,
           exclude: /node_modules/,

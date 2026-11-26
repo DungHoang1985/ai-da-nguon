@@ -151,7 +151,7 @@ describe("Đợt 4 · Soát mã · Sheet nhật ký", () => {
     const writes: any[] = [];
     const range = () => {
       const r: any = { format: { font: {}, fill: {}, wrapText: false }, load: () => r };
-      Object.defineProperty(r, "values", { set: (v) => writes.push(v) });
+      Object.defineProperty(r, "values", { set: (v) => { writes.push(v); } });
       return r;
     };
     const sheet = (name: string, isNull = false): any => ({

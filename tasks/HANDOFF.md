@@ -9,16 +9,14 @@ Cập nhật 26/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 - **Đang chạy: v4.13.2** (phát hành 26/11/2026, `main@11df743` → `gh-pages@05b0b26`; Tự kiểm tra trên bản phát hành: Word 43/43, Excel 44/44, PowerPoint 27/27; kiểm thử máy 967/967). Trước đó: **v4.13.1** (`main@bd6dea7` → `gh-pages@9f4a154`).
 - 4.13.2 = mức 2 việc 5 phần Excel: `excel_format_range` trả chữ hiển thị (`display_preview`) và cảnh báo ô số có thể hiện "####" (ước theo cỡ chữ vì Office.js không trả "####" — đã đo) → coi như đã đọc lại. Chạy thật Trả phí (Claude Sonnet 5.5): AI thấy cảnh báo, tự giãn cột, không còn ô "####" (`tasks/viec-le/rea-claude-chinh-thuc/` mục 10).
-- 4.13.1 = cổng soát lập luận bằng mã: lệnh ghi câu chữ Word (`needsExplain`) lần đầu trong lượt mà chưa gọi `word_explain_edits` thì không ghi, nhắc model soát trước (một lần mỗi lượt). Chạy thật Miễn phí (Groq / Cohere): AI soát trước khi ghi 2/2 lần.
-- 26/11, sửa bài thử (không thuộc bản add-in): `mo-office.ps1` kết thúc PowerPoint treo sau Quit (lỗi lần 3); `cdp.mjs eval` chờ khung vẽ xong, trắng thì tự tải lại một lần.
+- **Đang làm: 4.13.3 xong mã, commit trên máy, CHƯA phát hành** (chờ anh duyệt). Nhóm 3 rà soát kiến trúc: B10 mã Tự kiểm tra nạp khi bấm nút (gói khung 1.294 → 1.145 KB); B16 bỏ babel-loader + 6 gói thừa; B18 `Rich` / `Linked` ghi nhớ, `onNav` ổn định; B15 `eslint.config.mjs` riêng, `npm run lint` 0 lỗi / 285 cảnh báo Office.js, CI chặn khi có lỗi lint. Tự kiểm tra bản cục bộ Word 43/43, Excel 44/44, PowerPoint 27/27; kiểm thử máy 967/967; tác tử phản biện: không lỗi nghiêm trọng, đã làm các điểm nên làm. Để lại: tách công cụ theo ứng dụng (phần còn lại của B10, cần nạp công cụ bất đồng bộ trong `Chat.tsx`).
 
 ## 2. Phiên bản gần đây
 
 | Bản | Ngày | Nội dung | Chi tiết |
 |---|---|---|---|
+| 4.13.3 (chưa phát hành) | 26/11 | Nhóm 3 rà soát kiến trúc: gói khung −148 KB (Tự kiểm tra tách riêng), bỏ babel, ghi nhớ khung chat, lint chạy được và vào CI | `tasks/viec-le/ra-soat-kien-truc/` |
 | 4.13.2 | 26/11 | Excel: lệnh định dạng trả chữ hiển thị và cảnh báo ô số bị "####" (ước theo số đo tự giãn cột). Kiểm thử máy 967/967, Tự kiểm tra Excel 44/44 | `docs/quy-tac/excel.md` |
-| 4.13.1 | 25/11 | Cổng bằng mã: lệnh ghi câu chữ Word lần đầu trong lượt phải soát lập luận trước (nhắc một lần; sửa máy móc thì gọi lại). Chạy thật Miễn phí: AI soát trước khi ghi 2/2 lần. Kiểm thử máy 961/961 | `tasks/viec-le/rea-claude-chinh-thuc/` |
-| 4.13.0 | 25/11 | Công cụ soát lập luận Word `word_explain_edits`: AI nêu căn cứ có loại nguồn cho từng sửa đổi câu chữ pháp lý; người soát (lượt model riêng, không thấy hội thoại) đối chiếu văn bản, sửa đổi chờ duyệt, chỉ dẫn riêng, kỹ năng đã nạp; căn cứ chưa xác nhận → AI phải sửa đề xuất hoặc hỏi. Mốc chặn phình: Trả phí 33.950, Miễn phí 20.800 ký tự. Kiểm thử máy 954/954, Tự kiểm tra trên bản phát hành Word 43/43, Excel 43/43, PowerPoint 27/27 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 
 Các bản cũ hơn (đợt 0A → 12, bản 3.6 → 4.12.0): bảng "Đã xong" trong `tasks/luu/HANDOFF-den-2026-11-24.md`; mỗi đợt có thư mục `tasks/dot/dot-<N>/`.
 
@@ -82,14 +80,14 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 - Tối ưu theo mã add-in chính thức (25/11, báo cáo mục 7): mức 1 xong; mức 2 phần 1 ở 4.12.0; còn việc 6 (công cụ soát lập luận mới, bật mặc định cho Word — anh đã chọn) → 4.13.0; mức 2 xong ở 4.13.2 (việc 5: Word đã tự đọc lại trong lệnh ghi, PowerPoint có cổng xem lại, Excel trả chữ hiển thị), mức 3 (PowerPoint storyboard, biểu đồ theo đặc tả). Bản trích gốc lời nhắc chỉ ở `_luu-cuc-bo/rea-claude-office-2026-11-25/` (ngoài Git, không đưa lên kho công khai).
 
-- Rà soát kiến trúc 20/11, bảng "Phát hiện để lại" (`tasks/viec-le/ra-soat-kien-truc/ra-soat-kien-truc-2026-11-20.md`): nhóm 1 (B1, B2, B3, B4, B6, B23) xong ở 4.11.13. Còn: nhóm 2 kiến trúc (B7 tách `Chat.tsx`, B8 sổ công cụ một nguồn, B9 `quirks`, B13 tách `wordTools.ts`) — việc lớn, cần kế hoạch riêng; nhóm 3 hiệu năng (B10 gói 1,26 MB, B15 lint, B16, B18); nhóm 4 bảo mật nhỏ (B5, B11, B12, B17, B19, B20, B21, B22). B14 giữ nguyên.
+- Rà soát kiến trúc 20/11, bảng "Phát hiện để lại" (`tasks/viec-le/ra-soat-kien-truc/ra-soat-kien-truc-2026-11-20.md`): nhóm 1 (B1, B2, B3, B4, B6, B23) xong ở 4.11.13. Còn: nhóm 2 kiến trúc (B7 tách `Chat.tsx`, B8 sổ công cụ một nguồn, B9 `quirks`, B13 tách `wordTools.ts`) — việc lớn, cần kế hoạch riêng; nhóm 3 xong ở 4.13.3 trừ tách công cụ theo ứng dụng (B10 phần 2); nhóm 4 bảo mật nhỏ (B5, B11, B12, B17, B19, B20, B21, B22). B14 giữ nguyên.
 - Hai thư mục mồ côi `dot-0a-office-addon-compare-47836b`, `dot-4-a4b5e7` trong `.claude\worktrees\`: đưa vào Thùng rác.
 - Xóa các khóa "AI Da Nguon (Office)" thừa ở `openrouter.ai/settings/keys`.
 - Nguồn Gemini trên máy còn nhớ "Gemini 2.5 Flash" (Google ngừng cấp cho người dùng mới): chọn lại Gemini 3.8 Flash.
 
 ## 5. Bước tiếp theo
 
-1. 4.13.2 xong (phát hành, Tự kiểm tra, Chạy thật đạt). 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
+1. 4.13.3: anh duyệt thì đẩy `main`, Tự kiểm tra ba ứng dụng trên bản phát hành. 4.13.2 xong (phát hành, Tự kiểm tra, Chạy thật đạt). 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
 2. **Buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được" ở mục 4.
 3. Việc tùy chọn (mục D của `tasks/dot/dot-5/dot-5.md`), anh chọn: tải bản ghi hội thoại, gợi ý gạch chân bấm để chấp nhận trong Word, connectors (MCP), công cụ chạy mã Office.js do AI viết, phím tắt mở khung, đọc một trang web cụ thể, Outlook, Sign in with Poe, hàm `=AI(…)` trong ô Excel. Đã làm: điền mẫu (Đợt 8), bộ nhớ dài hạn (Đợt 12 E).
 
