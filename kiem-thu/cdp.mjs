@@ -133,6 +133,29 @@ async function evalFile(port, list) {
   const body = (String(port).includes("#") || keep ? "" : TEST_MODE_ON) + list.map((f) => fs.readFileSync(f, "utf8")).join("\n");
   const c = await connect(port);
   try {
+    // Khung add-in phải vẽ xong mới chạy bài: 23/11 và 26/11/2026 bài trượt vì khung trắng (26/11 kẹt ở readyState "interactive"
+    // tới khi tải lại). Chờ khung có chữ; trắng thì tự tải lại một lần (bỏ bộ nhớ tạm); vẫn trắng thì báo lỗi, không chạy bài.
+    if (!String(port).includes("#")) {
+      const ve = async (ms) => {
+        for (const t0 = Date.now(); Date.now() - t0 < ms; await new Promise((r) => setTimeout(r, 1000))) {
+          const r = await c.send("Runtime.evaluate", {
+            expression: `document.readyState === "complete" && !!document.body && document.body.innerText.trim().length > 0`,
+            returnByValue: true,
+          }).catch(() => null);
+          if (r?.result?.value === true) return true;
+        }
+        return false;
+      };
+      if (!(await ve(30000))) {
+        console.error("Khung add-in còn trắng sau 30 giây: tải lại (bỏ bộ nhớ tạm) rồi chờ thêm.");
+        await c.send("Page.reload", { ignoreCache: true });
+        if (!(await ve(45000))) {
+          console.log(JSON.stringify({ LOI: "Khung add-in trắng (chưa vẽ xong) cả sau khi tải lại: không chạy bài thử." }, null, 1));
+          process.exitCode = 1;
+          return;
+        }
+      }
+    }
     const r = await c.send("Runtime.evaluate", {
       expression: `(async () => { ${body}\n})()`,
       awaitPromise: true,

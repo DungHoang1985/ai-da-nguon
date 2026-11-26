@@ -82,7 +82,12 @@ if (Get-Process powerpnt -ErrorAction SilentlyContinue) {
   if ($p.Presentations.Count -ne 0) { Write-Output "DUNG: PowerPoint con bai chua dong duoc."; exit 2 }
   $p.Quit()
   [void][Runtime.InteropServices.Marshal]::ReleaseComObject($p)
-  if (-not (Cho-Thoat powerpnt)) { Write-Output "DUNG: PowerPoint chua thoat han."; exit 2 }
+  # PowerPoint sau Quit hay treo thêm 45–75 giây rồi mới tự thoát (25–26/11/2026: ba lần "chua thoat han", nhả COM + GC không đủ).
+  # Đã chắc không còn bài nào (kiểm Presentations.Count ở trên) thì kết thúc tiến trình, như Excel.
+  $d = $null; $p = $null
+  [GC]::Collect(); [GC]::WaitForPendingFinalizers(); [GC]::Collect()
+  if (-not (Cho-Thoat powerpnt)) { Get-Process powerpnt -ErrorAction SilentlyContinue | Stop-Process -Force; [void](Cho-Thoat powerpnt) }
+  if (Get-Process powerpnt -ErrorAction SilentlyContinue) { Write-Output "DUNG: PowerPoint chua thoat han."; exit 2 }
   Write-Output "Da dong PowerPoint (tep thu: $($names -join ', '), khong luu)."
 }
 if ($Dong) { exit 0 }

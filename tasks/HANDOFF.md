@@ -1,20 +1,21 @@
 # Bàn giao — AI Đa Nguồn
 
-Cập nhật 25/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa tại chỗ, gạch hoặc xóa mục đã xong. Chi tiết cũ vào `tasks/luu/`, chi tiết đợt vào tệp đợt, bài học vào `docs/bai-hoc.md`.
+Cập nhật 26/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa tại chỗ, gạch hoặc xóa mục đã xong. Chi tiết cũ vào `tasks/luu/`, chi tiết đợt vào tệp đợt, bài học vào `docs/bai-hoc.md`.
 
 - Bản đầy đủ tới 24/11/2026 (mọi quyết định nguyên văn, diễn biến từng đợt): `tasks/luu/HANDOFF-den-2026-11-24.md`; trước đó `tasks/luu/HANDOFF-den-2026-11-17.md`.
 - Bài học (Office.js, WebView2, bài thử, quy trình): `docs/bai-hoc.md`.
 
 ## 1. Trạng thái
 
-- **Đang chạy: v4.13.0** (phát hành 25/11/2026, `main@f4f57d2` → `gh-pages@000bfd6`; Tự kiểm tra trên bản phát hành: Word 43/43, Excel 43/43, PowerPoint 27/27; kiểm thử máy 954/954). Trước đó: **v4.12.0** (`main@f019df1` → `gh-pages@5acbf31`; Word 42/42, Excel 43/43, PowerPoint 27/27).
-- **Đang làm: 4.13.1 xong mã, CHƯA commit, CHƯA phát hành** (chờ anh duyệt). Cổng soát lập luận bằng mã (anh chọn 25/11): lệnh ghi câu chữ vào thân văn bản Word (`needsExplain`: replace_text, set_paragraph_text, insert_clause, replace_selection, insert_paragraphs) lần đầu trong lượt mà chưa gọi `word_explain_edits` thì không ghi, nhắc model soát trước — trước bước hỏi duyệt, một lần mỗi lượt, chặn cả các lệnh cùng bước, lượt "Làm tiếp" không nhắc lại, không tính là lệnh ghi lỗi. Kiểm thử máy 961/961; Tự kiểm tra Word 43/43 (bản cục bộ). Chạy thật Miễn phí (OpenRouter lỗi nên xoay sang Groq / Cohere), bài `kiem-thu/cdp-bai/soat-lap-luan.js`: trước cổng AI không soát; có cổng: 2/2 lần AI soát trước khi ghi (một lần Cohere vẫn ghi nguyên câu căn cứ luật rồi hết 12 bước; một lần Groq hỏi anh trước khi ghi). Hai tác tử phản biện (4.13.0: 15 điểm, 4.13.1: 8 điểm) đã xử lý phần chính.
+- **Đang chạy: v4.13.1** (phát hành 25/11/2026, `main@bd6dea7` → `gh-pages@9f4a154`; Tự kiểm tra trên bản phát hành 26/11: Word 43/43, Excel 43/43, PowerPoint 27/27; kiểm thử máy 961/961). Trước đó: **v4.13.0** (`main@f4f57d2` → `gh-pages@000bfd6`).
+- 4.13.1 = cổng soát lập luận bằng mã: lệnh ghi câu chữ Word (`needsExplain`) lần đầu trong lượt mà chưa gọi `word_explain_edits` thì không ghi, nhắc model soát trước (một lần mỗi lượt). Chạy thật Miễn phí (Groq / Cohere): AI soát trước khi ghi 2/2 lần.
+- 26/11, sửa bài thử (không thuộc bản add-in): `mo-office.ps1` kết thúc PowerPoint treo sau Quit (lỗi lần 3); `cdp.mjs eval` chờ khung vẽ xong, trắng thì tự tải lại một lần.
 
 ## 2. Phiên bản gần đây
 
 | Bản | Ngày | Nội dung | Chi tiết |
 |---|---|---|---|
-| 4.13.1 (chưa phát hành) | 25/11 | Cổng bằng mã: lệnh ghi câu chữ Word lần đầu trong lượt phải soát lập luận trước (nhắc một lần; sửa máy móc thì gọi lại). Chạy thật Miễn phí: AI soát trước khi ghi 2/2 lần. Kiểm thử máy 961/961 | `tasks/viec-le/rea-claude-chinh-thuc/` |
+| 4.13.1 | 25/11 | Cổng bằng mã: lệnh ghi câu chữ Word lần đầu trong lượt phải soát lập luận trước (nhắc một lần; sửa máy móc thì gọi lại). Chạy thật Miễn phí: AI soát trước khi ghi 2/2 lần. Kiểm thử máy 961/961 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.13.0 | 25/11 | Công cụ soát lập luận Word `word_explain_edits`: AI nêu căn cứ có loại nguồn cho từng sửa đổi câu chữ pháp lý; người soát (lượt model riêng, không thấy hội thoại) đối chiếu văn bản, sửa đổi chờ duyệt, chỉ dẫn riêng, kỹ năng đã nạp; căn cứ chưa xác nhận → AI phải sửa đề xuất hoặc hỏi. Mốc chặn phình: Trả phí 33.950, Miễn phí 20.800 ký tự. Kiểm thử máy 954/954, Tự kiểm tra trên bản phát hành Word 43/43, Excel 43/43, PowerPoint 27/27 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 
 Các bản cũ hơn (đợt 0A → 12, bản 3.6 → 4.12.0): bảng "Đã xong" trong `tasks/luu/HANDOFF-den-2026-11-24.md`; mỗi đợt có thư mục `tasks/dot/dot-<N>/`.
@@ -86,7 +87,7 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ## 5. Bước tiếp theo
 
-1. 4.13.1: anh duyệt thì commit + đẩy `main`, Tự kiểm tra ba ứng dụng trên bản phát hành. Còn Chạy thật bản Trả phí một ca sửa điều khoản phạt trên hợp đồng thử (cần nguồn có tiền: Anthropic đạt 25/11). Sau đó chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
+1. 4.13.1 đã phát hành và Tự kiểm tra đạt. Còn Chạy thật bản Trả phí một ca sửa điều khoản phạt trên hợp đồng thử (cần nguồn có tiền: Anthropic đạt 25/11). Sau đó chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
 2. **Buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được" ở mục 4.
 3. Việc tùy chọn (mục D của `tasks/dot/dot-5/dot-5.md`), anh chọn: tải bản ghi hội thoại, gợi ý gạch chân bấm để chấp nhận trong Word, connectors (MCP), công cụ chạy mã Office.js do AI viết, phím tắt mở khung, đọc một trang web cụ thể, Outlook, Sign in with Poe, hàm `=AI(…)` trong ô Excel. Đã làm: điền mẫu (Đợt 8), bộ nhớ dài hạn (Đợt 12 E).
 
