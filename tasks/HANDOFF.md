@@ -7,16 +7,16 @@ Cập nhật 26/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 ## 1. Trạng thái
 
-- **Đang chạy: v4.13.1** (phát hành 25/11/2026, `main@bd6dea7` → `gh-pages@9f4a154`; Tự kiểm tra trên bản phát hành 26/11: Word 43/43, Excel 43/43, PowerPoint 27/27; kiểm thử máy 961/961). Trước đó: **v4.13.0** (`main@f4f57d2` → `gh-pages@000bfd6`).
+- **Đang chạy: v4.13.2** (phát hành 26/11/2026, `main@11df743` → `gh-pages@05b0b26`; Tự kiểm tra trên bản phát hành: Word 43/43, Excel 44/44, PowerPoint 27/27; kiểm thử máy 967/967). Trước đó: **v4.13.1** (`main@bd6dea7` → `gh-pages@9f4a154`).
+- 4.13.2 = mức 2 việc 5 phần Excel: `excel_format_range` trả chữ hiển thị (`display_preview`) và cảnh báo ô số có thể hiện "####" (ước theo cỡ chữ vì Office.js không trả "####" — đã đo) → coi như đã đọc lại. Chưa Chạy thật với model.
 - 4.13.1 = cổng soát lập luận bằng mã: lệnh ghi câu chữ Word (`needsExplain`) lần đầu trong lượt mà chưa gọi `word_explain_edits` thì không ghi, nhắc model soát trước (một lần mỗi lượt). Chạy thật Miễn phí (Groq / Cohere): AI soát trước khi ghi 2/2 lần.
-- **Đang làm: 4.13.2 xong mã, commit trên máy, CHƯA phát hành** (chờ anh duyệt). Mức 2 việc 5 phần Excel: `excel_format_range` trả chữ hiển thị (`display_preview`) và cảnh báo ô số có thể hiện "####" (ước theo cỡ chữ vì Office.js không trả "####" — đã đo) → coi như đã đọc lại, không tốn thêm lần gọi model. Kiểm thử máy 967/967; Tự kiểm tra Excel 44/44 (bản cục bộ). Chưa Chạy thật với model.
 - 26/11, sửa bài thử (không thuộc bản add-in): `mo-office.ps1` kết thúc PowerPoint treo sau Quit (lỗi lần 3); `cdp.mjs eval` chờ khung vẽ xong, trắng thì tự tải lại một lần.
 
 ## 2. Phiên bản gần đây
 
 | Bản | Ngày | Nội dung | Chi tiết |
 |---|---|---|---|
-| 4.13.2 (chưa phát hành) | 26/11 | Excel: lệnh định dạng trả chữ hiển thị và cảnh báo ô số bị "####" (ước theo số đo tự giãn cột). Kiểm thử máy 967/967, Tự kiểm tra Excel 44/44 | `docs/quy-tac/excel.md` |
+| 4.13.2 | 26/11 | Excel: lệnh định dạng trả chữ hiển thị và cảnh báo ô số bị "####" (ước theo số đo tự giãn cột). Kiểm thử máy 967/967, Tự kiểm tra Excel 44/44 | `docs/quy-tac/excel.md` |
 | 4.13.1 | 25/11 | Cổng bằng mã: lệnh ghi câu chữ Word lần đầu trong lượt phải soát lập luận trước (nhắc một lần; sửa máy móc thì gọi lại). Chạy thật Miễn phí: AI soát trước khi ghi 2/2 lần. Kiểm thử máy 961/961 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 | 4.13.0 | 25/11 | Công cụ soát lập luận Word `word_explain_edits`: AI nêu căn cứ có loại nguồn cho từng sửa đổi câu chữ pháp lý; người soát (lượt model riêng, không thấy hội thoại) đối chiếu văn bản, sửa đổi chờ duyệt, chỉ dẫn riêng, kỹ năng đã nạp; căn cứ chưa xác nhận → AI phải sửa đề xuất hoặc hỏi. Mốc chặn phình: Trả phí 33.950, Miễn phí 20.800 ký tự. Kiểm thử máy 954/954, Tự kiểm tra trên bản phát hành Word 43/43, Excel 43/43, PowerPoint 27/27 | `tasks/viec-le/rea-claude-chinh-thuc/` |
 
@@ -89,7 +89,7 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ## 5. Bước tiếp theo
 
-1. 4.13.2: anh duyệt thì đẩy `main`, Tự kiểm tra ba ứng dụng trên bản phát hành. 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
+1. 4.13.2 đã phát hành; còn Chạy thật một ca Excel định dạng số / cột hẹp với model. 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
 2. **Buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được" ở mục 4.
 3. Việc tùy chọn (mục D của `tasks/dot/dot-5/dot-5.md`), anh chọn: tải bản ghi hội thoại, gợi ý gạch chân bấm để chấp nhận trong Word, connectors (MCP), công cụ chạy mã Office.js do AI viết, phím tắt mở khung, đọc một trang web cụ thể, Outlook, Sign in with Poe, hàm `=AI(…)` trong ô Excel. Đã làm: điền mẫu (Đợt 8), bộ nhớ dài hạn (Đợt 12 E).
 
