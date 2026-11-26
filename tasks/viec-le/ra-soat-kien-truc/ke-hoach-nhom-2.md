@@ -48,3 +48,10 @@ Mỗi bước: tiêu chí trước khi làm; tác tử phản biện (được �
 
 - Vá ghi chéo chen ngang: `receiveBlocked` (`crossapp.ts`) xét thêm cờ đang chuẩn bị gửi; phản biện bước 0 bắt thêm kẽ 80–140 ms lúc chờ giành lệnh → `receive` bật cờ bận ngay khi lấy được lệnh, trước `await claimCommand`.
 - Golden `test/unit/golden-gui-model.test.ts` (75 ca, sinh từ mã 4.13.3 chưa sửa): 3 ứng dụng × Trả phí / Miễn phí (thân đầy đủ); 12 nguồn (6 thường + openrouter-claude, deepseek-anthropic, minimax, kimi, 2 nguồn tự khai) × 5 tình huống; 6 nguồn có lịch sử gọi công cụ; nhóm công cụ Miễn phí từng nhóm / mọi nhóm của 3 ứng dụng. `.gitattributes` giữ LF. Còn thiếu (ghi để biết): bước thứ hai trong cùng lượt, khối bộ nhớ / chỉ dẫn riêng, ca gửi lại không tham số suy nghĩ.
+
+## Bước 1 — đã làm (26/11/2026, 4.14.0)
+
+- `ProviderQuirks` (`providers.ts`): 18 trường, gắn đúng các nguồn đã có hành vi đó; `quirksOf(p)` tra lại nguồn dựng sẵn theo mã khi đối tượng không mang `quirks` (vòng xoay, kiểm thử); nguồn tự khai luôn `{}`.
+- Thay mọi so sánh mã nguồn ở `history`, `llm`, `thinking`, `rotation`, `catalog`, `models`, `modes`, `pdfPages` và 3 chỗ giao diện (`Chat`, `ModelPicker`, `ProviderCheck`). Còn được phép: `providers.ts`, `credits.ts`, `oauth.ts` (API riêng của OpenRouter). Thẻ `raw.kind` của lịch sử đã lưu giữ nguyên.
+- `test/unit/b9-quirks.test.ts`: quét `src/core` + `src/taskpane` (so sánh xuôi, ngược, `case`, biểu thức chính quy trên mã nguồn, `[...].includes(id)`, tập mã nguồn — đã cài thử từng dạng, đều bị bắt); bảng kỳ vọng đủ mọi trường mọi nguồn; khóa thời gian nghỉ, mốc đặt lại hạn mức giữ y nguyên.
+- Nghiệm thu: golden 75 ca y nguyên; kiểm thử máy 1.050/1.050; Tự kiểm tra bản cục bộ 43/44/27; "Kiểm tra từng nguồn" 4.13.4 và 4.14.0 cùng 5 nguồn đạt, 5 nguồn lỗi tài khoản (Gemini, Groq, DeepSeek ×2, OpenAI). Phản biện: không lỗi nghiêm trọng; đã làm: so sánh dạng `/^openrouter/` còn sót (`pdfPages`, thành đặc điểm `relay`), 3 chỗ giao diện, mở rộng phép quét, bảng kỳ vọng đủ trường, kiểm mốc Gemini chặt.

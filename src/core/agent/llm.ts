@@ -1,5 +1,5 @@
 /** Gọi model một bước, có khai báo công cụ, nhận chữ chạy dần + các lệnh gọi công cụ. 3 kiểu API: OpenAI-compatible, Anthropic, Gemini. */
-import { Provider } from "../providers";
+import { Provider, quirksOf } from "../providers";
 import { anthropicHeaders } from "../models";
 import { ApiError, ensureOk, explainApiError, fetchDiagnosed, isRetryable, maskSecrets, rememberSecret } from "../errors";
 import { createSSEParser } from "../sse";
@@ -305,19 +305,20 @@ export function buildStepRequest(
         }));
       }
       // OpenRouter: gửi lại nguyên các khối suy nghĩ của câu trả lời trước (tài liệu: bắt buộc khi tiếp tục vòng lặp công cụ)
-      if (!opts.plain && provider.id === "openrouter" && m.raw?.kind === "openrouter" && m.raw.reasoning?.length) msg.reasoning_details = m.raw.reasoning;
+      if (!opts.plain && quirksOf(provider).reasoningDetails && m.raw?.kind === "openrouter" && m.raw.reasoning?.length) msg.reasoning_details = m.raw.reasoning;
       msgs.push(msg);
     }
   }
   const headers: Record<string, string> = { Authorization: `Bearer ${key}`, "content-type": "application/json" };
-  if (provider.id === "openrouter") headers["X-Title"] = "AI Da Nguon Office Add-in";
+  const q = quirksOf(provider);
+  if (q.appTitleHeader) headers["X-Title"] = "AI Da Nguon Office Add-in";
   const body: any = { model, messages: msgs, stream: true };
-  if (opts.webSearch && provider.id === "openrouter") body.plugins = [{ id: "web", max_results: 5 }];
+  if (opts.webSearch && q.webPlugin) body.plugins = [{ id: "web", max_results: 5 }];
   // OpenRouter: chỉ rõ để model tự đọc tệp PDF; không để OpenRouter tự chuyển sang bộ OCR tính phí riêng
-  if (hasFiles && provider.id === "openrouter") body.plugins = [...(body.plugins || []), { id: "file-parser", pdf: { engine: "native" } }];
+  if (hasFiles && q.pdfPlugin) body.plugins = [...(body.plugins || []), { id: "file-parser", pdf: { engine: "native" } }];
   if (opts.think && !opts.plain) {
-    if (provider.id === "openrouter") body.reasoning = { effort: "high" };
-    else if (provider.id === "openai") body.reasoning_effort = "high";
+    if (q.reasoning === "openrouter") body.reasoning = { effort: "high" };
+    else if (q.reasoning === "openai") body.reasoning_effort = "high";
   }
   if (tools.length) {
     body.tools = tools.map((t) => ({
@@ -630,7 +631,7 @@ export async function callModelStep(input: CallModelOptions): Promise<StepResult
     } catch (e: any) {
       // Nhà cung cấp không nhận tham số suy nghĩ, hoặc từ chối khối suy nghĩ gửi lại (tài liệu Anthropic: bỏ hết khối suy nghĩ
       // rồi gửi lại một lần): gửi lại không kèm các phần đó, và giữ cách gửi này cho các bước sau của lượt.
-      const mayThink = opts.provider.kind === "anthropic" || opts.provider.kind === "gemini" || opts.provider.id === "openrouter" || opts.provider.id === "openai";
+      const mayThink = opts.provider.kind === "anthropic" || opts.provider.kind === "gemini" || !!quirksOf(opts.provider).reasoning;
       if (mayThink && !opts.signal?.aborted && !emitted && opts.state && !opts.state.plain && isThinkingParamError(e)) {
         opts.state.plain = true;
         opts.onThinkingOff?.(String(e?.message || ""));

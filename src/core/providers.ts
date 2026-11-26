@@ -33,6 +33,47 @@ export interface Provider {
   /** Chế độ dùng (Đợt 9): "free" = chỉ hiện ở chế độ Miễn phí, "both" = có bậc miễn phí và bậc trả phí (cùng key),
    *  không ghi = chỉ Trả phí. Lọc model theo chế độ ở src/core/modes.ts. */
   tier?: "free" | "paid" | "both";
+  /** Đặc điểm riêng của nguồn mà lõi phải biết (B9, nhóm 2 rà soát kiến trúc, 26/11/2026): thay các chỗ so sánh mã nguồn
+   *  (`p.id === "openrouter"`…) rải trong lõi. Không ghi = không có đặc điểm nào (nguồn tự khai luôn vậy). */
+  quirks?: ProviderQuirks;
+}
+
+/** Đặc điểm riêng theo nguồn. Mỗi trường gắn đúng những nguồn đang có hành vi đó trước B9 — thêm nguồn mới thì khai ở đây,
+ *  không viết `p.id === "…"` trong lõi (kiểm thử quét mã chặn ở test/unit/b9-quirks.test.ts). */
+export interface ProviderQuirks {
+  /** Nguồn kiểu OpenAI nhận tham số suy nghĩ: "openrouter" = body.reasoning { effort }, "openai" = body.reasoning_effort */
+  reasoning?: "openrouter" | "openai";
+  /** Gửi lại nguyên reasoning_details của câu trả lời trước (OpenRouter: bắt buộc khi tiếp vòng lặp công cụ) */
+  reasoningDetails?: boolean;
+  /** Gửi tiêu đề X-Title tên ứng dụng */
+  appTitleHeader?: boolean;
+  /** Tìm web bằng plugin "web" — tính tiền theo kết quả kể cả model miễn phí, nên vòng xoay Miễn phí không bật */
+  webPlugin?: boolean;
+  /** Nguồn kiểu OpenAI nhận nguyên tệp PDF */
+  pdf?: boolean;
+  /** Chỉ rõ plugin đọc PDF engine "native" (không để nguồn tự chuyển sang bộ OCR tính phí riêng) */
+  pdfPlugin?: boolean;
+  /** Mã lời gọi công cụ: "nine" = đúng 9 ký tự chữ-số (Mistral) · "dotted" = cho thêm . và : (OpenRouter, giữ dạng của Kimi) */
+  callId?: "nine" | "dotted";
+  /** Không nhận câu người dùng ngay sau kết quả công cụ: chèn một câu trả lời nối (Mistral) */
+  assistantAfterTool?: boolean;
+  /** Danh mục model có giá: model ":free" hoặc giá 0 là miễn phí */
+  catalogPricing?: boolean;
+  /** Danh mục lẫn model miễn phí và trả tiền, có dữ liệu gọi công cụ: chế độ Miễn phí chỉ model miễn phí, Trả phí chỉ model trả tiền;
+   *  lọc "Miễn phí" / "Chỉ model thao tác được", mẫu ưu tiên model miễn phí, danh sách model không gọi công cụ đáng tin */
+  mixedFreeCatalog?: boolean;
+  /** Model miễn phí nhận theo mẫu tên (Gemini: `GEMINI_FREE` trong modes.ts) */
+  freeByPattern?: boolean;
+  /** Hạn mức ngày tính chung cả tài khoản: khóa thời gian nghỉ là mã nguồn (giá trị khóa đã lưu trên máy người dùng — không đổi) */
+  accountDailyQuota?: boolean;
+  /** Múi giờ đặt lại hạn mức ngày; không ghi = 24 giờ kể từ lúc lỗi */
+  dailyResetTz?: string;
+  /** Câu nhắc khi nhập key ở chế độ Miễn phí: "none" = không nhắc · "trial" = key dùng thử (Cohere) */
+  freeKeyNote?: "none" | "trial";
+  /** Có gói miễn phí phổ biến nhưng key không cho biết thuộc gói nào (nhắc riêng tư khi gửi tệp đính kèm) */
+  ambiguousFreeTier?: boolean;
+  /** Đi qua nơi trung chuyển OpenRouter (mọi kênh, kể cả kênh Claude kiểu Anthropic): nhắc riêng tư khi gửi tệp đính kèm */
+  relay?: boolean;
 }
 
 /** "Phương ngữ" của một nguồn nhận kiểu yêu cầu Anthropic (POST …/messages). Thiếu trường nào = giống api.anthropic.com.
@@ -77,6 +118,7 @@ const NO_CORS = "nhà cung cấp này chặn gọi trực tiếp từ add-in (đ
 export const PROVIDERS: Provider[] = [
   {
     id: "openrouter",
+    quirks: { reasoning: "openrouter", reasoningDetails: true, appTitleHeader: true, webPlugin: true, pdf: true, pdfPlugin: true, callId: "dotted", catalogPricing: true, mixedFreeCatalog: true, accountDailyQuota: true, dailyResetTz: "UTC", freeKeyNote: "none", relay: true },
     name: "OpenRouter",
     tier: "both",
     kind: "openai",
@@ -94,6 +136,7 @@ export const PROVIDERS: Provider[] = [
   },
   {
     id: "gemini",
+    quirks: { freeByPattern: true, dailyResetTz: "America/Los_Angeles", ambiguousFreeTier: true },
     name: "Google Gemini",
     tier: "both",
     kind: "gemini",
@@ -103,6 +146,7 @@ export const PROVIDERS: Provider[] = [
   },
   {
     id: "groq",
+    quirks: { ambiguousFreeTier: true },
     name: "Groq",
     tier: "both",
     kind: "openai",
@@ -121,6 +165,7 @@ export const PROVIDERS: Provider[] = [
     // Kênh Messages của OpenRouter (đối chiếu openrouter.ai/docs/api/api-reference/anthropic-messages, 17/11/2026):
     // model Claude đi đúng kiểu Anthropic — có bộ nhớ đệm chủ động, PDF nguyên tệp, khối suy nghĩ. Dùng chung key với OpenRouter.
     id: "openrouter-claude",
+    quirks: { catalogPricing: true, relay: true },
     name: "OpenRouter · Claude (kiểu Anthropic)",
     kind: "anthropic",
     baseUrl: "https://openrouter.ai/api/v1",
@@ -207,6 +252,7 @@ export const PROVIDERS: Provider[] = [
   },
   {
     id: "openai",
+    quirks: { reasoning: "openai", pdf: true },
     name: "OpenAI",
     kind: "openai",
     baseUrl: "https://api.openai.com/v1",
@@ -214,6 +260,7 @@ export const PROVIDERS: Provider[] = [
   },
   {
     id: "mistral",
+    quirks: { callId: "nine", assistantAfterTool: true, ambiguousFreeTier: true },
     name: "Mistral",
     kind: "openai",
     baseUrl: "https://api.mistral.ai/v1",
@@ -221,6 +268,7 @@ export const PROVIDERS: Provider[] = [
   },
   {
     id: "cerebras",
+    quirks: { ambiguousFreeTier: true },
     name: "Cerebras",
     kind: "openai",
     baseUrl: "https://api.cerebras.ai/v1",
@@ -252,6 +300,7 @@ export const PROVIDERS: Provider[] = [
   },
   {
     id: "cohere",
+    quirks: { freeKeyNote: "trial", ambiguousFreeTier: true },
     name: "Cohere",
     tier: "both",
     kind: "openai",
@@ -332,4 +381,10 @@ export function allProviders(): Provider[] {
 
 export function getProvider(id: string): Provider | undefined {
   return allProviders().find((p) => p.id === id);
+}
+
+/** Đặc điểm riêng của một nguồn. Nhận cả đối tượng chỉ có `id` (vòng xoay, kiểm thử): tra lại nguồn dựng sẵn theo mã. */
+export function quirksOf(p: { id: string; quirks?: ProviderQuirks } | undefined | null): ProviderQuirks {
+  if (!p) return {};
+  return p.quirks || PROVIDERS.find((x) => x.id === p.id)?.quirks || {};
 }

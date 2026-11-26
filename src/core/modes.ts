@@ -1,6 +1,7 @@
 /** Hai chế độ dùng (Đợt 9, `tasks/dot/dot-9/dot-9.md`): "Miễn phí" chỉ hiện nguồn / model có bậc miễn phí và tự xoay vòng giữa các nguồn đó;
  *  "Trả phí" chỉ hiện nguồn / model thu phí, không xoay vòng. Hàm thuần, kiểm thử bằng npm test. */
 import type { Provider } from "./providers";
+import { quirksOf } from "./providers";
 
 export type UsageMode = "free" | "paid";
 
@@ -27,17 +28,19 @@ export function providerInMode(p: Provider, mode: UsageMode): boolean {
  *  trừ OpenRouter (model `:free` thuộc chế độ Miễn phí). */
 export function modelInMode(p: Provider, m: { id: string; free?: boolean }, mode: UsageMode): boolean {
   if (!providerInMode(p, mode)) return false;
-  if (p.id === "openrouter") return mode === "free" ? !!m.free : !m.free;
+  const q = quirksOf(p);
+  if (q.mixedFreeCatalog) return mode === "free" ? !!m.free : !m.free;
   if (mode === "paid") return true;
-  if (p.id === "gemini") return GEMINI_FREE.test(m.id) && !GEMINI_NOT_FREE.test(m.id);
+  if (q.freeByPattern) return GEMINI_FREE.test(m.id) && !GEMINI_NOT_FREE.test(m.id);
   return true;
 }
 
 /** Dòng nhắc hiện khi nhập key ở chế độ Miễn phí: add-in không biết key thuộc gói nào (R1 của dot-9). */
 export function freeKeyWarning(p: Provider): string {
-  if (p.id === "openrouter") return "";
+  const note = quirksOf(p).freeKeyNote;
+  if (note === "none") return "";
   const base = "Chỉ miễn phí khi key thuộc gói miễn phí (dự án / tài khoản chưa bật thanh toán). Đã bật thanh toán thì mỗi lần gọi bị tính tiền.";
-  if (p.id === "cohere") return "Key dùng thử: miễn phí, giới hạn tốc độ, Cohere không cho dùng vào mục đích thương mại. " + base;
+  if (note === "trial") return "Key dùng thử: miễn phí, giới hạn tốc độ, Cohere không cho dùng vào mục đích thương mại. " + base;
   return providerTier(p) === "paid" ? "" : base;
 }
 

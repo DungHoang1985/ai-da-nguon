@@ -1,5 +1,5 @@
 /** Liệt kê model của từng nhà cung cấp và chuẩn hóa về một định dạng. */
-import { Provider } from "./providers";
+import { Provider, quirksOf } from "./providers";
 import { ensureOk, fetchDiagnosed, rememberSecret } from "./errors";
 
 export interface ModelInfo {
@@ -72,7 +72,7 @@ export function normalizeModels(provider: Provider, json: any): ModelInfo[] {
         const id = String(m.id);
         const p = m.pricing;
         const free =
-          provider.id === "openrouter" || provider.id === "openrouter-claude"
+          quirksOf(provider).catalogPricing
             ? id.endsWith(":free") || (p && Number(p.prompt) === 0 && Number(p.completion) === 0)
             : undefined;
         const sp: any[] | undefined = Array.isArray(m.supported_parameters) ? m.supported_parameters : undefined;

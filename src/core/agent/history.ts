@@ -1,6 +1,6 @@
 /** Chuẩn hóa lịch sử hội thoại trước khi gửi cho nguồn đích (khi đổi nhà cung cấp giữa hội thoại, mở lại hội thoại cũ, lượt bị dừng).
  *  Chỉ đổi trong bản gửi đi; lịch sử gốc giữ nguyên để quay lại nguồn cũ vẫn dùng được mã gốc (Gemini cần). */
-import { Provider } from "../providers";
+import { Provider, quirksOf } from "../providers";
 import { AgentMessage, ToolCall } from "./types";
 import { pdfCapable } from "./thinking";
 
@@ -16,10 +16,11 @@ const ALNUM = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
  *  Mistral: đúng 9 ký tự chữ-số · Anthropic: chữ, số, _ - · OpenAI và nguồn kiểu OpenAI: tối đa 40 ký tự, chữ, số, _ -
  *  (OpenRouter cho thêm . và : để giữ dạng "functions.ten:0" của Kimi) · Gemini: chỉ gửi lại mã do chính Gemini cấp. */
 export function callIdOk(p: Provider, id: string): boolean {
-  if (p.id === "mistral") return /^[a-zA-Z0-9]{9}$/.test(id);
+  const callId = quirksOf(p).callId;
+  if (callId === "nine") return /^[a-zA-Z0-9]{9}$/.test(id);
   if (p.kind === "gemini") return true;
   if (p.kind === "anthropic") return /^[a-zA-Z0-9_-]{1,64}$/.test(id);
-  if (p.id === "openrouter") return /^[a-zA-Z0-9_.:-]{1,40}$/.test(id);
+  if (callId === "dotted") return /^[a-zA-Z0-9_.:-]{1,40}$/.test(id);
   return /^[a-zA-Z0-9_-]{1,40}$/.test(id);
 }
 
@@ -174,7 +175,7 @@ export function prepareHistory(messages: AgentMessage[], target: HistoryTarget):
   }
 
   // 5) Mistral không nhận câu hỏi người dùng ngay sau kết quả công cụ → chèn một câu trả lời nối
-  if (p.id === "mistral") {
+  if (quirksOf(p).assistantAfterTool) {
     const fixed: AgentMessage[] = [];
     out.forEach((m, i) => {
       fixed.push(m);

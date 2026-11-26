@@ -8,6 +8,7 @@
 import { estimateInputTokens } from "../inputsize";
 import { ApiError, isRetryable, maskSecrets } from "../errors";
 import type { Provider } from "../providers";
+import { quirksOf } from "../providers";
 import { CallModelOptions, callModelStep, isToolUnsupportedError } from "./llm";
 import type { AgentMessage, StepResult } from "./types";
 import { modelInMode, providerInMode } from "../modes";
@@ -101,9 +102,8 @@ export function nextMidnightIn(timeZone: string, now: number): number {
 /** Mốc đặt lại hạn mức ngày theo nguồn. [Chưa kiểm trang chính thức 19/11/2026 — xem dot-9 R8] Gemini: nửa đêm giờ Thái Bình Dương;
  *  OpenRouter: nửa đêm UTC; nguồn khác: 24 giờ kể từ lúc lỗi. */
 export function dailyResetAt(providerId: string, now: number): number {
-  if (providerId === "gemini") return nextMidnightIn("America/Los_Angeles", now);
-  if (providerId === "openrouter") return nextMidnightIn("UTC", now);
-  return now + 86400000;
+  const tz = quirksOf({ id: providerId }).dailyResetTz;
+  return tz ? nextMidnightIn(tz, now) : now + 86400000;
 }
 
 export function monthlyResetAt(now: number): number {
@@ -139,7 +139,8 @@ export function retryHintMs(msg: string): number {
 /** Khóa thời gian nghỉ: hạn mức miễn phí tính theo MODEL (Gemini Flash và Flash-Lite mỗi model một hạn mức), trừ hạn mức ngày
  *  của OpenRouter tính chung cả tài khoản cho mọi model :free (soát mã Đợt 9, M1) */
 export function cooldownKey(c: { provider: { id: string }; model: string }, kind?: FailKind): string {
-  return c.provider.id === "openrouter" && kind === "daily" ? "openrouter" : `${c.provider.id}|${c.model}`;
+  // Giá trị khóa đã lưu trên máy người dùng: hạn mức chung tài khoản → khóa là đúng mã nguồn ("openrouter"), không đổi
+  return quirksOf(c.provider).accountDailyQuota && kind === "daily" ? c.provider.id : `${c.provider.id}|${c.model}`;
 }
 
 /** Một vòng xoay cho MỘT lượt (bên gọi tạo mới mỗi lượt). Bước kế tiếp của lượt bắt đầu từ nguồn đang chạy được.
@@ -204,7 +205,7 @@ export class FreeRotation {
     if (x) return x;
     const all = this.cooldowns();
     const t = this.now();
-    for (const k of [cooldownKey(c), c.provider.id === "openrouter" ? "openrouter" : ""]) {
+    for (const k of [cooldownKey(c), quirksOf(c.provider).accountDailyQuota ? c.provider.id : ""]) {
       const cd = k ? all[k] : undefined;
       if (cd && cd.until > t) return `${cd.reason}, dùng lại lúc ${clock(cd.until)}`;
     }
@@ -265,7 +266,7 @@ export class FreeRotation {
           stallMs: input.stallMs ?? this.o.stallMs ?? FREE_STALL_MS,
           foreignToolsAsText: true,
           // Tìm web của OpenRouter (plugin "web") tính tiền theo kết quả kể cả với model :free → không bật ở chế độ Miễn phí (soát mã Đợt 9, H1)
-          webSearch: c.provider.id === "openrouter" ? false : input.webSearch,
+          webSearch: quirksOf(c.provider).webPlugin ? false : input.webSearch,
           onText: (d) => {
             shown = true;
             input.onText(d);

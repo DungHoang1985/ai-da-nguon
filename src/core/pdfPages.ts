@@ -1,6 +1,7 @@
 /** Đọc tệp PDF đính kèm THEO TRANG (Đợt 5): chọn trang, phân loại trang quét / trang có lớp chữ, đường đi của PDF quét lúc gửi,
  *  lời dặn chép nguyên văn, cảnh báo riêng tư. Phần này không đụng pdf.js hay DOM nên kiểm thử được bằng npm test;
  *  phần dựng ảnh nằm ở pdfRender.ts. */
+import { quirksOf } from "./providers";
 
 /** Trang có ít hơn ngần này ký tự lớp chữ thì coi là trang quét (ngưỡng 300: trang quét có chữ ký số vẫn mang một dòng chữ) */
 export const SCAN_TEXT_MIN_CHARS = 300;
@@ -95,13 +96,11 @@ export function routeScanPdf(o: { pages: number; pdfCapable: boolean; vision?: b
 }
 
 /** Dòng nhắc riêng tư khi tệp đính kèm sắp được gửi cho nguồn miễn phí hoặc qua nơi trung chuyển. Không phải thì trả "". */
-/** Nguồn có gói miễn phí phổ biến, key không cho biết thuộc gói nào */
-const FREE_TIER_PROVIDERS = new Set(["gemini", "groq", "cerebras", "mistral", "cohere"]);
 
 export function attachmentPrivacyNote(o: { providerId: string; providerName: string; modelId: string; free?: boolean }): string {
   const freeModel = /:free$/i.test(o.modelId) || !!o.free;
   // Mọi kênh đi qua OpenRouter (kể cả kênh Claude kiểu Anthropic) đều là nơi trung chuyển
-  if (/^openrouter(-|$)/.test(o.providerId)) {
+  if (quirksOf({ id: o.providerId }).relay) {
     return freeModel
       ? `Tệp đính kèm được gửi qua OpenRouter tới một model miễn phí: nhà cung cấp model miễn phí thường được phép lưu và dùng nội dung để huấn luyện. Tài liệu thật, có thông tin mật thì nên dùng nguồn trả tiền.`
       : `Tệp đính kèm được gửi qua OpenRouter (nơi trung chuyển) rồi tới nhà cung cấp model. Tài liệu có thông tin mật thì cân nhắc gửi thẳng tới nhà cung cấp.`;
@@ -109,7 +108,8 @@ export function attachmentPrivacyNote(o: { providerId: string; providerName: str
   if (freeModel) return `Tệp đính kèm được gửi tới ${o.providerName} theo gói miễn phí: gói miễn phí thường cho phép nhà cung cấp lưu và dùng nội dung để cải thiện model. Tài liệu thật, có thông tin mật thì nên dùng nguồn trả tiền.`;
   // Nguồn có gói miễn phí dùng chung một loại key với gói trả tiền: add-in không biết key thuộc gói nào → nhắc có điều kiện
   // (soát mã Đợt 5, mục 4)
-  if (FREE_TIER_PROVIDERS.has(o.providerId))
+  // Nguồn có gói miễn phí phổ biến, key không cho biết thuộc gói nào (B9: đặc điểm ambiguousFreeTier ở providers.ts)
+  if (quirksOf({ id: o.providerId }).ambiguousFreeTier)
     return `Nếu key ${o.providerName} của bạn thuộc gói miễn phí: điều khoản gói miễn phí có thể cho phép nhà cung cấp lưu và dùng nội dung tệp để cải thiện model (xem điều khoản của nhà cung cấp). Tài liệu có thông tin mật thì nên dùng gói trả tiền.`;
   return "";
 }

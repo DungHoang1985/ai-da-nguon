@@ -1,7 +1,7 @@
 /** Thẻ "Kiểm tra nhà cung cấp" (trang Cài đặt): chạy thật với từng key đã lưu; bảng đổi nguồn mọi cặp, cả hai chiều. */
 import * as React from "react";
 import { Button, Spinner, Text, makeStyles, tokens } from "@fluentui/react-components";
-import { allProviders } from "../../core/providers";
+import { allProviders, quirksOf } from "../../core/providers";
 import { Storage } from "../../core/storage";
 import { fetchModels, isStale } from "../../core/models";
 import { describeError } from "../../core/errors";
@@ -73,7 +73,7 @@ async function prepareTargets(storage: Storage): Promise<{ targets: CheckTarget[
       providerId: p.id,
       remembered: rememberedOk ? remembered : undefined,
       agentOn: true,
-      freeOnly: p.id === "openrouter" && !!storage.getSelection().freeOnly,
+      freeOnly: !!quirksOf(p).mixedFreeCatalog && !!storage.getSelection().freeOnly,
     });
     const info = models.find((m) => m.id === model);
     targets.push({ provider: p, key: storage.getKey(p.id), model, vision: info?.vision ?? p.vision });

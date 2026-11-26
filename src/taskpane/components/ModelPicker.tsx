@@ -17,6 +17,7 @@ import { ArrowClockwiseRegular, ChevronDownRegular } from "@fluentui/react-icons
 import type { ModelInfo } from "../../core/models";
 import { useCatalog } from "./useCatalog";
 import { toolReliabilityNote } from "../../core/catalog";
+import { quirksOf } from "../../core/providers";
 import type { UsageMode } from "../../core/modes";
 
 type Catalog = ReturnType<typeof useCatalog>;
@@ -149,7 +150,7 @@ const ModelPicker: React.FC<{
           value={cat.search}
           onChange={(_, d) => cat.setSearch(d.value)}
         />
-        {cat.providerId === "openrouter" && (!mode || agentOn) && (
+        {!!quirksOf({ id: cat.providerId }).mixedFreeCatalog && (!mode || agentOn) && (
           <div className={s.row}>
             {!mode && <Switch label="Miễn phí" checked={cat.freeOnly} onChange={(_, d) => cat.setFreeOnly(d.checked)} />}
             {agentOn && <Switch label="Chỉ model thao tác được" checked={toolsOnly} onChange={(_, d) => onToolsOnly(d.checked)} />}

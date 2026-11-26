@@ -26,7 +26,7 @@ import {
   StopRegular,
 } from "@fluentui/react-icons";
 import ModelPicker from "./ModelPicker";
-import { allProviders, getProvider } from "../../core/providers";
+import { allProviders, getProvider, quirksOf } from "../../core/providers";
 import { UsageMode, normalizeFreeOrder, providerInMode } from "../../core/modes";
 import { FREE_STALL_MS, FREE_STALL_THINK_MS, FreeRotation, buildFreeCandidates } from "../../core/agent/rotation";
 import { fetchModels, isStale } from "../../core/models";
@@ -253,7 +253,7 @@ interface Props {
 }
 
 const WEB_PROVIDERS = (p: { id: string; kind: string; dialect?: { webSearch?: boolean } }) =>
-  p.id === "openrouter" || (p.kind === "anthropic" && (!p.dialect || !!p.dialect.webSearch)) || p.kind === "gemini";
+  !!quirksOf(p).webPlugin || (p.kind === "anthropic" && (!p.dialect || !!p.dialect.webSearch)) || p.kind === "gemini";
 
 /** Chữ thường + liên kết bấm được tới ô/đoạn/slide */
 // B18 (rà soát kiến trúc, 26/11/2026): Linked và Rich ghi nhớ theo props — mỗi token mới chỉ vẽ lại đoạn đang chạy, không phân tích lại

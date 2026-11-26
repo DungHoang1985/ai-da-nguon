@@ -2,7 +2,7 @@
  *  Căn cứ: tài liệu chính thức đọc ngày 15/11/2026, tóm tắt ở tasks/dot/dot-1b/bang-chung/05-tra-tai-lieu-nha-cung-cap.md.
  *  Các tham số này KHÔNG nằm trong lời nhắc hệ thống, bộ công cụ hay tin nhắn, nên bật / tắt không làm vỡ bộ nhớ đệm lời nhắc
  *  và không làm hỏng khối suy nghĩ đã có trong lịch sử. */
-import { Provider } from "../providers";
+import { Provider, quirksOf } from "../providers";
 
 /** Cách một model Claude nhận tham số suy nghĩ:
  *  - bound: suy nghĩ bật sẵn, chỉ kiểu "adaptive"; khối suy nghĩ gắn với phần hội thoại đứng trước (Fable/Mythos 5.x, Opus 5.5,
@@ -97,7 +97,7 @@ export function thinkingToggleWorks(provider: Provider, model: string): boolean 
     return anthropicThinkingKind(String(model || "").replace(/^[^/]+\//, "").replace(/\./g, "-")) !== "none";
   }
   if (provider.kind === "gemini") return !!geminiThinkingConfig(model);
-  return provider.id === "openrouter" || provider.id === "openai";
+  return !!quirksOf(provider).reasoning;
 }
 
 /** Lỗi 400 do nhà cung cấp không nhận tham số suy nghĩ hoặc khối suy nghĩ gửi lại: gửi lại một lần không kèm các phần đó */
@@ -110,5 +110,5 @@ export function isThinkingParamError(e: any): boolean {
 /** Nguồn nhận nguyên tệp PDF để model tự đọc (PDF quét không có lớp chữ) */
 export function pdfCapable(provider: Provider): boolean {
   if (provider.kind === "anthropic") return !provider.dialect || provider.dialect.pdf === true;
-  return provider.kind === "gemini" || provider.id === "openrouter" || provider.id === "openai";
+  return provider.kind === "gemini" || !!quirksOf(provider).pdf;
 }

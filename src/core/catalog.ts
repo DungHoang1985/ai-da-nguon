@@ -3,7 +3,11 @@
  *  không cho gửi khi model không thuộc nguồn đang chọn; nhớ model theo từng nguồn. */
 import type { ModelInfo } from "./models";
 import type { Provider } from "./providers";
+import { quirksOf } from "./providers";
 import { UsageMode, modelInMode } from "./modes";
+
+/** Nguồn có danh mục lẫn model miễn phí / trả tiền và dữ liệu gọi công cụ (B9: thay so sánh mã "openrouter") */
+const mixed = (providerId: string) => !!quirksOf({ id: providerId }).mixedFreeCatalog;
 
 export type CatalogStatus = "loading" | "ready" | "error";
 
@@ -50,7 +54,7 @@ export interface FilterOptions {
 
 /** "Miễn phí" và "Chỉ model thao tác được" chỉ có nghĩa với OpenRouter (nơi danh mục có dữ liệu đó). */
 export function filterModels(models: ModelInfo[], o: FilterOptions): ModelInfo[] {
-  const or = o.providerId === "openrouter";
+  const or = mixed(o.providerId);
   const q = o.search.trim().toLowerCase();
   const byMode = !!(o.mode && o.provider);
   return models
@@ -98,7 +102,7 @@ export const UNRELIABLE_TOOL_MODELS: { re: RegExp; note: string }[] = [
 
 /** Lời cảnh báo cho một model đã thấy không gọi công cụ đáng tin; null = chưa thấy vấn đề */
 export function toolReliabilityNote(providerId: string, modelId: string): string | null {
-  if (providerId !== "openrouter") return null;
+  if (!mixed(providerId)) return null;
   return UNRELIABLE_TOOL_MODELS.find((x) => x.re.test(modelId))?.note || null;
 }
 
@@ -114,20 +118,20 @@ export function pickModel(
   if (!models.length) return "";
   if (o.remembered && models.some((m) => m.id === o.remembered)) return o.remembered;
   let pool = models;
-  if (o.providerId === "openrouter" && o.freeOnly) pool = pool.filter((m) => m.free);
+  if (mixed(o.providerId) && o.freeOnly) pool = pool.filter((m) => m.free);
   if (o.agentOn) {
     const usable = pool.filter((m) => m.tools !== false);
     if (usable.length) pool = usable;
   }
   if (!pool.length) pool = models;
-  if (o.agentOn && o.providerId === "openrouter") {
+  if (o.agentOn && mixed(o.providerId)) {
     // Đang cần AI thao tác: tránh model đã thấy không gọi công cụ, trừ khi không còn model nào khác
     const reliable = pool.filter((m) => !toolReliabilityNote(o.providerId, m.id));
     if (reliable.length) pool = reliable;
   }
   // Mẫu ưu tiên của nhánh miễn phí chỉ dùng khi nhóm đang xét toàn model miễn phí (không rơi vào bản trả tiền cùng dòng)
   const allFree = pool.length > 0 && pool.every((m) => m.free);
-  const prefer = [...(o.providerId === "openrouter" && o.freeOnly && allFree ? PREFER_FREE : []), ...(PREFER[o.providerId] || [])];
+  const prefer = [...(mixed(o.providerId) && o.freeOnly && allFree ? PREFER_FREE : []), ...(PREFER[o.providerId] || [])];
   for (const re of prefer) {
     const hit = pool.filter((m) => re.test(m.id)).sort(newestFirst);
     if (hit.length) return hit[0].id;
