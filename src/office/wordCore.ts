@@ -4,7 +4,17 @@
  *  wordTools.ts, không đổi hành vi; wordTools.ts vẫn là điểm tái xuất. Quy tắc: docs/quy-tac/word.md. */
 import { escapeWordSearch, truncate } from "./util";
 import { OutlineItem, ParaRow, outlineByParagraph } from "../core/outline";
-import { ChangeSnap, beforeExcerpt, EditPlan, Locator, Wanted, changeKey, locateParagraph, pickWanted, snapChange } from "../core/worddiff";
+import { ChangeSnap, beforeExcerpt, EditPlan, Locator, Wanted, changeKey, locateParagraph, pickWanted, planParagraphEdit, snapChange } from "../core/worddiff";
+
+export const MAX_READ_CHARS = 30000;
+/** Thay quá số chỗ này trong một lần gọi thì hỏi người dùng trước */
+export const MANY_REPLACEMENTS = 5;
+/** Vùng chọn từ mức này trở lên mà bị thay cả khối thì hỏi người dùng trước */
+export const BIG_SELECTION_CHARS = 1000;
+export const BIG_SELECTION_PARAS = 3;
+/** Đoạn không có sửa đổi chờ duyệt, bị viết lại quá tỷ lệ này ở nhiều chỗ: thay cả đoạn cho dễ đọc */
+export const WHOLE_PARAGRAPH_RATIO = 0.6;
+export const WHOLE_PARAGRAPH_HUNKS = 4;
 
 export const STYLE_ENUM = ["Normal", "Heading1", "Heading2", "Heading3", "Title", "ListBullet", "ListNumber", "Quote"];
 
@@ -483,3 +493,137 @@ export async function annotatePending(ctx: Word.RequestContext, loaded: { rows: 
     if (by.length) row.changed_by = by.slice(0, 3).join(", ");
   });
 }
+
+// ---- Dời từ closure createWordTools (B13 phần 2, 26/11/2026): không giữ trạng thái ----
+
+/** Luôn bật Theo dõi thay đổi trong lúc AI sửa, xong trả lại chế độ cũ. Word không có API theo dõi (dưới WordApi 1.4) → từ chối ghi. */
+export async function tracked<T>(ctx: Word.RequestContext, fn: () => Promise<T>): Promise<T> {
+  if (!supports("1.4")) {
+    throw new Error(
+      "Word trên máy này chưa hỗ trợ ghi có theo dõi qua add-in (cần WordApi 1.4) nên AI không sửa trực tiếp, để mọi sửa đổi luôn duyệt được. Hãy cập nhật Office; tạm thời đề xuất nội dung để người dùng tự chèn."
+    );
+  }
+  const doc = ctx.document;
+  doc.load("changeTrackingMode");
+  await ctx.sync();
+  const prev = doc.changeTrackingMode;
+  if (prev !== "TrackAll") {
+    doc.changeTrackingMode = "TrackAll" as any;
+    await ctx.sync();
+  }
+  try {
+    return await fn();
+  } finally {
+    if (prev !== "TrackAll") {
+      doc.changeTrackingMode = prev;
+      await ctx.sync();
+    }
+  }
+}
+
+/** Vùng đích của định dạng / nhận xét: đúng một trong ba cách chỉ (find, paragraph_index, use_selection) */
+export async function targetRanges(ctx: Word.RequestContext, a: any): Promise<{ ranges: Word.Range[]; paras: Word.Paragraph[] }> {
+  const hasIndex = a.paragraph_index !== undefined && a.paragraph_index !== null;
+  if (a.find) {
+    if (String(a.find).length > 255) throw new Error("Chuỗi tìm quá dài (tối đa 255 ký tự).");
+    let scope: Word.Paragraph | Word.Body = ctx.document.body;
+    let hasChanges = true;
+    if (hasIndex) {
+      const r = await resolvePara(ctx, a.paragraph_index, a.expect);
+      scope = r.p;
+      hasChanges = r.hasChanges;
+    }
+    const res = scope.search(escapeWordSearch(a.find), { matchCase: true });
+    res.load("items/text");
+    await ctx.sync();
+    const live = await liveHits(ctx, res.items.slice(0, 200), hasChanges);
+    if (!live.length) throw new Error(`Không tìm thấy "${truncate(a.find, 80)}"${hasIndex ? ` trong đoạn ${a.paragraph_index}` : ""}.`);
+    const ps = live.map((r) => r.paragraphs.getFirst());
+    return { ranges: live.slice(0, 50), paras: ps.slice(0, 50) };
+  }
+  if (hasIndex) {
+    const r = await resolvePara(ctx, a.paragraph_index, a.expect);
+    return { ranges: [r.p.getRange("Content")], paras: [r.p] };
+  }
+  if (a.use_selection !== true) {
+    throw new Error("Phải chỉ rõ đúng một vị trí: find (chuỗi chữ), paragraph_index (số đoạn) hoặc use_selection=true (vùng người dùng đang chọn).");
+  }
+  const sel = ctx.document.getSelection();
+  const ps = sel.paragraphs;
+  ps.load("items");
+  await ctx.sync();
+  return { ranges: [sel], paras: ps.items };
+}
+
+/** Chỉ số đoạn của một loạt đoạn (theo định danh đoạn) */
+export const indexOfIds = (rows: Row[]) => {
+  const m = new Map<string, number>();
+  rows.forEach((r) => r.id && !m.has(r.id) && m.set(r.id, r.i));
+  return m;
+};
+
+export type UndoStep = () => Promise<void>;
+/** extra = việc hoàn tác luôn phải làm (gỡ nhận xét…); inverse = cách hoàn tác thay thế, chỉ dùng khi sửa đổi của công cụ
+ *  đã nhập vào một sửa đổi có từ trước nên không từ chối riêng được */
+export interface Undo {
+  extra: UndoStep[];
+  inverse: UndoStep[];
+  /** Dùng khi công cụ không sinh sửa đổi được theo dõi nào (ví dụ đổi cấp đánh số) */
+  fallback: UndoStep[];
+  /** Việc dọn luôn làm SAU khi đã từ chối các sửa đổi (ví dụ gỡ đoạn rỗng cạnh bảng mà Word để lại khi từ chối phần chèn) */
+  after?: UndoStep[];
+  /** Định danh các đoạn công cụ đã đụng: để phân biệt sửa đổi của AI với sửa đổi trùng hệt người dùng tự làm ở đoạn khác */
+  touched: string[];
+}
+
+/** Đưa chữ của một đoạn (tìm theo định danh) về câu cũ bằng sửa mức từ */
+export const restoreText = (id: string, prev: string): UndoStep => () =>
+  Word.run(async (ctx) =>
+    tracked(ctx, async () => {
+      const p = ctx.document.getParagraphByUniqueLocalId(id);
+      p.load("text");
+      const cur = supports("1.7") ? p.getText() : p.getReviewedText("Current");
+      await ctx.sync();
+      const C = noMarks(curOf(cur.value, p.text));
+      if (C === prev) return;
+      const info = await pendingInfo(ctx, p);
+      const plan = planParagraphEdit(p.text, C, prev, withNoteSpans(p.text, info.spans));
+      if (typeof plan === "string") throw new Error(`không đưa được đoạn “${truncate(C, 40)}” về câu cũ: ${plan}`);
+      await applyPlan(ctx, p, plan);
+      const now = supports("1.7") ? p.getText() : p.getReviewedText("Current");
+      await ctx.sync();
+      if (noMarks(curOf(now.value, prev)) !== prev) throw new Error(`đoạn “${truncate(prev, 40)}” chưa về đúng câu cũ; xem thẻ Review của Word`);
+    })
+  );
+
+/** Gỡ hẳn các đoạn AI đã chèn (tìm theo định danh); đoạn không còn thì bỏ qua. Trước khi gỡ đối chiếu chữ đầu đoạn với chữ AI đã
+ *  chèn: định danh đoạn trỏ sang đoạn khác thì không xóa. */
+export const removeParas = (ids: string[], texts: string[]): UndoStep => async () => {
+  let skipped = 0;
+  for (let k = ids.length - 1; k >= 0; k--) {
+    await Word.run(async (ctx) => {
+      ctx.document.load("changeTrackingMode");
+      await ctx.sync();
+      const mode = ctx.document.changeTrackingMode;
+      try {
+        const p = ctx.document.getParagraphByUniqueLocalId(ids[k]);
+        p.load("text");
+        await ctx.sync();
+        const head = String(texts[k] ?? "").slice(0, 20);
+        if (head && !p.text.includes(head)) {
+          skipped++;
+          return;
+        }
+        ctx.document.changeTrackingMode = "Off" as any;
+        p.delete();
+        await ctx.sync();
+      } catch {
+        /* đoạn đã không còn */
+      } finally {
+        ctx.document.changeTrackingMode = mode;
+        await ctx.sync();
+      }
+    });
+  }
+  if (skipped) throw new Error(`${skipped} đoạn đã chèn nay mang nội dung khác nên không gỡ; xem thẻ Review của Word`);
+};
