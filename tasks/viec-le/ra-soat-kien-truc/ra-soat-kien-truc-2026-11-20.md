@@ -80,3 +80,7 @@ Sắp theo mức; "Office" = cần Tự kiểm tra hoặc Chạy thật trong Of
 | B15 | `eslint.config.mjs` riêng: lỗi JS cơ bản + `react-hooks/rules-of-hooks` (thư mục giao diện) mức lỗi; quy tắc Office.js mức cảnh báo (chỉ `src/office`); bỏ quy tắc định dạng. CI chạy `npm run lint`, lỗi thì không phát hành | 0 lỗi, 285 cảnh báo. Thử cài một hook sau `return` sớm: lint báo lỗi đúng chỗ |
 
 Tự kiểm tra bản cục bộ 4.13.3: Word 43/43, Excel 44/44, PowerPoint 27/27. Tác tử phản biện (model khác, không thấy lập luận): không lỗi nghiêm trọng; đã làm: khai báo trực tiếp `eslint`, `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` (trước chỉ có gián tiếp qua `office-addin-lint`), đồng bộ số bản trong lock, hai chỗ vụn ở `Chat.tsx`.
+
+## Nhóm 2 — làm ở 4.15.0 (26/11/2026)
+
+B9, B13, B7 (phần thuần; khối `onEvent` để sau), B5 xong; **B8 không làm** (anh quyết): lỗi "quên khai" đã có kiểm thử A8 chặn, nhóm công cụ nằm ở lõi không phụ thuộc Office. Chi tiết, nghiệm thu, phản biện: `ke-hoach-nhom-2.md`.
