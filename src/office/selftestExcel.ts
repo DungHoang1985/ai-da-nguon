@@ -390,6 +390,21 @@ export async function runExcelModelSelfTest({ base, step, expect, riskOf }: Kit)
     return `Thay 3 ô → 3 dòng (W2, W4, W6: “Cty A” → “Công ty A”); xóa 2 dòng trùng → ${r2.length} dòng có giá trị cũ; Hoàn tác trả đủ; khóa ô: sheet mặc định không hỏi, sheet có ô mở khóa riêng thì hỏi, bố trí cũ còn nguyên`;
   });
 
+  await step("Mức 2 · Định dạng trả chữ hiển thị; cột hẹp thì báo ô ####", async () => {
+    await run("excel_write_range", { sheet: M, address: "H20", values: [[1234.5, 123456789]] });
+    const r1: any = await run("excel_format_range", { sheet: M, address: "H20", number_format: "#,##0.00" });
+    const shown = String(r1.display_preview?.[0]?.[0] ?? "");
+    expect(/^1\D?234\D50$/.test(shown), `Chữ hiển thị sau định dạng không đúng: ${JSON.stringify(r1)}`);
+    expect(!/####/.test(String(r1.message)), `Cột đủ rộng mà vẫn báo ####: ${r1.message}`);
+    const r2: any = await run("excel_format_range", { sheet: M, address: "I20", number_format: "#,##0", column_width: 12 });
+    expect(/hiện "####"/.test(String(r2.message)) && /I20/.test(String(r2.message)), `Cột hẹp mà không báo ô I20: ${JSON.stringify(r2)}`);
+    const r4: any = await run("excel_format_range", { sheet: M, address: "I20", autofit_columns: true });
+    expect(!/####/.test(String(r4.message)), `Đã tự giãn cột mà vẫn báo ####: ${r4.message}`);
+    const r3: any = await run("excel_format_range", { sheet: M, address: "H20", bold: true });
+    expect(r3.display_preview === undefined, "Chỉ in đậm (không đổi cách hiện) mà vẫn trả xem trước");
+    return `H20 hiện "${shown}"; I20 cột 12pt → báo cột hẹp; tự giãn cột → không báo; in đậm không trả xem trước`;
+  });
+
   // Dọn: bỏ bảo vệ nếu còn, xóa sheet thử và tên vùng thử
   await Excel.run(async (ctx) => {
     const nm = ctx.workbook.names.getItemOrNullObject(NAME);

@@ -2,6 +2,7 @@
 
 Chép nguyên văn từ mục Bài học của `tasks/HANDOFF.md` (tới 24/11/2026). Mới nhất ở đầu. Đọc trước khi đụng tới Word, Excel, PowerPoint, WebView2 hoặc bài thử trong Office. Bài học mới: thêm vào đầu tệp này, ghi ngày.
 
+  - (26/11/2026) Trước khi ghi "Không đạt" cho một hành vi của model, đọc kết quả công cụ model đã nhận: lần Chạy thật Trả phí 4.13.1 bị ghi nhầm "không đọc lại sau khi ghi", trong khi `word_set_paragraph_text` tự đọc lại trong mã và trả "đã đọc lại". Cũng vậy với Office.js: `range.text` của Excel không trả "####" — viết theo trí nhớ là bắt cột hẹp sai hoàn toàn; phải thăm dò trước.
   - (26/11/2026) Hai lỗi bài thử lặp lại nay chặn bằng máy: PowerPoint sau `Quit` treo thêm 45–75 giây rồi mới tự thoát (ba lần; nhả COM + GC không đủ) → `mo-office.ps1` kết thúc tiến trình khi đã chắc không còn bài nào, như Excel. Khung add-in trắng khi bài thử chạy (23/11, 26/11; lần 26/11 kẹt ở `readyState` "interactive" tới khi tải lại) → `cdp.mjs eval` chờ khung có chữ, trắng thì tự tải lại một lần, vẫn trắng thì báo lỗi, không chạy bài.
   - (23/11/2026, 4.11.8) Lỗi thể thức của model miễn phí phần lớn do add-in thiếu chỗ dựa: thiếu loại văn bản trong công cụ dựng thì model tự chế; kết quả đọc không nói đoạn nằm trong ô bảng thì model hiểu chỉ số đoạn thành trên dưới. Sửa ở công cụ (bản vẽ, dữ liệu đọc) trước, kỹ năng sau.
   - (23/11/2026, 4.11.8) Word tự sinh một đoạn rỗng sau bảng cuối khi dựng phần ký hợp đồng; đoạn này không thuộc phần đã chèn nên Hoàn tác để sót — công cụ dựng phải nhận ra (so với đoạn đứng sau chỗ chèn trước khi dựng) và bỏ.

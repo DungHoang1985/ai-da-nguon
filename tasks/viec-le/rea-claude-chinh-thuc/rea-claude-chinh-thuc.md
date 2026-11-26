@@ -104,7 +104,7 @@ Bài `kiem-thu/cdp-bai/soat-lap-luan.js` trên bản phát hành v4.13.1, Word t
 | Hỏi duyệt trước khi ghi, ghi bằng Track Changes | Đạt — một lần hỏi; sửa đổi: xóa "12%", thêm "8%" và câu giới hạn |
 | Văn bản sau sửa đúng yêu cầu, không đụng điều khác | Đạt — chỉ đoạn ¶4 (Điều 5) đổi |
 | Trả lời nói rõ căn cứ luật chưa đối chiếu được, nhắc kiểm phạm vi áp dụng | Đạt |
-| Đọc lại sau khi ghi (quy tắc lời nhắc 25/11) | Không — AI trả lời ngay sau lệnh sửa, không đọc lại |
+| Đọc lại sau khi ghi (quy tắc lời nhắc 25/11) | Đạt — `word_set_paragraph_text` tự đọc lại đoạn trong mã và trả "đã đọc lại: câu hiện tại đúng câu yêu cầu"; lời nhắc coi kết quả này là đã đọc (lần ghi đầu 26/11 ghi nhầm "Không") |
 
 17 giây, 4 lần gọi AI (kể cả lượt người soát); token vào 84.808 (đọc bộ nhớ đệm 60.688, ghi bộ nhớ đệm 24.106), ra 1.845.
 

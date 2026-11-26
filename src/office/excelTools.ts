@@ -1,6 +1,7 @@
 /* global Excel */
 /** Công cụ để AI thao tác trực tiếp trên sổ tính Excel. Mỗi thao tác ghi đều lưu ảnh chụp để Hoàn tác. */
 import { convertDateTexts, dateTextToSerial, isDateNumberFormat } from "../core/datetext";
+import { checkDisplay, narrowNote } from "../core/exceldisplay";
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { cellAddress, lettersToCol, noUndoSuffix, normalize2D, sanitizeSheetName, splitAddress, splitAreas, topLeft, truncate } from "./util";
 import { bulkTrail, getRange, restoreFrom, snapshot } from "./excelCore";
@@ -378,6 +379,7 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
       });
 
     case "excel_format_range": {
+      const DISPLAY_SCAN_CELLS = 5000;
       // Đợt 12 (bài X6): `more` = các vùng khác với định dạng khác, làm trong CÙNG một lệnh (model miễn phí gọi một công cụ mỗi bước,
       // mỗi bước ~75 giây khi Nghĩ kỹ: 7 lệnh định dạng rời làm chạm trần 12 bước). Mỗi mục chạy như một lệnh riêng, có Hoàn tác riêng.
       if (Array.isArray(a.more) && a.more.length) {
@@ -478,7 +480,39 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         await ctx.sync();
         const undo = restoreFrom(snap, `Định dạng ${range.address}`);
         if (undo) log.push(undo);
-        return { ok: true, message: `Đã định dạng ${range.address}${dateNote}` };
+        // Mức 2 việc 5 (26/11/2026): định dạng làm đổi cách hiện thì trả chữ người dùng thấy + ô số có thể hiện "####" (ước, vì Office.js
+        // không trả "####") — coi như đã đọc lại.
+        // Vùng lớn chỉ xét phần đầu (DISPLAY_SCAN_CELLS ô); lỗi đọc không làm hỏng lệnh đã ghi xong.
+        let shown: { display_preview?: string[][] } = {};
+        let wide = "";
+        if (a.number_format || a.column_width || a.autofit_columns || a.font_size) {
+          try {
+            const cols = Math.min(range.columnCount, 30);
+            const rows = Math.max(1, Math.min(range.rowCount, Math.floor(DISPLAY_SCAN_CELLS / cols)));
+            const scan = range.getCell(0, 0).getResizedRange(rows - 1, cols - 1);
+            scan.load("text,values");
+            scan.format.font.load("size");
+            const colFmt = Array.from({ length: cols }, (_, j) => {
+              const cf = scan.getColumn(j).format;
+              cf.load("columnWidth");
+              return cf;
+            });
+            await ctx.sync();
+            const tl = topLeft(range.address);
+            const d = checkDisplay(
+              scan.text,
+              scan.values,
+              (i, j) => cellAddress(tl.col + j, tl.row + i),
+              colFmt.map((cf) => (typeof cf.columnWidth === "number" ? cf.columnWidth : null)),
+              typeof scan.format.font.size === "number" ? scan.format.font.size : null
+            );
+            shown = { display_preview: d.preview };
+            wide = narrowNote(d);
+          } catch {
+            /* không đọc được chữ hiển thị: bỏ phần xem trước */
+          }
+        }
+        return { ok: true, message: `Đã định dạng ${range.address}${dateNote}${wide}`, ...shown };
       });
     }
 

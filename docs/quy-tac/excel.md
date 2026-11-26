@@ -33,3 +33,8 @@
 ## Câu hỏi ghi đè (4.12.0)
 
 - Câu hỏi trước khi ghi đè nêu tối đa 5 ô sẽ mất kèm giá trị / công thức đang có (`excelRisk`, `excelAdvanced.ts`); Tự kiểm tra có bước kiểm dạng câu này.
+
+## Chữ hiển thị sau khi định dạng (4.13.2, đo 26/11/2026)
+
+- Office.js `range.text` trả chữ đã định dạng theo vùng của máy ("1.234,50") nhưng **không bao giờ trả "####"** khi cột hẹp (cột 12pt vẫn ra "123.456.789"). Muốn biết ô số bị "####" phải ước: `estimateWidth` (`src/core/exceldisplay.ts`), hệ số lấy từ số đo "tự giãn cột"; đổi hệ số phải đo lại và sửa bảng số đo trong kiểm thử.
+- `excel_format_range` trả `display_preview` và câu cảnh báo ô số có thể hiện "####" chỉ khi lệnh làm đổi cách hiện (định dạng số, độ rộng cột, tự giãn, cỡ chữ); chỉ xét ô có giá trị là số (chữ dài tràn sang ô bên, không hiện "####").
