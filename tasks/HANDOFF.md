@@ -26,6 +26,7 @@ Các bản cũ hơn (đợt 0A → 12, bản 3.6 → 4.12.0): bảng "Đã xong"
 
 Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của bản lưu 24/11. Quy tắc kỹ thuật rút từ các quyết định này nằm ở `docs/quy-tac/`.
 
+- 26/11: **làm liền nhiều bước rồi mới phát hành một lần** (mỗi bước vẫn kiểm đủ trên bản cục bộ và commit trên máy; hỏi anh một lần khi đẩy `main`). Nguồn AI chỉ OpenRouter + Anthropic (dự phòng Cerebras, Cohere).
 - 25/11: lời nhắc dặn **đọc lại sau khi ghi** (một lần cho mọi chỗ, cuối việc) thay quy tắc cũ "KHÔNG ĐỌC LẠI" (anh quyết, chấp nhận thêm lần gọi model để báo đúng).
 - AI sửa thẳng vào tài liệu + Hoàn tác; Word luôn ghi Track Changes (đã bỏ công tắc tắt); thao tác rủi ro luôn hỏi, "Cho phép hết lần này" không áp dụng cho thao tác rủi ro.
 - Kỹ năng chính thức chuyển thể, không chép nguyên văn; không ghi số hiệu văn bản pháp luật. Tự chọn kỹ năng bằng từ khóa không dấu + danh mục để model tự gọi `use_skill`.
@@ -47,16 +48,10 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ## 4. Vấn đề mở
 
-### Chưa kiểm được vì thiếu tiền hoặc key (cần anh)
+### Nguồn AI (anh chốt 26/11/2026)
 
-- 25/11: key Groq trên máy bị Groq từ chối ("Invalid API Key") — cần anh dán key mới.
-- OpenRouter: lỗi 400 "Request path cannot be relayed" từ 25/11 đã hết — 26/11 "Kiểm tra từng nguồn" đạt (Nemotron free, Claude qua OpenRouter).
-
-- Gemini: 5 bài trên hợp đồng thử, PDF quét 3 và 7 trang, Suy nghĩ kỹ (gói miễn phí hết hạn mức rất nhanh; bảng B1, B2 ở `tasks/dot/dot-5/dot-5.md`). Công cụ của Đợt 7 chưa Chạy thật với Gemini.
-- DeepSeek (cả hai kênh): hết tiền. MiniMax, Kimi: chưa có key (tiêu chí 4 Đợt 6 cần một nguồn nhóm này có tiền).
-- OpenRouter: PDF qua kênh Claude cần số dư từ 0,50 USD; model trả tiền chưa thử.
-- OpenAI: lỗi không đọc được chi tiết, nghi số dư hoặc quyền dùng model.
-- Model Claude đời cũ dùng `budget_tokens`; ca soát lập luận trả "CHƯA ĐẠT" (Đợt 1B).
+- Chỉ dùng OpenRouter (kèm kênh Claude qua OpenRouter) và Anthropic; giữ Cerebras, Cohere làm dự phòng Miễn phí. Đã xóa khỏi add-in key Gemini, Groq, DeepSeek, OpenAI (đều lỗi). "Kiểm tra từng nguồn" 26/11: 5/5 nguồn còn key đều đạt. Không ghi các nguồn đã xóa vào "chưa kiểm được" nữa.
+- Còn để biết: OpenRouter — PDF qua kênh Claude cần số dư từ 0,50 USD, model trả tiền chưa thử; model Claude đời cũ dùng `budget_tokens`, ca soát lập luận trả "CHƯA ĐẠT" (Đợt 1B).
 
 ### Việc kỹ thuật chưa làm
 
@@ -65,9 +60,8 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 - Mục soát mã để lại: Đợt 4 còn 10 mục (`tasks/dot/dot-4/dot-4.md`); Đợt 3 phần A còn 1, phần B còn 6; Đợt 7 chủ yếu mục thấp (`tasks/dot/dot-7/dot-7.md`); mục thấp của soát mã 4.11.10–11 ở báo cáo vòng 3.
 - Ghi chéo với hai tài liệu cùng ứng dụng chưa thử trong Office. Desktop ẩn chưa thăm dò ba ứng dụng cùng lúc.
 - Bản quét: đọc hai lần độc lập rồi máy so số liệu; máy kiểm dãy Điều – khoản – điểm trên bản chép.
-- Groq: hạn token mỗi phút theo model chưa có bảng; chưa đo khi model gọi công cụ không có trong danh sách; đổi Miễn phí → Trả phí giữa hội thoại khi lịch sử có `load_tools`.
+- Đổi Miễn phí → Trả phí giữa hội thoại khi lịch sử có `load_tools`: chưa đo.
 - Đợt 6: SiliconFlow, Qwen, ModelScope, StepFun chưa thêm sẵn (dùng qua nguồn tự khai); Bedrock, Foundry, Vercel chưa làm.
-- Hạn chờ im lặng 150 giây mới thấy chạy đúng một lần (Gemini, bản cục bộ).
 
 - 4.13.1 để lại: thẻ bước bị cổng chặn hiện như lỗi (⚠️); cổng chỉ bảo đảm AI đã GỌI soát, không bảo đảm AI làm theo kết luận (model yếu vẫn ghi căn cứ chưa kiểm được). 4.13.0 phản biện để lại: người soát chỉ thấy kỹ năng tự chọn đầu lượt (kỹ năng gọi `use_skill` giữa lượt → "chưa nạp nguồn", an toàn nhưng thừa câu hỏi); căn cứ `user_instruction` chỉ đối chiếu chỉ dẫn riêng đã lưu, không thấy lời yêu cầu trong chat (cố ý: người soát không thấy hội thoại); sửa đổi chờ duyệt chưa gắn số đoạn; từ khóa "dieu khoan" làm nhóm `soat` (Miễn phí) bật thường xuyên; người soát dùng trần đầu ra như lượt chính.
 
@@ -85,7 +79,6 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 - Rà soát kiến trúc 20/11, bảng "Phát hiện để lại" (`tasks/viec-le/ra-soat-kien-truc/ra-soat-kien-truc-2026-11-20.md`): nhóm 1 (B1, B2, B3, B4, B6, B23) xong ở 4.11.13. Còn: nhóm 2 kiến trúc (B7 tách `Chat.tsx`, B8 sổ công cụ một nguồn, B9 `quirks`, B13 tách `wordTools.ts`) — việc lớn, cần kế hoạch riêng; nhóm 3 xong ở 4.13.3 trừ tách công cụ theo ứng dụng (B10 phần 2); nhóm 4 bảo mật nhỏ (B5, B11, B12, B17, B19, B20, B21, B22). B14 giữ nguyên.
 - Hai thư mục mồ côi `dot-0a-office-addon-compare-47836b`, `dot-4-a4b5e7` trong `.claude\worktrees\`: đưa vào Thùng rác.
 - Xóa các khóa "AI Da Nguon (Office)" thừa ở `openrouter.ai/settings/keys`.
-- Nguồn Gemini trên máy còn nhớ "Gemini 2.5 Flash" (Google ngừng cấp cho người dùng mới): chọn lại Gemini 3.8 Flash.
 
 ## 5. Bước tiếp theo
 
