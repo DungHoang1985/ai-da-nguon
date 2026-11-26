@@ -41,10 +41,35 @@ export function readSnapshot(host: string, now = Date.now(), s?: KVStore): Snaps
     const raw = st.getItem(SHARE_PREFIX + host);
     if (!raw) return null;
     const snap = JSON.parse(raw) as Snapshot;
-    return now - snap.at > SHARE_MAX_AGE_MS ? null : snap;
+    if (now - snap.at > SHARE_MAX_AGE_MS) {
+      // B5 (26/11/2026): bản quá hạn không nằm lại trong kho cục bộ vô thời hạn
+      try {
+        st.removeItem(SHARE_PREFIX + host);
+      } catch {
+        /* bỏ qua */
+      }
+      return null;
+    }
+    return snap;
   } catch {
     return null;
   }
+}
+
+/** Gỡ ảnh chụp của ứng dụng này (khi đóng khung — B5) */
+export function clearSnapshot(host: string, s?: KVStore): void {
+  const st = store(s);
+  try {
+    st?.removeItem(SHARE_PREFIX + host);
+  } catch {
+    /* bỏ qua */
+  }
+}
+
+/** B5 (rà soát kiến trúc, làm 26/11/2026): chỉ chụp tài liệu để chia sẻ khi có khung ở ỨNG DỤNG KHÁC đang mở và được kết nối —
+ *  trước đây chụp mỗi 30 giây kể cả khi không có ai đọc. */
+export function shouldShare(o: { shareContext: boolean; canSnapshot: boolean; busy: boolean; links: { open: boolean }[] }): boolean {
+  return o.shareContext && o.canSnapshot && !o.busy && o.links.some((l) => l.open);
 }
 
 /** Thực thi công cụ read_other_app */

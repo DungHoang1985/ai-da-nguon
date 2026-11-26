@@ -52,3 +52,31 @@ describe("Đồ thị import của src/ không có vòng", () => {
     assert.deepStrictEqual(cycles, [], "Import vòng:\n" + cycles.join("\n"));
   });
 });
+
+/** Phản biện bước 2b (26/11/2026): mỗi công cụ Word được ĐÚNG MỘT tệp nhận xử lý — thêm công cụ mà quên khai trong NAMES của
+ *  wordRead / wordEdit / wordComments thì lúc chạy rơi xuống "Không có công cụ" (golden không bắt được). */
+describe("Mỗi công cụ Word có đúng một nơi xử lý", () => {
+  it("WORD_SPECS: mỗi tên được đúng một factory nhận (word_explain_edits xử lý riêng trong execute)", () => {
+    const { WORD_SPECS } = require("../../src/office/wordTools");
+    const { EXPLAIN_TOOL } = require("../../src/core/explainEdits");
+    const ov = { overview: async () => ({}) };
+    const nop: any = () => undefined;
+    const sets = {
+      review: require("../../src/office/wordReview").createWordReviewTools({ supports: () => true, loadRows: nop, loadRowsOf: nop }),
+      admin: require("../../src/office/wordAdmin").createWordAdminTools({ supports: () => true, tracked: nop, resolvePara: nop }),
+      form: require("../../src/office/wordForm").createWordFormTools({ supports: () => true, tracked: nop, loadRows: nop, tableValues: nop }),
+      read: require("../../src/office/wordRead").createWordReadTools(ov),
+      edit: require("../../src/office/wordEdit").createWordEditTools(ov),
+      comments: require("../../src/office/wordComments").createWordCommentTools(ov),
+    } as Record<string, { has: (n: string) => boolean }>;
+    const bad: string[] = [];
+    for (const sp of WORD_SPECS as { name: string }[]) {
+      if (sp.name === EXPLAIN_TOOL) continue;
+      const who = Object.keys(sets).filter((k) => sets[k].has(sp.name));
+      if (who.length === 0) bad.push(`${sp.name}: không nơi nào xử lý`);
+      // review / admin / form được kiểm TRƯỚC read / edit / comments trong run(): trùng ở hai nơi thì nơi sau là mã chết — vẫn báo
+      if (who.length > 1) bad.push(`${sp.name}: ${who.join(", ")}`);
+    }
+    assert.deepStrictEqual(bad, []);
+  });
+});

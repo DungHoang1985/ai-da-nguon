@@ -45,11 +45,12 @@ import { ConversationMeta, ConversationStore, MAX_CONVERSATIONS, newConversation
 import { Command, Skill, SkillStore, resolveSlash, skillCatalog } from "../../core/skills";
 import { CORE_GUIDES, autoSelectSkills } from "../../core/skillpack";
 import { toolGroupsFor } from "../../core/toolgroups";
-import { Attachment, DOCX_MIME, MAX_FILES_TOTAL_B64, PDF_MIME, filesBase64Chars, readAttachment, withAttachments } from "../../core/attachments";
-import { attachmentPrivacyNote, canSeePages, routeScanPdf } from "../../core/pdfPages";
+import { Attachment, DOCX_MIME, PDF_MIME, filesBase64Chars, readAttachment } from "../../core/attachments";
+import { canSeePages } from "../../core/pdfPages";
+import { AttachmentsResult, groupHintsFor, handleIncoming, prepareAttachments } from "../../core/turnPrep";
 import { clearAttachedFiles, listAttachedImages, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
-import { publishSnapshot } from "../../core/share";
+import { clearSnapshot, publishSnapshot, shouldShare } from "../../core/share";
 import { SHOW_SIZE_FROM, sizeNote } from "../../core/inputsize";
 import { REDO_WITH_TOOLS, TaskSoFar, answerAfterGate, mergeTaskFacts, taskSoFar, toolFailureClaim, unbackedEditClaims, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
 import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, claimCommand, clearBeat, connectionLine, connections, describePayload, normalizeApp, receiveBlocked, reply, sweep, takeCommand } from "../../core/crossapp";
@@ -474,24 +475,6 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
   }, [items, pending]);
 
-  /** Chia sẻ nội dung đang mở cho ứng dụng Office khác (đọc chéo) */
-  const share = React.useCallback(async () => {
-    if (!settings.shareContext || !hostTools?.snapshot || busyRef.current) return;
-    try {
-      const snap = await hostTools.snapshot();
-      publishSnapshot(host, snap.data, snap.title);
-    } catch {
-      /* tài liệu đang bận → lần sau */
-    }
-  }, [settings.shareContext, hostTools, host]);
-
-  React.useEffect(() => {
-    if (!settings.shareContext) return undefined;
-    share();
-    const t = setInterval(share, 30000);
-    return () => clearInterval(t);
-  }, [share, settings.shareContext]);
-
   // ----- Ghi chéo ứng dụng: nhịp sống, chỉ báo kết nối, nhận lệnh ghi hộ (core/crossapp.ts) -----
   const selfApp = normalizeApp(host);
   /** Các ứng dụng khác đang bật kết nối trong Cài đặt của khung này */
@@ -505,6 +488,32 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
   acceptRef.current = !!settings.shareContext && settings.crossWrite !== false && !!hostTools;
   const linkedRef = React.useRef<string[]>([]);
   linkedRef.current = linkedApps;
+
+  /** Chia sẻ nội dung đang mở cho ứng dụng Office khác (đọc chéo). B5 (26/11/2026): chỉ chụp khi có khung ở ứng dụng khác đang mở
+   *  và được kết nối (shouldShare); chụp ngay khi khung đó vừa mở; đóng khung thì gỡ bản chụp của mình. */
+  const linksRef = React.useRef<Connection[]>([]);
+  linksRef.current = links;
+  const share = React.useCallback(async () => {
+    if (!shouldShare({ shareContext: !!settings.shareContext, canSnapshot: !!hostTools?.snapshot, busy: busyRef.current, links: linksRef.current })) return;
+    try {
+      const snap = await hostTools!.snapshot!();
+      publishSnapshot(host, snap.data, snap.title);
+    } catch {
+      /* tài liệu đang bận → lần sau */
+    }
+  }, [settings.shareContext, hostTools, host]);
+  const anyLinkOpen = links.some((l) => l.open);
+  React.useEffect(() => {
+    if (!settings.shareContext || !anyLinkOpen) return undefined;
+    share();
+    const t = setInterval(share, 30000);
+    return () => clearInterval(t);
+  }, [share, settings.shareContext, anyLinkOpen]);
+  React.useEffect(() => {
+    const gone = () => clearSnapshot(host);
+    window.addEventListener("pagehide", gone);
+    return () => window.removeEventListener("pagehide", gone);
+  }, [host]);
 
   React.useEffect(() => {
     if (!selfApp || !settings.shareContext) {
@@ -556,23 +565,25 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         release();
         return;
       }
-      if (!linkedRef.current.includes(cmd.from)) {
-        reply(ls, cmd.id, { ok: false, error: `Khung AI Đa Nguồn ở ${selfApp} đang tắt kết nối với ${cmd.from}.` });
+      const opts = {
+        selfApp,
+        linked: linkedRef.current,
+        what: describePayload(cmd.payload),
+        exec: (payload: any, log: UndoEntry[]) => executeIncoming(hostTools, payload, log),
+        errText: networkErrorMessage,
+      };
+      if (!opts.linked.includes(cmd.from)) {
+        reply(ls, cmd.id, (await handleIncoming(cmd, opts)).reply);
         release();
         return;
       }
       // Trong lúc ghi hộ, khung này coi như đang bận: người dùng chưa gửi được yêu cầu mới (tránh hai luồng ghi chen nhau)
       setBusy(true);
-      const log: UndoEntry[] = [];
-      const what = describePayload(cmd.payload);
       try {
-        const message = await executeIncoming(hostTools, cmd.payload, log);
-        reply(ls, cmd.id, { ok: true, message });
-        setItems((prev) => [...prev, { role: "assistant", text: "", incoming: `Vừa ghi theo yêu cầu từ khung AI Đa Nguồn ở ${cmd.from}: ${what}.`, wrote: true, undo: log.length ? log : undefined }]);
-      } catch (e: any) {
-        // Ghi dở thì gỡ phần đã làm rồi mới báo lỗi, để khung gửi không tưởng là đã ghi
-        for (const u of log.slice().reverse()) await u.undo().catch(() => undefined);
-        reply(ls, cmd.id, { ok: false, error: `${selfApp} không ghi được: ${networkErrorMessage(e)}` });
+        // Ghi, ghi dở thì gỡ phần đã làm rồi mới báo lỗi (core/turnPrep.ts handleIncoming)
+        const r = await handleIncoming(cmd, opts);
+        reply(ls, cmd.id, r.reply);
+        if (r.item) setItems((prev) => [...prev, r.item!]);
       } finally {
         working = false;
         busyRef.current = false;
@@ -828,42 +839,28 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     const vision = model?.vision ?? p.vision;
     const useAgent = agentOn && !!hostTools && model?.tools !== false;
     const auto = useAgent && !slash.label ? autoSelectSkills(typed, skills as any) : [];
-    // PDF quét đi đường nào: nguyên tệp (tệp ngắn, nguồn đọc được) · AI đọc theo trang bằng công cụ · không đọc được
-    const scans = atts.filter((a) => a.kind === "file" && a.data);
-    const routeOf = (a: Attachment) => routeScanPdf({ pages: a.pages ?? 1, pdfCapable: pdfCapable(p), vision, tools: useAgent });
-    const byPages = scans.filter((a) => routeOf(a) === "pages");
-    const whole = scans.filter((a) => routeOf(a) !== "pages");
-    // Tệp gửi nguyên vẹn nằm lại trong lịch sử và được gửi lại ở mọi lượt: quá trần thì nhà cung cấp từ chối mọi lượt sau
-    const newFiles = whole.reduce((n, a) => n + a.data!.length, 0);
-    if (newFiles && filesBase64Chars(historyRef.current as any) + newFiles > MAX_FILES_TOTAL_B64) {
-      setNotice({
-        text: "Các tệp PDF quét trong hội thoại này đã quá lớn để gửi tiếp (tệp được gửi lại ở mỗi lượt). Bấm “Hội thoại mới” rồi đính kèm lại tệp cần hỏi, hoặc tách tệp nhỏ hơn.",
-        err: true,
-      });
+    // Tệp đính kèm: đường đi của PDF quét, trần dung lượng, ảnh, thông báo — hàm thuần ở core/turnPrep.ts (B7 phần 1)
+    const prep = prepareAttachments({
+      content,
+      atts,
+      host,
+      provider: p,
+      modelId,
+      modelFree: model?.free,
+      vision,
+      useAgent,
+      agentOn,
+      historyFilesB64: filesBase64Chars(historyRef.current as any),
+    });
+    if (prep.stop) {
+      setNotice(prep.notice);
       return;
     }
-    // Bản gốc của tệp .docx và .pdf: đăng ký (lại) lúc gửi để công cụ so sánh phiên bản và công cụ đọc theo trang đọc được
-    atts.forEach((a) => (a.mime === DOCX_MIME || a.mime === PDF_MIME) && a.data && registerAttachedFile(a.name, a.data));
-    content = withAttachments(content, atts, { compare: host === "Word" && agentOn, pageTool: useAgent, byPages: byPages.map((a) => a.name), docTool: host === "Word" && useAgent });
-    const images = atts.filter((a) => a.kind === "image" && a.data).map((a) => ({ mime: a.mime || "image/png", data: a.data! }));
-    // PowerPoint: giữ ảnh đính kèm trong bộ nhớ của phiên và nêu tên để AI đặt được ảnh vào slide (ppt_insert_image)
-    if (host === "PowerPoint" && useAgent) {
-      const named = atts.filter((a) => a.kind === "image" && a.data);
-      named.forEach((a) => registerAttachedFile(a.name, a.data!));
-      if (named.length) content = `${content}\n\n[Ảnh đính kèm: ${named.map((a) => `“${a.name}”`).join(", ")}. Muốn đặt ảnh vào slide thì gọi công cụ chèn ảnh đính kèm với image = tên ảnh.]`;
-    }
-    // PDF quét gửi nguyên tệp cho model tự đọc; nguồn không đọc được thì báo rõ (và model cũng được báo trong tin nhắn)
-    const pdfs = whole.map((a) => ({ mime: a.mime || "application/pdf", data: a.data!, name: a.name }));
-    if (pdfs.length && !pdfCapable(p)) {
-      setNotice({
-        text: `${p.name} không đọc được PDF quét (${pdfs.map((f) => f.name).join(", ")}): tệp không được gửi đi. ${vision === true && !useAgent ? "Bật “AI tự thao tác” để AI đọc từng trang bằng ảnh, hoặc đổi" : "Đổi"} sang nguồn Anthropic hoặc Gemini rồi đính kèm lại.`,
-        err: true,
-      });
-    } else if (atts.length) {
-      // Nhắc riêng tư (không chặn): tệp đính kèm sắp tới nguồn miễn phí hoặc qua nơi trung chuyển
-      const priv = attachmentPrivacyNote({ providerId: p.id, providerName: p.name, modelId, free: model?.free });
-      if (priv) setNotice({ text: priv });
-    }
+    const ready = prep as Extract<AttachmentsResult, { stop: false }>;
+    ready.register.forEach((f) => registerAttachedFile(f.name, f.data));
+    content = ready.content;
+    const { images, pdfs } = ready;
+    if (ready.notice) setNotice(ready.notice);
 
 
     // Bấm "Làm tiếp": cảnh báo "nói đã sửa mà không ghi" xét cả các lệnh ghi của lượt trước cùng nhiệm vụ
@@ -1026,12 +1023,8 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
                 maxSteps: stepCapFor(host),
                 // Đợt 10 (Word), Đợt 11 (Excel, PowerPoint): chế độ Miễn phí chỉ gửi công cụ lõi, nhóm chuyên bật theo việc (Trả phí gửi đủ để giữ bộ nhớ đệm)
                 toolGroups: toolGroupsFor(mode, host),
-                groupHints: [
-                  ...(host === "Word" && atts.some((a) => a.mime === DOCX_MIME) ? ["soat"] : []),
-                  // Đợt 11: ảnh đính kèm trong PowerPoint bật nhóm chèn ảnh
-                  // (cả ảnh đính kèm ở lượt trước còn trong phiên: lời "đặt hình đó vào slide 4" không có từ khóa — soát mã Đợt 11, #7)
-                  ...(host === "PowerPoint" && (images.length || listAttachedImages().length) ? ["hinh_anh"] : []),
-                ],
+                // Đợt 10–11: tệp .docx (Word) / ảnh đính kèm lượt này hoặc còn trong phiên (PowerPoint) bật nhóm công cụ (core/turnPrep.ts)
+                groupHints: groupHintsFor({ host, atts, images: images.length, sessionImages: listAttachedImages().length }),
                 // Kỹ năng gọi bằng /tên kéo theo nhóm công cụ của nó (soát mã Đợt 10, H3)
                 groupSkills: [...auto.map((k) => k.name), ...(slash.label?.startsWith("/") ? [slash.label.slice(1)] : [])],
               }
