@@ -1,0 +1,28 @@
+{
+ "url": "https://openrouter.ai/api/v1/chat/completions",
+ "headers": {
+  "authorization": "Bearer <KEY>",
+  "content-type": "application/json",
+  "x-title": "AI Da Nguon Office Add-in"
+ },
+ "body": {
+  "model": "anthropic/claude-sonnet-5.5",
+  "messages": [
+   {
+    "role": "system",
+    "content": "<141 ký tự #f115be4f>"
+   },
+   {
+    "role": "user",
+    "content": "Sửa Điều 5."
+   }
+  ],
+  "stream": true,
+  "plugins": [
+   {
+    "id": "web",
+    "max_results": 5
+   }
+  ]
+ }
+}

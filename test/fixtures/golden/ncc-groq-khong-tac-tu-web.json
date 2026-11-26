@@ -1,0 +1,21 @@
+{
+ "url": "https://api.groq.com/openai/v1/chat/completions",
+ "headers": {
+  "authorization": "Bearer <KEY>",
+  "content-type": "application/json"
+ },
+ "body": {
+  "model": "llama-golden",
+  "messages": [
+   {
+    "role": "system",
+    "content": "<141 ký tự #f115be4f>"
+   },
+   {
+    "role": "user",
+    "content": "Sửa Điều 5."
+   }
+  ],
+  "stream": true
+ }
+}

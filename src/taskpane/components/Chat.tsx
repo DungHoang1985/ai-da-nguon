@@ -52,7 +52,7 @@ import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { publishSnapshot } from "../../core/share";
 import { SHOW_SIZE_FROM, sizeNote } from "../../core/inputsize";
 import { REDO_WITH_TOOLS, TaskSoFar, answerAfterGate, mergeTaskFacts, taskSoFar, toolFailureClaim, unbackedEditClaims, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
-import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, claimCommand, clearBeat, connectionLine, connections, describePayload, normalizeApp, reply, sweep, takeCommand } from "../../core/crossapp";
+import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, claimCommand, clearBeat, connectionLine, connections, describePayload, normalizeApp, receiveBlocked, reply, sweep, takeCommand } from "../../core/crossapp";
 import { executeIncoming } from "../../office/crossExec";
 import { RefTarget, findRefs } from "../../core/refs";
 import { parseMarkdownTable } from "../../core/table";
@@ -535,21 +535,33 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     const token = Math.random().toString(36).slice(2);
     const receive = async () => {
       // Khung đang chạy một lượt của chính nó (hoặc đang hỏi người dùng): để lệnh nằm trong hộp thư, lát nữa lấy; khung gửi tự rút nếu chờ quá lâu
-      if (working || !hostTools || busyRef.current) return;
+      if (receiveBlocked({ working, hasTools: !!hostTools, busy: busyRef.current, sending: sendingRef.current })) return;
       const cmd = takeCommand(ls, selfApp, { accept: acceptRef.current, seen: seenCmds.current, title });
       if (!cmd) return;
       working = true;
-      if (!(await claimCommand(ls, cmd.id, token))) {
+      // Bận NGAY từ lúc lấy được lệnh, trước khi chờ giành lệnh (claimCommand chờ 80–140 ms): phản biện bước 0 nhóm 2 (26/11/2026) —
+      // trước đây busyRef chỉ bật sau lần chờ đó nên người dùng bấm Gửi đúng lúc ấy thì hai luồng ghi chạy song song
+      busyRef.current = true;
+      const release = () => {
         working = false;
+        busyRef.current = false;
+      };
+      let claimed = false;
+      try {
+        claimed = await claimCommand(ls, cmd.id, token);
+      } catch {
+        claimed = false;
+      }
+      if (!claimed) {
+        release();
         return;
       }
       if (!linkedRef.current.includes(cmd.from)) {
         reply(ls, cmd.id, { ok: false, error: `Khung AI Đa Nguồn ở ${selfApp} đang tắt kết nối với ${cmd.from}.` });
-        working = false;
+        release();
         return;
       }
       // Trong lúc ghi hộ, khung này coi như đang bận: người dùng chưa gửi được yêu cầu mới (tránh hai luồng ghi chen nhau)
-      busyRef.current = true;
       setBusy(true);
       const log: UndoEntry[] = [];
       const what = describePayload(cmd.payload);

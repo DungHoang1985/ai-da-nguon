@@ -1,0 +1,29 @@
+{
+ "url": "https://api.moonshot.ai/anthropic/v1/messages",
+ "headers": {
+  "authorization": "Bearer <KEY>",
+  "content-type": "application/json"
+ },
+ "body": {
+  "model": "kimi-k3.1-pro",
+  "max_tokens": 16000,
+  "stream": true,
+  "messages": [
+   {
+    "role": "user",
+    "content": [
+     {
+      "type": "text",
+      "text": "Sửa Điều 5."
+     }
+    ]
+   }
+  ],
+  "system": [
+   {
+    "type": "text",
+    "text": "<141 ký tự #f115be4f>"
+   }
+  ]
+ }
+}

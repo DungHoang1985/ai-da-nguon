@@ -272,6 +272,13 @@ export async function sendCommand(s: KVStore, from: AppName, to: AppName, payloa
 
 // ---------- Nhận ----------
 
+/** Khung có đang bận, chưa nhận lệnh ghi chéo được không (bước 0 nhóm 2, 26/11/2026). `sending`: người dùng vừa bấm Gửi, khung đang
+ *  chuẩn bị lượt (đọc vùng chọn, tải danh mục tới 8 giây ở Miễn phí) nhưng chưa chuyển sang "đang chạy" — trước đây không xét nên lệnh
+ *  ghi chéo có thể chạy chen vào tài liệu đúng lúc đó. Bận thì lệnh nằm lại hộp thư, lát nữa lấy. */
+export function receiveBlocked(s: { working: boolean; hasTools: boolean; busy: boolean; sending: boolean }): boolean {
+  return s.working || !s.hasTools || s.busy || s.sending;
+}
+
 /** Lấy lệnh đang chờ cho ứng dụng này (và gỡ khỏi hộp thư). Lệnh sai hình dạng, quá hạn, đã chạy đều bị bỏ.
  *  `seen` là tập id đã chạy của khung này. Trả null khi không có gì để làm. */
 export function takeCommand(s: KVStore, self: AppName, o: { accept: boolean; seen: Set<string>; now?: number; title?: string }): Command | null {

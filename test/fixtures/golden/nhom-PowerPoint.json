@@ -1,0 +1,319 @@
+{
+ "nhom": [
+  {
+   "id": "bieu_do_so_do",
+   "label": "biểu đồ, sơ đồ quy trình và mốc thời gian",
+   "tools": [
+    "ppt_add_chart",
+    "ppt_add_process_flow"
+   ],
+   "keywords": [
+    "bieu do",
+    "do thi",
+    "chart",
+    "so lieu",
+    "quy trinh",
+    "cac buoc",
+    "moc thoi gian",
+    "timeline",
+    "so do",
+    "tien do",
+    "lo trinh",
+    "giai doan",
+    "truc quan"
+   ],
+   "skills": [
+    "thiet-ke-bieu-do",
+    "bao-cao-tien-do-du-an",
+    "trinh-chieu-tu-tai-lieu"
+   ]
+  },
+  {
+   "id": "sap_xep",
+   "label": "sắp xếp, nhân bản, xóa slide, đổi bố cục",
+   "tools": [
+    "ppt_move_slide",
+    "ppt_duplicate_slide",
+    "ppt_delete_slide",
+    "ppt_set_layout"
+   ],
+   "keywords": [
+    "di chuyen",
+    "doi cho",
+    "doi thu tu",
+    "sap xep",
+    "len truoc",
+    "len dau",
+    "ra sau",
+    "xuong cuoi",
+    "hoan doi",
+    "doi vi tri",
+    "nhan ban",
+    "sao chep slide",
+    "xoa slide",
+    "bo slide",
+    "bo cuc",
+    "layout"
+   ],
+   "skills": [
+    "kiem-tra-bai-trinh-chieu"
+   ]
+  },
+  {
+   "id": "kiem_bai",
+   "label": "kiểm cả bài theo mẫu",
+   "tools": [
+    "ppt_check_deck"
+   ],
+   "keywords": [
+    "kiem tra",
+    "soat",
+    "ra soat",
+    "hoan thien",
+    "truoc khi gui",
+    "dung mau",
+    "phong chu",
+    "co chu",
+    "tran chu",
+    "lỗi"
+   ],
+   "skills": [
+    "kiem-tra-bai-trinh-chieu"
+   ]
+  },
+  {
+   "id": "hinh_anh",
+   "label": "chèn ảnh đính kèm",
+   "tools": [
+    "ppt_insert_image"
+   ],
+   "keywords": [
+    "ảnh",
+    "hinh anh",
+    "logo",
+    "photo",
+    "picture"
+   ]
+  },
+  {
+   "id": "bang",
+   "label": "bảng",
+   "tools": [
+    "ppt_edit_table"
+   ],
+   "keywords": [
+    "bảng",
+    "table",
+    "cột"
+   ]
+  },
+  {
+   "id": "ngoai",
+   "label": "ứng dụng Office khác",
+   "tools": [
+    "read_other_app",
+    "write_other_app"
+   ],
+   "keywords": [
+    "word",
+    "excel",
+    "van ban dang mo",
+    "so tinh",
+    "bang tinh",
+    "ung dung khac"
+   ],
+   "skills": [
+    "bao-cao-tien-do-du-an",
+    "trinh-chieu-tu-tai-lieu",
+    "chuan-bi-hop"
+   ]
+  },
+  {
+   "id": "bo_nho",
+   "label": "ghi nhớ cho hội thoại sau",
+   "tools": [
+    "propose_memory"
+   ],
+   "keywords": [
+    "tu gio",
+    "tu nay",
+    "tu lan sau",
+    "lan sau",
+    "ve sau",
+    "ghi nho",
+    "hay nho",
+    "nho giup",
+    "nho rang",
+    "nho la",
+    "luon luon",
+    "lan nao cung",
+    "quy uoc",
+    "nhớ"
+   ]
+  }
+ ],
+ "macDinh": [
+  "ppt_get_overview",
+  "ppt_add_slide",
+  "ppt_add_slides",
+  "ppt_set_shape_text",
+  "ppt_add_textbox",
+  "ppt_add_shape",
+  "ppt_add_table",
+  "ppt_go_to_slide",
+  "ppt_update_shape",
+  "ppt_delete_shape",
+  "ppt_get_slide_image",
+  "ppt_get_theme",
+  "ppt_format_text",
+  "ppt_get_selection"
+ ],
+ "tungNhom": {
+  "bieu_do_so_do": [
+   "ppt_get_overview",
+   "ppt_add_slide",
+   "ppt_add_slides",
+   "ppt_set_shape_text",
+   "ppt_add_textbox",
+   "ppt_add_shape",
+   "ppt_add_table",
+   "ppt_go_to_slide",
+   "ppt_add_chart",
+   "ppt_add_process_flow",
+   "ppt_update_shape",
+   "ppt_delete_shape",
+   "ppt_get_slide_image",
+   "ppt_get_theme",
+   "ppt_format_text",
+   "ppt_get_selection"
+  ],
+  "sap_xep": [
+   "ppt_get_overview",
+   "ppt_add_slide",
+   "ppt_add_slides",
+   "ppt_set_shape_text",
+   "ppt_add_textbox",
+   "ppt_add_shape",
+   "ppt_add_table",
+   "ppt_go_to_slide",
+   "ppt_move_slide",
+   "ppt_duplicate_slide",
+   "ppt_delete_slide",
+   "ppt_update_shape",
+   "ppt_delete_shape",
+   "ppt_get_slide_image",
+   "ppt_get_theme",
+   "ppt_format_text",
+   "ppt_get_selection",
+   "ppt_set_layout"
+  ],
+  "kiem_bai": [
+   "ppt_get_overview",
+   "ppt_add_slide",
+   "ppt_add_slides",
+   "ppt_set_shape_text",
+   "ppt_add_textbox",
+   "ppt_add_shape",
+   "ppt_add_table",
+   "ppt_go_to_slide",
+   "ppt_update_shape",
+   "ppt_delete_shape",
+   "ppt_get_slide_image",
+   "ppt_check_deck",
+   "ppt_get_theme",
+   "ppt_format_text",
+   "ppt_get_selection"
+  ],
+  "hinh_anh": [
+   "ppt_get_overview",
+   "ppt_add_slide",
+   "ppt_add_slides",
+   "ppt_insert_image",
+   "ppt_set_shape_text",
+   "ppt_add_textbox",
+   "ppt_add_shape",
+   "ppt_add_table",
+   "ppt_go_to_slide",
+   "ppt_update_shape",
+   "ppt_delete_shape",
+   "ppt_get_slide_image",
+   "ppt_get_theme",
+   "ppt_format_text",
+   "ppt_get_selection"
+  ],
+  "bang": [
+   "ppt_get_overview",
+   "ppt_add_slide",
+   "ppt_add_slides",
+   "ppt_set_shape_text",
+   "ppt_add_textbox",
+   "ppt_add_shape",
+   "ppt_add_table",
+   "ppt_go_to_slide",
+   "ppt_update_shape",
+   "ppt_delete_shape",
+   "ppt_get_slide_image",
+   "ppt_get_theme",
+   "ppt_format_text",
+   "ppt_edit_table",
+   "ppt_get_selection"
+  ],
+  "ngoai": [
+   "ppt_get_overview",
+   "ppt_add_slide",
+   "ppt_add_slides",
+   "ppt_set_shape_text",
+   "ppt_add_textbox",
+   "ppt_add_shape",
+   "ppt_add_table",
+   "ppt_go_to_slide",
+   "ppt_update_shape",
+   "ppt_delete_shape",
+   "ppt_get_slide_image",
+   "ppt_get_theme",
+   "ppt_format_text",
+   "ppt_get_selection"
+  ],
+  "bo_nho": [
+   "ppt_get_overview",
+   "ppt_add_slide",
+   "ppt_add_slides",
+   "ppt_set_shape_text",
+   "ppt_add_textbox",
+   "ppt_add_shape",
+   "ppt_add_table",
+   "ppt_go_to_slide",
+   "ppt_update_shape",
+   "ppt_delete_shape",
+   "ppt_get_slide_image",
+   "ppt_get_theme",
+   "ppt_format_text",
+   "ppt_get_selection"
+  ]
+ },
+ "tatCa": [
+  "ppt_get_overview",
+  "ppt_add_slide",
+  "ppt_add_slides",
+  "ppt_insert_image",
+  "ppt_set_shape_text",
+  "ppt_add_textbox",
+  "ppt_add_shape",
+  "ppt_add_table",
+  "ppt_go_to_slide",
+  "ppt_add_chart",
+  "ppt_add_process_flow",
+  "ppt_move_slide",
+  "ppt_duplicate_slide",
+  "ppt_delete_slide",
+  "ppt_update_shape",
+  "ppt_delete_shape",
+  "ppt_get_slide_image",
+  "ppt_check_deck",
+  "ppt_get_theme",
+  "ppt_format_text",
+  "ppt_edit_table",
+  "ppt_get_selection",
+  "ppt_set_layout"
+ ]
+}

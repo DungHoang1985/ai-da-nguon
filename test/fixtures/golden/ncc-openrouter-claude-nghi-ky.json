@@ -1,0 +1,1230 @@
+{
+ "url": "https://openrouter.ai/api/v1/messages",
+ "headers": {
+  "authorization": "Bearer <KEY>",
+  "content-type": "application/json"
+ },
+ "body": {
+  "model": "anthropic/claude-sonnet-5.5",
+  "max_tokens": 16000,
+  "stream": true,
+  "messages": [
+   {
+    "role": "user",
+    "content": [
+     {
+      "type": "text",
+      "text": "<518 ký tự #52a23399>",
+      "cache_control": {
+       "type": "ephemeral"
+      }
+     }
+    ]
+   }
+  ],
+  "thinking": {
+   "type": "adaptive"
+  },
+  "output_config": {
+   "effort": "xhigh"
+  },
+  "system": [
+   {
+    "type": "text",
+    "text": "<10415 ký tự #7d146c4f>",
+    "cache_control": {
+     "type": "ephemeral"
+    }
+   }
+  ],
+  "tools": [
+   {
+    "name": "word_get_overview",
+    "description": "<139 ký tự #aeafb8ab>",
+    "input_schema": {
+     "type": "object",
+     "properties": {}
+    }
+   },
+   {
+    "name": "word_get_outline",
+    "description": "<268 ký tự #715df392>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "max_level": {
+       "type": "number",
+       "description": "0 = top level only. Default: all."
+      },
+      "start": {
+       "type": "number",
+       "description": "From next_start."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_find",
+    "description": "<266 ký tự #205dcf38>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "query": {
+       "type": "string",
+       "description": "Word or short phrase to find."
+      },
+      "match_case": {
+       "type": "boolean"
+      },
+      "whole_word": {
+       "type": "boolean"
+      },
+      "max": {
+       "type": "number",
+       "description": "Default 30."
+      }
+     },
+     "required": [
+      "query"
+     ]
+    }
+   },
+   {
+    "name": "word_read_clause",
+    "description": "Read one whole clause with its sub-clauses by number: 'Điều 5', '5.3', '5.3(a)', 'khoản 2 Điều 5', 'Chương II'.",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "number": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "number"
+     ]
+    }
+   },
+   {
+    "name": "word_read_paragraphs",
+    "description": "<407 ký tự #d6705cb9>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "start": {
+       "type": "number",
+       "description": "Default 0."
+      },
+      "end": {
+       "type": "number",
+       "description": "Exclusive. Default start+200."
+      },
+      "selection_only": {
+       "type": "boolean"
+      },
+      "view": {
+       "type": "string",
+       "enum": [
+        "current",
+        "original"
+       ],
+       "description": "original = before pending tracked changes. Default current."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_replace_text",
+    "description": "<227 ký tự #6239b5fc>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "find": {
+       "type": "string"
+      },
+      "replace": {
+       "type": "string"
+      },
+      "paragraph_index": {
+       "type": "number"
+      },
+      "expect": {
+       "type": "string",
+       "description": "With paragraph_index: First ~30 characters of the paragraph exactly as read (checked before writing)."
+      },
+      "occurrence": {
+       "type": "number",
+       "description": "1 = first."
+      },
+      "all": {
+       "type": "boolean"
+      },
+      "match_case": {
+       "type": "boolean"
+      },
+      "whole_word": {
+       "type": "boolean"
+      },
+      "max_replacements": {
+       "type": "number",
+       "description": "With all=true. Default 50."
+      },
+      "reason": {
+       "type": "string",
+       "description": "Always give: why, one short sentence in the user's language (shown to the user)."
+      }
+     },
+     "required": [
+      "find",
+      "replace"
+     ]
+    }
+   },
+   {
+    "name": "word_set_paragraph_text",
+    "description": "<161 ký tự #6f300406>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "index": {
+       "type": "number"
+      },
+      "text": {
+       "type": "string"
+      },
+      "expect": {
+       "type": "string",
+       "description": "First ~30 characters of the paragraph exactly as read (checked before writing)."
+      },
+      "reason": {
+       "type": "string",
+       "description": "Always give: why, one short sentence in the user's language (shown to the user)."
+      }
+     },
+     "required": [
+      "index",
+      "text",
+      "expect"
+     ]
+    }
+   },
+   {
+    "name": "word_insert_paragraphs",
+    "description": "<206 ký tự #5638f3a4>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "text": {
+       "type": "string"
+      },
+      "position": {
+       "type": "string",
+       "enum": [
+        "end",
+        "start",
+        "after_paragraph",
+        "before_paragraph",
+        "after_selection"
+       ],
+       "description": "Default end."
+      },
+      "paragraph_index": {
+       "type": "number"
+      },
+      "expect": {
+       "type": "string",
+       "description": "With paragraph_index: First ~30 characters of the paragraph exactly as read (checked before writing)."
+      },
+      "style": {
+       "type": "string",
+       "enum": [
+        "Normal",
+        "Heading1",
+        "Heading2",
+        "Heading3",
+        "Title",
+        "ListBullet",
+        "ListNumber",
+        "Quote"
+       ],
+       "description": "One style for all lines."
+      },
+      "reason": {
+       "type": "string",
+       "description": "Always give: why, one short sentence in the user's language (shown to the user)."
+      }
+     },
+     "required": [
+      "text"
+     ]
+    }
+   },
+   {
+    "name": "word_insert_clause",
+    "description": "<251 ký tự #6a6dfc8e>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "after_index": {
+       "type": "number",
+       "description": "First paragraph of the anchor clause."
+      },
+      "expect": {
+       "type": "string",
+       "description": "First ~30 characters of the paragraph exactly as read (checked before writing)."
+      },
+      "text": {
+       "type": "string"
+      },
+      "level": {
+       "type": "string",
+       "enum": [
+        "same",
+        "deeper",
+        "shallower"
+       ],
+       "description": "same (default) = sibling; deeper = its first sub-clause; shallower = one level up."
+      },
+      "reason": {
+       "type": "string",
+       "description": "Always give: why, one short sentence in the user's language (shown to the user)."
+      }
+     },
+     "required": [
+      "after_index",
+      "text",
+      "expect"
+     ]
+    }
+   },
+   {
+    "name": "word_change_level",
+    "description": "Move an auto-numbered clause one level deeper or shallower in Word's numbering (e.g. 8.3 → 8.2(a)).",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "index": {
+       "type": "number"
+      },
+      "expect": {
+       "type": "string",
+       "description": "First ~30 characters of the paragraph exactly as read (checked before writing)."
+      },
+      "direction": {
+       "type": "string",
+       "enum": [
+        "deeper",
+        "shallower"
+       ]
+      }
+     },
+     "required": [
+      "index",
+      "direction",
+      "expect"
+     ]
+    }
+   },
+   {
+    "name": "word_replace_selection",
+    "description": "Replace the user's current selection (or insert at the cursor) with text (tracked).",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "text": {
+       "type": "string"
+      },
+      "reason": {
+       "type": "string",
+       "description": "Always give: why, one short sentence in the user's language (shown to the user)."
+      }
+     },
+     "required": [
+      "text"
+     ]
+    }
+   },
+   {
+    "name": "word_format_text",
+    "description": "<198 ký tự #bbba3ff9>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "find": {
+       "type": "string"
+      },
+      "paragraph_index": {
+       "type": "number"
+      },
+      "expect": {
+       "type": "string",
+       "description": "With paragraph_index: First ~30 characters of the paragraph exactly as read (checked before writing)."
+      },
+      "use_selection": {
+       "type": "boolean"
+      },
+      "bold": {
+       "type": "boolean"
+      },
+      "italic": {
+       "type": "boolean"
+      },
+      "underline": {
+       "type": "boolean"
+      },
+      "font_size": {
+       "type": "number"
+      },
+      "font_name": {
+       "type": "string"
+      },
+      "font_color": {
+       "type": "string",
+       "description": "Hex, e.g. #C00000."
+      },
+      "highlight_color": {
+       "type": "string",
+       "description": "Hex or 'none'."
+      },
+      "alignment": {
+       "type": "string",
+       "enum": [
+        "Left",
+        "Centered",
+        "Right",
+        "Justified"
+       ]
+      },
+      "first_line_indent_mm": {
+       "type": "number",
+       "description": "Administrative documents: 10. 0 removes."
+      },
+      "space_after_pt": {
+       "type": "number",
+       "description": "Administrative documents: 6."
+      },
+      "line_spacing": {
+       "type": "number",
+       "description": "In lines: 1, 1.2, 1.5."
+      },
+      "style": {
+       "type": "string",
+       "enum": [
+        "Normal",
+        "Heading1",
+        "Heading2",
+        "Heading3",
+        "Title",
+        "ListBullet",
+        "ListNumber",
+        "Quote"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "name": "word_add_comment",
+    "description": "<171 ký tự #5e2c470f>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "text": {
+       "type": "string"
+      },
+      "find": {
+       "type": "string",
+       "description": "Anchor text, max 255 chars."
+      },
+      "paragraph_index": {
+       "type": "number"
+      },
+      "expect": {
+       "type": "string",
+       "description": "With paragraph_index: First ~30 characters of the paragraph exactly as read (checked before writing)."
+      },
+      "use_selection": {
+       "type": "boolean"
+      }
+     },
+     "required": [
+      "text"
+     ]
+    }
+   },
+   {
+    "name": "word_insert_table",
+    "description": "Insert a table (tracked) after a paragraph, after the selection, or at the end. First row is the header.",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "values": {
+       "type": "array",
+       "items": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      },
+      "position": {
+       "type": "string",
+       "enum": [
+        "end",
+        "after_paragraph",
+        "after_selection"
+       ]
+      },
+      "paragraph_index": {
+       "type": "number"
+      },
+      "expect": {
+       "type": "string",
+       "description": "With paragraph_index: First ~30 characters of the paragraph exactly as read (checked before writing)."
+      }
+     },
+     "required": [
+      "values"
+     ]
+    }
+   },
+   {
+    "name": "word_delete_paragraphs",
+    "description": "<159 ký tự #ee5538c8>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "start": {
+       "type": "number"
+      },
+      "end": {
+       "type": "number"
+      },
+      "expect": {
+       "type": "string",
+       "description": "For `start`: First ~30 characters of the paragraph exactly as read (checked before writing)."
+      },
+      "reason": {
+       "type": "string",
+       "description": "Always give: why, one short sentence in the user's language (shown to the user)."
+      }
+     },
+     "required": [
+      "start",
+      "expect"
+     ]
+    }
+   },
+   {
+    "name": "word_list_comments",
+    "description": "List comments: anchored text, author, paragraph index, clause number, replies, resolved state. Page with next_start.",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "include_resolved": {
+       "type": "boolean",
+       "description": "Default false."
+      },
+      "start": {
+       "type": "number",
+       "description": "From next_start."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_reply_comment",
+    "description": "Reply to a comment thread (e.g. explain what was changed).",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "id": {
+       "type": "string"
+      },
+      "text": {
+       "type": "string"
+      }
+     },
+     "required": [
+      "id",
+      "text"
+     ]
+    }
+   },
+   {
+    "name": "word_resolve_comment",
+    "description": "Mark a comment as resolved (or reopen it).",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "id": {
+       "type": "string"
+      },
+      "resolved": {
+       "type": "boolean",
+       "description": "Default true."
+      }
+     },
+     "required": [
+      "id"
+     ]
+    }
+   },
+   {
+    "name": "word_list_revisions",
+    "description": "<242 ký tự #6eeaf7ca>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "start": {
+       "type": "number",
+       "description": "From next_start."
+      },
+      "author": {
+       "type": "string",
+       "description": "Only this author (name or part)."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_review_revision",
+    "description": "<156 ký tự #b6d10bc3>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "action": {
+       "type": "string",
+       "enum": [
+        "accept",
+        "reject"
+       ]
+      },
+      "indexes": {
+       "type": "array",
+       "items": {
+        "type": "number"
+       }
+      },
+      "texts": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "description": "Per index: start of that change's text as listed."
+      },
+      "all": {
+       "type": "boolean"
+      },
+      "author": {
+       "type": "string",
+       "description": "With all=true: only this author's changes."
+      }
+     },
+     "required": [
+      "action"
+     ]
+    }
+   },
+   {
+    "name": "word_explain_edits",
+    "description": "<356 ký tự #40776d9>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "edits": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "target": {
+          "type": "string",
+          "description": "e.g. Điều 5.2, [¶12]"
+         },
+         "proposed_text": {
+          "type": "string"
+         },
+         "claims": {
+          "type": "array",
+          "items": {
+           "type": "object",
+           "properties": {
+            "claim": {
+             "type": "string"
+            },
+            "basis": {
+             "type": "string",
+             "enum": [
+              "document_text",
+              "tracked_change",
+              "skill_instruction",
+              "user_instruction",
+              "external_law",
+              "model_judgment"
+             ]
+            },
+            "source": {
+             "type": "string",
+             "description": "clause, skill or law"
+            }
+           },
+           "required": [
+            "claim",
+            "basis"
+           ]
+          }
+         }
+        },
+        "required": [
+         "target",
+         "proposed_text",
+         "claims"
+        ]
+       }
+      }
+     },
+     "required": [
+      "edits"
+     ]
+    }
+   },
+   {
+    "name": "word_read_tables",
+    "description": "Read tables: index, size, cell values. Page with next_start.",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "max_rows": {
+       "type": "number",
+       "description": "Per table. Default 40."
+      },
+      "start": {
+       "type": "number",
+       "description": "From next_start."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_fill_table",
+    "description": "Fill cells of an existing table in place (tracked), starting at a row/column; extra rows are appended.",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "table_index": {
+       "type": "number",
+       "description": "From word_read_tables."
+      },
+      "values": {
+       "type": "array",
+       "items": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       }
+      },
+      "start_row": {
+       "type": "number",
+       "description": "Default 1 (skip header row)."
+      },
+      "start_col": {
+       "type": "number",
+       "description": "Default 0."
+      },
+      "reason": {
+       "type": "string",
+       "description": "Always give: why, one short sentence in the user's language (shown to the user)."
+      }
+     },
+     "required": [
+      "table_index",
+      "values"
+     ]
+    }
+   },
+   {
+    "name": "word_go_to",
+    "description": "Select a paragraph so the user sees it.",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "paragraph_index": {
+       "type": "number"
+      }
+     },
+     "required": [
+      "paragraph_index"
+     ]
+    }
+   },
+   {
+    "name": "word_check_consistency",
+    "description": "<392 ký tự #d13b0554>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "checks": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "enum": [
+         "numbering",
+         "reference",
+         "term",
+         "party",
+         "blank",
+         "amount",
+         "fact"
+        ]
+       },
+       "description": "Default: all."
+      },
+      "start": {
+       "type": "number",
+       "description": "Skip the first N points (paging, from next_start). Default 0."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_read_parts",
+    "description": "<292 ký tự #5c6d96b9>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "parts": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "enum": [
+         "footnotes",
+         "endnotes",
+         "headers_footers",
+         "bookmarks",
+         "fields",
+         "content_controls",
+         "text_boxes"
+        ]
+       },
+       "description": "Which parts to read. Default: all."
+      },
+      "include_hidden_bookmarks": {
+       "type": "boolean",
+       "description": "Also list hidden bookmarks (names starting with _). Default false."
+      },
+      "start": {
+       "type": "number",
+       "description": "Paging: when a list is truncated, call again with that one part and start=next_start."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_check_page_format",
+    "description": "<292 ký tự #4a40c3cc>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "top_mm": {
+       "type": "number"
+      },
+      "bottom_mm": {
+       "type": "number"
+      },
+      "left_mm": {
+       "type": "number"
+      },
+      "right_mm": {
+       "type": "number"
+      },
+      "font": {
+       "type": "string"
+      },
+      "font_size": {
+       "type": "number",
+       "description": "Body size in points."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_compare_versions",
+    "description": "<395 ký tự #94e860bd>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "file": {
+       "type": "string",
+       "description": "Attached .docx name. Default: the latest."
+      },
+      "open_redline": {
+       "type": "boolean",
+       "description": "Default false."
+      },
+      "start": {
+       "type": "number",
+       "description": "Skip the first N differences (paging, from next_start). Default 0."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_create_admin_document",
+    "description": "<562 ký tự #4977e9d9>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "doc_type": {
+       "type": "string",
+       "enum": [
+        "cong_van",
+        "to_trinh",
+        "bao_cao",
+        "quyet_dinh",
+        "nghi_quyet",
+        "thong_bao",
+        "giay_moi",
+        "bien_ban",
+        "ke_hoach",
+        "giay_uy_quyen",
+        "hop_dong",
+        "khac"
+       ],
+       "description": "cong_van: no title line, subject shown as 'V/v …'. hop_dong: contract, two-party signatures."
+      },
+      "org": {
+       "type": "string",
+       "description": "Issuing organisation, full official name. Required except hop_dong (optional, top-left)."
+      },
+      "parent_org": {
+       "type": "string",
+       "description": "Organisation directly above the issuing one, if any."
+      },
+      "number": {
+       "type": "string",
+       "description": "Normally omit."
+      },
+      "symbol": {
+       "type": "string",
+       "description": "e.g. 'TTr-ABC', 'ABC-PC'."
+      },
+      "place": {
+       "type": "string",
+       "description": "Place name, e.g. 'Hà Nội'."
+      },
+      "date": {
+       "type": "string",
+       "description": "e.g. 'ngày 05 tháng 01 năm 2026'. Omit = blanks."
+      },
+      "title": {
+       "type": "string",
+       "description": "For 'khac'; contract name for hop_dong."
+      },
+      "subject": {
+       "type": "string",
+       "description": "Trích yếu (công văn: text after 'V/v')."
+      },
+      "to": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "description": "'Kính gửi' addressees."
+      },
+      "body": {
+       "type": "string",
+       "description": "<167 ký tự #86a0e956>"
+      },
+      "signer_authority": {
+       "type": "string",
+       "description": "<139 ký tự #dbeb3f63>"
+      },
+      "signer_title": {
+       "type": "string",
+       "description": "e.g. 'GIÁM ĐỐC'."
+      },
+      "signer_name": {
+       "type": "string"
+      },
+      "left_signer_title": {
+       "type": "string",
+       "description": "Left signer (biên bản: 'THƯ KÝ'; hop_dong: Bên A)."
+      },
+      "left_signer_name": {
+       "type": "string"
+      },
+      "left_signer_authority": {
+       "type": "string",
+       "description": "hop_dong: default 'ĐẠI DIỆN BÊN A'."
+      },
+      "recipients": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "description": "Nơi nhận lines ('Như trên', 'Lưu: VT' auto-added)."
+      },
+      "font_size": {
+       "type": "number",
+       "enum": [
+        13,
+        14
+       ],
+       "description": "Body size (default 14; hop_dong 13)."
+      },
+      "page_setup": {
+       "type": "boolean",
+       "description": "Set A4, margins, page number. Default: true only on an empty document."
+      },
+      "position": {
+       "type": "string",
+       "enum": [
+        "end",
+        "after_paragraph"
+       ],
+       "description": "Default end."
+      },
+      "paragraph_index": {
+       "type": "number"
+      },
+      "expect": {
+       "type": "string",
+       "description": "First ~30 characters of that paragraph."
+      }
+     },
+     "required": [
+      "doc_type",
+      "body"
+     ]
+    }
+   },
+   {
+    "name": "word_set_page_format",
+    "description": "<210 ký tự #58f0d1d7>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "top_mm": {
+       "type": "number"
+      },
+      "bottom_mm": {
+       "type": "number"
+      },
+      "left_mm": {
+       "type": "number"
+      },
+      "right_mm": {
+       "type": "number"
+      },
+      "a4": {
+       "type": "boolean",
+       "description": "A4 portrait. Default true."
+      },
+      "page_number": {
+       "type": "boolean",
+       "description": "Page number at top centre, hidden on page 1. Default false."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_list_form_fields",
+    "description": "<419 ký tự #5c47a89f>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "start": {
+       "type": "integer",
+       "description": "From next_start."
+      }
+     }
+    }
+   },
+   {
+    "name": "word_fill_form",
+    "description": "<513 ký tự #cdbd87fe>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "fields": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "id": {
+          "type": "string"
+         },
+         "value": {
+          "type": "string"
+         },
+         "label": {
+          "type": "string"
+         }
+        },
+        "required": [
+         "id",
+         "value",
+         "label"
+        ]
+       }
+      }
+     },
+     "required": [
+      "fields"
+     ]
+    }
+   },
+   {
+    "name": "use_skill",
+    "description": "<208 ký tự #f38e1e03>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "name": {
+       "type": "string",
+       "description": "Skill name exactly as listed."
+      },
+      "file": {
+       "type": "string",
+       "description": "Optional reference file of the skill."
+      }
+     },
+     "required": [
+      "name"
+     ]
+    }
+   },
+   {
+    "name": "read_other_app",
+    "description": "<142 ký tự #5aaa702c>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "app": {
+       "type": "string",
+       "enum": [
+        "Excel",
+        "PowerPoint"
+       ]
+      }
+     },
+     "required": [
+      "app"
+     ]
+    }
+   },
+   {
+    "name": "write_other_app",
+    "description": "<314 ký tự #254d9689>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "app": {
+       "type": "string",
+       "enum": [
+        "Excel",
+        "PowerPoint"
+       ]
+      },
+      "text": {
+       "type": "string",
+       "description": "Word: paragraphs, one per line ('# ' heading, '- ' bullet)."
+      },
+      "sheet_name": {
+       "type": "string",
+       "description": "Excel: new sheet name."
+      },
+      "values": {
+       "type": "array",
+       "items": {
+        "type": "array",
+        "items": {
+         "type": "string"
+        }
+       },
+       "description": "Excel: rows, first = headers; plain values (formulas become text)."
+      },
+      "title": {
+       "type": "string",
+       "description": "PowerPoint: slide title."
+      },
+      "body": {
+       "type": "string",
+       "description": "PowerPoint: bullet lines separated by \\n."
+      }
+     },
+     "required": [
+      "app"
+     ]
+    }
+   },
+   {
+    "name": "read_attachment_pages",
+    "description": "<263 ký tự #44decf71>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "file": {
+       "type": "string",
+       "description": "Optional when only one PDF."
+      },
+      "pages": {
+       "type": "string",
+       "description": "Pages to read, e.g. \"1-4\" or \"2, 5, 7\"."
+      },
+      "as_image": {
+       "type": "boolean",
+       "description": "Also get IMAGES of text pages (max 4) to check amounts, dates, signatures when the text looks like faulty OCR."
+      }
+     },
+     "required": [
+      "pages"
+     ]
+    }
+   },
+   {
+    "name": "read_attachment_text",
+    "description": "<262 ký tự #9e0f7945>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "file": {
+       "type": "string",
+       "description": "Optional when only one .docx."
+      },
+      "clause": {
+       "type": "string"
+      },
+      "paragraphs": {
+       "type": "string",
+       "description": "e.g. \"120-160\" (¶ numbers in the outline)."
+      }
+     }
+    }
+   },
+   {
+    "name": "propose_memory",
+    "description": "<214 ký tự #e2d26f75>",
+    "input_schema": {
+     "type": "object",
+     "properties": {
+      "text": {
+       "type": "string",
+       "description": "One rule, ≤300 chars."
+      },
+      "scope": {
+       "type": "string",
+       "enum": [
+        "all",
+        "this_app"
+       ]
+      }
+     },
+     "required": [
+      "text"
+     ]
+    }
+   }
+  ]
+ }
+}

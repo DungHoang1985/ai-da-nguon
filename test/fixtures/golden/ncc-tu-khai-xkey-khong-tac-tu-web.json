@@ -1,0 +1,36 @@
+{
+ "url": "https://vi-du.invalid/anthropic/v1/messages",
+ "headers": {
+  "anthropic-version": "2023-06-01",
+  "content-type": "application/json",
+  "x-api-key": "<KEY>"
+ },
+ "body": {
+  "model": "m-b",
+  "max_tokens": 16000,
+  "stream": true,
+  "messages": [
+   {
+    "role": "user",
+    "content": [
+     {
+      "type": "text",
+      "text": "Sửa Điều 5.",
+      "cache_control": {
+       "type": "ephemeral"
+      }
+     }
+    ]
+   }
+  ],
+  "system": [
+   {
+    "type": "text",
+    "text": "<141 ký tự #f115be4f>",
+    "cache_control": {
+     "type": "ephemeral"
+    }
+   }
+  ]
+ }
+}

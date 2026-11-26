@@ -1,0 +1,38 @@
+{
+ "url": "https://openrouter.ai/api/v1/messages",
+ "headers": {
+  "authorization": "Bearer <KEY>",
+  "content-type": "application/json"
+ },
+ "body": {
+  "model": "anthropic/claude-sonnet-5.5",
+  "max_tokens": 16000,
+  "stream": true,
+  "messages": [
+   {
+    "role": "user",
+    "content": [
+     {
+      "type": "text",
+      "text": "Sửa Điều 5.",
+      "cache_control": {
+       "type": "ephemeral"
+      }
+     }
+    ]
+   }
+  ],
+  "thinking": {
+   "type": "adaptive"
+  },
+  "system": [
+   {
+    "type": "text",
+    "text": "<141 ký tự #f115be4f>",
+    "cache_control": {
+     "type": "ephemeral"
+    }
+   }
+  ]
+ }
+}

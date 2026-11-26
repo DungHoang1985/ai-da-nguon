@@ -1,0 +1,50 @@
+# Kế hoạch nhóm 2 — rà soát kiến trúc (lập 26/11/2026, bản 2 sau phản biện; anh duyệt 26/11: làm từng bước, hỏi trước mỗi lần phát hành; bước 4b làm, Chạy thật ghi "chưa kiểm được" tới khi có nguồn)
+
+Nguồn: bảng "Phát hiện để lại" của `ra-soat-kien-truc-2026-11-20.md` (B7, B8, B9, B13) và mục 1–2 "Ý tưởng". Đo lại trên `main@ecedf77` (v4.13.3). Bản 1 đã qua một tác tử phản biện (model khác, chỉ đọc mã); bản này sửa theo phản biện — ghi ở cuối.
+
+## Hiện trạng đo được
+
+| Mục | Hiện trạng 26/11 |
+|---|---|
+| B7 | `Chat.tsx` 1.815 dòng. `send` (dòng 779) / `prepareAndRun` (797): tải danh mục rồi dựng vòng xoay Miễn phí, xử lý tệp đính kèm (PDF, ảnh, nhắc riêng tư), `groupHints`, khối `onEvent` (~100 dòng: cảnh báo "nói đã sửa mà không ghi"). `receive` (536): nhận lệnh ghi chéo, hẹn giờ 1 giây. Không có kiểm thử máy cho các phần này. |
+| B8 | Thông tin một công cụ rải nhiều chỗ: spec, nhãn bước (`tools.ts`), nhóm (`toolgroups.ts`), rủi ro (`RISK` Word trong closure, `RISKY_NAMES` Excel), `UNDO_LABEL` Word, bước Tự kiểm tra. |
+| B9 | 66 chỗ so sánh theo chuỗi mã nguồn (`"openrouter"`, `"openai"`, `"mistral"`, `"gemini"`…) trong `src/core`, `src/office`, `src/taskpane` (đếm mọi so sánh với chuỗi mã; bản 1 ghi 43 vì chỉ đếm lõi). |
+| B13 | `wordTools.ts` 2.482 dòng: ~480 dòng hàm cấp mô-đun dùng chung + `createWordTools` là một closure ~1.500 dòng giữ trạng thái chung (`lastSnap`, hàng đợi ghi, `tracked`, `UNDO_LABEL`, `RISK`). |
+| Lỗi có thật | `receive` chỉ kiểm `busyRef`, không kiểm `sendingRef` (`Chat.tsx:538`): trong khoảng giữa bấm Gửi và lúc khung chuyển "đang chạy" (đọc vùng chọn, tải danh mục tới 8 giây ở Miễn phí), một lệnh ghi chéo có thể chạy chen vào tài liệu. |
+
+## Thứ tự — mỗi bước một bản phát hành riêng
+
+| Bước | Việc | Nghiệm thu (đo được) |
+|---|---|---|
+| 0 · 4.13.4 | **Vá ghi chéo chen ngang** (`receive` kiểm thêm `sendingRef`) + **kiểm thử golden**: với mỗi ứng dụng, lưu vào kho đúng thứ add-in gửi model và quyết định bộ nhớ đệm — danh sách công cụ `{name, description, parameters}` theo thứ tự (qua đúng hàm dựng trong `llm.ts`), lời nhắc hệ thống Trả phí / Miễn phí, `groupsNote`, `visibleSpecs` cho từng tập nhóm, công cụ chung (`load_tools`…); và thân yêu cầu (địa chỉ, tiêu đề, thân) cho openrouter, openai, groq, mistral, anthropic, gemini × (thường, tìm web, PDF, Suy nghĩ kỹ) | Golden sinh từ 4.13.3 và đạt; ca kiểm thử cho vá `sendingRef`; kiểm thử máy, lint; Tự kiểm tra 3 ứng dụng |
+| 1 · 4.14.0 | **B9** — trường `quirks` trong `Provider` (như `dialect`) thay so sánh mã nguồn ở lõi: `llm`, `thinking`, `history` (cả nhóm `mistral`), `rotation`, `modes`, `catalog`, `models`, `types`, `pdfPages`. Giữ nguyên giá trị khóa thời gian nghỉ đã lưu (`cooldownKey`). Nguồn tự khai: không có `quirks` | Golden bước 0 giữ y nguyên từng byte; kiểm thử quét mã cấm `.id === "…"` / `providerId === "…"` ngoài `providers.ts` (danh sách ngoại lệ có chú thích: `oauth.ts`, `credits.ts`, giao diện gắn đúng một nhà cung cấp); kiểm thử khóa nghỉ không đổi; Tự kiểm tra 3 ứng dụng; "Kiểm tra từng nguồn" với các key đang chạy được, so với kết quả 4.13.3 |
+| 2a · 4.14.1 | **B13 phần 1** — tách hàm cấp mô-đun ra `wordCore.ts`; `wordTools.ts` vẫn là điểm tái xuất (`WORD_SPECS`, `WORD_SYSTEM_PROMPT`, `reasonOf`, `createWordTools`…) | Golden Word y nguyên (cả thứ tự công cụ); không vòng import (kiểm thử đồ thị import); Tự kiểm tra Word 43/43, các bước Hoàn tác đạt |
+| 2b · 4.14.2 | **B13 phần 2** — tách các nhóm công cụ trong closure (đọc, sửa, nhận xét, bảng) theo khuôn `wordReview`/`wordAdmin` (nhận phụ thuộc qua tham số); lớp Hoàn tác + hàng đợi ghi ở lại làm lõi điều phối | Như 2a; `wordTools.ts` dưới 900 dòng |
+| 3 · 4.14.3 | **B8** — sổ công cụ một nguồn: nhãn bước, nhóm, rủi ro, nhãn Hoàn tác khai cạnh spec; `tools.ts`, `toolgroups.ts` đọc từ đó. Word → Excel → PowerPoint. Không đổi tập công cụ, thứ tự, nhãn nhóm | Golden 3 ứng dụng y nguyên; ảnh chụp nhãn bước + câu hỏi rủi ro y nguyên; kiểm thử chặn công cụ thiếu khai báo; Tự kiểm tra 3 ứng dụng |
+| 4a · 4.15.0 | **B7 phần 1** — đưa ra `src/core`: xử lý tệp đính kèm phần thuần (trả danh sách thông báo theo thứ tự, ảnh đính kèm truyền vào làm tham số), `groupHints`, xử lý một lệnh ghi chéo (hàm thuần; hẹn giờ, trạng thái mỗi lần chạy effect ở lại `Chat.tsx`). Gộp B5 (chụp tài liệu 30 giây, cùng vùng mã) | Kiểm thử máy cho từng hàm (cả ca "Làm tiếp" không có tệp, quá tổng dung lượng tệp, thứ tự thông báo); golden y nguyên; Tự kiểm tra 3 ứng dụng; ghi chéo Word → Excel thử trong Office; Chạy thật Trả phí 1 ca Word có tệp đính kèm |
+| 4b · 4.15.1 | **B7 phần 2** — dựng vòng xoay Miễn phí ra lõi, kết quả `{rotation} | {lỗi, trả lại chữ đã gõ}` | Kiểm thử máy với nguồn giả: hủy giữa chừng, lỗi dựng vòng xoay, hết 8 giây chờ, nguồn tải danh mục lỗi; `send` + `prepareAndRun` dưới 250 dòng; Chạy thật Miễn phí khi có nguồn chạy được (hiện chưa có → ghi "chưa kiểm được") |
+
+Mỗi bước: tiêu chí trước khi làm; tác tử phản biện (được đưa golden và danh sách rủi ro) trước khi phát hành; Tự kiểm tra trên bản phát hành; HANDOFF.
+
+## Không làm trong nhóm 2
+
+- Đổi giao diện, hành vi công cụ, lời nhắc hệ thống.
+- Khối `onEvent` (cảnh báo "nói đã sửa mà không ghi") và gom 4 đường gọi model: để sau bước 4b, xét lại khi đã có golden.
+- B10 phần 2 (nạp công cụ theo ứng dụng): tách hẳn, không gộp vào bước 4.
+
+## Phản biện bản 1 → đã sửa
+
+| Phản biện | Xử lý |
+|---|---|
+| Ảnh chụp `WORD_SPECS` không đủ giữ bộ nhớ đệm (thứ tự, lời nhắc, nhóm, công cụ chung, thân yêu cầu) | Bước 0: kiểm thử golden làm trước mọi bước |
+| B13 không phải "chỉ dời mã": closure 1.500 dòng, hàm dùng chung cần chỗ ở, dễ vòng import | Tách 2a (`wordCore`) / 2b (nhóm); giữ điểm tái xuất; kiểm đồ thị import, Hoàn tác |
+| B9 sót `catalog`, `models`, `types`, `pdfPages`, nhóm `mistral`; khóa nghỉ lưu trong máy theo chuỗi mã nguồn | Mở rộng phạm vi; giữ khóa, thêm kiểm thử; kiểm thử quét mã cụ thể |
+| Lỗ hổng `sendingRef` trong `receive` (có thật, đã kiểm mã) | Vá ở bước 0 |
+| B7 quá lớn, nhiều tác dụng phụ, thứ tự thông báo, "chỉ giữ trạng thái" là quá lời | Tách 4a / 4b; mục tiêu số dòng; kiểm thử thứ tự thông báo; `onEvent` để sau |
+| B5 cùng vùng mã | Gộp vào 4a |
+| Tiêu chí chưa đo được | Viết lại thành kiểm thử / số đo cụ thể |
+
+## Bước 0 — đã làm (26/11/2026, 4.13.4)
+
+- Vá ghi chéo chen ngang: `receiveBlocked` (`crossapp.ts`) xét thêm cờ đang chuẩn bị gửi; phản biện bước 0 bắt thêm kẽ 80–140 ms lúc chờ giành lệnh → `receive` bật cờ bận ngay khi lấy được lệnh, trước `await claimCommand`.
+- Golden `test/unit/golden-gui-model.test.ts` (75 ca, sinh từ mã 4.13.3 chưa sửa): 3 ứng dụng × Trả phí / Miễn phí (thân đầy đủ); 12 nguồn (6 thường + openrouter-claude, deepseek-anthropic, minimax, kimi, 2 nguồn tự khai) × 5 tình huống; 6 nguồn có lịch sử gọi công cụ; nhóm công cụ Miễn phí từng nhóm / mọi nhóm của 3 ứng dụng. `.gitattributes` giữ LF. Còn thiếu (ghi để biết): bước thứ hai trong cùng lượt, khối bộ nhớ / chỉ dẫn riêng, ca gửi lại không tham số suy nghĩ.

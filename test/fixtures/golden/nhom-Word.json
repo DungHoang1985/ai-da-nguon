@@ -1,0 +1,403 @@
+{
+ "nhom": [
+  {
+   "id": "hanh_chinh",
+   "label": "văn bản hành chính, thể thức trang",
+   "tools": [
+    "word_create_admin_document",
+    "word_set_page_format",
+    "word_check_page_format"
+   ],
+   "keywords": [
+    "cong van",
+    "to trinh",
+    "bao cao",
+    "quyet dinh",
+    "nghi quyet",
+    "bien ban hop",
+    "dai hoi dong co dong",
+    "thong bao",
+    "giay moi",
+    "bien ban",
+    "ke hoach",
+    "the thuc",
+    "hanh chinh",
+    "le trang",
+    "can le",
+    "kho giay",
+    "kho a4",
+    "so trang",
+    "danh so trang",
+    "phong chu",
+    "lề",
+    "cỡ chữ",
+    "soan hop dong",
+    "soan thao hop dong",
+    "du thao hop dong",
+    "soan mau hop dong",
+    "lap hop dong",
+    "viet hop dong",
+    "quoc hieu",
+    "tieu ngu"
+   ],
+   "skills": [
+    "soan-thao-van-ban-hanh-chinh",
+    "soan-phan-hoi-phap-ly",
+    "soan-hop-dong"
+   ]
+  },
+  {
+   "id": "dien_mau",
+   "label": "điền mẫu",
+   "tools": [
+    "word_list_form_fields",
+    "word_fill_form"
+   ],
+   "keywords": [
+    "dien mau",
+    "dien vao",
+    "dien thong tin",
+    "dien hop dong",
+    "dien to khai",
+    "dien bieu mau",
+    "dien giup",
+    "dien cac",
+    "dien het",
+    "dien day du",
+    "to khai",
+    "bieu mau",
+    "cho trong",
+    "hoan thien mau",
+    "mau co san",
+    "ô điền"
+   ],
+   "skills": [
+    "dien-mau"
+   ]
+  },
+  {
+   "id": "soat",
+   "label": "soát nhất quán, so phiên bản, phần ngoài thân văn bản",
+   "tools": [
+    "word_check_consistency",
+    "word_compare_versions",
+    "word_read_parts",
+    "word_explain_edits"
+   ],
+   "keywords": [
+    "soat",
+    "kiem tra",
+    "ra soat",
+    "nhat quan",
+    "truoc khi ky",
+    "trinh ky",
+    "ban cuoi",
+    "so sanh",
+    "phien ban",
+    "doi chieu",
+    "chu thich",
+    "dau trang",
+    "chan trang",
+    "bookmark",
+    "footnote",
+    "header",
+    "footer",
+    "hop van ban",
+    "loi chinh ta",
+    "danh so",
+    "dieu khoan",
+    "sua hop dong",
+    "don khoi kien",
+    "ban an",
+    "y kien phap ly"
+   ],
+   "skills": [
+    "kiem-tra-truoc-ky",
+    "ra-soat-hop-dong",
+    "soan-thao-van-ban-hanh-chinh"
+   ]
+  },
+  {
+   "id": "nhan_xet_sua_doi",
+   "label": "nhận xét và sửa đổi theo dõi",
+   "tools": [
+    "word_list_comments",
+    "word_reply_comment",
+    "word_resolve_comment",
+    "word_list_revisions",
+    "word_review_revision"
+   ],
+   "keywords": [
+    "nhan xet",
+    "comment",
+    "gop y",
+    "sua doi",
+    "track changes",
+    "redline",
+    "doi tac",
+    "chap nhan",
+    "tu choi",
+    "theo doi",
+    "ai sua",
+    "da sua gi"
+   ],
+   "skills": [
+    "xu-ly-nhan-xet",
+    "tom-tat-sua-doi-doi-tac",
+    "kiem-tra-truoc-ky",
+    "ra-soat-hop-dong"
+   ]
+  },
+  {
+   "id": "bang",
+   "label": "bảng",
+   "tools": [
+    "word_read_tables",
+    "word_insert_table",
+    "word_fill_table"
+   ],
+   "keywords": [
+    "bảng",
+    "table",
+    "cột",
+    "kẻ bảng"
+   ],
+   "skills": [
+    "kiem-tra-tuan-thu"
+   ]
+  },
+  {
+   "id": "ngoai",
+   "label": "ứng dụng Office khác",
+   "tools": [
+    "read_other_app",
+    "write_other_app"
+   ],
+   "keywords": [
+    "excel",
+    "powerpoint",
+    "slide",
+    "trinh chieu",
+    "bang tinh",
+    "ung dung khac"
+   ],
+   "skills": [
+    "kiem-tra-tuan-thu",
+    "chuan-bi-hop",
+    "dien-mau"
+   ]
+  },
+  {
+   "id": "bo_nho",
+   "label": "ghi nhớ cho hội thoại sau",
+   "tools": [
+    "propose_memory"
+   ],
+   "keywords": [
+    "tu gio",
+    "tu nay",
+    "tu lan sau",
+    "lan sau",
+    "ve sau",
+    "ghi nho",
+    "hay nho",
+    "nho giup",
+    "nho rang",
+    "nho la",
+    "luon luon",
+    "lan nao cung",
+    "quy uoc",
+    "nhớ"
+   ]
+  }
+ ],
+ "macDinh": [
+  "word_get_overview",
+  "word_get_outline",
+  "word_find",
+  "word_read_clause",
+  "word_read_paragraphs",
+  "word_replace_text",
+  "word_set_paragraph_text",
+  "word_insert_paragraphs",
+  "word_insert_clause",
+  "word_change_level",
+  "word_replace_selection",
+  "word_format_text",
+  "word_add_comment",
+  "word_delete_paragraphs",
+  "word_go_to"
+ ],
+ "tungNhom": {
+  "hanh_chinh": [
+   "word_get_overview",
+   "word_get_outline",
+   "word_find",
+   "word_read_clause",
+   "word_read_paragraphs",
+   "word_replace_text",
+   "word_set_paragraph_text",
+   "word_insert_paragraphs",
+   "word_insert_clause",
+   "word_change_level",
+   "word_replace_selection",
+   "word_format_text",
+   "word_add_comment",
+   "word_delete_paragraphs",
+   "word_go_to",
+   "word_check_page_format",
+   "word_create_admin_document",
+   "word_set_page_format"
+  ],
+  "dien_mau": [
+   "word_get_overview",
+   "word_get_outline",
+   "word_find",
+   "word_read_clause",
+   "word_read_paragraphs",
+   "word_replace_text",
+   "word_set_paragraph_text",
+   "word_insert_paragraphs",
+   "word_insert_clause",
+   "word_change_level",
+   "word_replace_selection",
+   "word_format_text",
+   "word_add_comment",
+   "word_delete_paragraphs",
+   "word_go_to",
+   "word_list_form_fields",
+   "word_fill_form"
+  ],
+  "soat": [
+   "word_get_overview",
+   "word_get_outline",
+   "word_find",
+   "word_read_clause",
+   "word_read_paragraphs",
+   "word_replace_text",
+   "word_set_paragraph_text",
+   "word_insert_paragraphs",
+   "word_insert_clause",
+   "word_change_level",
+   "word_replace_selection",
+   "word_format_text",
+   "word_add_comment",
+   "word_delete_paragraphs",
+   "word_explain_edits",
+   "word_go_to",
+   "word_check_consistency",
+   "word_read_parts",
+   "word_compare_versions"
+  ],
+  "nhan_xet_sua_doi": [
+   "word_get_overview",
+   "word_get_outline",
+   "word_find",
+   "word_read_clause",
+   "word_read_paragraphs",
+   "word_replace_text",
+   "word_set_paragraph_text",
+   "word_insert_paragraphs",
+   "word_insert_clause",
+   "word_change_level",
+   "word_replace_selection",
+   "word_format_text",
+   "word_add_comment",
+   "word_delete_paragraphs",
+   "word_list_comments",
+   "word_reply_comment",
+   "word_resolve_comment",
+   "word_list_revisions",
+   "word_review_revision",
+   "word_go_to"
+  ],
+  "bang": [
+   "word_get_overview",
+   "word_get_outline",
+   "word_find",
+   "word_read_clause",
+   "word_read_paragraphs",
+   "word_replace_text",
+   "word_set_paragraph_text",
+   "word_insert_paragraphs",
+   "word_insert_clause",
+   "word_change_level",
+   "word_replace_selection",
+   "word_format_text",
+   "word_add_comment",
+   "word_insert_table",
+   "word_delete_paragraphs",
+   "word_read_tables",
+   "word_fill_table",
+   "word_go_to"
+  ],
+  "ngoai": [
+   "word_get_overview",
+   "word_get_outline",
+   "word_find",
+   "word_read_clause",
+   "word_read_paragraphs",
+   "word_replace_text",
+   "word_set_paragraph_text",
+   "word_insert_paragraphs",
+   "word_insert_clause",
+   "word_change_level",
+   "word_replace_selection",
+   "word_format_text",
+   "word_add_comment",
+   "word_delete_paragraphs",
+   "word_go_to"
+  ],
+  "bo_nho": [
+   "word_get_overview",
+   "word_get_outline",
+   "word_find",
+   "word_read_clause",
+   "word_read_paragraphs",
+   "word_replace_text",
+   "word_set_paragraph_text",
+   "word_insert_paragraphs",
+   "word_insert_clause",
+   "word_change_level",
+   "word_replace_selection",
+   "word_format_text",
+   "word_add_comment",
+   "word_delete_paragraphs",
+   "word_go_to"
+  ]
+ },
+ "tatCa": [
+  "word_get_overview",
+  "word_get_outline",
+  "word_find",
+  "word_read_clause",
+  "word_read_paragraphs",
+  "word_replace_text",
+  "word_set_paragraph_text",
+  "word_insert_paragraphs",
+  "word_insert_clause",
+  "word_change_level",
+  "word_replace_selection",
+  "word_format_text",
+  "word_add_comment",
+  "word_insert_table",
+  "word_delete_paragraphs",
+  "word_list_comments",
+  "word_reply_comment",
+  "word_resolve_comment",
+  "word_list_revisions",
+  "word_review_revision",
+  "word_explain_edits",
+  "word_read_tables",
+  "word_fill_table",
+  "word_go_to",
+  "word_check_consistency",
+  "word_read_parts",
+  "word_check_page_format",
+  "word_compare_versions",
+  "word_create_admin_document",
+  "word_set_page_format",
+  "word_list_form_fields",
+  "word_fill_form"
+ ]
+}

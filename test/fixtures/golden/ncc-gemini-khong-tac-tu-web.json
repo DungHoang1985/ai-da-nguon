@@ -1,0 +1,31 @@
+{
+ "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:streamGenerateContent?alt=sse",
+ "headers": {
+  "content-type": "application/json",
+  "x-goog-api-key": "<KEY>"
+ },
+ "body": {
+  "contents": [
+   {
+    "role": "user",
+    "parts": [
+     {
+      "text": "Sửa Điều 5."
+     }
+    ]
+   }
+  ],
+  "systemInstruction": {
+   "parts": [
+    {
+     "text": "<141 ký tự #f115be4f>"
+    }
+   ]
+  },
+  "tools": [
+   {
+    "google_search": {}
+   }
+  ]
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "url": "https://api.anthropic.com/v1/messages",
+ "headers": {
+  "anthropic-beta": "thinking-binding-controls-2026-08-01",
+  "anthropic-dangerous-direct-browser-access": "true",
+  "anthropic-version": "2023-06-01",
+  "content-type": "application/json",
+  "x-api-key": "<KEY>"
+ },
+ "body": {
+  "model": "claude-sonnet-5-5",
+  "max_tokens": 16000,
+  "stream": true,
+  "messages": [
+   {
+    "role": "user",
+    "content": [
+     {
+      "type": "text",
+      "text": "Sửa Điều 5.",
+      "cache_control": {
+       "type": "ephemeral"
+      }
+     }
+    ]
+   }
+  ],
+  "thinking": {
+   "type": "adaptive",
+   "block_binding": {
+    "prefix_mismatch_behavior": "drop_block"
+   }
+  },
+  "system": [
+   {
+    "type": "text",
+    "text": "<141 ký tự #f115be4f>",
+    "cache_control": {
+     "type": "ephemeral"
+    }
+   }
+  ],
+  "tools": [
+   {
+    "type": "web_search_20250305",
+    "name": "web_search",
+    "max_uses": 5
+   }
+  ]
+ }
+}

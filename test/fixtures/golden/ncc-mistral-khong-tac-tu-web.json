@@ -1,0 +1,21 @@
+{
+ "url": "https://api.mistral.ai/v1/chat/completions",
+ "headers": {
+  "authorization": "Bearer <KEY>",
+  "content-type": "application/json"
+ },
+ "body": {
+  "model": "mistral-golden",
+  "messages": [
+   {
+    "role": "system",
+    "content": "<141 ký tự #f115be4f>"
+   },
+   {
+    "role": "user",
+    "content": "Sửa Điều 5."
+   }
+  ],
+  "stream": true
+ }
+}

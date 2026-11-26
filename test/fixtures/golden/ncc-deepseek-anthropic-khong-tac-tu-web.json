@@ -1,0 +1,33 @@
+{
+ "url": "https://api.deepseek.com/anthropic/v1/messages",
+ "headers": {
+  "anthropic-version": "2023-06-01",
+  "content-type": "application/json",
+  "x-api-key": "<KEY>"
+ },
+ "body": {
+  "model": "deepseek-flash",
+  "max_tokens": 16000,
+  "stream": true,
+  "messages": [
+   {
+    "role": "user",
+    "content": [
+     {
+      "type": "text",
+      "text": "Sửa Điều 5."
+     }
+    ]
+   }
+  ],
+  "thinking": {
+   "type": "disabled"
+  },
+  "system": [
+   {
+    "type": "text",
+    "text": "<141 ký tự #f115be4f>"
+   }
+  ]
+ }
+}

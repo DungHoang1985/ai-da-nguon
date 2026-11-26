@@ -1,0 +1,423 @@
+{
+ "nhom": [
+  {
+   "id": "bieu_do",
+   "label": "biểu đồ",
+   "tools": [
+    "excel_create_chart",
+    "excel_edit_chart"
+   ],
+   "keywords": [
+    "bieu do",
+    "do thi",
+    "chart",
+    "ve bieu",
+    "graph",
+    "truc quan"
+   ],
+   "skills": [
+    "thiet-ke-bieu-do",
+    "phan-tich-du-lieu"
+   ]
+  },
+  {
+   "id": "pivot",
+   "label": "PivotTable",
+   "tools": [
+    "excel_create_pivot",
+    "excel_edit_pivot"
+   ],
+   "keywords": [
+    "pivot",
+    "pivottable",
+    "pivot table",
+    "tong hop theo",
+    "bang tong hop",
+    "thong ke theo",
+    "bao cao tong hop",
+    "nhom theo"
+   ],
+   "skills": [
+    "phan-tich-du-lieu"
+   ]
+  },
+  {
+   "id": "loc_dinh_dang",
+   "label": "lọc, định dạng có điều kiện, danh sách chọn",
+   "tools": [
+    "excel_filter",
+    "excel_conditional_format",
+    "excel_data_validation"
+   ],
+   "keywords": [
+    "lọc",
+    "filter",
+    "dinh dang co dieu kien",
+    "tô màu",
+    "to mau theo",
+    "highlight",
+    "lam noi bat",
+    "bat thuong",
+    "danh sach chon",
+    "tha xuong",
+    "dropdown",
+    "drop down",
+    "validation",
+    "conditional formatting",
+    "chon tu danh sach",
+    "gioi han nhap",
+    "rang buoc nhap",
+    "kiem soat nhap"
+   ],
+   "skills": [
+    "phan-tich-du-lieu",
+    "kiem-tra-tuan-thu"
+   ]
+  },
+  {
+   "id": "in_an",
+   "label": "thiết lập in",
+   "tools": [
+    "excel_page_setup"
+   ],
+   "keywords": [
+    "in ra",
+    "ban in",
+    "khi in",
+    "de in",
+    "vung in",
+    "trang in",
+    "print",
+    "kho giay",
+    "huong giay",
+    "in ngang",
+    "in doc",
+    "vua trang",
+    "vua mot trang",
+    "vua 1 trang",
+    "chuan bi in",
+    "thiet lap in",
+    "lap lai tieu de",
+    "le trang"
+   ]
+  },
+  {
+   "id": "mo_hinh",
+   "label": "soát mô hình tài chính, tên ô giả định, giải ngược, bảng độ nhạy",
+   "tools": [
+    "excel_audit_model",
+    "excel_named_range",
+    "excel_what_if"
+   ],
+   "keywords": [
+    "mo hinh",
+    "o gia dinh",
+    "bang gia dinh",
+    "cac gia dinh",
+    "gia dinh dau vao",
+    "do nhay",
+    "goal seek",
+    "tim nguoc",
+    "giai nguoc",
+    "what if",
+    "dat ten vung",
+    "dat ten o",
+    "dat ten cho o",
+    "ten vung",
+    "named range",
+    "npv",
+    "irr",
+    "dong tien",
+    "hieu qua dau tu",
+    "phuong an tai chinh",
+    "so cung",
+    "hard code",
+    "kiem toan",
+    "audit"
+   ],
+   "skills": [
+    "mo-hinh-tai-chinh-du-an",
+    "kiem-tra-loi-bang-tinh"
+   ]
+  },
+  {
+   "id": "lam_sach_khoa",
+   "label": "xóa trùng, thay hàng loạt, điền chuỗi, khóa ô công thức",
+   "tools": [
+    "excel_clean_data",
+    "excel_protect"
+   ],
+   "keywords": [
+    "trùng",
+    "lam sach",
+    "don dep",
+    "chuan hoa",
+    "thay the",
+    "thay hang loat",
+    "dien chuoi",
+    "dien tiep",
+    "dien ngay",
+    "keo xuong",
+    "khóa",
+    "khoá",
+    "bao ve",
+    "protect",
+    "lock"
+   ],
+   "skills": [
+    "chuan-hoa-bang-tinh"
+   ]
+  },
+  {
+   "id": "ngoai",
+   "label": "ứng dụng Office khác",
+   "tools": [
+    "read_other_app",
+    "write_other_app"
+   ],
+   "keywords": [
+    "word",
+    "powerpoint",
+    "slide",
+    "trinh chieu",
+    "van ban dang mo",
+    "ung dung khac"
+   ],
+   "skills": [
+    "mo-hinh-tai-chinh-du-an",
+    "kiem-tra-tuan-thu"
+   ]
+  },
+  {
+   "id": "bo_nho",
+   "label": "ghi nhớ cho hội thoại sau",
+   "tools": [
+    "propose_memory"
+   ],
+   "keywords": [
+    "tu gio",
+    "tu nay",
+    "tu lan sau",
+    "lan sau",
+    "ve sau",
+    "ghi nho",
+    "hay nho",
+    "nho giup",
+    "nho rang",
+    "nho la",
+    "luon luon",
+    "lan nao cung",
+    "quy uoc",
+    "nhớ"
+   ]
+  }
+ ],
+ "macDinh": [
+  "excel_get_overview",
+  "excel_read_range",
+  "excel_write_range",
+  "excel_format_range",
+  "excel_add_sheet",
+  "excel_create_table",
+  "excel_sort_range",
+  "excel_clear_range",
+  "excel_select_range",
+  "excel_find",
+  "excel_find_errors",
+  "excel_trace",
+  "excel_add_comment",
+  "excel_insert_delete",
+  "excel_sheet",
+  "excel_list_objects"
+ ],
+ "tungNhom": {
+  "bieu_do": [
+   "excel_get_overview",
+   "excel_read_range",
+   "excel_write_range",
+   "excel_format_range",
+   "excel_add_sheet",
+   "excel_create_table",
+   "excel_create_chart",
+   "excel_sort_range",
+   "excel_clear_range",
+   "excel_select_range",
+   "excel_find",
+   "excel_find_errors",
+   "excel_trace",
+   "excel_add_comment",
+   "excel_insert_delete",
+   "excel_sheet",
+   "excel_list_objects",
+   "excel_edit_chart"
+  ],
+  "pivot": [
+   "excel_get_overview",
+   "excel_read_range",
+   "excel_write_range",
+   "excel_format_range",
+   "excel_add_sheet",
+   "excel_create_table",
+   "excel_sort_range",
+   "excel_clear_range",
+   "excel_select_range",
+   "excel_find",
+   "excel_find_errors",
+   "excel_trace",
+   "excel_create_pivot",
+   "excel_add_comment",
+   "excel_insert_delete",
+   "excel_sheet",
+   "excel_list_objects",
+   "excel_edit_pivot"
+  ],
+  "loc_dinh_dang": [
+   "excel_get_overview",
+   "excel_read_range",
+   "excel_write_range",
+   "excel_format_range",
+   "excel_add_sheet",
+   "excel_create_table",
+   "excel_sort_range",
+   "excel_clear_range",
+   "excel_select_range",
+   "excel_find",
+   "excel_find_errors",
+   "excel_trace",
+   "excel_filter",
+   "excel_conditional_format",
+   "excel_data_validation",
+   "excel_add_comment",
+   "excel_insert_delete",
+   "excel_sheet",
+   "excel_list_objects"
+  ],
+  "in_an": [
+   "excel_get_overview",
+   "excel_read_range",
+   "excel_write_range",
+   "excel_format_range",
+   "excel_add_sheet",
+   "excel_create_table",
+   "excel_sort_range",
+   "excel_clear_range",
+   "excel_select_range",
+   "excel_find",
+   "excel_find_errors",
+   "excel_trace",
+   "excel_add_comment",
+   "excel_insert_delete",
+   "excel_sheet",
+   "excel_list_objects",
+   "excel_page_setup"
+  ],
+  "mo_hinh": [
+   "excel_get_overview",
+   "excel_read_range",
+   "excel_write_range",
+   "excel_format_range",
+   "excel_add_sheet",
+   "excel_create_table",
+   "excel_sort_range",
+   "excel_clear_range",
+   "excel_select_range",
+   "excel_find",
+   "excel_find_errors",
+   "excel_trace",
+   "excel_add_comment",
+   "excel_insert_delete",
+   "excel_sheet",
+   "excel_list_objects",
+   "excel_named_range",
+   "excel_audit_model",
+   "excel_what_if"
+  ],
+  "lam_sach_khoa": [
+   "excel_get_overview",
+   "excel_read_range",
+   "excel_write_range",
+   "excel_format_range",
+   "excel_add_sheet",
+   "excel_create_table",
+   "excel_sort_range",
+   "excel_clear_range",
+   "excel_select_range",
+   "excel_find",
+   "excel_find_errors",
+   "excel_trace",
+   "excel_add_comment",
+   "excel_insert_delete",
+   "excel_sheet",
+   "excel_list_objects",
+   "excel_clean_data",
+   "excel_protect"
+  ],
+  "ngoai": [
+   "excel_get_overview",
+   "excel_read_range",
+   "excel_write_range",
+   "excel_format_range",
+   "excel_add_sheet",
+   "excel_create_table",
+   "excel_sort_range",
+   "excel_clear_range",
+   "excel_select_range",
+   "excel_find",
+   "excel_find_errors",
+   "excel_trace",
+   "excel_add_comment",
+   "excel_insert_delete",
+   "excel_sheet",
+   "excel_list_objects"
+  ],
+  "bo_nho": [
+   "excel_get_overview",
+   "excel_read_range",
+   "excel_write_range",
+   "excel_format_range",
+   "excel_add_sheet",
+   "excel_create_table",
+   "excel_sort_range",
+   "excel_clear_range",
+   "excel_select_range",
+   "excel_find",
+   "excel_find_errors",
+   "excel_trace",
+   "excel_add_comment",
+   "excel_insert_delete",
+   "excel_sheet",
+   "excel_list_objects"
+  ]
+ },
+ "tatCa": [
+  "excel_get_overview",
+  "excel_read_range",
+  "excel_write_range",
+  "excel_format_range",
+  "excel_add_sheet",
+  "excel_create_table",
+  "excel_create_chart",
+  "excel_sort_range",
+  "excel_clear_range",
+  "excel_select_range",
+  "excel_find",
+  "excel_find_errors",
+  "excel_trace",
+  "excel_filter",
+  "excel_create_pivot",
+  "excel_conditional_format",
+  "excel_data_validation",
+  "excel_add_comment",
+  "excel_insert_delete",
+  "excel_sheet",
+  "excel_list_objects",
+  "excel_edit_chart",
+  "excel_edit_pivot",
+  "excel_page_setup",
+  "excel_named_range",
+  "excel_audit_model",
+  "excel_what_if",
+  "excel_clean_data",
+  "excel_protect"
+ ]
+}
