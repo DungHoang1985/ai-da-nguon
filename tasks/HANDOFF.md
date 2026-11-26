@@ -8,7 +8,7 @@ Cập nhật 26/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 ## 1. Trạng thái
 
 - **Đang chạy: v4.13.2** (phát hành 26/11/2026, `main@11df743` → `gh-pages@05b0b26`; Tự kiểm tra trên bản phát hành: Word 43/43, Excel 44/44, PowerPoint 27/27; kiểm thử máy 967/967). Trước đó: **v4.13.1** (`main@bd6dea7` → `gh-pages@9f4a154`).
-- 4.13.2 = mức 2 việc 5 phần Excel: `excel_format_range` trả chữ hiển thị (`display_preview`) và cảnh báo ô số có thể hiện "####" (ước theo cỡ chữ vì Office.js không trả "####" — đã đo) → coi như đã đọc lại. Chưa Chạy thật với model.
+- 4.13.2 = mức 2 việc 5 phần Excel: `excel_format_range` trả chữ hiển thị (`display_preview`) và cảnh báo ô số có thể hiện "####" (ước theo cỡ chữ vì Office.js không trả "####" — đã đo) → coi như đã đọc lại. Chạy thật Trả phí (Claude Sonnet 5.5): AI thấy cảnh báo, tự giãn cột, không còn ô "####" (`tasks/viec-le/rea-claude-chinh-thuc/` mục 10).
 - 4.13.1 = cổng soát lập luận bằng mã: lệnh ghi câu chữ Word (`needsExplain`) lần đầu trong lượt mà chưa gọi `word_explain_edits` thì không ghi, nhắc model soát trước (một lần mỗi lượt). Chạy thật Miễn phí (Groq / Cohere): AI soát trước khi ghi 2/2 lần.
 - 26/11, sửa bài thử (không thuộc bản add-in): `mo-office.ps1` kết thúc PowerPoint treo sau Quit (lỗi lần 3); `cdp.mjs eval` chờ khung vẽ xong, trắng thì tự tải lại một lần.
 
@@ -89,7 +89,7 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ## 5. Bước tiếp theo
 
-1. 4.13.2 đã phát hành; còn Chạy thật một ca Excel định dạng số / cột hẹp với model. 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
+1. 4.13.2 xong (phát hành, Tự kiểm tra, Chạy thật đạt). 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
 2. **Buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được" ở mục 4.
 3. Việc tùy chọn (mục D của `tasks/dot/dot-5/dot-5.md`), anh chọn: tải bản ghi hội thoại, gợi ý gạch chân bấm để chấp nhận trong Word, connectors (MCP), công cụ chạy mã Office.js do AI viết, phím tắt mở khung, đọc một trang web cụ thể, Outlook, Sign in with Poe, hàm `=AI(…)` trong ô Excel. Đã làm: điền mẫu (Đợt 8), bộ nhớ dài hạn (Đợt 12 E).
 

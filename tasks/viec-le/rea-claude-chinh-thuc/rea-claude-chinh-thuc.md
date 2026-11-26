@@ -109,3 +109,16 @@ Bài `kiem-thu/cdp-bai/soat-lap-luan.js` trên bản phát hành v4.13.1, Word t
 17 giây, 4 lần gọi AI (kể cả lượt người soát); token vào 84.808 (đọc bộ nhớ đệm 60.688, ghi bộ nhớ đệm 24.106), ra 1.845.
 
 Ghi nhận: lời trả lời vẫn nêu số điều luật theo hiểu biết của model (có kèm "chưa đối chiếu được, nên kiểm lại"). Câu "theo giới hạn của pháp luật thương mại" được ghi vào hợp đồng vì người dùng yêu cầu đúng câu đó.
+
+## 10. Chạy thật 4.13.2 — Excel định dạng số, cột hẹp (26/11/2026)
+
+Bài `kiem-thu/cdp-bai/excel-dinh-dang.js` trên bản phát hành v4.13.2, Excel trên desktop ẩn, Trả phí, Anthropic · Claude Sonnet 5.5. Yêu cầu chỉ nói định dạng số B2:B6, không nhắc độ rộng cột. Bằng chứng: `bang-chung/chay-that-excel-dinh-dang-2026-11-26.json`.
+
+| Tiêu chí | Kết quả |
+|---|---|
+| Định dạng đúng yêu cầu | Đạt — `#,##0.00`, B2 hiện "1.234.567.890,50" |
+| AI thấy cảnh báo ô số có thể hiện "####" và tự nới cột (không được nhắc) | Đạt — sau lệnh định dạng, AI đọc bảng rồi tự giãn cột B: 48 → 88,2pt |
+| Sổ tính sau cùng không còn ô số bị "####" (ước theo hệ số đã đo) | Đạt — 0 ô (trước: 4 ô) |
+| Trả lời nói đúng việc đã làm | Đạt — nêu định dạng, ví dụ chữ hiển thị, việc nới cột |
+
+8 giây, 3 lần gọi AI; token vào 49.962 (đọc bộ nhớ đệm 32.961), ra 482. Có một bước đọc thêm (A1:B6) trước khi giãn cột.
