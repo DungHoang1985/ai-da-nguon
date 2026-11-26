@@ -29,7 +29,7 @@ Add-in Office dùng API key của nhiều nhà cung cấp; AI tự thao tác tr�
 
 ```
 npm ci                      # .npmrc phải trỏ registry.npmjs.org
-npm test                    # mocha, mọi kiểm thử phải đạt (1.050 ngày 26/11/2026)
+npm test                    # mocha, mọi kiểm thử phải đạt (1.072 ngày 26/11/2026)
 npx tsc --noEmit -p .       # không lỗi kiểu
 npm run lint                # 0 lỗi (cảnh báo Office.js được phép); CI chặn khi có lỗi
 npm run build               # ra dist/, manifest tự đổi sang địa chỉ GitHub Pages

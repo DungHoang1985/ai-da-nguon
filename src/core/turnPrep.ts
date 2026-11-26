@@ -108,21 +108,36 @@ export interface IncomingResult {
  *  mới báo lỗi (để khung gửi không tưởng là đã ghi). Không đụng React hay kho cục bộ: bên gọi trả lời và thêm mục. */
 export async function handleIncoming(
   cmd: { id: string; from: string; payload: any },
-  o: { selfApp: string; linked: string[]; what: string; exec: (payload: any, log: UndoEntry[]) => Promise<string>; errText: (e: any) => string }
+  o: {
+    selfApp: string;
+    linked: string[];
+    what: string;
+    exec: (payload: any, log: UndoEntry[]) => Promise<string>;
+    errText: (e: any) => string;
+    /** Trả lời khung gửi — gọi TRONG khối thử như mã cũ: trả lời thành công mà lỗi (kho cục bộ đầy…) thì gỡ phần đã ghi (phản biện 4a) */
+    reply?: (res: { ok: true; message: string } | { ok: false; error: string }) => void;
+  }
 ): Promise<IncomingResult> {
+  const send = o.reply || (() => undefined);
   if (!o.linked.includes(cmd.from)) {
-    return { ok: false, reply: { ok: false, error: `Khung AI Đa Nguồn ở ${o.selfApp} đang tắt kết nối với ${cmd.from}.` } };
+    const res = { ok: false as const, error: `Khung AI Đa Nguồn ở ${o.selfApp} đang tắt kết nối với ${cmd.from}.` };
+    send(res);
+    return { ok: false, reply: res };
   }
   const log: UndoEntry[] = [];
   try {
     const message = await o.exec(cmd.payload, log);
+    const res = { ok: true as const, message };
+    send(res);
     return {
       ok: true,
-      reply: { ok: true, message },
+      reply: res,
       item: { role: "assistant", text: "", incoming: `Vừa ghi theo yêu cầu từ khung AI Đa Nguồn ở ${cmd.from}: ${o.what}.`, wrote: true, undo: log.length ? log : undefined },
     };
   } catch (e: any) {
     for (const u of log.slice().reverse()) await u.undo().catch(() => undefined);
-    return { ok: false, reply: { ok: false, error: `${o.selfApp} không ghi được: ${o.errText(e)}` } };
+    const res = { ok: false as const, error: `${o.selfApp} không ghi được: ${o.errText(e)}` };
+    send(res);
+    return { ok: false, reply: res };
   }
 }

@@ -67,9 +67,10 @@ export function clearSnapshot(host: string, s?: KVStore): void {
 }
 
 /** B5 (rà soát kiến trúc, làm 26/11/2026): chỉ chụp tài liệu để chia sẻ khi có khung ở ỨNG DỤNG KHÁC đang mở và được kết nối —
- *  trước đây chụp mỗi 30 giây kể cả khi không có ai đọc. */
-export function shouldShare(o: { shareContext: boolean; canSnapshot: boolean; busy: boolean; links: { open: boolean }[] }): boolean {
-  return o.shareContext && o.canSnapshot && !o.busy && o.links.some((l) => l.open);
+ *  trước đây chụp mỗi 30 giây kể cả khi không có ai đọc. `othersOpen` KHÔNG lọc theo công tắc kết nối của khung này: bên kia đọc
+ *  được hay không là do công tắc của bên kia (createCommonTools apps), như trước B5 (phản biện bước 4a). */
+export function shouldShare(o: { shareContext: boolean; canSnapshot: boolean; busy: boolean; othersOpen: boolean }): boolean {
+  return o.shareContext && o.canSnapshot && !o.busy && o.othersOpen;
 }
 
 /** Thực thi công cụ read_other_app */

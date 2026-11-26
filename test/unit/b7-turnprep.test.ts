@@ -90,6 +90,18 @@ describe("B7 · handleIncoming (một lệnh ghi chéo)", () => {
     assert.strictEqual(r.item?.undo?.length, 1);
     assert.match(r.item!.incoming, /từ khung AI Đa Nguồn ở Word: ghi A1/);
   });
+  it("trả lời khung gửi lỗi sau khi ghi (kho đầy): gỡ phần đã ghi như mã cũ", async () => {
+    const undone: string[] = [];
+    const r = await handleIncoming(cmd, {
+      ...o(async (_p: any, log: any[]) => (log.push({ label: "x", undo: async () => undone.push("x") }), "Đã ghi")),
+      reply: (res: any) => {
+        if (res.ok) throw new Error("QuotaExceeded");
+      },
+    });
+    assert.deepStrictEqual(undone, ["x"]);
+    assert.strictEqual(r.ok, false);
+    assert.strictEqual(r.item, undefined);
+  });
   it("ghi dở rồi lỗi: gỡ phần đã làm theo thứ tự ngược, báo lỗi, không có mục", async () => {
     const undone: number[] = [];
     const r = await handleIncoming(
@@ -111,10 +123,9 @@ describe("B5 · chụp tài liệu cho đọc chéo", () => {
     return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k), m };
   };
   it("chỉ chụp khi có khung ở ứng dụng khác đang mở (và bật chia sẻ, có công cụ chụp, không bận)", () => {
-    const ok = { shareContext: true, canSnapshot: true, busy: false, links: [{ open: true }] };
+    const ok = { shareContext: true, canSnapshot: true, busy: false, othersOpen: true };
     assert.strictEqual(shouldShare(ok), true);
-    assert.strictEqual(shouldShare({ ...ok, links: [{ open: false }] }), false);
-    assert.strictEqual(shouldShare({ ...ok, links: [] }), false);
+    assert.strictEqual(shouldShare({ ...ok, othersOpen: false }), false);
     assert.strictEqual(shouldShare({ ...ok, busy: true }), false);
     assert.strictEqual(shouldShare({ ...ok, shareContext: false }), false);
     assert.strictEqual(shouldShare({ ...ok, canSnapshot: false }), false);

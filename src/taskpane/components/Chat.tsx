@@ -483,6 +483,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     [settings.shareContext, settings.crossApps, selfApp]
   );
   const [links, setLinks] = React.useState<Connection[]>([]);
+  /** Có khung ở ỨNG DỤNG KHÁC đang mở (không lọc theo công tắc kết nối của khung này): đọc chéo phía bên kia chỉ phụ thuộc công tắc
+   *  của bên đọc, nên khung này chụp tài liệu khi có bất kỳ khung nào khác mở (phản biện bước 4a — giữ hành vi cũ) */
+  const [othersOpen, setOthersOpen] = React.useState(false);
   const seenCmds = React.useRef(new Set<string>());
   const acceptRef = React.useRef(false);
   acceptRef.current = !!settings.shareContext && settings.crossWrite !== false && !!hostTools;
@@ -491,10 +494,10 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
 
   /** Chia sẻ nội dung đang mở cho ứng dụng Office khác (đọc chéo). B5 (26/11/2026): chỉ chụp khi có khung ở ứng dụng khác đang mở
    *  và được kết nối (shouldShare); chụp ngay khi khung đó vừa mở; đóng khung thì gỡ bản chụp của mình. */
-  const linksRef = React.useRef<Connection[]>([]);
-  linksRef.current = links;
+  const othersRef = React.useRef(false);
+  othersRef.current = othersOpen;
   const share = React.useCallback(async () => {
-    if (!shouldShare({ shareContext: !!settings.shareContext, canSnapshot: !!hostTools?.snapshot, busy: busyRef.current, links: linksRef.current })) return;
+    if (!shouldShare({ shareContext: !!settings.shareContext, canSnapshot: !!hostTools?.snapshot, busy: busyRef.current, othersOpen: othersRef.current })) return;
     try {
       const snap = await hostTools!.snapshot!();
       publishSnapshot(host, snap.data, snap.title);
@@ -502,13 +505,12 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       /* tài liệu đang bận → lần sau */
     }
   }, [settings.shareContext, hostTools, host]);
-  const anyLinkOpen = links.some((l) => l.open);
   React.useEffect(() => {
-    if (!settings.shareContext || !anyLinkOpen) return undefined;
+    if (!settings.shareContext || !othersOpen) return undefined;
     share();
     const t = setInterval(share, 30000);
     return () => clearInterval(t);
-  }, [share, settings.shareContext, anyLinkOpen]);
+  }, [share, settings.shareContext, othersOpen]);
   React.useEffect(() => {
     const gone = () => clearSnapshot(host);
     window.addEventListener("pagehide", gone);
@@ -536,7 +538,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     })();
     const tick = () => {
       beat(ls, { host: selfApp, title, accept: acceptRef.current });
-      const cs = connections(ls, selfApp).filter((c) => linkedRef.current.includes(c.app));
+      const all = connections(ls, selfApp);
+      setOthersOpen(all.some((c) => c.open));
+      const cs = all.filter((c) => linkedRef.current.includes(c.app));
       setLinks((prev) => (JSON.stringify(prev) === JSON.stringify(cs) ? prev : cs));
     };
     /** Nhận một lệnh ghi hộ (nếu có): chạy bằng công cụ ghi của ứng dụng này, trả kết quả, hiện một mục có nút Hoàn tác */
@@ -571,9 +575,10 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         what: describePayload(cmd.payload),
         exec: (payload: any, log: UndoEntry[]) => executeIncoming(hostTools, payload, log),
         errText: networkErrorMessage,
+        reply: (res: Parameters<typeof reply>[2]) => reply(ls, cmd.id, res),
       };
       if (!opts.linked.includes(cmd.from)) {
-        reply(ls, cmd.id, (await handleIncoming(cmd, opts)).reply);
+        await handleIncoming(cmd, opts);
         release();
         return;
       }
@@ -582,7 +587,6 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       try {
         // Ghi, ghi dở thì gỡ phần đã làm rồi mới báo lỗi (core/turnPrep.ts handleIncoming)
         const r = await handleIncoming(cmd, opts);
-        reply(ls, cmd.id, r.reply);
         if (r.item) setItems((prev) => [...prev, r.item!]);
       } finally {
         working = false;
