@@ -332,3 +332,72 @@ export function buildFreeCandidates(o: {
   }
   return out;
 }
+
+/** Kết quả chuẩn bị vòng xoay Miễn phí cho một lượt */
+export type FreeRotationPrep =
+  | { kind: "aborted" }
+  | { kind: "error"; error: unknown }
+  | { kind: "ok"; rotation: FreeRotation; candidates: Candidate[] };
+
+/** Chuẩn bị vòng xoay Miễn phí của một lượt (B7 phần 2, nhóm 2 rà soát kiến trúc, 26/11/2026 — dời nguyên văn từ Chat.tsx):
+ *  nguồn trong vòng chưa có danh mục model (hoặc đã cũ) thì tải trước, tối đa `waitMs` (8 giây), bấm Dừng là thôi chờ; nguồn tải lỗi
+ *  thì 10 phút sau mới thử lại (soát mã Đợt 9, M2). Dựng ứng viên (nguồn đang chọn đứng đầu) rồi FreeRotation. Không đụng React:
+ *  bên gọi báo lỗi, trả lại chữ đã gõ, nhắc khi chỉ có một nguồn. */
+export async function prepareFreeRotation(o: {
+  selected: { provider: Provider; modelId: string };
+  keys: Record<string, string>;
+  order: string[];
+  getProvider: (id: string) => Provider | undefined;
+  /** Danh mục model đã lưu (đọc lại sau khi tải) */
+  modelCache: () => Record<string, { at?: number; models: any[] } | undefined>;
+  setModels: (pid: string, models: any[]) => void;
+  fetchModels: (p: Provider, key: string) => Promise<any[]>;
+  isStale: (at: number | undefined) => boolean;
+  /** Mốc lỗi tải danh mục gần nhất theo nguồn (bên gọi giữ qua các lượt) */
+  catalogFail: Record<string, number>;
+  remembered: (pid: string) => string;
+  agentOn: boolean;
+  deepThink: boolean;
+  cooldownStore: CooldownStore;
+  signal: AbortSignal;
+  waitMs?: number;
+  now?: () => number;
+}): Promise<FreeRotationPrep> {
+  const now = o.now || Date.now;
+  const p = o.selected.provider;
+  const fetches = o.order
+    .filter((pid) => o.keys[pid] && pid !== p.id)
+    .map(async (pid) => {
+      const c = o.modelCache()[pid];
+      const pp = o.getProvider(pid);
+      if (!pp || (c && !o.isStale(c.at)) || (o.catalogFail[pid] || 0) > now() - 600000) return;
+      try {
+        o.setModels(pid, await o.fetchModels(pp, o.keys[pid]));
+      } catch {
+        o.catalogFail[pid] = now();
+      }
+    });
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  await Promise.race([
+    Promise.all(fetches),
+    new Promise((r) => (timer = setTimeout(r, o.waitMs ?? 8000))),
+    new Promise((r) => o.signal.addEventListener("abort", r, { once: true })),
+  ]);
+  if (timer) clearTimeout(timer);
+  if (o.signal.aborted) return { kind: "aborted" };
+  const candidates = buildFreeCandidates({
+    order: o.order,
+    selected: { providerId: p.id, modelId: o.selected.modelId },
+    keys: o.keys,
+    getProvider: o.getProvider,
+    modelCache: o.modelCache() as any,
+    remembered: o.remembered,
+    agentOn: o.agentOn,
+  });
+  try {
+    const rotation = new FreeRotation(candidates, { store: o.cooldownStore, stallMs: o.deepThink ? FREE_STALL_THINK_MS : FREE_STALL_MS });
+    return { kind: "ok", rotation, candidates };
+  } catch (e) {
+    return { kind: "error", error: e };
+  }
+}

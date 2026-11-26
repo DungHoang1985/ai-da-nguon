@@ -28,7 +28,7 @@ import {
 import ModelPicker from "./ModelPicker";
 import { allProviders, getProvider, quirksOf } from "../../core/providers";
 import { UsageMode, normalizeFreeOrder, providerInMode } from "../../core/modes";
-import { FREE_STALL_MS, FREE_STALL_THINK_MS, FreeRotation, buildFreeCandidates } from "../../core/agent/rotation";
+import { FreeRotation, FreeRotationPrep, prepareFreeRotation } from "../../core/agent/rotation";
 import { fetchModels, isStale } from "../../core/models";
 import { Storage } from "../../core/storage";
 import { ErrorReason, describeError, networkErrorMessage } from "../../core/errors";
@@ -930,48 +930,30 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
     // Đợt 9: chế độ Miễn phí → mọi lần gọi model của lượt đi qua vòng xoay nguồn miễn phí; nguồn đang chọn đứng đầu
     let rotation: FreeRotation | undefined;
     if (mode === "free") {
-      const keys = storage.getKeys();
-      const order = normalizeFreeOrder(storage.getSelection().freeOrder, allProviders());
-      // Nguồn trong vòng chưa có danh mục model (hoặc đã cũ): tải trước để chọn được model. Tối đa 8 giây, bấm Dừng là thôi chờ;
-      // nguồn tải lỗi thì 10 phút sau mới thử tải lại (soát mã Đợt 9, M2)
-      const fetches = order
-        .filter((pid) => keys[pid] && pid !== p.id)
-        .map(async (pid) => {
-          const c = storage.getModelCache()[pid];
-          const pp = getProvider(pid);
-          if (!pp || (c && !isStale(c.at)) || (catalogFailRef.current[pid] || 0) > Date.now() - 600000) return;
-          try {
-            storage.setModels(pid, await fetchModels(pp, keys[pid]));
-          } catch {
-            catalogFailRef.current[pid] = Date.now();
-          }
-        });
-      await Promise.race([
-        Promise.all(fetches),
-        new Promise((r) => setTimeout(r, 8000)),
-        new Promise((r) => ac.signal.addEventListener("abort", r, { once: true })),
-      ]);
-      if (ac.signal.aborted) {
+      // Tải danh mục còn thiếu (tối đa 8 giây, Dừng là thôi chờ), dựng ứng viên và vòng xoay — core/agent/rotation.ts (B7 phần 2)
+      const prepared = await prepareFreeRotation({
+        selected: { provider: p, modelId },
+        keys: storage.getKeys(),
+        order: normalizeFreeOrder(storage.getSelection().freeOrder, allProviders()),
+        getProvider,
+        modelCache: () => storage.getModelCache(),
+        setModels: (pid, ms) => storage.setModels(pid, ms),
+        fetchModels,
+        isStale: (at) => isStale(at),
+        catalogFail: catalogFailRef.current,
+        remembered: (pid) => storage.getModelFor(pid),
+        agentOn: useAgent,
+        deepThink: !!settings.deepThink,
+        cooldownStore: { get: () => storage.getCooldowns(), set: (v) => storage.setCooldowns(v) },
+        signal: ac.signal,
+      });
+      if (prepared.kind === "aborted") {
         setBusy(false);
         abortRef.current = null;
         return;
       }
-      const candidates = buildFreeCandidates({
-        order,
-        selected: { providerId: p.id, modelId },
-        keys,
-        getProvider,
-        modelCache: storage.getModelCache(),
-        remembered: (pid) => storage.getModelFor(pid),
-        agentOn: useAgent,
-      });
-      try {
-        rotation = new FreeRotation(candidates, {
-          store: { get: () => storage.getCooldowns(), set: (v) => storage.setCooldowns(v) },
-          stallMs: settings.deepThink ? FREE_STALL_THINK_MS : FREE_STALL_MS,
-        });
-      } catch (e) {
-        const text = describeError(e, { provider: p }).text;
+      if (prepared.kind === "error") {
+        const text = describeError(prepared.error, { provider: p }).text;
         patchLast((it) => ({ ...it, error: text }));
         setNotice({ text, err: true });
         // Trả lại chữ đã gõ để gửi lại không phải gõ lại (soát mã Đợt 9, L4)
@@ -983,9 +965,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         abortRef.current = null;
         return;
       }
+      const ok = prepared as Extract<FreeRotationPrep, { kind: "ok" }>;
+      rotation = ok.rotation;
       // Chỉ có một nguồn miễn phí dùng được: nhắc nhập thêm key để có chỗ đổi khi hết lượt (dot-9 R9)
-      if (candidates.length < 2)
-        setNotice({ text: `Chế độ Miễn phí mới có một nguồn dùng được (${candidates[0].provider.name}): hết lượt là phải dừng. Nhập thêm key miễn phí (Gemini, Groq, OpenRouter, Cohere) trong Cài đặt để add-in tự đổi nguồn.` });
+      if (ok.candidates.length < 2)
+        setNotice({ text: `Chế độ Miễn phí mới có một nguồn dùng được (${ok.candidates[0].provider.name}): hết lượt là phải dừng. Nhập thêm key miễn phí (Gemini, Groq, OpenRouter, Cohere) trong Cài đặt để add-in tự đổi nguồn.` });
     }
 
     try {
