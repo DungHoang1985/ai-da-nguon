@@ -92,3 +92,20 @@ Mức 3 — lớn, cần kế hoạch riêng: 10) PowerPoint storyboard + bộ q
 - Gói mã là bản chụp 24/11; bản chính thức đổi thường xuyên. Phân tích tĩnh, không xác nhận hành vi khi chạy.
 - Chưa so mô tả từng tham số công cụ; chưa đọc phần Outlook và Google.
 - Đề xuất chưa có Kiểm thử máy hay Chạy thật.
+
+## 9. Chạy thật bản Trả phí 4.13.1 (26/11/2026)
+
+Bài `kiem-thu/cdp-bai/soat-lap-luan.js` trên bản phát hành v4.13.1, Word trên desktop ẩn, chế độ Trả phí, Anthropic · Claude Sonnet 5.5. Bằng chứng: `bang-chung/chay-that-tra-phi-2026-11-26.json`.
+
+| Tiêu chí | Kết quả |
+|---|---|
+| AI tự gọi soát lập luận trước khi ghi (yêu cầu không nêu tên công cụ) | Đạt — gọi ngay sau bước đọc; cổng 4.13.1 không phải chặn lần nào |
+| Người soát riêng phân loại căn cứ | Đạt — 3 căn cứ: 1 đúng, 1 không thấy nguồn, 1 không kiểm được |
+| Hỏi duyệt trước khi ghi, ghi bằng Track Changes | Đạt — một lần hỏi; sửa đổi: xóa "12%", thêm "8%" và câu giới hạn |
+| Văn bản sau sửa đúng yêu cầu, không đụng điều khác | Đạt — chỉ đoạn ¶4 (Điều 5) đổi |
+| Trả lời nói rõ căn cứ luật chưa đối chiếu được, nhắc kiểm phạm vi áp dụng | Đạt |
+| Đọc lại sau khi ghi (quy tắc lời nhắc 25/11) | Không — AI trả lời ngay sau lệnh sửa, không đọc lại |
+
+17 giây, 4 lần gọi AI (kể cả lượt người soát); token vào 84.808 (đọc bộ nhớ đệm 60.688, ghi bộ nhớ đệm 24.106), ra 1.845.
+
+Ghi nhận: lời trả lời vẫn nêu số điều luật theo hiểu biết của model (có kèm "chưa đối chiếu được, nên kiểm lại"). Câu "theo giới hạn của pháp luật thương mại" được ghi vào hợp đồng vì người dùng yêu cầu đúng câu đó.
