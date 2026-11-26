@@ -7,15 +7,15 @@ Cập nhật 26/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 ## 1. Trạng thái
 
-- **Đang chạy: v4.13.2** (phát hành 26/11/2026, `main@11df743` → `gh-pages@05b0b26`; Tự kiểm tra trên bản phát hành: Word 43/43, Excel 44/44, PowerPoint 27/27; kiểm thử máy 967/967). Trước đó: **v4.13.1** (`main@bd6dea7` → `gh-pages@9f4a154`).
+- **Đang chạy: v4.13.3** (phát hành 26/11/2026, `main@6ccf948` → `gh-pages@8db5c89`; Tự kiểm tra trên bản phát hành: Word 43/43, Excel 44/44, PowerPoint 27/27; kiểm thử máy 967/967; CI nay có bước lint). Trước đó: **v4.13.2** (`main@11df743` → `gh-pages@05b0b26`).
 - 4.13.2 = mức 2 việc 5 phần Excel: `excel_format_range` trả chữ hiển thị (`display_preview`) và cảnh báo ô số có thể hiện "####" (ước theo cỡ chữ vì Office.js không trả "####" — đã đo) → coi như đã đọc lại. Chạy thật Trả phí (Claude Sonnet 5.5): AI thấy cảnh báo, tự giãn cột, không còn ô "####" (`tasks/viec-le/rea-claude-chinh-thuc/` mục 10).
-- **Đang làm: 4.13.3 xong mã, commit trên máy, CHƯA phát hành** (chờ anh duyệt). Nhóm 3 rà soát kiến trúc: B10 mã Tự kiểm tra nạp khi bấm nút (gói khung 1.294 → 1.145 KB); B16 bỏ babel-loader + 6 gói thừa; B18 `Rich` / `Linked` ghi nhớ, `onNav` ổn định; B15 `eslint.config.mjs` riêng, `npm run lint` 0 lỗi / 285 cảnh báo Office.js, CI chặn khi có lỗi lint. Tự kiểm tra bản cục bộ Word 43/43, Excel 44/44, PowerPoint 27/27; kiểm thử máy 967/967; tác tử phản biện: không lỗi nghiêm trọng, đã làm các điểm nên làm. Để lại: tách công cụ theo ứng dụng (phần còn lại của B10, cần nạp công cụ bất đồng bộ trong `Chat.tsx`).
+- 4.13.3 = nhóm 3 rà soát kiến trúc: B10 mã Tự kiểm tra nạp khi bấm nút (gói khung 1.294 → 1.145 KB); B16 bỏ babel-loader + 6 gói thừa; B18 `Rich` / `Linked` ghi nhớ, `onNav` ổn định; B15 `eslint.config.mjs` riêng, `npm run lint` 0 lỗi / 285 cảnh báo Office.js, CI chặn khi có lỗi lint. tác tử phản biện: không lỗi nghiêm trọng, đã làm các điểm nên làm. Để lại: tách công cụ theo ứng dụng (phần còn lại của B10, cần nạp công cụ bất đồng bộ trong `Chat.tsx`).
 
 ## 2. Phiên bản gần đây
 
 | Bản | Ngày | Nội dung | Chi tiết |
 |---|---|---|---|
-| 4.13.3 (chưa phát hành) | 26/11 | Nhóm 3 rà soát kiến trúc: gói khung −148 KB (Tự kiểm tra tách riêng), bỏ babel, ghi nhớ khung chat, lint chạy được và vào CI | `tasks/viec-le/ra-soat-kien-truc/` |
+| 4.13.3 | 26/11 | Nhóm 3 rà soát kiến trúc: gói khung −148 KB (Tự kiểm tra tách riêng), bỏ babel, ghi nhớ khung chat, lint chạy được và vào CI | `tasks/viec-le/ra-soat-kien-truc/` |
 | 4.13.2 | 26/11 | Excel: lệnh định dạng trả chữ hiển thị và cảnh báo ô số bị "####" (ước theo số đo tự giãn cột). Kiểm thử máy 967/967, Tự kiểm tra Excel 44/44 | `docs/quy-tac/excel.md` |
 
 Các bản cũ hơn (đợt 0A → 12, bản 3.6 → 4.12.0): bảng "Đã xong" trong `tasks/luu/HANDOFF-den-2026-11-24.md`; mỗi đợt có thư mục `tasks/dot/dot-<N>/`.
@@ -87,7 +87,7 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 ## 5. Bước tiếp theo
 
-1. 4.13.3: anh duyệt thì đẩy `main`, Tự kiểm tra ba ứng dụng trên bản phát hành. 4.13.2 xong (phát hành, Tự kiểm tra, Chạy thật đạt). 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
+1. 4.13.3 đã phát hành, Tự kiểm tra đạt. 4.13.2 xong (phát hành, Tự kiểm tra, Chạy thật đạt). 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
 2. **Buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được" ở mục 4.
 3. Việc tùy chọn (mục D của `tasks/dot/dot-5/dot-5.md`), anh chọn: tải bản ghi hội thoại, gợi ý gạch chân bấm để chấp nhận trong Word, connectors (MCP), công cụ chạy mã Office.js do AI viết, phím tắt mở khung, đọc một trang web cụ thể, Outlook, Sign in with Poe, hàm `=AI(…)` trong ô Excel. Đã làm: điền mẫu (Đợt 8), bộ nhớ dài hạn (Đợt 12 E).
 
