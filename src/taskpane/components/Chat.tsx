@@ -39,7 +39,7 @@ import { useCatalog } from "./useCatalog";
 import { AgentMessage, ToolCall, UndoEntry, Usage } from "../../core/agent/types";
 import { isToolUnsupportedError } from "../../core/agent/llm";
 import { stepCapFor } from "../../core/agent/loop";
-import { addUsage, formatUsage, runTurn } from "../../core/agent/turn";
+import { formatUsage, runTurn } from "../../core/agent/turn";
 import { getKV } from "../../core/db";
 import { ConversationMeta, ConversationStore, MAX_CONVERSATIONS, newConversationId, slimForStorage, testModeOn, titleFrom } from "../../core/conversations";
 import { Command, Skill, SkillStore, resolveSlash, skillCatalog } from "../../core/skills";
@@ -51,8 +51,7 @@ import { AttachmentsResult, groupHintsFor, handleIncoming, prepareAttachments } 
 import { clearAttachedFiles, listAttachedImages, registerAttachedFile } from "../../core/attachedFiles";
 import { pdfCapable, thinkingToggleWorks } from "../../core/agent/thinking";
 import { clearSnapshot, publishSnapshot, shouldShare } from "../../core/share";
-import { SHOW_SIZE_FROM, sizeNote } from "../../core/inputsize";
-import { REDO_WITH_TOOLS, TaskSoFar, answerAfterGate, mergeTaskFacts, taskSoFar, toolFailureClaim, unbackedEditClaims, unverifiedWriteClaim, writeSucceeded } from "../../core/claims";
+import { REDO_WITH_TOOLS, TaskSoFar, answerAfterGate, mergeTaskFacts, taskSoFar, toolFailureClaim, unbackedEditClaims, unverifiedWriteClaim } from "../../core/claims";
 import { APPS, CMD_PREFIX, Connection, HEARTBEAT_MS, beat, claimCommand, clearBeat, connectionLine, connections, describePayload, normalizeApp, receiveBlocked, reply, sweep, takeCommand } from "../../core/crossapp";
 import { executeIncoming } from "../../office/crossExec";
 import { RefTarget, findRefs } from "../../core/refs";
@@ -61,6 +60,7 @@ import { HostName, INSERT_LABEL, insertAnswer, readSelection } from "../../offic
 import { QUICK_PROMPTS, describeCall, getHostTools } from "../../office/tools";
 import { createCommonTools } from "../../office/common";
 import { MemoryItem, MemoryProposal, memoryCapFor, memoryForTurn, memorySnapshot } from "../../core/memory";
+import { textParts, TurnEventTracker } from "../../core/turnEvents";
 import { navigateTo } from "../../office/navigate";
 import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { inputKeyAction } from "../../core/keys";
@@ -347,8 +347,6 @@ const Rich = React.memo<{ text: string; host: string; onNav: (r: RefTarget) => v
   return <span style={{ whiteSpace: "normal" }}>{out}</span>;
 });
 
-/** Các khối chữ của câu trả lời (để cắt phần trước lúc cổng cuối lượt nhắc AI — 4.11.15) */
-const textParts = (it: Item): string[] => (it.segments ? it.segments.filter((sg) => sg.type === "text").map((sg: any) => sg.text) : it.text ? [it.text] : []);
 
 const finalText = (it: Item) =>
   it.segments
@@ -923,21 +921,12 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       memory: () => storage.getMemory(),
       request,
     });
-    /** Công cụ đã gọi trong lượt và số lệnh ghi không thành công — để nhận ra ca "nói đã sửa mà không ghi" */
-    const called: string[] = [];
-    let failedWrites = 0;
-    /** Độ dài chữ (các khối nối bằng xuống dòng) lúc cổng cuối lượt nhắc AI; undefined = cổng không chạy.
-     *  Chữ sau cổng được nối tiếp vào khối cuối nên cắt theo vị trí ký tự, không đếm khối. */
-    let gateCut: number | undefined;
-    /** Tham số của các lệnh ghi thành công trong lượt — đối chiếu với các chỗ "A" → "B" AI kể đã sửa (vòng thử 3, 24/11/2026) */
-    const writtenArgs: string[] = [];
-    let needSep = false;
-    let retrying = false;
-    const clearRetry = () => {
-      if (!retrying) return;
-      retrying = false;
-      setNotice(undefined);
-    };
+    /** Bộ đếm và xử lý sự kiện của lượt (core/turnEvents.ts): công cụ đã gọi, lệnh ghi thành công / thất bại, vị trí cổng cuối lượt */
+    const tracker = new TurnEventTracker<Item>({
+      rotation: () => !!rotation,
+      isWrite: (name) => [...(hostTools?.specs || []), ...extraTools.specs].some((t) => t.name === name && t.write),
+      describe: describeCall,
+    });
 
     // Đợt 9: chế độ Miễn phí → mọi lần gọi model của lượt đi qua vòng xoay nguồn miễn phí; nguồn đang chọn đứng đầu
     let rotation: FreeRotation | undefined;
@@ -1034,91 +1023,11 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
           if (Date.now() - lastSaveAt.current > 1500) setTimeout(saveConversation, 0);
         },
         onEvent: (ev) => {
-          if (ev.type === "input_size") {
-            // Đợt 12: lượt lớn thì báo số đo (chỉ để hiện, không vào lịch sử)
-            patchLast((it) => ({ ...it, inputEst: ev.tokens }));
-            if (ev.tokens >= SHOW_SIZE_FROM) setNotice({ text: sizeNote(ev.tokens, rotation ? undefined : ev.context) });
-          } else if (ev.type === "compacted") {
-            setNotice({ text: "Cuộc trò chuyện dài: đã tự tóm tắt phần đầu để AI nhớ gọn hơn." });
-          } else if (ev.type === "step") {
-            if (ev.step > 1) needSep = true;
-            patchLast((it) => ({ ...it, calls: Math.max(it.calls || 0, ev.step) }));
-          } else if (ev.type === "text") {
-            clearRetry();
-            appendText(needSep ? "\n" + ev.delta : ev.delta);
-            needSep = false;
-          } else if (ev.type === "tool_start") {
-            clearRetry();
-            patchLast((it) => ({
-              ...it,
-              segments: [...(it.segments || []), { type: "step", id: ev.call.id, label: describeCall(ev.call), status: "running" }],
-            }));
-          } else if (ev.type === "tool_end") {
-            const isWrite = [...(hostTools?.specs || []), ...extraTools.specs].some((t) => t.name === ev.call.name && t.write);
-            called.push(ev.call.name);
-            // Công cụ ghi báo lỗi, trả ok=false hoặc "thay 0 chỗ" thì tài liệu chưa đổi
-            const done = isWrite && writeSucceeded(ev.result, ev.error);
-            if (isWrite && !done) failedWrites++;
-            if (done) {
-              try {
-                writtenArgs.push(JSON.stringify(ev.call.args ?? {}));
-              } catch {
-                /* tham số không chuyển được thành chữ: bỏ qua */
-              }
-            }
-            patchLast((it) => ({
-              ...it,
-              wrote: it.wrote || done,
-              segments: (it.segments || []).map((sg) =>
-                sg.type === "step" && sg.id === ev.call.id
-                  ? { ...sg, status: ev.error ? "error" : "ok", detail: ev.error || ev.result?.message, brief: !ev.error && typeof ev.result?.brief === "string" ? ev.result.brief : undefined }
-                  : sg
-              ),
-            }));
-          } else if (ev.type === "review_start") {
-            clearRetry();
-            patchLast((it) => ({
-              ...it,
-              segments: [...(it.segments || []), { type: "step", id: "review:" + ev.call.id, label: `Soát lập luận trước khi ghi: ${describeCall(ev.call)}`, status: "running" }],
-            }));
-          } else if (ev.type === "review_end") {
-            patchLast((it) => ({
-              ...it,
-              segments: (it.segments || []).map((sg) =>
-                sg.type === "step" && sg.id === "review:" + ev.call.id
-                  ? { ...sg, status: ev.ok ? "ok" : "error", detail: ev.ok ? ev.note || "Đạt" : `Chưa ghi — ${ev.note || "có vấn đề"}`, brief: ev.ok ? ev.note || "đạt" : undefined }
-                  : sg
-              ),
-            }));
-          } else if (ev.type === "switch") {
-            clearRetry();
-            patchLast((it) => ({ ...it, answeredBy: ev.to }));
-            appendText(`
-↪ ${ev.from}: ${ev.reason} — đổi sang ${ev.to}${ev.partial ? " (trả lời lại bước này)" : ""}.
-`);
-            needSep = false;
-          } else if (ev.type === "thinking_off") {
-            setNotice({ text: "Nguồn đang dùng không nhận chế độ suy nghĩ với model này: đã gửi lại yêu cầu ở chế độ thường." });
-          } else if (ev.type === "limit") {
-            patchLast((it) => ({ ...it, paused: { steps: ev.maxSteps, writes: ev.writes } }));
-          } else if (ev.type === "error_gate") {
-            patchLast((it) => {
-              gateCut = textParts(it).join("\n").length;
-              return it;
-            });
-          } else if (ev.type === "stuck") {
-            patchLast((it) => ({ ...it, paused: { steps: ev.step, writes: ev.writes, stuck: `${ev.tool} báo cùng một lỗi ${ev.times} bước liên tiếp` } }));
-          } else if (ev.type === "retry") {
-            retrying = true;
-            const why = ev.reason.charAt(0).toUpperCase() + ev.reason.slice(1);
-            setNotice({ text: `${why}: đang thử lại lần ${ev.attempt}/${ev.max} sau ${Math.round(ev.waitMs / 1000)} giây… Bấm Dừng để hủy.` });
-          } else if (ev.type === "usage") {
-            clearRetry();
-            patchLast((it) => ({ ...it, usage: addUsage(it.usage || {}, ev.usage), ...(it.firstInput === undefined && ev.step === 1 && ev.usage?.input ? { firstInput: ev.usage.input } : {}) }));
-          } else if (ev.type === "truncated") {
-            if (!ev.skipped) appendText("\n(Câu trả lời bị cắt vì quá dài. Gửi “tiếp tục” để AI viết tiếp.)");
-            else if (ev.gaveUp)
-              appendText("\n(Dừng lượt: câu trả lời bị cắt vì quá dài nhiều lần liên tiếp, các lệnh ghi dở chưa được thực hiện. Hãy nhờ AI làm từng phần nhỏ hơn.)");
+          for (const fx of tracker.handle(ev)) {
+            if (fx.kind === "clear_retry") setNotice(undefined);
+            else if (fx.kind === "patch") patchLast(fx.fn);
+            else if (fx.kind === "text") appendText(fx.text);
+            else setNotice({ text: fx.text });
           }
         },
       });
@@ -1128,9 +1037,9 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       if (log.length) patchLast((it) => ({ ...it, undo: log }));
       // Ghi lại việc đã làm của cả nhiệm vụ kể cả khi lượt dừng giữa chừng (chạm trần số bước, lỗi): lượt "Làm tiếp" sau gộp vào
       // Cổng cuối lượt đã nhắc thì chỉ xét câu trả lời AI viết lại sau đó (câu "Đã sửa xong" trước đó AI đã tự đính chính)
-      const answerOf = (it: Item) => answerAfterGate(textParts(it), gateCut);
+      const answerOf = (it: Item) => answerAfterGate(textParts(it), tracker.gateCut);
       const factsOf = (it: Item) =>
-        mergeTaskFacts(prevTask, { userText: opts?.continueTask ? request : typed, answer: answerOf(it), wrote: !!it.wrote, toolsCalled: called, failedWrites });
+        mergeTaskFacts(prevTask, { userText: opts?.continueTask ? request : typed, answer: answerOf(it), wrote: !!it.wrote, toolsCalled: tracker.called, failedWrites: tracker.failedWrites });
       if (useAgent && hostTools) patchLast((it) => ({ ...it, task: taskSoFar(factsOf(it)) }));
       if (res.error) {
         const e: any = res.error;
@@ -1147,7 +1056,7 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
         // Lượt kết thúc bình thường: AI khẳng định đã thay đổi tài liệu mà không có thao tác ghi nào thành công → cảnh báo trên khung
         patchLast((it) => {
           // Lượt "Làm tiếp": lệnh ghi của lượt trước không có ở đây → không đối chiếu từng chỗ (tránh báo nhầm)
-          const w = unverifiedWriteClaim(factsOf(it)) || toolFailureClaim(factsOf(it)) || (opts?.continueTask ? null : unbackedEditClaims(answerOf(it), writtenArgs));
+          const w = unverifiedWriteClaim(factsOf(it)) || toolFailureClaim(factsOf(it)) || (opts?.continueTask ? null : unbackedEditClaims(answerOf(it), tracker.writtenArgs));
           return w ? { ...it, claimWarning: w.text } : it;
         });
       }
@@ -1156,7 +1065,6 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
       const info = describeError(e, { provider: p });
       patchLast((it) => ({ ...it, error: info.text, errorDetail: info.detail }));
     } finally {
-      retrying = false;
       setBusy(false);
       setPending(null);
       abortRef.current = null;
