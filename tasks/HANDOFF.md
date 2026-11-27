@@ -18,6 +18,7 @@ Cập nhật 26/11/2026. Giữ tệp này **dưới 15 KB**: mỗi phiên sửa 
 
 | Bản | Ngày | Nội dung | Chi tiết |
 |---|---|---|---|
+| 4.18.0 | 27/11 | Phần để sau nhóm 2–3: khối `onEvent` ra `core/turnEvents.ts` (9 kiểm thử); B10 phần 2 bộ công cụ nạp riêng theo ứng dụng — gói tải đầu 1.132 → 746 KB | `tasks/viec-le/ra-soat-kien-truc/` |
 | 4.17.0 | 27/11 | Mức 3 PowerPoint: storyboard (key_message, đọc lại tiêu đề), soát văn phong / cỡ chữ / tiêu đề bằng mã trong kết quả công cụ (`pptStyle.ts`), biểu đồ theo đặc tả (unit, source, highlight). Chặn lỗi `\b` sát chữ có dấu bằng kiểm thử máy | `tasks/viec-le/rea-claude-chinh-thuc/` mục 6–7 |
 | 4.16.0 | 27/11 | Nhóm 4 bảo mật nhỏ: B11 lưu hội thoại an toàn, B17 CSP, B19 Word dưới 1.6 không ghi, B20 bỏ đường dẫn máy, B21, B22 | `tasks/viec-le/ra-soat-kien-truc/ra-soat-kien-truc-2026-11-20.md` |
 | 4.15.0 | 26/11 | Nhóm 2: B9 quirks, tách wordTools.ts, phần thuần của lượt ra lõi, B5. Golden y nguyên | `tasks/viec-le/ra-soat-kien-truc/ke-hoach-nhom-2.md` |
@@ -81,14 +82,14 @@ Nguyên văn và lý do đầy đủ: mục "Quyết định và lý do" của b
 
 - Tối ưu theo mã add-in chính thức (25/11, báo cáo mục 7): mức 1, 2, 3 xong (mức 3 ở 4.17.0). Bản trích gốc lời nhắc chỉ ở `_luu-cuc-bo/rea-claude-office-2026-11-25/` (ngoài Git, không đưa lên kho công khai).
 
-- Rà soát kiến trúc 20/11, bảng "Phát hiện để lại" (`tasks/viec-le/ra-soat-kien-truc/ra-soat-kien-truc-2026-11-20.md`): nhóm 1 (B1, B2, B3, B4, B6, B23) xong ở 4.11.13. Nhóm 2 xong ở 4.15.0 (B8 không làm). Còn: nhóm 3 xong ở 4.13.3 trừ tách công cụ theo ứng dụng (B10 phần 2); nhóm 4 bảo mật nhỏ (B11, B12, B17, B19, B20, B21, B22; B5 xong ở 4.15.0). B14 giữ nguyên.
+- Rà soát kiến trúc 20/11, bảng "Phát hiện để lại" (`tasks/viec-le/ra-soat-kien-truc/ra-soat-kien-truc-2026-11-20.md`): nhóm 1 (B1, B2, B3, B4, B6, B23) xong ở 4.11.13. Nhóm 2 xong ở 4.15.0 (B8 không làm). Nhóm 3 xong (B10 phần 2 ở 4.18.0); nhóm 4 bảo mật nhỏ (B11, B12, B17, B19, B20, B21, B22; B5 xong ở 4.15.0). B14 giữ nguyên.
 - Hai thư mục mồ côi `dot-0a-office-addon-compare-47836b`, `dot-4-a4b5e7` trong `.claude\worktrees\`: đưa vào Thùng rác.
 - Xóa các khóa "AI Da Nguon (Office)" thừa ở `openrouter.ai/settings/keys`.
 
 ## 5. Bước tiếp theo
 
 0. Mức 3 xong (4.17.0): PowerPoint storyboard + văn phong (việc 10), biểu đồ theo đặc tả (việc 11). Để lại: chưa Chạy thật với model xem AI có ghi key_message và sửa theo style_warnings không (Miễn phí làm được, không tốn tiền); bỏ `sort` của biểu đồ (AI tự sắp số liệu). Một lần `npm test` trượt 1 ca ngay sau `git commit -am` (27/11), chạy lại 5 lần đều đạt, chưa rõ ca nào — gặp lại thì ghi tên ca. Chọn tiếp theo mục 1. Từ 27/11 anh giao tự triển khai và tự quyết phát hành; chỉ hỏi khi đổi kiến trúc, đụng tiền, mật khẩu, lộ thông tin.
-1. Chọn tiếp: phần để sau của nhóm 2–3. Còn để sau: khối `onEvent` của `Chat.tsx`, tách công cụ theo ứng dụng (B10 phần 2). 4.13.3 đã phát hành, Tự kiểm tra đạt. 4.13.2 xong (phát hành, Tự kiểm tra, Chạy thật đạt). 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
+1. Rà soát kiến trúc 20/11 đã xong hết (trừ B8 không làm, B14 giữ nguyên). Chọn tiếp: buổi kiểm bù (mục 2) hoặc việc tùy chọn (mục 3). Để lại từ 4.18.0: `gateCut` vẫn tính trong hàm cập nhật trạng thái React (như cũ, an toàn vì runTurn chờ mạng); bộ công cụ Word của khung chat và của Tự kiểm tra là hai bản riêng (như trước), chỉ chặn chạy cùng lúc bằng `aiBusy`. Còn để sau: khối `onEvent` của `Chat.tsx`, tách công cụ theo ứng dụng (B10 phần 2). 4.13.3 đã phát hành, Tự kiểm tra đạt. 4.13.2 xong (phát hành, Tự kiểm tra, Chạy thật đạt). 4.13.1 xong (Tự kiểm tra đạt; Chạy thật Trả phí 26/11, Anthropic · Claude Sonnet 5.5: AI tự soát trước khi ghi, căn cứ chưa kiểm được nói rõ; 6/6 tiêu chí — `tasks/viec-le/rea-claude-chinh-thuc/` mục 9). Chọn tiếp: mức 2 của báo cáo, hoặc nhóm 3 rà soát kiến trúc (khung mở nhanh hơn), hoặc lập kế hoạch nhóm 2.
 2. **Buổi kiểm bù** khi anh đã nạp tiền hoặc có key: chạy hết nhóm "chưa kiểm được" ở mục 4.
 3. Việc tùy chọn (mục D của `tasks/dot/dot-5/dot-5.md`), anh chọn: tải bản ghi hội thoại, gợi ý gạch chân bấm để chấp nhận trong Word, connectors (MCP), công cụ chạy mã Office.js do AI viết, phím tắt mở khung, đọc một trang web cụ thể, Outlook, Sign in with Poe, hàm `=AI(…)` trong ô Excel. Đã làm: điền mẫu (Đợt 8), bộ nhớ dài hạn (Đợt 12 E).
 
