@@ -1,5 +1,6 @@
 /* global PowerPoint, Office */
 /** Công cụ để AI thao tác trực tiếp trên bài trình chiếu PowerPoint. Mỗi thao tác tạo/sửa đều có Hoàn tác. */
+import { STORYBOARD_MIN_SLIDES, withStyleWarnings } from "./pptStyle";
 import { HostToolSet, ToolSpec, UndoEntry } from "../core/agent/types";
 import { normalize2D, truncate } from "./util";
 import { currentSlideId, deleteShapeUndo, findShape, loadShapeTexts, restoreFont, setTextKeepFont, shapeOn, slideAt, supports } from "./pptCore";
@@ -38,10 +39,11 @@ export const PPT_SPECS: ToolSpec[] = [
   {
     name: "ppt_add_slides",
     description:
-      "Add SEVERAL slides (2 or more) in one call, appended at the end in order, each with a layout of the deck and its title/body. Max 10 per call.",
+      "Add SEVERAL slides (2 or more) in one call, appended at the end in order, each with a layout of the deck and its title/body. Max 10 per call. Deck of 3+: set key_message; titles = short conclusions (with numbers) that tell the story alone.",
     parameters: {
       type: "object",
       properties: {
+        key_message: { type: "string", description: "One-sentence point of the deck." },
         slides: {
           type: "array",
           items: {
@@ -453,6 +455,10 @@ async function execute(name: string, a: any, { log }: { log: UndoEntry[] }): Pro
         ok: !failed,
         message: `Đã thêm ${done.length}/${list.length} slide: ${nums.join(", ")}${failed ? `. Dừng ở slide thứ ${done.length + 1} vì lỗi: ${failed}` : ""}`,
         slides: done.map((d) => ({ slide: d.slide, slide_id: d.slide_id, layout: d.layout, ...(d.note ? { note: d.note } : {}) })),
+        // Mức 3 việc 10: storyboard đọc lại — câu ý chính và riêng các tiêu đề, để AI tự soát "đọc tiêu đề có ra câu chuyện không"
+        ...(list.length >= STORYBOARD_MIN_SLIDES
+          ? { storyboard: { key_message: String(a.key_message || "").trim() || "(chưa ghi)", titles: list.map((s, i) => `${nums[i] ?? "(chưa thêm)"}: ${s.title || "(không tiêu đề)"}`) } }
+          : {}),
         // Đếm phần dư trên danh sách đã lọc (bỏ phần tử rỗng, nhận cả chuỗi JSON) — soát mã Đợt 7, #8
         ...(overflow > 0 ? { note: `Chỉ nhận ${MAX_SLIDES_PER_CALL} slide mỗi lần gọi; ${overflow} slide còn lại chưa thêm.` } : {}),
       };
@@ -693,7 +699,9 @@ export const pptTools: HostToolSet = {
   execute: async (name, a, ctx) => {
     if (PPT_DESIGN_SPECS.some((sp) => sp.name === name)) return executePptDesign(name, a || {}, ctx.log);
     const adv = PPT_ADV_SPECS.some((sp) => sp.name === name);
-    return adv ? executePptAdvanced(name, a || {}, ctx.log) : execute(name, a || {}, ctx);
+    const r = adv ? await executePptAdvanced(name, a || {}, ctx.log) : await execute(name, a || {}, ctx);
+    // Mức 3 việc 10: soát văn phong, cỡ chữ, tiêu đề của chữ vừa ghi — cảnh báo đi trong kết quả
+    return withStyleWarnings(name, a, r);
   },
   snapshot: async () => ({ title: "Bài trình chiếu PowerPoint đang mở", data: await overview() }),
   overview,

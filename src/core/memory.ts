@@ -51,7 +51,8 @@ export function cleanMemoryText(t: unknown): string {
 }
 
 /** Ngữ cảnh làm một dãy số dài là số tiền (theo sau) hoặc mã số thuế / mã số doanh nghiệp (đứng trước, thông tin công khai) */
-const MONEY_AFTER = /^\s*(đồng|đ\b|vnđ|vnd|usd|eur|tỷ|triệu|nghìn|ngàn|trđ)/i;
+// "đ" theo sau là hết chữ: (?!\p{L}) — \b của JavaScript không nhận "đ" là chữ nên "đ\b" không bao giờ khớp "5 đ" (sửa 27/11/2026)
+const MONEY_AFTER = /^\s*(đồng|đ(?!\p{L})|vnđ|vnd|usd|eur|tỷ|triệu|nghìn|ngàn|trđ)/iu;
 const PUBLIC_CODE_BEFORE = /(mst|mã số thuế|mã số doanh nghiệp|mã số dn|mã doanh nghiệp)(\s+[^\s\d]+){0,3}\s*(là|:)?\s*$/i;
 
 /** Lý do không được nhớ (chuỗi giống key, mật khẩu, số định danh, số điện thoại, số tài khoản); không có thì undefined.

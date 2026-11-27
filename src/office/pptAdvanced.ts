@@ -2,7 +2,7 @@
 /** Công cụ PowerPoint nâng cao: biểu đồ gốc (sửa được dữ liệu), sơ đồ quy trình tự dàn trang, di chuyển/nhân bản/xóa slide, sửa và xóa hình. */
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { nextTableFont, tableFits } from "../core/tablefit";
-import { currentSlideId, deleteShapeUndo, findShape, remapSlide, restoreFont, shapeOn, slideAt, supports } from "./pptCore";
+import { currentSlideId, deleteShapeUndo, findShape, remapSlide, restoreFont, shapeOn, slideAt, supports, themeColors } from "./pptCore";
 import { LONG_CELL_TEXT, LONG_SHAPE_TEXT, longOverwrite } from "./util";
 
 const slideProp = { type: "number" };
@@ -33,6 +33,9 @@ export const PPT_ADV_SPECS: ToolSpec[] = [
         number_format: { type: "string", description: "e.g. '#,##0', '0.0%'." },
         show_values: { type: "boolean", description: "Data labels." },
         layout: { type: "string", description: "Default 'Title Only'." },
+        unit: { type: "string", description: "Axis unit, e.g. 'tỷ đồng'." },
+        source: { type: "string", description: "Source note under the chart." },
+        highlight: { type: "array", items: { type: "string" }, description: "Categories in accent colour, rest grey (one-series column/bar)." },
       },
       required: ["chart_type", "categories", "series"],
     },
@@ -376,7 +379,43 @@ function inheritTitle(slideXml: string): string {
   );
 }
 
-export async function buildChartPptx(a: any, size: { w: number; h: number }, layout?: ChartLayout): Promise<string> {
+/** Màu xám cho các cột không được nhấn (biểu đồ có điểm nhấn) */
+export const MUTED_HEX = "BFBFBF";
+
+/** Mức 3 việc 11 (27/11/2026): đọc đặc tả biểu đồ — điểm nhấn, đơn vị, nguồn — và cảnh báo đặc tả không hợp dạng.
+ *  Hàm thuần (kiểm thử máy). accentHex: màu Accent1 của mẫu, 6 ký tự hex (pptxgenjs chỉ nhận srgb cho màu từng cột). */
+export function chartSpec(a: any, accentHex = "4472C4") {
+  const kind = String(a.chart_type || "column");
+  const pie = kind === "pie" || kind === "doughnut";
+  const barLike = /^(column|bar|stacked_column|stacked_bar)$/.test(kind);
+  const cats: string[] = (a.categories || []).map((c: any) => String(c));
+  const series: any[] = Array.isArray(a.series) ? a.series : [];
+  const rows = series.map((sr, i) => {
+    const vals = (Array.isArray(sr.values) ? sr.values : []).map((v: any) => Number(v) || 0);
+    while (vals.length < cats.length) vals.push(0);
+    return { name: String(sr.name || `Chuỗi ${i + 1}`), values: vals.slice(0, cats.length) };
+  });
+  const warnings: string[] = [];
+  const hl = new Set((Array.isArray(a.highlight) ? a.highlight : a.highlight ? [a.highlight] : []).map((h: any) => String(h).trim().toLowerCase()));
+  let pointColors: string[] | undefined;
+  if (hl.size) {
+    const hit = cats.map((c) => hl.has(c.trim().toLowerCase()));
+    if (!barLike || rows.length !== 1) warnings.push("Bỏ qua highlight: chỉ dùng cho biểu đồ cột / thanh một chuỗi.");
+    else if (!hit.some(Boolean)) warnings.push(`Bỏ qua highlight: không có danh mục nào tên ${[...hl].map((h) => `"${h}"`).join(", ")}.`);
+    else {
+      const hex = /^#?[0-9a-f]{6}$/i.test(accentHex) ? accentHex.replace("#", "").toUpperCase() : "4472C4";
+      pointColors = hit.map((h) => (h ? hex : MUTED_HEX));
+    }
+  }
+  if (pie && cats.length > 5) warnings.push(`Biểu đồ tròn có ${cats.length} phần (nên ≤ 5): cân nhắc thanh ngang sắp xếp giảm dần.`);
+  if (pie && rows.length > 1) warnings.push("Biểu đồ tròn chỉ vẽ chuỗi đầu; nhiều chuỗi thì dùng cột.");
+  const unit = String(a.unit || "").trim();
+  if (unit && pie) warnings.push("Biểu đồ tròn không có trục: ghi đơn vị trong tiêu đề slide.");
+  const source = String(a.source || "").trim();
+  return { kind, pie, cats, rows, pointColors, unit: pie ? "" : unit, source, warnings };
+}
+
+export async function buildChartPptx(a: any, size: { w: number; h: number }, layout?: ChartLayout, accentHex?: string): Promise<string> {
   const PptxGenJS = (await import("pptxgenjs")).default;
   const pptx = new PptxGenJS();
   const wIn = size.w / 72;
@@ -402,29 +441,32 @@ export async function buildChartPptx(a: any, size: { w: number; h: number }, lay
     s.addText(String(a.title), { placeholder: "title" } as any);
     top = titleBox.y + titleBox.h + 0.15;
   }
-  const kind = String(a.chart_type || "column");
-  const cats: string[] = (a.categories || []).map((c: any) => String(c));
-  if (!cats.length) throw new Error("Thiếu categories (nhãn danh mục).");
-  const series: any[] = Array.isArray(a.series) ? a.series : [];
-  if (!series.length) throw new Error("Thiếu series (chuỗi số liệu).");
-  const data = series.map((sr, i) => {
-    const vals = (Array.isArray(sr.values) ? sr.values : []).map((v: any) => Number(v) || 0);
-    while (vals.length < cats.length) vals.push(0);
-    return { name: String(sr.name || `Chuỗi ${i + 1}`), labels: cats, values: vals.slice(0, cats.length) };
-  });
-  const pie = kind === "pie" || kind === "doughnut";
+  if (!(a.categories || []).length) throw new Error("Thiếu categories (nhãn danh mục).");
+  if (!(Array.isArray(a.series) && a.series.length)) throw new Error("Thiếu series (chuỗi số liệu).");
+  const spec = chartSpec(a, accentHex);
+  const { kind, pie, cats } = spec;
+  const data = spec.rows.map((r) => ({ name: r.name, labels: cats, values: r.values }));
   const type = pie ? kind : kind === "line" ? "line" : kind === "area" ? "area" : "bar";
   const fmt = a.number_format || (pie ? "0%" : "#,##0");
   const left = tb ? titleBox.x : m;
   const width = tb ? titleBox.w : wIn - 2 * m;
+  // Có ghi nguồn: chừa một dòng chữ nhỏ dưới biểu đồ
+  const noteH = spec.source ? 0.35 : 0;
+  const chartH = Math.max(1.5, hIn - top - 0.45 - noteH);
+  if (spec.source) {
+    // Chú thích nguồn 10 pt, không đặt màu, phông: theo mẫu
+    s.addText(`Nguồn: ${spec.source}`, { x: left, y: top + chartH + 0.05, w: width, h: 0.3, fontSize: 10, valign: "top", margin: 0 } as any);
+  }
   const opts: any = {
     x: left,
     y: top,
     w: width,
-    h: Math.max(1.5, hIn - top - 0.45),
+    h: chartH,
     // Một chuỗi cột/thanh: một màu (màu theo đối tượng, không theo từng cột). pptxgenjs ghi màu từng cột bằng srgbClr
     // nên tên màu chủ đề ở đó làm tệp không hợp lệ (PowerPoint báo InvalidArgument khi chèn).
-    chartColors: type === "bar" && data.length === 1 ? THEME_COLORS.slice(0, 1) : THEME_COLORS,
+    // Có điểm nhấn (mức 3 việc 11): màu từng cột bằng hex — Accent1 của mẫu cho cột nhấn, xám cho phần còn lại.
+    chartColors: spec.pointColors ?? (type === "bar" && data.length === 1 ? THEME_COLORS.slice(0, 1) : THEME_COLORS),
+    ...(spec.unit ? { showValAxisTitle: true, valAxisTitle: spec.unit, valAxisTitleColor: "tx1", valAxisTitleFontSize: 12 } : {}),
     showLegend: pie || data.length > 1,
     legendPos: "b",
     legendColor: "tx1",
@@ -599,7 +641,10 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
         const ids = await slideIds(ctx);
         const after = a.after_slide !== undefined ? Math.max(0, Math.min(Number(a.after_slide), ids.length)) : ids.length;
         const layout = await pickChartLayout(ctx, a.layout);
-        const b64 = await buildChartPptx(a, size, layout);
+        // Điểm nhấn cần màu Accent1 của mẫu dạng hex (đọc theo chủ đề; máy cũ không đọc được thì dùng màu mặc định)
+        const accent = (Array.isArray(a.highlight) ? a.highlight.length : a.highlight) ? String((await themeColors(ctx)).Accent1 || "") : "";
+        const specWarn = chartSpec(a, accent || undefined).warnings;
+        const b64 = await buildChartPptx(a, size, layout, accent || undefined);
         // Bố cục có sẵn của bài TRƯỚC khi chèn: nếu PowerPoint không ghép được bố cục và tự thêm bố cục lạ (lỗi cũ "thêm một bố cục"),
         // slide biểu đồ được chuyển về bố cục của mẫu để không lệch mẫu (đã đo 16/11/2026: slide.applyLayout dùng được, PowerPointApi 1.8)
         let known: { id: string; name: string }[] = [];
@@ -695,6 +740,7 @@ export async function executePptAdvanced(name: string, a: any, log: UndoEntry[])
           message: `Đã chèn biểu đồ gốc (sửa được dữ liệu) ở slide ${after + 1}, bố cục "${usedLayout}" của mẫu${layoutNote}`,
           layout: usedLayout,
           slide: after + 1,
+          ...(specWarn.length ? { spec_notes: specWarn } : {}),
         };
       });
 

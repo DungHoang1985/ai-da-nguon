@@ -155,3 +155,18 @@ export async function loadShapeTexts(ctx: PowerPoint.RequestContext, shapes: Pow
   return out;
 }
 
+
+const THEME_COLOR_NAMES = ["Dark1", "Light1", "Dark2", "Light2", "Accent1", "Accent2", "Accent3", "Accent4", "Accent5", "Accent6", "Hyperlink", "FollowedHyperlink"];
+
+/** Màu chủ đề của mẫu (hex), PowerPointApi 1.10; máy cũ hoặc lỗi thì {} */
+export async function themeColors(ctx: PowerPoint.RequestContext): Promise<Record<string, string>> {
+  if (!supports("1.10")) return {};
+  try {
+    const m = ctx.presentation.slideMasters.getItemAt(0);
+    const rs = THEME_COLOR_NAMES.map((n) => m.themeColorScheme.getThemeColor(n as any));
+    await ctx.sync();
+    return Object.fromEntries(THEME_COLOR_NAMES.map((n, i) => [n, rs[i].value]));
+  } catch {
+    return {};
+  }
+}

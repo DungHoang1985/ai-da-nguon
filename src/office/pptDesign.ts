@@ -6,6 +6,7 @@
 import { ToolSpec, UndoEntry } from "../core/agent/types";
 import { DeckPara, DeckShape, DeckSlide, checkDeck, deckBrief } from "../core/deckcheck";
 import { exportSlide, fitTableToSlide, restoreSlideUndo, slideSizePt } from "./pptAdvanced";
+import { themeColors } from "./pptCore";
 import { shapeOn, slideAt, supports } from "./pptCore";
 import { truncate } from "./util";
 
@@ -97,7 +98,6 @@ export const PPT_DESIGN_SPECS: ToolSpec[] = [
 
 const TITLE_TYPES = new Set(["Title", "CenterTitle", "VerticalTitle"]);
 const TEXTY = new Set(["GeometricShape", "TextBox", "Placeholder", "Callout"]);
-const THEME_COLOR_NAMES = ["Dark1", "Light1", "Dark2", "Light2", "Accent1", "Accent2", "Accent3", "Accent4", "Accent5", "Accent6", "Hyperlink", "FollowedHyperlink"];
 
 /** Tách chữ của một khung thành các đoạn kèm vị trí (PowerPoint ngắt đoạn bằng \r, \n hoặc \v) */
 export function splitParagraphs(text: string): { text: string; start: number }[] {
@@ -196,17 +196,7 @@ async function readSlides(ctx: PowerPoint.RequestContext, only?: number[]): Prom
   return out;
 }
 
-async function themeColors(ctx: PowerPoint.RequestContext): Promise<Record<string, string>> {
-  if (!supports("1.10")) return {};
-  try {
-    const m = ctx.presentation.slideMasters.getItemAt(0);
-    const rs = THEME_COLOR_NAMES.map((n) => m.themeColorScheme.getThemeColor(n as any));
-    await ctx.sync();
-    return Object.fromEntries(THEME_COLOR_NAMES.map((n, i) => [n, rs[i].value]));
-  } catch {
-    return {};
-  }
-}
+
 
 let fontCache: { at: number; fonts: { heading?: string; body?: string } } | null = null;
 /** Phông chủ đề: không có API → đọc từ tệp chủ đề trong gói của một slide xuất ra (đã đo: exportAsBase64 trả gói .pptx) */

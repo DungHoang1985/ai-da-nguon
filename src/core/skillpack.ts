@@ -36,7 +36,7 @@ export const CORE_GUIDES: Record<string, string> = {
   PowerPoint: `## Chuẩn làm việc với PowerPoint (luôn áp dụng)
 - Mỗi slide một thông điệp; bài dài theo cấu trúc kim tự tháp: kết luận chính → tóm tắt → các phần → kết luận/bước tiếp theo.
 - Dùng bố cục (layout) và màu, phông của mẫu đang mở; không tự thêm thanh màu trang trí, đường gạch dưới tiêu đề.
-- Tiêu đề ngắn (≤ 10 từ), không chấm cuối, cùng vị trí trên các slide nội dung; thân bài 14–16pt trở lên, căn trái; mỗi slide ≤ 6 ý.
+- Tiêu đề là câu kết luận (≤ 15 từ, có số liệu khi có), không chấm cuối, cùng vị trí trên các slide nội dung; thân bài 14–16pt trở lên, căn trái; mỗi slide ≤ 6 ý.
 - Mỗi slide nên có yếu tố trực quan: biểu đồ cho số liệu, sơ đồ cho quy trình/mốc thời gian, bảng cho so sánh.
 - Không để chữ tràn khỏi khung: nhiều chữ thì tách slide; hình và ô chữ không chồng nhau, lề ≥ 36pt, khoảng cách giữa khối đều nhau.
 - Soát lại khi xong: lỗi chính tả, thứ tự, chữ mẫu còn sót ("Click to add…", "[cần bổ sung]").

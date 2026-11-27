@@ -276,7 +276,8 @@ describe("Đợt 11 — chặn phình lại (số ký tự phần cố định c
   // bài X6 chạm trần 12 bước vì 7 lệnh định dạng rời) — đo: Trả phí 25.891, Miễn phí 15.135
   // Đợt 12 phần E (23/11/2026): Trả phí +400 / +450 cho công cụ remember (đo: Excel ≈26.280, PowerPoint 19.308); Miễn phí giữ trần (remember nằm trong nhóm bo_nho)
   // 25/11/2026: +700 cho quy tắc đọc lại sau khi ghi và báo cáo đúng việc đã làm (REPORT_RULES, mức 1 tối ưu theo mã bản chính thức)
-  const CAP: Record<string, { paid: number; free: number }> = { Excel: { paid: 27100, free: 15950 }, PowerPoint: { paid: 20050, free: 14800 } };
+  // 27/11/2026: PowerPoint +500 / +180 cho mức 3 (storyboard key_message trong ppt_add_slides; unit, source, highlight của ppt_add_chart; tiêu đề là câu kết luận ≤ 15 từ) — đo: Trả phí ≈20.510, Miễn phí 14.956
+  const CAP: Record<string, { paid: number; free: number }> = { Excel: { paid: 27100, free: 15950 }, PowerPoint: { paid: 20550, free: 14980 } };
   for (const h of HOSTS) {
     const parts = { base: h.prompt, guide: CORE_GUIDES[h.host], host: h.host, skillCatalog: skillCatalog(skillsOf(h.host)) };
     it(`${h.host}, Trả phí: ≤ ${CAP[h.host].paid} ký tự`, () => {
