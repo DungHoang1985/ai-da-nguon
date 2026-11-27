@@ -36,7 +36,7 @@ import { chatCreditWarning } from "../../core/credits";
 import { useCredits } from "./useCredits";
 import { WelcomeSignIn } from "./SignInCard";
 import { useCatalog } from "./useCatalog";
-import { AgentMessage, ToolCall, UndoEntry, Usage } from "../../core/agent/types";
+import { AgentMessage, HostToolSet, ToolCall, UndoEntry, Usage } from "../../core/agent/types";
 import { isToolUnsupportedError } from "../../core/agent/llm";
 import { stepCapFor } from "../../core/agent/loop";
 import { formatUsage, runTurn } from "../../core/agent/turn";
@@ -57,7 +57,7 @@ import { executeIncoming } from "../../office/crossExec";
 import { RefTarget, findRefs } from "../../core/refs";
 import { parseMarkdownTable } from "../../core/table";
 import { HostName, INSERT_LABEL, insertAnswer, readSelection } from "../../office/host";
-import { QUICK_PROMPTS, describeCall, getHostTools } from "../../office/tools";
+import { QUICK_PROMPTS, describeCall, loadHostTools } from "../../office/tools";
 import { createCommonTools } from "../../office/common";
 import { MemoryItem, MemoryProposal, memoryCapFor, memoryForTurn, memorySnapshot } from "../../core/memory";
 import { textParts, TurnEventTracker } from "../../core/turnEvents";
@@ -434,7 +434,22 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
   const [histWarn, setHistWarn] = React.useState("");
   const skillStore = React.useMemo(() => new SkillStore(kv), [kv]);
 
-  const hostTools = React.useMemo(() => getHostTools(host, () => storage.getSettings()), [host, storage]);
+  // B10 phần 2: bộ công cụ của ứng dụng nạp riêng (import()); tới khi nạp xong hostTools = null. Lượt gửi trong lúc đó chờ nạp xong (toolsReady).
+  const [hostTools, setHostTools] = React.useState<HostToolSet | null>(null);
+  const toolsReady = React.useRef<Promise<HostToolSet | null>>(Promise.resolve(null));
+  React.useEffect(() => {
+    let live = true;
+    setHostTools(null);
+    const p = loadHostTools(host, () => storage.getSettings()).catch((e) => {
+      if (live) setNotice({ text: "Không nạp được bộ công cụ của ứng dụng (AI chỉ trò chuyện được): " + networkErrorMessage(e), err: true });
+      return null;
+    });
+    toolsReady.current = p;
+    p.then((t) => live && setHostTools(t));
+    return () => {
+      live = false;
+    };
+  }, [host, storage]);
   const agentOn = settings.agentMode && !!hostTools;
   /** Đợt 9: chế độ Miễn phí / Trả phí; chưa chọn → hiện thẻ chọn chế độ */
   const [mode, setModeState] = React.useState<UsageMode | undefined>(() => storage.getSelection().mode);
@@ -829,6 +844,17 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
 
   const prepareAndRun = async (p: NonNullable<ReturnType<typeof getProvider>>, typed: string, opts?: { continueTask?: boolean }) => {
     setNotice(undefined);
+    // Bộ công cụ có thể còn đang nạp (vừa mở khung): chờ cho xong để lượt này không chạy thiếu công cụ (B10 phần 2)
+    let hostTools = settings.agentMode ? await toolsReady.current : null;
+    // Lần nạp trước hỏng (mạng, bản cũ trong bộ nhớ tạm): thử nạp lại một lần cho lượt này
+    if (settings.agentMode && !hostTools) {
+      hostTools = await loadHostTools(host, () => storage.getSettings()).catch(() => null);
+      if (hostTools) {
+        toolsReady.current = Promise.resolve(hostTools);
+        setHostTools(hostTools);
+      }
+    }
+    const agentOn = settings.agentMode && !!hostTools;
     const slash = resolveSlash(typed, skills, commands);
     let content = slash.content;
     if (withSelection) {

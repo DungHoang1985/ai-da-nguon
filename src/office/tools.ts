@@ -1,19 +1,29 @@
 /** Chọn bộ công cụ theo ứng dụng đang chạy + mô tả từng bước bằng tiếng Việt cho khung chat. */
 import { HostToolSet, ToolCall } from "../core/agent/types";
-import { excelTools } from "./excelTools";
-import { createWordTools, reasonOf } from "./wordTools";
-import { pptTools } from "./pptTools";
+import { reasonOf } from "./toolReasons";
 import { HostName } from "./host";
-import { withAuditTrail } from "./excelTrail";
 import { ALL_TOOL_GROUPS } from "../core/toolgroups";
 
-export function getHostTools(host: HostName, settings: () => unknown): HostToolSet | null {
-  if (host === "Excel") return withWriteQueue(withAuditTrail(excelTools, { settings: () => settings() as any, describe: describeCall }), "Excel");
-  if (host === "Word") return createWordTools(settings);
-  if (host === "PowerPoint") return withWriteQueue(pptTools, "PowerPoint");
+/** B10 phần 2 (rà soát kiến trúc 20/11/2026, làm 27/11): bộ công cụ của từng ứng dụng nạp riêng bằng import() — khung Excel không
+ *  tải mã công cụ Word, PowerPoint và ngược lại. Mỗi lần gọi tạo bộ công cụ mới (như getHostTools cũ); mã của ứng dụng chỉ tải một lần. */
+export async function loadHostTools(host: HostName, settings: () => unknown): Promise<HostToolSet | null> {
+  if (host === "Excel") {
+    const [{ excelTools }, { withAuditTrail }] = await Promise.all([
+      import(/* webpackChunkName: "cong-cu-excel" */ "./excelTools"),
+      import(/* webpackChunkName: "cong-cu-excel" */ "./excelTrail"),
+    ]);
+    return withWriteQueue(withAuditTrail(excelTools, { settings: () => settings() as any, describe: describeCall }), "Excel");
+  }
+  if (host === "Word") {
+    const { createWordTools } = await import(/* webpackChunkName: "cong-cu-word" */ "./wordTools");
+    return createWordTools(settings);
+  }
+  if (host === "PowerPoint") {
+    const { pptTools } = await import(/* webpackChunkName: "cong-cu-ppt" */ "./pptTools");
+    return withWriteQueue(pptTools, "PowerPoint");
+  }
   return null;
 }
-
 /** B6 (rà soát kiến trúc 20/11/2026): công cụ GHI của Excel, PowerPoint chạy lần lượt như Word (wordTools.ts tự có hàng đợi).
  *  Công cụ bị hết hạn chờ vẫn chạy ngầm trong Office; lệnh ghi kế không được chen vào giữa (bản chụp Hoàn tác, nhật ký sẽ lẫn nhau).
  *  Hàng đợi theo ứng dụng, ở cấp mô-đun: khung chat và nút Tự kiểm tra dùng chung. Công cụ chỉ đọc không xếp hàng. */

@@ -26,6 +26,8 @@ import {
 import { OutlineItem, ParaRow, buildOutline, clauseAt, clauseName, findClause, outlineByParagraph } from "../core/outline";
 import { WORD_REVIEW_SPECS, createWordReviewTools } from "./wordReview";
 import { createWordReadTools } from "./wordRead";
+import { REASON_TOOLS, reasonOf } from "./toolReasons";
+export { REASON_TOOLS, reasonOf };
 import { createWordEditTools } from "./wordEdit";
 import { createWordCommentTools } from "./wordComments";
 import { WORD_ADMIN_SPECS, createWordAdminTools } from "./wordAdmin";
@@ -421,9 +423,6 @@ export const WORD_SPECS: ToolSpec[] = [
   ...WORD_FORM_SPECS,
 ];
 
-/** Công cụ sửa nội dung Word nhận thêm `reason`: một câu lý do ngắn, hiện cạnh bước trên khung, trong hộp hỏi và ở mục Hoàn tác
- *  (như thẻ đề xuất kèm lý do của add-in Claude chính thức). Lý do chỉ để hiển thị, không ghi vào tài liệu. */
-export const REASON_TOOLS = new Set(["word_replace_text", "word_set_paragraph_text", "word_insert_paragraphs", "word_insert_clause", "word_replace_selection", "word_delete_paragraphs", "word_fill_table"]);
 for (const sp of WORD_SPECS) {
   if (REASON_TOOLS.has(sp.name)) {
     (sp.parameters as any).properties.reason = {
@@ -433,12 +432,6 @@ for (const sp of WORD_SPECS) {
   }
 }
 
-/** Lý do AI nêu cho một lần sửa, gọn một dòng (rỗng nếu không nêu) */
-export function reasonOf(name: string, a: any): string {
-  if (!REASON_TOOLS.has(name)) return "";
-  const r = String(a?.reason ?? "").replace(/\s+/g, " ").trim();
-  return r.length > 160 ? r.slice(0, 159) + "…" : r;
-}
 /** Công cụ ghi chữ vào điều khoản: khi người dùng bật "Soát lập luận trước khi sửa", mỗi lần gọi được soát trước khi ghi */
 const REVIEWABLE = ["word_set_paragraph_text", "word_insert_clause", "word_replace_selection"];
 WORD_SPECS.forEach((sp) => {

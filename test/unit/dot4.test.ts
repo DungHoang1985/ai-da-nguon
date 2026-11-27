@@ -10,7 +10,7 @@ import { cellAddress } from "../../src/office/util";
 import { excelTools } from "../../src/office/excelTools";
 import { EXCEL_MODEL_SPECS, cleanName } from "../../src/office/excelModel";
 import { withAuditTrail } from "../../src/office/excelTrail";
-import { describeCall, getHostTools } from "../../src/office/tools";
+import { describeCall, loadHostTools } from "../../src/office/tools";
 import { DEFAULT_SETTINGS } from "../../src/core/storage";
 import { runAgent } from "../../src/core/agent/loop";
 import { PROVIDERS } from "../../src/core/providers";
@@ -313,8 +313,8 @@ describe("Đợt 4 · Bộ công cụ Excel", () => {
     for (const n of ["excel_edit_chart", "excel_edit_pivot", "excel_page_setup", "excel_named_range", "excel_clean_data", "excel_protect"]) assert.ok(w(n), n);
   });
 
-  it("Bộ công cụ Excel của khung được bọc lớp nhật ký; lời nhắc Excel cố định, nhắc công cụ mới, không chứa thứ hay đổi", () => {
-    const t = getHostTools("Excel", () => DEFAULT_SETTINGS)!;
+  it("Bộ công cụ Excel của khung được bọc lớp nhật ký; lời nhắc Excel cố định, nhắc công cụ mới, không chứa thứ hay đổi", async () => {
+    const t = (await loadHostTools("Excel", () => DEFAULT_SETTINGS))!;
     assert.strictEqual(t.specs.length, 29);
     const p = t.systemPrompt();
     assert.strictEqual(p, t.systemPrompt());

@@ -3,7 +3,7 @@ import { Button, Input, Link, Select, Spinner, Switch, Text, Textarea, makeStyle
 import { ArrowLeftRegular } from "@fluentui/react-icons";
 import { APP_VERSION, APP_VERSION_FULL } from "../../core/version";
 import { HostName } from "../../office/host";
-import { getHostTools } from "../../office/tools";
+import { loadHostTools } from "../../office/tools";
 // B10 (rà soát kiến trúc, 26/11/2026): mã Tự kiểm tra (~140 KB) chỉ nạp khi bấm nút — chỉ lấy kiểu ở đây, không kéo mã vào gói khung
 import type { TestStep } from "../../office/selftest";
 import { CUSTOM_PREFIX, Provider, allProviders, getProvider, normalizeBaseUrl } from "../../core/providers";
@@ -12,7 +12,6 @@ import { Storage } from "../../core/storage";
 import { fetchModels } from "../../core/models";
 import { cleanKey, describeError, keyProblem, networkErrorMessage } from "../../core/errors";
 import ProviderCheckCard from "./ProviderCheck";
-import { clearHighlights } from "../../office/excelTrail";
 import SignInCard from "./SignInCard";
 import BackupCard from "./BackupCard";
 import { getKV } from "../../core/db";
@@ -404,7 +403,8 @@ const ExcelTrailCard: React.FC<Props> = ({ storage, onChanged }) => {
         <Button
           size="small"
           onClick={async () => {
-            const n = await clearHighlights().catch(() => -1);
+            // B10 phần 2: mã nhật ký Excel nạp khi bấm (không kéo vào gói tải đầu)
+      const n = await import(/* webpackChunkName: "cong-cu-excel" */ "../../office/excelTrail").then((m) => m.clearHighlights()).catch(() => -1);
             setMsg(n < 0 ? "Không bỏ được tô sáng." : n ? `Đã trả lại màu cũ cho ${n} vùng.` : "Không có ô nào đang được tô trong phiên này.");
           }}
         >
@@ -423,9 +423,14 @@ const SelfTestCard: React.FC<Props> = ({ storage, host, aiBusy }) => {
   const s = useStyles();
   const [steps, setSteps] = React.useState<TestStep[] | null>(null);
   const [running, setRunning] = React.useState(false);
-  const tools = host ? getHostTools(host, () => storage.getSettings()) : null;
   const test = async () => {
-    if (!tools || aiBusy) return;
+    if (!host || aiBusy) return;
+    // B10 phần 2: bộ công cụ nạp khi bấm (import())
+    const tools = await loadHostTools(host, () => storage.getSettings()).catch(() => null);
+    if (!tools) {
+      setSteps([{ name: "Nạp bộ công cụ", ok: false, detail: "Không nạp được bộ công cụ của ứng dụng (mạng hoặc bản cũ trong bộ nhớ tạm). Tải lại khung rồi thử lại." }]);
+      return;
+    }
     setRunning(true);
     setSteps([]);
     try {
@@ -452,7 +457,7 @@ const SelfTestCard: React.FC<Props> = ({ storage, host, aiBusy }) => {
         Word, phần thử nằm trong một vùng riêng ở cuối văn bản và phần còn lại được kiểm là không đổi; Excel và PowerPoint nên chạy trên tài liệu trống.
       </Text>
       <div className={s.row}>
-        <Button onClick={test} disabled={!tools || running || !!aiBusy} title={aiBusy ? "AI đang chạy ở khung chat: chờ xong hoặc bấm Dừng rồi chạy tự kiểm tra" : undefined}>
+        <Button onClick={test} disabled={!host || running || !!aiBusy} title={aiBusy ? "AI đang chạy ở khung chat: chờ xong hoặc bấm Dừng rồi chạy tự kiểm tra" : undefined}>
           Chạy tự kiểm tra
         </Button>
         {aiBusy && !running && <Text size={200}>AI đang chạy ở khung chat — chờ xong rồi chạy.</Text>}
