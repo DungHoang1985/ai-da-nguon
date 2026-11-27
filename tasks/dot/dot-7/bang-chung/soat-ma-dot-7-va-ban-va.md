@@ -2,7 +2,7 @@
 
 Phạm vi: `git diff 01a6a13..HEAD -- src` (27 tệp, +1057 −85), soát trên nhánh `claude/ppt-toa-do-tieu-de` (HEAD `6505fdd`). Đã đọc ba bản soát trước (`soat-ma-dot-5.md`, `soat-ma-dot-6.md`, `soat-ma-loi-tac-tu.md`) để không lặp. Phần sửa theo các bản soát đó (trần chữ `read_attachment_pages`, `parsePageSpec`, che key, `safeJson`…) chỉ kiểm lại chỗ mới phát sinh.
 
-Ca thử tự viết: `C:\Users\Admin\AppData\Local\Temp\claude\soat-ma-dot-7\soat.test.ts` (S1–S13) và `skills.test.ts`, chạy bằng mocha + ts-node trên mã của nhánh, ngoài kho. `npm test`: 567 ca đạt. `npx tsc --noEmit -p .`: không lỗi. Không mở Office: các phát hiện về PowerPoint/Excel chỉ đọc mã, ghi rõ ở cột Xác nhận.
+Ca thử tự viết: `%TEMP%\claude\soat-ma-dot-7\soat.test.ts` (S1–S13) và `skills.test.ts`, chạy bằng mocha + ts-node trên mã của nhánh, ngoài kho. `npm test`: 567 ca đạt. `npx tsc --noEmit -p .`: không lỗi. Không mở Office: các phát hiện về PowerPoint/Excel chỉ đọc mã, ghi rõ ở cột Xác nhận.
 
 Tổng: 1 Cao · 3 Trung bình · 12 Thấp (16 phát hiện).
 

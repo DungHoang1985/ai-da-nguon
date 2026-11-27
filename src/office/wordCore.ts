@@ -498,9 +498,10 @@ export async function annotatePending(ctx: Word.RequestContext, loaded: { rows: 
 
 /** Luôn bật Theo dõi thay đổi trong lúc AI sửa, xong trả lại chế độ cũ. Word không có API theo dõi (dưới WordApi 1.4) → từ chối ghi. */
 export async function tracked<T>(ctx: Word.RequestContext, fn: () => Promise<T>): Promise<T> {
-  if (!supports("1.4")) {
+  // B19: Hoàn tác = từ chối đúng các sửa đổi mới (đọc danh sách sửa đổi cần WordApi 1.6). Dưới 1.6 ghi được nhưng không hoàn tác được → từ chối như dưới 1.4.
+  if (!supports("1.6")) {
     throw new Error(
-      "Word trên máy này chưa hỗ trợ ghi có theo dõi qua add-in (cần WordApi 1.4) nên AI không sửa trực tiếp, để mọi sửa đổi luôn duyệt được. Hãy cập nhật Office; tạm thời đề xuất nội dung để người dùng tự chèn."
+      "Word trên máy này chưa hỗ trợ ghi có theo dõi và Hoàn tác qua add-in (cần WordApi 1.6) nên AI không sửa trực tiếp, để mọi sửa đổi luôn duyệt và hoàn tác được. Hãy cập nhật Office; tạm thời đề xuất nội dung để người dùng tự chèn."
     );
   }
   const doc = ctx.document;

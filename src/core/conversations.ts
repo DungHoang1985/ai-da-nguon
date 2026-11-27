@@ -100,29 +100,30 @@ export class ConversationStore {
     if (this.noSave?.()) return;
     const stored: Conversation = { ...c, history: slimForStorage(c.history), updatedAt: Date.now() };
     await this.kv.set("conv:" + c.id, stored);
-    let index = (await this.kv.get<ConversationMeta[]>("conv-index")) || [];
-    index = index.filter((x) => x.id !== c.id);
-    index.unshift({ id: c.id, host: c.host, title: c.title, updatedAt: stored.updatedAt });
-    index.sort((a, b) => b.updatedAt - a.updatedAt);
-    const drop = index.slice(MAX_CONVERSATIONS);
-    index = index.slice(0, MAX_CONVERSATIONS);
+    // B11: mục lục đọc – sửa – ghi trong một giao dịch, hai khung cùng lưu không làm mất mục của nhau
+    let drop: ConversationMeta[] = [];
+    await this.kv.update<ConversationMeta[]>("conv-index", (cur) => {
+      const index = (cur || []).filter((x) => x.id !== c.id);
+      index.unshift({ id: c.id, host: c.host, title: c.title, updatedAt: stored.updatedAt });
+      index.sort((a, b) => b.updatedAt - a.updatedAt);
+      drop = index.slice(MAX_CONVERSATIONS);
+      return index.slice(0, MAX_CONVERSATIONS);
+    });
     for (const d of drop) await this.kv.del("conv:" + d.id);
-    await this.kv.set("conv-index", index);
   }
 
   async delete(id: string): Promise<void> {
+    await this.kv.update<ConversationMeta[]>("conv-index", (cur) => (cur || []).filter((x) => x.id !== id));
     await this.kv.del("conv:" + id);
-    const index = ((await this.kv.get<ConversationMeta[]>("conv-index")) || []).filter((x) => x.id !== id);
-    await this.kv.set("conv-index", index);
   }
 
   async clear(host?: string): Promise<void> {
-    const index = (await this.kv.get<ConversationMeta[]>("conv-index")) || [];
-    const keep: ConversationMeta[] = [];
-    for (const c of index) {
-      if (!host || c.host === host) await this.kv.del("conv:" + c.id);
-      else keep.push(c);
-    }
-    await this.kv.set("conv-index", keep);
+    const hit = (c: ConversationMeta) => !host || c.host === host;
+    let gone: ConversationMeta[] = [];
+    await this.kv.update<ConversationMeta[]>("conv-index", (cur) => {
+      gone = (cur || []).filter(hit);
+      return (cur || []).filter((c) => !hit(c));
+    });
+    for (const c of gone) await this.kv.del("conv:" + c.id);
   }
 }

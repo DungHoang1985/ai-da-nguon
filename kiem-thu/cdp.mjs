@@ -18,7 +18,7 @@
 // <cổng> có thể kèm tên ứng dụng khi mở nhiều ứng dụng: 9229/Word, 9229/Excel, 9229/PowerPoint
 //
 // Mở Office kèm cổng gỡ lỗi (PowerShell), khi KHÔNG còn ứng dụng Office nào đang chạy:
-//   $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--remote-debugging-port=9229 --remote-allow-origins=*"
+//   $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--remote-debugging-port=9229 --remote-allow-origins=http://127.0.0.1:9229,http://localhost:9229"
 //   Start-Process winword.exe -ArgumentList '"<tệp ra>"'
 // KHÔNG đọc hay in kho lưu của khung (localStorage, IndexedDB): ở đó có API key thật.
 import fs from "node:fs";

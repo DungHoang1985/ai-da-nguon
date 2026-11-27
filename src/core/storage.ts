@@ -98,7 +98,15 @@ export interface Selection {
 }
 
 export class Storage {
-  constructor(private store: KVStore = defaultStore()) {}
+  constructor(private store: KVStore = defaultStore()) {
+    this.reloadCustomSources();
+  }
+
+  /** B22: đăng ký nguồn tự khai vào danh sách nguồn — tường minh lúc khởi động và sau khi khôi phục sao lưu
+   *  (trước đây chỉ chạy kèm getKeys(), ai gọi allProviders() trước thì không thấy nguồn tự khai) */
+  reloadCustomSources(): void {
+    registerCustomSources(this.getCustomSources());
+  }
 
   private read<T>(key: string, fallback: T): T {
     try {
@@ -124,7 +132,6 @@ export class Storage {
 
   /** Key theo nguồn. Nguồn dùng chung key với nguồn khác (`keyFrom`) nhận key của nguồn đó — chỉ tính ra, không lưu thêm bản sao. */
   getKeys(): Record<string, string> {
-    registerCustomSources(this.getCustomSources());
     const keys = { ...this.rawKeys() };
     for (const p of allProviders()) {
       if (!p.keyFrom) continue;

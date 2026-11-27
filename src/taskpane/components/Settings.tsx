@@ -921,6 +921,7 @@ const Settings: React.FC<Props> = (props) => {
         <BackupCard
           host={props.host}
           onRestored={() => {
+            props.storage.reloadCustomSources();
             props.onChanged();
             setGen((g) => g + 1);
           }}

@@ -97,7 +97,7 @@ if (-not (La-Tep-Thu (Split-Path $full -Leaf))) { Write-Output "Ten tep thu phai
 $exe = switch -Regex ($full) { '\.docx$' { 'winword.exe' } '\.xlsx$' { 'excel.exe' } '\.pptx$' { 'powerpnt.exe' } default { '' } }
 if (-not $exe) { Write-Output "Tep phai la .docx, .xlsx hoac .pptx"; exit 1 }
 
-$env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--remote-debugging-port=$Cong --remote-allow-origins=*"
+$env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = "--remote-debugging-port=$Cong --remote-allow-origins=http://127.0.0.1:$Cong,http://localhost:$Cong"
 Start-Process $exe -ArgumentList "`"$full`""
 for ($i = 0; $i -lt 90; $i++) {
   Start-Sleep -Seconds 1

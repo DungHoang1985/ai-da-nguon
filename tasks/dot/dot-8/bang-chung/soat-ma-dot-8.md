@@ -2,7 +2,7 @@
 
 Phạm vi: `git diff f8c5a01..HEAD -- src` (8 tệp, +804 −8), soát trên nhánh `claude/dot-8-dien-mau` (HEAD `d49c6a8`): `src/core/formfill.ts`, `src/office/wordForm.ts`, phần nối vào `wordTools.ts`, `wordReview.ts` (`liveContentControls`), kỹ năng `dien-mau` (`skillpack.ts`), bước Tự kiểm tra trong `selftestWord.ts`. Đã đọc `tasks/dot/dot-8/dot-8.md` (số đo Office.js) và `test/unit/dot8.test.ts`.
 
-Ca thử tự viết, ngoài kho: `C:\Users\Admin\AppData\Local\Temp\claude\soat-ma-dot-8\blanks.ts` (46 dòng mẫu hợp đồng, tờ khai), `ox.ts` và `ox2.ts` (OOXML ô điền mẫu: sửa đổi định dạng chờ duyệt, ô cấp ô bảng, ô chứa bảng hoặc ảnh, ô đánh dấu Wingdings, ô gắn dữ liệu, định dạng ngày có chữ). Chạy bằng ts-node trên mã của nhánh. `npm test`: 597 ca đạt. `npx tsc --noEmit -p .`: không lỗi. Không mở Office: mọi điều về hành vi Word chỉ suy từ mã và số đo trong `tasks/dot/dot-8/dot-8.md`, ghi "chưa chắc" ở cột Xác nhận.
+Ca thử tự viết, ngoài kho: `%TEMP%\claude\soat-ma-dot-8\blanks.ts` (46 dòng mẫu hợp đồng, tờ khai), `ox.ts` và `ox2.ts` (OOXML ô điền mẫu: sửa đổi định dạng chờ duyệt, ô cấp ô bảng, ô chứa bảng hoặc ảnh, ô đánh dấu Wingdings, ô gắn dữ liệu, định dạng ngày có chữ). Chạy bằng ts-node trên mã của nhánh. `npm test`: 597 ca đạt. `npx tsc --noEmit -p .`: không lỗi. Không mở Office: mọi điều về hành vi Word chỉ suy từ mã và số đo trong `tasks/dot/dot-8/dot-8.md`, ghi "chưa chắc" ở cột Xác nhận.
 
 Tổng: 1 Cao · 7 Trung bình · 16 Thấp (24 phát hiện).
 

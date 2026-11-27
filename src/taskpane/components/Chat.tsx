@@ -424,6 +424,14 @@ const Chat: React.FC<Props> = ({ storage, host, version, onOpenSettings, onKeysC
   /** Chế độ thử (bài thử tự động bật qua sessionStorage): không lưu lịch sử */
   const testMode = React.useMemo(() => testModeOn(), []);
   const convStore = React.useMemo(() => new ConversationStore(kv, testModeOn), [kv]);
+  // B11: không mở được kho lưu trên máy → đang lưu tạm trong bộ nhớ, đóng khung là mất: báo rõ
+  React.useEffect(
+    () =>
+      kv.onFallback((why) =>
+        setNotice({ text: `Không mở được kho lưu trên máy (${why || "IndexedDB lỗi"}): lịch sử hội thoại, kỹ năng và bộ nhớ chỉ giữ tới khi đóng khung.`, err: true })
+      ),
+    [kv]
+  );
   /** Lịch sử đầy: hội thoại cũ nhất sắp bị xóa khi hội thoại mới này được lưu */
   const [histWarn, setHistWarn] = React.useState("");
   const skillStore = React.useMemo(() => new SkillStore(kv), [kv]);

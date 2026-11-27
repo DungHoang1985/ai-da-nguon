@@ -3,6 +3,7 @@
 const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CspPlugin } = require("./csp-plugin");
 const { DefinePlugin } = require("webpack");
 const pkg = require("./package.json");
 
@@ -63,6 +64,7 @@ module.exports = async (env, options) => {
     },
     plugins: [
       // Số phiên bản duy nhất: lấy từ package.json (src/core/version.ts)
+      new CspPlugin({ dev }),
       new DefinePlugin({ __APP_VERSION__: JSON.stringify(pkg.version) }),
       new HtmlWebpackPlugin({
         filename: "taskpane.html",

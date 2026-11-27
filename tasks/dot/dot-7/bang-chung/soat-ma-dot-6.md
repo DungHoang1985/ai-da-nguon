@@ -1,6 +1,6 @@
 # Soát mã độc lập — Đợt 6 (bản 4.6.0)
 
-Phạm vi: `git diff 0c40ac7..01a6a13 -- src test`, soát trên mã nhánh `claude/dot-7`. Ca thử nằm ở `tmp-soat/dot6/a.test.ts` (git bỏ qua), chạy bằng mocha của thư mục cha `D:\ADD IN\node_modules` vì worktree chưa có `node_modules`. Không gọi mạng, không mở Office, không đọc key thật. Không sửa `src/`, `test/`.
+Phạm vi: `git diff 0c40ac7..01a6a13 -- src test`, soát trên mã nhánh `claude/dot-7`. Ca thử nằm ở `tmp-soat/dot6/a.test.ts` (git bỏ qua), chạy bằng mocha của thư mục cha `<thư mục dự án>\node_modules` vì worktree chưa có `node_modules`. Không gọi mạng, không mở Office, không đọc key thật. Không sửa `src/`, `test/`.
 
 ## Kết luận về đường đi của bí mật
 

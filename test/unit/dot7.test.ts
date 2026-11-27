@@ -131,7 +131,7 @@ describe("Đợt 7 · A: trần số bước và dừng sớm", () => {
 describe("Đợt 7 · E: chế độ thử và lịch sử đầy", () => {
   const memKV = () => {
     const m = new Map<string, any>();
-    return { get: async (k: string) => m.get(k), set: async (k: string, v: any) => void m.set(k, v), del: async (k: string) => void m.delete(k), m } as any;
+    return { get: async (k: string) => m.get(k), set: async (k: string, v: any) => void m.set(k, v), del: async (k: string) => void m.delete(k), update: async (k: string, fn: (v: any) => any) => { const v = fn(m.get(k)); m.set(k, v); return v; }, m } as any;
   };
   const conv = (id: string, at = 0) => ({ id, host: "Word", title: "T " + id, updatedAt: at, items: [{ role: "user", text: "x" }], history: [] });
 

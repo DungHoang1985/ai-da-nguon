@@ -55,7 +55,7 @@ Sắp theo mức; "Office" = cần Tự kiểm tra hoặc Chạy thật trong Of
 | B17 | Thấp | Không có CSP ở `taskpane.html`, `dang-nhap.html` | — | `script-src 'self' <CDN Office>`, `object-src 'none'` | Có |
 | B18 | Thấp | Mỗi token trả về vẽ lại toàn bộ hội thoại | `Chat.tsx:1299-1320` | `React.memo` cho từng mục | Có |
 | B19 | Thấp | Word dưới WordApi 1.6: lệnh ghi không có Hoàn tác | `wordTools.ts:2066` | Từ chối ghi như khi dưới 1.4 | Không |
-| B20 | Thấp | Kho công khai còn đường dẫn máy (`C:\Users\…`, `D:\…`) và một kế hoạch nội bộ | `tasks/ban-giao-phan-phoi-cong-ty-va-che-do-web.md`, 3 tệp `soat-ma-*` | Đường dẫn tương đối; chuyển kế hoạch nội bộ ra ngoài kho | Không |
+| B20 | Thấp | Kho công khai còn đường dẫn máy (đường dẫn tuyệt đối ổ C, ổ D) và một kế hoạch nội bộ | `tasks/ban-giao-phan-phoi-cong-ty-va-che-do-web.md`, 3 tệp `soat-ma-*` | Đường dẫn tương đối; chuyển kế hoạch nội bộ ra ngoài kho | Không |
 | B21 | Thấp | `--remote-allow-origins=*` khi mở Office thử | `kiem-thu/mo-office.ps1:95` | Chỉ cho `http://127.0.0.1:<cổng>` | Có |
 | B22 | Thấp | `customProviders` chỉ nạp như tác dụng phụ của `Storage.getKeys()` | `providers.ts:322`, `storage.ts:126` | Nạp tường minh lúc khởi động | Không |
 | B23 | Cần anh | PowerPoint ghi đè chữ ô bảng / hình có sẵn không hỏi (Word, Excel thì hỏi) | `pptDesign.ts:68-84` | Anh quyết quy tắc "ghi đè hỏi trước" có áp cho PowerPoint không | — |

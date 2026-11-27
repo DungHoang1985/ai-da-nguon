@@ -50,5 +50,5 @@ Các điều đã đo thật: mã xử lý đúng 400 "Invalid code" (`badCode`)
 ## 4. Đã chạy thử gì
 - `npm test`: 349 đạt, 0 trượt.
 - `npx tsc --noEmit -p .`: không lỗi.
-- Hai tệp mocha tạm ở `C:\Users\Admin\AppData\Local\Temp\aidn-soat-dot2\` (`t1.test.ts`, `t2.test.ts`; `npx mocha -r ts-node/register <tệp>`): 21 chuỗi lỗi qua `classifyError` (kết quả ở T3, Th2, Th3, Th4), `explainApiError` với key Gemini giả (T1), `extractCode` với key OpenAI/Gemini giả (T2), `redact` với `AIza…` (Th1), `parseDialogQuery`, `readDialogMessage`. Toàn bộ chuỗi là dữ liệu giả.
+- Hai tệp mocha tạm ở `%TEMP%\aidn-soat-dot2\` (`t1.test.ts`, `t2.test.ts`; `npx mocha -r ts-node/register <tệp>`): 21 chuỗi lỗi qua `classifyError` (kết quả ở T3, Th2, Th3, Th4), `explainApiError` với key Gemini giả (T1), `extractCode` với key OpenAI/Gemini giả (T2), `redact` với `AIza…` (Th1), `parseDialogQuery`, `readDialogMessage`. Toàn bộ chuỗi là dữ liệu giả.
 - Không gọi mạng, không mở Office, không đọc localStorage/IndexedDB/Wef.
